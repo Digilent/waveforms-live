@@ -1,14 +1,26 @@
-
 <ion-navbar *navbar>
-  <button menuToggle>
-    <ion-icon name="menu"></ion-icon>
-  </button>
-  <ion-title>Oscilloscope</ion-title>
+    <button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-buttons end>
+        <button outline>
+            Single
+            <ion-icon name="play"></ion-icon>
+        </button>
+        <button outline>
+            Run
+            <ion-icon name="repeat"></ion-icon>
+        </button>
+    </ion-buttons>
 </ion-navbar>
 
+<ion-content padding>
+    <oscilloscope-chart></oscilloscope-chart>
 
-<ion-content padding class="getting-started">
-  
-  <oscilloscope-chart></oscilloscope-chart>
+
 
 </ion-content>
+
+<ion-toolbar position="bottom">
+    Bottom Bar...
+</ion-toolbar>

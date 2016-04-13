@@ -1,4 +1,4 @@
-import {Page} from 'ionic-angular';
+import {Page, } from 'ionic-angular';
 import {OscilloscopeChartComponent} from '../../components/charts/oscilloscope/oscilloscope-chart.component';
 
 @Page({

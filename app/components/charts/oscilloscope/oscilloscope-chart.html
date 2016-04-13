@@ -1,1 +1,12 @@
-<chart [options]="options"></chart>
+<ion-row>
+    <ion-col width-75>
+        <chart [options]="options"></chart>
+        <button outline (click)="refresh()">
+            Single
+            <ion-icon name="play"></ion-icon>
+        </button>
+    </ion-col>
+    <ion-col width-25 class="oscilloscope-controlls">
+        <center><h3>Controls</h3></center>
+    </ion-col>   
+</ion-row>
