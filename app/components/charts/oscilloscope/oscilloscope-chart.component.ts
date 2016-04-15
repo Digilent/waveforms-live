@@ -90,4 +90,10 @@ export class OscilloscopeChartComponent {
         chart.series[seriesNum].options.pointInterval = waveform.dt;
         chart.series[seriesNum].setData(waveform.y);
     }
+    
+    reflowChart()
+    {
+        console.log('asdf');
+       this.chart.reflow(); 
+    }
 }

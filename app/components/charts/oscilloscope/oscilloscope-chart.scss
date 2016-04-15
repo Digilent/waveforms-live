@@ -1,9 +1,25 @@
+.oscope-chart-outer
+{
+   position: absolute;
+   height: 100%;
+   width: 75%;
+}
+
+.oscope-chart-inner
+{
+    display: inline-block;
+    height: 100%;
+    width: 95%;
+}
+
 chart 
 {
     display: block;
+    height: 100%;
 }
 
-.oscilloscope-controlls
+.oscope-ctrls
 {
+    width: 25%;
     float: right;
 }
