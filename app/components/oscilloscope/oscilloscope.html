@@ -1,0 +1,52 @@
+<ion-row class="full-height-row">
+    <ion-col width-75 class="chart-col">
+        <div class="oscope-chart-outer">
+            <div class="oscope-chart-inner">
+                <chart [options]="options" (load)="saveInstance($event.context)"></chart>
+            </div>
+        </div>
+    </ion-col>
+    <ion-col width-25 class="controls-col">
+        <div class="oscope-ctrls">
+            <center>
+                <h3>Controls</h3></center>
+            <ion-list>
+                <ion-item>
+                    <ion-label>Sample Rate (Hz):</ion-label>
+                    <ion-input type="number" value="1000" [(ngModel)]="sampleRate"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Number of Samples:</ion-label>
+                    <ion-input type="number" [(ngModel)]="numSamples" value="20"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Signal Frequency (Hz):</ion-label>
+                    <ion-input type="number" [(ngModel)]="sigFreq" value="20"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Phase Offset (deg):</ion-label>
+                    <ion-input type="number" [(ngModel)]="phaseOffset" value="20"></ion-input>
+                </ion-item>
+            </ion-list>
+            <button outline (click)="single(sampleRate, numSamples, sigFreq, phaseOffset)">
+                Single
+                <ion-icon name="play"></ion-icon>
+            </button>
+            <button outline *ngIf="!run" (click)="continuous(sampleRate, numSamples, sigFreq, phaseOffset)">
+                Run
+                <ion-icon name="repeat"></ion-icon>
+            </button>
+            <button outline *ngIf="run" (click)="stop()">
+                Stop
+                <ion-icon name="stop"></ion-icon>
+            </button>
+            <button outline (click)="reflowChart()">
+                Reflow
+                <ion-icon name="play"></ion-icon>
+            </button> 
+            <br />           
+            <br />Status: {{run}}<br />
+            <br />Frame: {{frame}}<br />
+        </div>
+    </ion-col>
+</ion-row>
