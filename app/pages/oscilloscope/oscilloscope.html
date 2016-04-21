@@ -3,14 +3,14 @@
         <ion-icon name="menu"></ion-icon>
     </button>
     <ion-buttons end>
-        <button outline>
-            Single
-            <ion-icon name="play"></ion-icon>
-        </button>
-        <button outline>
-            Run
-            <ion-icon name="repeat"></ion-icon>
-        </button>
+        <button outline (click)="oscilloscope.single(oscilloscope.sampleRate, oscilloscope.numSamples, oscilloscope.sigFreq, oscilloscope.phaseOffset)">
+                Single
+                <ion-icon name="play"></ion-icon>
+            </button>
+            <button outline *ngIf="!run" (click)="continuous(sampleRate, numSamples, sigFreq, phaseOffset)">
+                Run
+                <ion-icon name="repeat"></ion-icon>
+            </button>
     </ion-buttons>
 </ion-navbar>
 

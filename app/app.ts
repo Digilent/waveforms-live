@@ -4,6 +4,12 @@ import {StatusBar} from 'ionic-native';
 import {HomePage} from './pages/home/home';
 import {OscilloscopePage} from './pages/oscilloscope/oscilloscope';
 
+/* ---------- Uncomment this to switch to production mode ---------
+import {enableProdMode} from 'angular2/core';
+enableProdMode();
+-----------------------------------------------------------------*/
+
+
 
 @App({
   templateUrl: 'build/app.html',

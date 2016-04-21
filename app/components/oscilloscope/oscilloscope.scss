@@ -1,6 +1,6 @@
 .full-height-row
 {
-    //background-color: yellow;
+    //background-color: #444444;
     height: 100%;
 }
 
@@ -8,6 +8,11 @@
 {
     //background-color: purple;
     height: 100%;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 75%;
+    -ms-flex: 0 0 75%;
+    flex: 0 0 75%;
+    max-width: 75%; 
 }
 
 .controls-col
@@ -37,4 +42,20 @@ chart
 .clear-both
 {
     clear: both;
+}
+
+//Small Screens
+@media screen and (max-width: 720px) {
+    .controls-col {
+        display:none;
+    }
+    .chart-col
+    {
+        -webkit-box-flex: 0;
+        -webkit-flex: 0 0 100%;
+        -ms-flex: 0 0 100%;
+        flex: 0 0 100%;
+        max-width: 100%; 
+        //background-color: green;
+    }
 }

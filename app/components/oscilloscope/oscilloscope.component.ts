@@ -29,6 +29,11 @@ export class OscilloscopeComponent {
     private dataSourceSubscription: any;
     public run: boolean = false;
 
+    public min: number = 0;
+    public max: number = 0;
+    public secsPerDiv = 1;
+    public position = 5;
+
     constructor(private http: Http) {
         this.sampleRate = 10000;
         this.numSamples = 100;
@@ -39,13 +44,16 @@ export class OscilloscopeComponent {
             chart: {
                 type: 'line',
                 zoomType: 'x',
-                title: ''
+                title: '',
+                animation: false
+                //backgroundColor: '#141414',
+            },
+            title: {
+                text: '',
             },
             plotOptions: {
                 series: {
-                    animation: {
-                        animation: false
-                    }
+                    animation: false
                 }
             },
             tooltip: {
@@ -53,21 +61,48 @@ export class OscilloscopeComponent {
                 formatter: function() {
                     let tip = '<b>' + this.x.toFixed(2) + '</b>';
                     this.points.forEach(function(point) {
-                        tip += '<br/>' + point.series.name + ': ' + point.y.toFixed(2) + ' MEGAVOLTS!';
+                        tip += '<br/>' + point.series.name + ': ' + point.y.toFixed(2) + ' V';
                     });
 
                     return tip;
                 },
+            },
+            yAxis: {
+                gridLineWidth: 1,
+                tickAmount: 11,
+            },
+            xAxis: {
+                //startOnTick: true,
+                //endOnTick: true,
+
+                gridLineWidth: 1,
+                minorGridLineWidth: 0,
+                tickPixelInterval: null,
+                tickAmount: 11,
+                
+                /*
+                tickPositioner: function() {
+                    let xTicks = [this.position];
+                    return xTicks;
+                },
+                */
+                minorTickInterval: 'auto',
+                minorTickLength: 10,
+                minorTickWidth: 1,
+                minorTickPosition: 'inside',
+                
             },
             series: [
                 {
                     name: 'Channel 0',
                     data: [],
                 },
+                /*
                 {
                     name: 'Channel 1',
                     data: [],
                 }
+                */
             ]
 
         };
@@ -75,9 +110,9 @@ export class OscilloscopeComponent {
 
     //Configure settings
     configure(sampleRate, numSamples, sigFreq, phaseOffset) {
-        //let url = 'https://0u7h6sgzf6.execute-api.us-east-1.amazonaws.com/prod';
-        let url = 'http://localhost:8080';
-        
+        let url = 'https://0u7h6sgzf6.execute-api.us-east-1.amazonaws.com/prod';
+        //let url = 'http://localhost:8080';
+
         let params = {
             "mode": "single",
             "sigType": "sin",
@@ -139,72 +174,24 @@ export class OscilloscopeComponent {
     }
 
     //Update the chart data with the contents of a waveform object
-    drawWaveform(chart, seriesNum, waveform) {
-        console.log(waveform.t0);
-        chart.series[seriesNum].options.pointStart = waveform.t0;
-        chart.series[seriesNum].options.pointInterval = waveform.dt / 1000;
-        chart.series[seriesNum].setData(waveform.y, true, false, false);
+    drawWaveform(chart, seriesNum, waveform) {        
+        this.chart.series[seriesNum].options.pointStart = 0;//waveform.t0;
+        this.chart.series[seriesNum].options.pointInterval = waveform.dt;
+        this.chart.series[seriesNum].setData(waveform.y, true, false, false);
     }
 
     reflowChart() {
         this.chart.reflow();
     }
 
-    /*
-        single(sampleRate, numSamples, sigFreq, phaseOffset) {
-    
-            let url = 'https://0u7h6sgzf6.execute-api.us-east-1.amazonaws.com/prod';
-            let params = {
-                "mode": "single",
-                "sigType": "sin",
-                "sampleRate": parseInt(sampleRate, 10),
-                "numSamples": parseInt(numSamples, 10),
-                "sigFreq": parseInt(sigFreq, 10),
-                "phaseOffset": parseInt(phaseOffset, 10)
-            };
-    
-            this.http.post(url, JSON.stringify(params)).subscribe((response) => {
-                if (response.status != 200) {
-                    console.log(Error, 'Bad Response: ', response);
-                }
-                else {
-                    let waveform = JSON.parse(response.text());
-    
-                    this.drawWaveform(this.chart, 0, waveform);
-                    this.count++;
-                }
-            });
-        }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        /*
-            continuous(sampleRate, numSamples, sigFreq, phaseOffset) {
-                let url = 'https://0u7h6sgzf6.execute-api.us-east-1.amazonaws.com/prod';
-                let params = {
-                    "mode": "single",
-                    "sigType": "sin",
-                    "sampleRate": parseInt(sampleRate, 10),
-                    "numSamples": parseInt(numSamples, 10),
-                    "sigFreq": parseInt(sigFreq, 10),
-                    "phaseOffset": parseInt(phaseOffset, 10)
-                };
-                
-                this.http.post(url, JSON.stringify(params)).subscribe((response) => {
-                    if (response.status != 200) {
-                        console.log(Error, 'Bad Response: ', response);
-                    }
-                    else {
-                        let waveform = JSON.parse(response.text());
-                        this.drawWaveform(this.chart, 0, waveform);
-                    }
-                })
-            }
-            */
+    xZoom(position, secsPerDiv) {
+        position = parseFloat(position);
+        secsPerDiv = parseFloat(secsPerDiv);
+       
+        let delta = 5 * secsPerDiv;
+        let xMin = position - delta;
+        let xMax = position + delta;
+        
+        this.chart.xAxis[0].setExtremes(xMin, xMax);
+    }
 }

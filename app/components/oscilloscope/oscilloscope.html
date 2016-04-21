@@ -1,5 +1,5 @@
 <ion-row class="full-height-row">
-    <ion-col width-75 class="chart-col">
+    <ion-col class="chart-col">
         <div class="oscope-chart-outer">
             <div class="oscope-chart-inner">
                 <chart [options]="options" (load)="saveInstance($event.context)"></chart>
@@ -43,10 +43,25 @@
             <button outline (click)="reflowChart()">
                 Reflow
                 <ion-icon name="play"></ion-icon>
-            </button> 
-            <br />           
-            <br />Status: {{run}}<br />
-            <br />Frame: {{frame}}<br />
+            </button>
+            <h3>X Scale</h3>
+            <ion-item>
+                <ion-label>Position:</ion-label>
+                <ion-input type="number" [(ngModel)]="position"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Base:</ion-label>
+                <ion-input type="number" [(ngModel)]="secsPerDiv"></ion-input>
+            </ion-item>
+            <button outline (click)="xZoom(position, secsPerDiv)">
+                Update
+                <ion-icon name="stop"></ion-icon>
+            </button>
+            <br />
+            <br />Status: {{run}}
+            <br />
+            <br />Frame: {{frame}}
+            <br />
         </div>
     </ion-col>
 </ion-row>
