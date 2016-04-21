@@ -2,7 +2,7 @@
     <ion-col class="chart-col">
         <div class="oscope-chart-outer">
             <div class="oscope-chart-inner">
-                <chart [options]="options" (load)="saveInstance($event.context)"></chart>
+                <chart [options]="options" (load)="onLoad($event.context)"></chart>
             </div>
         </div>
     </ion-col>
@@ -40,27 +40,27 @@
                 Stop
                 <ion-icon name="stop"></ion-icon>
             </button>
-            <button outline (click)="reflowChart()">
-                Reflow
-                <ion-icon name="play"></ion-icon>
-            </button>
-            <h3>X Scale</h3>
+            <h3>X Axis</h3>
             <ion-item>
                 <ion-label>Position:</ion-label>
-                <ion-input type="number" [(ngModel)]="position"></ion-input>
+                <ion-input type="number" [ngModel]="xPosition" (ngModelChange)="xViewChange($event, xUnitsPerDiv)"></ion-input>
             </ion-item>
             <ion-item>
                 <ion-label>Base:</ion-label>
-                <ion-input type="number" [(ngModel)]="secsPerDiv"></ion-input>
+                <ion-input type="number" [ngModel]="xUnitsPerDiv" (ngModelChange)="xViewChange(xPosition, $event)"></ion-input>
             </ion-item>
-            <button outline (click)="xZoom(position, secsPerDiv)">
-                Update
-                <ion-icon name="stop"></ion-icon>
-            </button>
+            <h3>Y Axis</h3>
+            <ion-item>
+                <ion-label>Position:</ion-label>
+                <ion-input type="number" [ngModel]="yPosition" (ngModelChange)="yViewChange($event, yUnitsPerDiv)"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Base:</ion-label>
+                <ion-input type="number" [ngModel]="yUnitsPerDiv" (ngModelChange)="yViewChange(yPosition, $event)"></ion-input>
+            </ion-item>
             <br />
-            <br />Status: {{run}}
             <br />
-            <br />Frame: {{frame}}
+            <br />Frame: {{frameNumber}}
             <br />
         </div>
     </ion-col>

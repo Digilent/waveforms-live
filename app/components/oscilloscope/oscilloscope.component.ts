@@ -21,18 +21,19 @@ export class OscilloscopeComponent {
     public sigFreq: number;
     public phaseOffset: number;
 
-    public state: string = 'idle';
-
-    //test code
-    public frame: number = 0;
+    public frameNumber: number = 0;
     private dataSource: Observable<any>;
     private dataSourceSubscription: any;
     public run: boolean = false;
 
-    public min: number = 0;
-    public max: number = 0;
-    public secsPerDiv = 1;
-    public position = 5;
+    //Chart Pan / Zoom Variables
+    public xPosition = 5;
+    public xUnitsPerDiv = 1;
+    public yPosition = 0;
+    public yUnitsPerDiv = 1;
+
+    //Cursors
+    public numXCursors: number = 0;
 
     constructor(private http: Http) {
         this.sampleRate = 10000;
@@ -43,7 +44,7 @@ export class OscilloscopeComponent {
         this.options = {
             chart: {
                 type: 'line',
-                zoomType: 'x',
+                zoomType: '',
                 title: '',
                 animation: false
                 //backgroundColor: '#141414',
@@ -58,9 +59,9 @@ export class OscilloscopeComponent {
             },
             tooltip: {
                 shared: true,
-                formatter: function() {
+                formatter: function () {
                     let tip = '<b>' + this.x.toFixed(2) + '</b>';
-                    this.points.forEach(function(point) {
+                    this.points.forEach(function (point) {
                         tip += '<br/>' + point.series.name + ': ' + point.y.toFixed(2) + ' V';
                     });
 
@@ -69,28 +70,42 @@ export class OscilloscopeComponent {
             },
             yAxis: {
                 gridLineWidth: 1,
-                tickAmount: 11,
+                tickPositioner: function () {
+                    let numTicks = 11;
+                    let ticks = [];
+                    let min = this.chart.yAxis[0].min;
+                    let max = this.chart.yAxis[0].max;
+                    let delta = (max - min) / (numTicks - 1);
+                    for (var i = 0; i < numTicks; i++) {
+                        ticks[i] = (min + i * delta).toFixed(3);
+                    }
+                    return ticks;
+                },
             },
             xAxis: {
-                //startOnTick: true,
-                //endOnTick: true,
+                startOnTick: true,
+                endOnTick: true,
 
                 gridLineWidth: 1,
                 minorGridLineWidth: 0,
-                tickPixelInterval: null,
-                tickAmount: 11,
-                
-                /*
-                tickPositioner: function() {
-                    let xTicks = [this.position];
-                    return xTicks;
+
+                tickPositioner: function () {
+                    let numTicks = 11;
+                    let ticks = [];
+                    let min = this.chart.xAxis[0].min;
+                    let max = this.chart.xAxis[0].max;
+                    let delta = (max - min) / (numTicks - 1);
+                    for (var i = 0; i < numTicks; i++) {
+                        ticks[i] = (min + i * delta).toFixed(3);
+                    }
+                    return ticks;
                 },
-                */
+
                 minorTickInterval: 'auto',
                 minorTickLength: 10,
                 minorTickWidth: 1,
                 minorTickPosition: 'inside',
-                
+
             },
             series: [
                 {
@@ -110,8 +125,8 @@ export class OscilloscopeComponent {
 
     //Configure settings
     configure(sampleRate, numSamples, sigFreq, phaseOffset) {
-        let url = 'https://0u7h6sgzf6.execute-api.us-east-1.amazonaws.com/prod';
-        //let url = 'http://localhost:8080';
+        //let url = 'https://0u7h6sgzf6.execute-api.us-east-1.amazonaws.com/prod';
+        let url = 'http://localhost:8080';
 
         let params = {
             "mode": "single",
@@ -128,8 +143,8 @@ export class OscilloscopeComponent {
     start() {
         this.dataSourceSubscription = this.dataSource.subscribe(
             (result) => {
-                console.log(result);
-                this.frame++;
+                //console.log(result);
+                this.frameNumber++;
                 let waveform = JSON.parse(result.text());
                 this.drawWaveform(this.chart, 0, waveform);
             },
@@ -168,13 +183,16 @@ export class OscilloscopeComponent {
         this.start();
     }
 
-    //Save a reference to the chart object so we can call methods on it later
-    saveInstance(instance) {
+   
+    onLoad(instance) {
+         //Save a reference to the chart object so we can call methods on it later
         this.chart = instance;
+        this.setXView(this.xPosition, this.xUnitsPerDiv);
+        this.setYView(this.yPosition, this.yUnitsPerDiv);
     }
 
     //Update the chart data with the contents of a waveform object
-    drawWaveform(chart, seriesNum, waveform) {        
+    drawWaveform(chart, seriesNum, waveform) {
         this.chart.series[seriesNum].options.pointStart = 0;//waveform.t0;
         this.chart.series[seriesNum].options.pointInterval = waveform.dt;
         this.chart.series[seriesNum].setData(waveform.y, true, false, false);
@@ -184,14 +202,37 @@ export class OscilloscopeComponent {
         this.chart.reflow();
     }
 
-    xZoom(position, secsPerDiv) {
+    setXView(position, secsPerDiv) {
         position = parseFloat(position);
         secsPerDiv = parseFloat(secsPerDiv);
-       
+
         let delta = 5 * secsPerDiv;
-        let xMin = position - delta;
-        let xMax = position + delta;
-        
-        this.chart.xAxis[0].setExtremes(xMin, xMax);
+        let min = position - delta;
+        let max = position + delta;
+
+        this.chart.xAxis[0].setExtremes(min, max);
+    }
+
+    xViewChange(position, unitsPerDiv) {
+        this.xPosition = position;
+        this.xUnitsPerDiv = unitsPerDiv;
+        this.setXView(position, unitsPerDiv);
+    }
+
+    setYView(position, secsPerDiv) {
+        position = parseFloat(position);
+        secsPerDiv = parseFloat(secsPerDiv);
+
+        let delta = 5 * secsPerDiv;
+        let min = position - delta;
+        let max = position + delta;
+
+        this.chart.yAxis[0].setExtremes(min, max);
+    }
+
+    yViewChange(position, unitsPerDiv) {
+        this.yPosition = position;
+        this.yUnitsPerDiv = unitsPerDiv;
+        this.setYView(position, unitsPerDiv);
     }
 }
