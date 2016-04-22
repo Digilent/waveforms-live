@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component, ViewChild} from 'angular2/core';
 import {Http, HTTP_PROVIDERS} from 'angular2/http';
 import {IONIC_DIRECTIVES} from 'ionic-angular';
 import {CHART_DIRECTIVES, Highcharts} from 'angular2-highcharts';
@@ -12,6 +12,9 @@ import 'rxjs/Rx';
     viewProviders: [HTTP_PROVIDERS],
 })
 export class OscilloscopeComponent {
+    @ViewChild('oscopeChartInner') oscopeChartInner: ElementRef;
+    @ViewChild('chartContainer') chartContainer: ElementRef;
+
     private chart: Object;
     private options: Object;
     private data: Array<number>;
@@ -22,9 +25,12 @@ export class OscilloscopeComponent {
     public phaseOffset: number;
 
     public frameNumber: number = 0;
+    public remoteDataSource: boolean;
     private dataSource: Observable<any>;
     private dataSourceSubscription: any;
     public run: boolean = false;
+
+
 
     //Chart Pan / Zoom Variables
     public xPosition = 5;
@@ -34,6 +40,9 @@ export class OscilloscopeComponent {
 
     //Cursors
     public numXCursors: number = 0;
+    private xCursorDragStartPos: number = 0;
+    private xCursors;
+    private cursorLabel: any;
 
     constructor(private http: Http) {
         this.sampleRate = 10000;
@@ -46,7 +55,15 @@ export class OscilloscopeComponent {
                 type: 'line',
                 zoomType: '',
                 title: '',
-                animation: false
+                animation: false,
+                /*
+                 events: {
+                     click: function (event) {
+                         console.log(event.xAxis[0].value);
+                     }
+                 }
+                 */
+
                 //backgroundColor: '#141414',
             },
             title: {
@@ -54,10 +71,11 @@ export class OscilloscopeComponent {
             },
             plotOptions: {
                 series: {
-                    animation: false
+                    animation: false                   
                 }
             },
             tooltip: {
+                enabled: false,
                 shared: true,
                 formatter: function () {
                     let tip = '<b>' + this.x.toFixed(2) + '</b>';
@@ -123,10 +141,22 @@ export class OscilloscopeComponent {
         };
     }
 
+    toggleDataSource() {
+        if (this.source == "Remote") {
+            this.source = "Local";
+        }
+        else {
+            this.source = "Remote";
+        }
+    }
     //Configure settings
     configure(sampleRate, numSamples, sigFreq, phaseOffset) {
-        //let url = 'https://0u7h6sgzf6.execute-api.us-east-1.amazonaws.com/prod';
-        let url = 'http://localhost:8080';
+        if (this.remoteDataSource) {
+            let url = 'https://0u7h6sgzf6.execute-api.us-east-1.amazonaws.com/prod';
+        }
+        else {
+            let url = 'http://localhost:8080';
+        }
 
         let params = {
             "mode": "single",
@@ -183,9 +213,9 @@ export class OscilloscopeComponent {
         this.start();
     }
 
-   
+
     onLoad(instance) {
-         //Save a reference to the chart object so we can call methods on it later
+        //Save a reference to the chart object so we can call methods on it later
         this.chart = instance;
         this.setXView(this.xPosition, this.xUnitsPerDiv);
         this.setYView(this.yPosition, this.yUnitsPerDiv);
@@ -230,9 +260,77 @@ export class OscilloscopeComponent {
         this.chart.yAxis[0].setExtremes(min, max);
     }
 
-    yViewChange(position, unitsPerDiv) {
+    yViewChange(position: number, unitsPerDiv: number) {
         this.yPosition = position;
         this.yUnitsPerDiv = unitsPerDiv;
         this.setYView(position, unitsPerDiv);
     }
+
+
+    //-------------------- Cursors --------------------
+    addCursor() {
+        this.chart.xAxis[0].addPlotLine({
+            value: this.xPosition,
+            color: 'blue',
+            width: 3,
+            zIndex: 100 + this.numXCursors,
+            id: 'cursor' + this.numXCursors,
+        });
+
+        this.cursorLabel = this.chart.renderer.text('Cursor 0', 100, 100).add();
+
+        //let options = this.chart.options;
+        //console.log(options);
+        this.chart.options.chart.events.click = function (event) {
+            console.log(event);
+        };
+        console.log(this.chart.options);
+        //this.chart = new Highcharts.Chart(options);
+
+        //Set Mouse To Pointer On Hover Over
+        this.chart.xAxis[0].plotLinesAndBands[0].svgElem.css({
+            'cursor': 'pointer'
+        })
+
+            .on('mousedown', (event) => {
+                // console.log('start')
+                this.xCursorDragStartPos = event.clientX;
+                this.xCursorStartDrag(0, event.clientX);
+            })
+            .on('mouseup', (event) => {
+                console.log('mouse released on cursor');
+                //console.log('stop')
+            });
+
+        this.numXCursors++;
+    }
+
+    xCursorStartDrag(cursorId, xStartPos) {
+        console.log('start');
+        this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.cursorDragListener);
+        this.oscopeChartInner.nativeElement.addEventListener('mouseup', this.xCursorStopDrag.bind(this));
+    }
+
+    xCursorStopDrag() {
+        this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.cursorDragListener);
+        console.log('done');
+        //console.log(this.chart.xAxis[0].plotLinesAndBands[0].options.value);
+
+    }
+
+    //
+    cursorDragListener = function (event) {
+        //TODO FORCE BETWEEN MIN / MAX
+        let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true).toFixed(1);       
+        let pointNum = Math.round((xVal - this.chart.series[0].data[0].x) / this.chart.series[0].options.pointInterval);
+        //console.log(this.chart.series[0].data[pointNum].plotY + 15);
+        //this.chart.xAxis[0].plotLinesAndBands[0].svgElem.translate(event.clientX - this.xCursorDragStartPos);
+        this.chart.xAxis[0].plotLinesAndBands[0].options.value = xVal;
+        this.chart.xAxis[0].plotLinesAndBands[0].render();
+        this.cursorLabel.attr({
+            text: this.chart.series[0].data[pointNum].y.toFixed(3) + 'V', 
+            x: event.chartX + 5,
+            y: this.chart.series[0].data[pointNum].plotY - 15
+        });
+    }.bind(this);
 }

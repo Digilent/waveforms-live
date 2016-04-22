@@ -1,8 +1,8 @@
 <ion-row class="full-height-row">
     <ion-col class="chart-col">
         <div class="oscope-chart-outer">
-            <div class="oscope-chart-inner">
-                <chart [options]="options" (load)="onLoad($event.context)"></chart>
+            <div #oscopeChartInner class="oscope-chart-inner">
+                <chart #chartContainer [options]="options" (load)="onLoad($event.context)"></chart>
             </div>
         </div>
     </ion-col>
@@ -10,7 +10,12 @@
         <div class="oscope-ctrls">
             <center>
                 <h3>Controls</h3></center>
+
             <ion-list>
+                <ion-item>
+                    <ion-label>Remote Data Source</ion-label>
+                    <ion-toggle checked="false" [(ngModel)]="remoteDataSource"></ion-toggle>
+                </ion-item>
                 <ion-item>
                     <ion-label>Sample Rate (Hz):</ion-label>
                     <ion-input type="number" value="1000" [(ngModel)]="sampleRate"></ion-input>
@@ -58,6 +63,14 @@
                 <ion-label>Base:</ion-label>
                 <ion-input type="number" [ngModel]="yUnitsPerDiv" (ngModelChange)="yViewChange(yPosition, $event)"></ion-input>
             </ion-item>
+            <button outline (click)="addCursor()">
+                Add X Cursor
+                <ion-icon name="play"></ion-icon>
+            </button>
+            <button outline (click)="reflowChart()">
+                Reflow
+                <ion-icon name="play"></ion-icon>
+            </button>
             <br />
             <br />
             <br />Frame: {{frameNumber}}
