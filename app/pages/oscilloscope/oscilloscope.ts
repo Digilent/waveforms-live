@@ -1,4 +1,6 @@
 import {Page} from 'ionic-angular';
+
+//Components
 import {OscilloscopeComponent} from '../../components/oscilloscope/oscilloscope.component';
 
 @Page({

@@ -1,8 +1,11 @@
 import 'es6-shim';
 import {App, IonicApp, Platform, MenuController} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
+
+//Pages
 import {HomePage} from './pages/home/home';
 import {OscilloscopePage} from './pages/oscilloscope/oscilloscope';
+import {SideControlsPage} from './pages/sidecontrols/sidecontrols';
 
 /* ---------- Uncomment this to switch to production mode ---------
 import {enableProdMode} from 'angular2/core';
@@ -30,7 +33,8 @@ class MyApp {
     // set our app's pages
     this.pages = [
       { title: 'Home', component: HomePage },
-      { title: 'Oscilloscope', component: OscilloscopePage }      
+      { title: 'Oscilloscope', component: OscilloscopePage },   
+      { title: 'SideControls', component: SideControlsPage }      
     ];
   }
 
