@@ -1,0 +1,56 @@
+<ion-navbar *navbar>
+    <button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Side Menu Test</ion-title>
+
+</ion-navbar>
+<!--
+<ion-menu name="sideMenu" side="right" type="push" [content]="mycontent">
+    <ion-content>
+        <ion-list>
+            <ion-item>
+                <ion-label>Remote Data Source</ion-label>
+                <ion-toggle checked="false" [(ngModel)]="remoteDataSource"></ion-toggle>
+            </ion-item>
+            <ion-item>
+                <ion-label>Sample Rate (Hz):</ion-label>
+                <ion-input type="number" value="1000" [(ngModel)]="sampleRate"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Number of Samples:</ion-label>
+                <ion-input type="number" [(ngModel)]="numSamples" value="20"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Signal Frequency (Hz):</ion-label>
+                <ion-input type="number" [(ngModel)]="sigFreq" value="20"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Phase Offset (deg):</ion-label>
+                <ion-input type="number" [(ngModel)]="phaseOffset" value="20"></ion-input>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-menu>
+-->
+
+<ion-content #mycontent padding>    
+    <div class="wrapper" [ngClass]="{controlsVisible: controlsVisible}">
+        <div class="graph container-fluid">
+                <button (click)="toggleControls()">
+                    <ion-icon name="menu"></ion-icon>
+                </button>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vestibulum feugiat nulla ac auctor. Pellentesque at nibh ex. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse risus justo, iaculis a lorem vel, sodales posuere massa. Phasellus a ultricies mi. Vestibulum non mattis ex. Mauris vel lorem non felis maximus tristique. In mollis lacus ac quam fermentum, ut dapibus nisl efficitur.
+                <oscilloscope-chart></oscilloscope-chart>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br /> -----
+           
+        </div>
+        <div class="controls">
+            Contorls!
+        </div>
+    </div>
+</ion-content>

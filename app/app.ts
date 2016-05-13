@@ -6,6 +6,8 @@ import {StatusBar} from 'ionic-native';
 import {HomePage} from './pages/home/home';
 import {OscilloscopePage} from './pages/oscilloscope/oscilloscope';
 import {SideControlsPage} from './pages/sidecontrols/sidecontrols';
+import {TestChartPage} from './pages/test-chart/test-chart';
+import {TestChartCtrlsPage} from './pages/test-chart-ctrls/test-chart-ctrls';
 
 /* ---------- Uncomment this to switch to production mode ---------
 import {enableProdMode} from 'angular2/core';
@@ -21,7 +23,7 @@ enableProdMode();
 class MyApp {
   // make HelloIonicPage the root (or first) page
   rootPage: any = HomePage;
-  pages: Array<{title: string, component: any}>;
+  pages: Array<{ title: string, component: any }>;
 
   constructor(
     private app: IonicApp,
@@ -33,8 +35,10 @@ class MyApp {
     // set our app's pages
     this.pages = [
       { title: 'Home', component: HomePage },
-      { title: 'Oscilloscope', component: OscilloscopePage },   
-      { title: 'SideControls', component: SideControlsPage }      
+      { title: 'Oscilloscope', component: OscilloscopePage },
+      { title: 'SideControls', component: SideControlsPage },
+      { title: 'Test Chart', component: TestChartPage },
+      { title: 'Test Chart Controls', component: TestChartCtrlsPage }
     ];
   }
 

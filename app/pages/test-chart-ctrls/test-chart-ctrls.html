@@ -1,0 +1,24 @@
+<ion-navbar *navbar>
+    <button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Chart Control Test Page</ion-title>
+</ion-navbar>
+
+<ion-content #mycontent padding>
+    <div class="tcwrapper" [ngClass]="{controlsVisible: controlsVisible}">
+        <div class="left">
+            Controls
+        </div> 
+        <div class="right">
+            <button (click)="toggleControls()">
+                <ion-icon name="menu"></ion-icon>
+            </button>
+            <button (click)="chart1.redrawChart()">
+                <ion-icon name="refresh"></ion-icon>
+            </button>
+            Chart
+            <silverNeedleChart #chart1></silverNeedleChart>            
+        </div>
+    </div>
+</ion-content>
