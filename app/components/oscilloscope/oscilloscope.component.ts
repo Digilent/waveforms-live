@@ -333,4 +333,9 @@ export class OscilloscopeComponent {
             y: this.chart.series[0].data[pointNum].plotY - 15
         });
     }.bind(this);
+    
+    redrawChart()
+    {
+        this.chart.reflow();
+    }
 }

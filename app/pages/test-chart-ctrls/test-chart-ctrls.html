@@ -6,19 +6,30 @@
 </ion-navbar>
 
 <ion-content #mycontent padding>
+
+
     <div class="tcwrapper" [ngClass]="{controlsVisible: controlsVisible}">
         <div class="left">
             Controls
-        </div> 
+        </div>
         <div class="right">
-            <button (click)="toggleControls()">
-                <ion-icon name="menu"></ion-icon>
-            </button>
-            <button (click)="chart1.redrawChart()">
-                <ion-icon name="refresh"></ion-icon>
-            </button>
-            Chart
-            <silverNeedleChart #chart1></silverNeedleChart>            
+            <div class="innerCtrls">
+                <button (click)="toggleControls()">
+                    <ion-icon name="menu"></ion-icon>
+                </button>
+
+                <button (click)="chart1.redrawChart()">
+                    <ion-icon name="refresh"></ion-icon>
+                </button> Chart
+            </div>
+            <div class="chartWrapper">
+                <silverNeedleChart #chart1></silverNeedleChart>
+            </div>
+            <!--
+                 <oscilloscope-chart #chart2></oscilloscope-chart>
+                 -->
         </div>
     </div>
+
+
 </ion-content>

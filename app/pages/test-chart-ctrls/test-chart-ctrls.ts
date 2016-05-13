@@ -3,13 +3,15 @@ import {ViewChild} from 'angular2/core';
 
 //Components
 import {SilverNeedleChart} from '../../components/chart/chart.component';
+import {OscilloscopeComponent} from '../../components/oscilloscope/oscilloscope.component';
 
 @Page({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
-    directives: [SilverNeedleChart]
+    directives: [SilverNeedleChart, OscilloscopeComponent]
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
+    //@ViewChild('chart2') chart2: OscilloscopeComponent;
 
     public controlsVisible = false;
 
@@ -19,7 +21,7 @@ export class TestChartCtrlsPage {
 
     toggleControls() {
         this.controlsVisible = !this.controlsVisible;
-        this.chart1.redrawChart();
+        //this.chart1.redrawChart();
 
         setTimeout(() => {
             this.chart1.redrawChart();
