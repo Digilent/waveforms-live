@@ -1,0 +1,13 @@
+<div class="digi-container">
+    <div class="title" (click)="headerClicked.emit(null)">
+        DIGITAL - I/O
+    </div>
+    <ion-row *ngFor="#channel of gpioArray | slice:4">
+        <ion-col width-50>
+            <ion-checkbox></ion-checkbox>
+        </ion-col>
+        <ion-col width-50>
+            <ion-checkbox></ion-checkbox>
+        </ion-col>
+    </ion-row>
+</div>

@@ -7,27 +7,28 @@
 
 <ion-content #mycontent padding>
 
-
-    <div class="tcwrapper" [ngClass]="{controlsVisible: controlsVisible}">
-        <div class="left">
-            Controls
+    <div class="vertwrapper">
+        <div class="tcwrapper" [ngClass]="{showControls: controlsVisible}">
+            <div class="left" *ngIf="controlsVisible">
+                Controls
+            </div>
+            <div class="right">
+                <div class="innerCtrls">
+                    <button (click)="toggleControls()">
+                        <ion-icon name="menu"></ion-icon>
+                    </button>
+                    <button (click)="chart1.redrawChart()">
+                        <ion-icon name="refresh"></ion-icon>
+                    </button> Chart
+                </div>
+                <div class="chartWrapper">
+                    <silverNeedleChart #chart1></silverNeedleChart>
+                </div>
+            </div>
         </div>
-        <div class="right">
-            <div class="innerCtrls">
-                <button (click)="toggleControls()">
-                    <ion-icon name="menu"></ion-icon>
-                </button>
-
-                <button (click)="chart1.redrawChart()">
-                    <ion-icon name="refresh"></ion-icon>
-                </button> Chart
-            </div>
-            <div class="chartWrapper">
-                <silverNeedleChart #chart1></silverNeedleChart>
-            </div>
-            <!--
-                 <oscilloscope-chart #chart2></oscilloscope-chart>
-                 -->
+        <!--<div class="botwrapper" [ngClass]="{showbot: botVisible}" (click)="toggleBotControls();">-->
+        <div class="botwrapper" [ngClass]="{showbot: botVisible}">
+            <bottom-bar (headerClicked)="toggleBotControls();"></bottom-bar>
         </div>
     </div>
 

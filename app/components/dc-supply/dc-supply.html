@@ -1,0 +1,18 @@
+<div class="dc-container">
+    <div class="title" (click)="headerClicked.emit(null)">
+        DC POWER SUPPLY
+    </div>
+    <ion-row>
+        <ion-col *ngFor="#supply of voltageSupplies; #i = index">
+            DC Power Supply {{i}}
+            <ion-item>
+                <ion-label stacked>Volts</ion-label>
+                <ion-input type="number" value="5.00"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label stacked>Amps</ion-label>
+                <ion-input type="number" value="1.00"></ion-input>
+            </ion-item>          
+        </ion-col>
+    </ion-row>
+</div>
