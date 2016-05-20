@@ -8,6 +8,7 @@ import {OscilloscopePage} from './pages/oscilloscope/oscilloscope';
 import {SideControlsPage} from './pages/sidecontrols/sidecontrols';
 import {TestChartPage} from './pages/test-chart/test-chart';
 import {TestChartCtrlsPage} from './pages/test-chart-ctrls/test-chart-ctrls';
+import {TestPage} from './pages/test-page/test-page';
 
 /* ---------- Uncomment this to switch to production mode ---------
 import {enableProdMode} from 'angular2/core';
@@ -38,7 +39,8 @@ class MyApp {
       { title: 'Oscilloscope', component: OscilloscopePage },
       { title: 'SideControls', component: SideControlsPage },
       { title: 'Test Chart', component: TestChartPage },
-      { title: 'Test Chart Controls', component: TestChartCtrlsPage }
+      { title: 'Test Chart Controls', component: TestChartCtrlsPage },
+      { title: 'Test Page', component: TestPage}
     ];
   }
 
