@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter} from 'angular2/core';
+import {Component, Output, EventEmitter, Input} from 'angular2/core';
 import {IONIC_DIRECTIVES} from 'ionic-angular';
 
 @Component({
@@ -8,10 +8,15 @@ import {IONIC_DIRECTIVES} from 'ionic-angular';
 })
 export class DcSupplyComponent { 
     @Output() headerClicked: EventEmitter<any> = new EventEmitter();
+    @Input() contentHidden: boolean;
     private voltageSupplies: number[];
     
     constructor() {
         this.voltageSupplies = [0, 1, 2];
+        this.contentHidden = true;
     }
-  
+    
+    headerClick() {
+        this.headerClicked.emit(null);
+    }
 }

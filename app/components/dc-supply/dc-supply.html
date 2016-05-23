@@ -2,7 +2,7 @@
     <div class="title" (click)="headerClicked.emit(null)">
         DC POWER SUPPLY
     </div>
-    <ion-row>
+    <ion-row [hidden]="contentHidden">
         <ion-col *ngFor="#supply of voltageSupplies; #i = index">
             DC Power Supply {{i}}
             <ion-item>

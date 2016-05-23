@@ -5,12 +5,11 @@ import {ViewChild} from 'angular2/core';
 import {SilverNeedleChart} from '../../components/chart/chart.component';
 import {OscilloscopeComponent} from '../../components/oscilloscope/oscilloscope.component';
 import {BottomBarComponent} from '../../components/bottom-bar/bottom-bar.component';
-import {DigitalIoComponent} from '../../components/digital-io/digital-io.component';
-import {DcSupplyComponent} from '../../components/dc-supply/dc-supply.component';
+import {SideBarComponent} from '../../components/side-bar/side-bar.component';
 
 @Page({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
-    directives: [SilverNeedleChart, OscilloscopeComponent, BottomBarComponent, DigitalIoComponent, DcSupplyComponent]
+    directives: [SilverNeedleChart, OscilloscopeComponent, BottomBarComponent, SideBarComponent]
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
@@ -18,6 +17,7 @@ export class TestChartCtrlsPage {
 
     public controlsVisible = false;
     public botVisible = false;
+    public sideVisible = false;
 
     constructor() {
 
@@ -41,6 +41,13 @@ export class TestChartCtrlsPage {
     
     toggleBotControls() {
         this.botVisible = !this.botVisible;
+        setTimeout(() => {
+            this.chart1.redrawChart();
+        }, 550);
+    }
+
+    toggleSideControls() {
+        this.sideVisible = !this.sideVisible;
         setTimeout(() => {
             this.chart1.redrawChart();
         }, 550);

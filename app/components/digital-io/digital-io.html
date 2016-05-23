@@ -2,7 +2,7 @@
     <div class="title" (click)="headerClicked.emit(null)">
         DIGITAL - I/O
     </div>
-    <ion-row *ngFor="#channel of gpioArray | slice:4">
+    <ion-row *ngFor="#channel of gpioArray | slice:4" [hidden]="contentHidden">
         <ion-col width-50>
             <ion-checkbox></ion-checkbox>
         </ion-col>

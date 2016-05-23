@@ -6,7 +6,7 @@ import {SilverNeedleChart} from '../../components/chart/chart.component';
 
 @Page({
     templateUrl: "build/pages/fgen-modal/fgen-modal.html",
-    directives: [SilverNeedleChart]
+    directives: [IONIC_DIRECTIVES, SilverNeedleChart]
 })
 export class ModalFgenPage {
     @ViewChild('chart') chart: SilverNeedleChart;
@@ -25,7 +25,7 @@ export class ModalFgenPage {
         this.viewCtrl = _viewCtrl;
         this.params = _params;
         //Not sure how to get params passed
-        this.value = this.params.get('num');
+        this.value = this.params.get('value');
     }
 
     closeModal() {

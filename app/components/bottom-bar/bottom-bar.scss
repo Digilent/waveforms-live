@@ -1,3 +1,9 @@
+.bottom-wrapper
+{
+    display: flex;
+    flex-direction: row;
+}
+
 .bottom-component
 {
     border-style: solid; 
@@ -9,12 +15,14 @@
 .left
 {
     margin-right: 3px;
-    float: left;
-    width: 29.5%;
+    flex: 1 0;
+    border-left: solid black 1px;
+    border-right: solid black 1px;
 }
 
 .right
 {
-    width: 70%;
-    float: left;
+    flex: 5 0;
+    border-left: solid black 1px;
+    border-right: solid black 1px;
 }

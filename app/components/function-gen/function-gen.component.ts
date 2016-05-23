@@ -24,7 +24,7 @@ export class FgenComponent {
     }
     
     openFgen(num) {
-        let modal = Modal.create(ModalFgenPage, {num: 20});
+        let modal = Modal.create(ModalFgenPage, {value: num});
         modal.onDismiss(data=> {
            console.log(data); 
         });

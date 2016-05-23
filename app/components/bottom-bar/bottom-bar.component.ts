@@ -11,13 +11,15 @@ import {DcSupplyComponent} from '../dc-supply/dc-supply.component';
     directives: [DigitalIoComponent, DcSupplyComponent]
 })
 export class BottomBarComponent {
-    private options: Object;
     @Output() headerClicked: EventEmitter<any> = new EventEmitter;
+    public contentHidden: boolean;
+    
     constructor() {
-        
+        this.contentHidden = true;
     }
 
     holy() {
-      this.headerClicked.emit(null);  
+        this.contentHidden = !this.contentHidden;
+        this.headerClicked.emit(null);  
     }
 }

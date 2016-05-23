@@ -1,4 +1,4 @@
-
-<div class="bottom-component left"><digital-io (headerClicked)="holy();"></digital-io></div>
-
-<div class="bottom-component right"><dc-supply (headerClicked)="holy();"></dc-supply></div>
+<div class="bottom-wrapper">
+    <div class="bottom-component left"><digital-io (headerClicked)="holy();" [contentHidden]="contentHidden"></digital-io></div>
+    <div class="bottom-component right"><dc-supply (headerClicked)="holy();" [contentHidden]="contentHidden"></dc-supply></div>
+</div>

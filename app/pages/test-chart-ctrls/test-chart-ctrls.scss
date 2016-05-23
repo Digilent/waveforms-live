@@ -20,7 +20,7 @@
     width: 100%;
     overflow: hidden;
     display: flex;
-    flex: 35 1;
+    flex-grow: 1;
     flex-direction: row;
   
     -webkit-transition: all 0.5s ease;
@@ -31,11 +31,8 @@
 
 .botwrapper
 {
-    background-color: black; 
     width: 100%;
     overflow: hidden;
-    flex: 1 1;
-  
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -44,29 +41,31 @@
 
 .showbot
 {
-    flex: 11 1;
+    height: 188px;
 }
 
-.tcwrapper .left
+.tcwrapper .right
 {
     background-color: green;
-    flex: 0 0;
-    height:100%;  
+    width: 0%;
+    height:100%; 
+    flex: 1 0; 
+    
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;    
 }
-.tcwrapper.showControls .left 
+.tcwrapper.showControls .right 
 {
-    flex: 1 0; 
+    width: 10%; 
 }
 
-.tcwrapper .right
+.tcwrapper .left
 {  
     background-color: red;
     padding: 10px;
-    flex: 10 0;
+    flex-grow: 2;
     overflow: hidden;
     display: flex;
     display: -webkit-flex;
@@ -75,16 +74,17 @@
     -webkit-flex-direction: column;
 }
 
-.tcwrapper .right .innerCtrls
+.tcwrapper .left .innerCtrls
 {
     display: block;
     position: relative;
     flex: 0 1 auto;
     -webkit-flex: 0 1 auto;
     background-color: orange;  
+    text-align: right;
 }
 
-.tcwrapper .right .chartWrapper
+.tcwrapper .left .chartWrapper
 {
     display: block;
     position: relative;
