@@ -1,0 +1,15 @@
+<ion-list>
+    <ion-item>
+        Here come dat trigger
+        Oh shit whaddup
+    </ion-item>
+</ion-list>
+<div class="dropdown">
+    <button (click)="toggleTriggerMenu(triggerType)">Trigger Type: {{triggerType}}</button>
+    <div class="dropdown-content" [ngClass]="{show: showTriggerMenu}">
+        <a (click)="toggleTriggerMenu('rising')">Rising</a>
+        <a (click)="toggleTriggerMenu('falling')">Falling</a>
+        <a (click)="toggleTriggerMenu('someOther')">SomeOther</a>
+    </div>
+</div>
+   

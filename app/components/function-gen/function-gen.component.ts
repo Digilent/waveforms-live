@@ -18,9 +18,21 @@ import {ModalFgenPage} from '../../pages/fgen-modal/fgen-modal';
 })
 export class FgenComponent { 
     private nav: NavController;
+    private showDutyCycle: boolean;
+    private waveType: string;
+    private sigFreq: number;
+    private numSamples: number;
+    private sampleRate: number;
+    private dutyCycle: number;
     
     constructor(_nav: NavController) {
         this.nav = _nav;
+        this.showDutyCycle = false;
+        this.waveType = 'sine';
+        this.sigFreq = 1000;
+        this.numSamples = 1000;
+        this.sampleRate = 2500;
+        this.dutyCycle = 50;
     }
     
     openFgen(num) {
@@ -30,4 +42,14 @@ export class FgenComponent {
         });
         this.nav.present(modal);
     }
+    
+    onSegmentChanged(event) {
+        if(event.value === 'digitalWave') {
+            this.showDutyCycle = true;
+        } 
+        else {
+            this.showDutyCycle = false;
+        }
+    }
+    
 }

@@ -12,5 +12,25 @@
         <ion-label>DC Offset:</ion-label>
         <ion-input type="number" [(ngModel)]="sigFreq" value="20"></ion-input>
     </ion-item>
+    <ion-toolbar>
+        <ion-segment [(ngModel)]="waveType" (change)="onSegmentChanged($event)">
+            <ion-segment-button value="sine">
+                Sine
+            </ion-segment-button>
+            <ion-segment-button value="saw">
+                Saw
+            </ion-segment-button>
+            <ion-segment-button value="digitalWave">
+                Digi-Wave
+            </ion-segment-button>
+            <ion-segment-button value="dc">
+                DC
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+    <ion-item *ngIf="showDutyCycle">
+        <ion-label>Duty Cycle:</ion-label>
+        <ion-input type="number" [(ngModel)]="dutyCycle"></ion-input>
+    </ion-item>
 </ion-list>
     

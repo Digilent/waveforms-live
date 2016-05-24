@@ -1,7 +1,9 @@
 modal page
-<ion-row>
+<ion-row class="fgen-chart-container">
     <ion-col width-75>
-        <silverNeedleChart #chart></silverNeedleChart>
+        <div class="container-test">
+            <silverNeedleChart #chart></silverNeedleChart>
+        </div>
     </ion-col>
     <ion-col width-25>
         <h3>Settings</h3>
@@ -10,3 +12,4 @@ modal page
 <ion-toolbar position="bottom">
     <button (click)="closeModal();">Close Function Gen Configuration</button>
 </ion-toolbar>
+ 
