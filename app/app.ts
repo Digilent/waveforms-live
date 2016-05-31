@@ -8,6 +8,11 @@ import {OscilloscopePage} from './pages/oscilloscope/oscilloscope';
 import {SideControlsPage} from './pages/sidecontrols/sidecontrols';
 import {TestChartPage} from './pages/test-chart/test-chart';
 import {TestChartCtrlsPage} from './pages/test-chart-ctrls/test-chart-ctrls';
+import {TestTransportPage} from './pages/test-transport/test-transport';
+import {SettingsPage} from './pages/settings/settings';
+
+//Services
+import {DeviceManagerService} from './services/device/device-manager.service';
 
 /* ---------- Uncomment this to switch to production mode ---------
 import {enableProdMode} from 'angular2/core';
@@ -18,7 +23,9 @@ enableProdMode();
 
 @App({
   templateUrl: 'build/app.html',
-  config: {} // http://ionicframework.com/docs/v2/api/config/Config/
+  config: {},
+  providers: [DeviceManagerService],
+  
 })
 class MyApp {
   // make HelloIonicPage the root (or first) page
@@ -28,7 +35,8 @@ class MyApp {
   constructor(
     private app: IonicApp,
     private platform: Platform,
-    private menu: MenuController
+    private menu: MenuController,
+    private deviceManager: DeviceManagerService
   ) {
     this.initializeApp();
 
@@ -38,7 +46,9 @@ class MyApp {
       { title: 'Oscilloscope', component: OscilloscopePage },
       { title: 'SideControls', component: SideControlsPage },
       { title: 'Test Chart', component: TestChartPage },
-      { title: 'Test Chart Controls', component: TestChartCtrlsPage }
+      { title: 'Test Chart Controls', component: TestChartCtrlsPage },
+      { title: 'Test Transport', component: TestTransportPage },
+      { title: 'Settings', component: SettingsPage }
     ];
   }
 
