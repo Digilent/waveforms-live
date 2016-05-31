@@ -13,6 +13,13 @@ export class ModalFgenPage {
     private platform: Platform;
     private viewCtrl: ViewController;
     private params: NavParams;
+    private showDutyCycle: boolean;
+    private waveType: string;
+    private frequency: number;
+    private amplitude: number;
+    private offset: number;
+    private dutyCycle: number;
+    private newChart: any;
     
     public value: number;
     
@@ -24,12 +31,33 @@ export class ModalFgenPage {
         this.platform = _platform;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
-        //Not sure how to get params passed
         this.value = this.params.get('value');
+        this.showDutyCycle = false;
+        this.waveType = 'sine';
+        this.frequency = 1000;
+        this.amplitude = 2.5;
+        this.offset = 2.5;
+        this.dutyCycle = 50;
     }
 
     closeModal() {
         console.log(this.value);
         this.viewCtrl.dismiss(10);
+    }
+    
+    isDigiWave() {
+        if (this.waveType === 'digitalWave') {
+            return true;
+        }
+        return false;
+    }
+    
+    saveInstance(chart: Object) {
+        alert('swwag');
+        console.log(chart);
+        this.newChart = chart;
+        console.log(this.chart);
+        this.chart.chart.options.series.data = [5, 5, 5, 5];
+        this.chart.chart.reflow();
     }
 }

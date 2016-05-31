@@ -1,4 +1,4 @@
-import { Component } from 'angular2/core';
+import { Component, Output, EventEmitter } from 'angular2/core';
 import { CHART_DIRECTIVES } from 'angular2-highcharts';
 
 @Component({
@@ -7,6 +7,7 @@ import { CHART_DIRECTIVES } from 'angular2-highcharts';
     templateUrl: 'build/components/chart/chart.html',
 })
 export class SilverNeedleChart {
+    @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     public chart: Object;
     private options: Object;
 
@@ -32,6 +33,7 @@ export class SilverNeedleChart {
         
         //Redraw chart to scale chart to container size
         this.redrawChart()
+        this.chartLoad.emit(this.chart);
     }
     
     /*

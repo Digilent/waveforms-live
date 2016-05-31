@@ -12,14 +12,27 @@ export class DigitalIoComponent {
     @Input() contentHidden: boolean;
     private numGpio: number;
     private gpioArray: number[];
+    private showMenu: boolean;
     
     constructor() {
         this.numGpio = 8;
         this.gpioArray = [0, 1, 2, 3, 4, 5, 6, 7];
         this.contentHidden = true;
+        this.showMenu = false;
     }
     
-    headerClick() {
-        this.headerClicked.emit(null);
+    isInput() {
+        return true;
+    }
+    
+    isHigh(channel: number) {
+        if (channel % 2 == 0) {
+            return true;
+        }
+        return false;
+    }
+    
+    toggleMenu() {
+        this.showMenu = !this.showMenu;
     }
 }

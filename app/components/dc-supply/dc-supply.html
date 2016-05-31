@@ -7,12 +7,20 @@
             DC Power Supply {{i}}
             <ion-item>
                 <ion-label stacked>Volts</ion-label>
-                <ion-input type="number" value="5.00"></ion-input>
+                <ion-input type="number" [(ngModel)]="voltages[i]" [ngClass]="{powerOn: dcPower}" class="power-controls"></ion-input>
             </ion-item>
             <ion-item>
                 <ion-label stacked>Amps</ion-label>
-                <ion-input type="number" value="1.00"></ion-input>
+                <ion-input type="number" [(ngModel)]="currents[i]" [ngClass]="{powerOn: dcPower}" class="power-controls"></ion-input>
+            </ion-item> 
+            <ion-item>
+                <div class="center">{{maxVoltages[i]}}V</div>
             </ion-item>          
         </ion-col>
     </ion-row>
+    <div [hidden]="contentHidden" class="center">
+        <button (click)="togglePower()" [ngClass]="{powerButtonOn: dcPower}" class="powerButtonOff">
+            <ion-icon name="power"></ion-icon>
+        </button>
+    </div>
 </div>

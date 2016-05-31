@@ -9,4 +9,41 @@
     text-align: center;
     background-color: yellow;
     font-size: 100%;
+    
+}
+
+.dc-container .center
+{
+    text-align: center;
+}
+
+.dc-container .power-controls
+{
+    color: red;
+    font-weight: bold;
+}
+
+.dc-container .powerOn
+{
+    color: green;
+}
+
+.dc-container .powerButtonOff
+{
+    background-color: red;
+}
+
+.dc-container .powerButtonOff:hover
+{
+    background-color: red;
+}
+
+.dc-container .powerButtonOn:hover
+{
+    background-color: green;
+}
+
+.dc-container .powerButtonOn
+{
+    background-color: green;
 }

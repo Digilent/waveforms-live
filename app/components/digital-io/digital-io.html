@@ -2,12 +2,24 @@
     <div class="title" (click)="headerClicked.emit(null)">
         DIGITAL - I/O
     </div>
-    <ion-row *ngFor="#channel of gpioArray | slice:4" [hidden]="contentHidden">
+    <div class="digi-right" [hidden]="contentHidden">
+        <div class="dropdown">
+            <div class="dropdown-content" [ngClass]="{show: showMenu}">
+                <a (click)="toggleMenu()">Hey</a>
+                <a (click)="toggleMenu()">Sup</a>
+                <a (click)="toggleMenu()">Dude</a>
+            </div>
+            <button (click)="toggleMenu()">
+                <ion-icon name="ios-more"></ion-icon>
+            </button>
+        </div>
+    </div>
+    <ion-row *ngFor="#channel of gpioArray | slice:4; #i = index" [hidden]="contentHidden">
         <ion-col width-50>
-            <ion-checkbox></ion-checkbox>
+            <ion-checkbox class="input"></ion-checkbox>
         </ion-col>
         <ion-col width-50>
-            <ion-checkbox></ion-checkbox>
+            <ion-checkbox [disabled]="isInput()" [checked]="isHigh(i)"></ion-checkbox>
         </ion-col>
     </ion-row>
 </div>

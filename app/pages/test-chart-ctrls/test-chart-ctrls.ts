@@ -20,11 +20,13 @@ export class TestChartCtrlsPage {
     public sideVisible = false;
 
     constructor() {
-
+        
     }
 
     toggleControls() {
         this.controlsVisible = !this.controlsVisible;
+        console.log(this.chart1);
+        //this.chart1.options.chart.height = 400;
         //this.chart1.redrawChart();
 
         setTimeout(() => {

@@ -1,14 +1,14 @@
 import {Page} from 'ionic-angular';
 
 //Components
-import {SideBarComponent} from '../../components/side-bar/side-bar.component';
+import {SilverNeedleChart} from '../../components/chart/chart.component';
 
 @Page({
     templateUrl: 'build/pages/test-page/test-page.html',
-    directives: [SideBarComponent]
+    directives: [SilverNeedleChart]
 })
 export class TestPage {
-    public controlsVisible = false;
+
     constructor() {
         
     }

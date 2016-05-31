@@ -11,6 +11,7 @@ import {ModalFgenPage} from '../../pages/fgen-modal/fgen-modal';
 *   Small highchart -> http://jsfiddle.net/zPDca/1/
 * Nav Params must be objects
 */
+
 @Component({
   templateUrl: 'build/components/function-gen/function-gen.html',
   selector: 'fgen',
@@ -20,18 +21,18 @@ export class FgenComponent {
     private nav: NavController;
     private showDutyCycle: boolean;
     private waveType: string;
-    private sigFreq: number;
-    private numSamples: number;
-    private sampleRate: number;
+    private frequency: number;
+    private amplitude: number;
+    private offset: number;
     private dutyCycle: number;
     
     constructor(_nav: NavController) {
         this.nav = _nav;
         this.showDutyCycle = false;
         this.waveType = 'sine';
-        this.sigFreq = 1000;
-        this.numSamples = 1000;
-        this.sampleRate = 2500;
+        this.frequency = 1000;
+        this.amplitude = 2.5;
+        this.offset = 2.5;
         this.dutyCycle = 50;
     }
     

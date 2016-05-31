@@ -1,0 +1,13 @@
+<ion-list>
+    <div *ngFor="#channel of oscopeChannels; #i = index" class="oscopeControlsContainer">
+        <ion-item>
+            <ion-label stacked class="centered">{{channel}}</ion-label>
+            <ion-checkbox [(ngModel)]="oscopeSwitches[i]"></ion-checkbox>
+        </ion-item>
+        <ion-item>
+            <ion-label>V/div:</ion-label>
+            <ion-input type="number" [(ngModel)]="vPerDiv[i]"></ion-input>
+        </ion-item>
+    </div>
+</ion-list>
+    

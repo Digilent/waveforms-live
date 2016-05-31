@@ -41,7 +41,8 @@
 
 .showbot
 {
-    height: 188px;
+    height: 277px;
+    overflow: auto;
 }
 
 .tcwrapper .right
@@ -60,13 +61,13 @@
 .tcwrapper.showControls .right 
 {
     width: 10%; 
+    overflow: auto;
 }
 
 .tcwrapper .left
 {  
     background-color: red;
     padding: 10px;
-    flex-grow: 2;
     overflow: hidden;
     display: flex;
     display: -webkit-flex;

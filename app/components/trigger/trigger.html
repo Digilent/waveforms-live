@@ -1,15 +1,25 @@
-<ion-list>
-    <ion-item>
-        Here come dat trigger
-        Oh shit whaddup
-    </ion-item>
-</ion-list>
+<div class="dropdown">
+    <button (click)="toggleFlagType(flagType)">Flag Type: {{flagType}}</button>
+    <div class="dropdown-content" [ngClass]="{show: showFlagMenu}">
+        <a (click)="toggleFlagType('Edge')">Edge</a>
+        <a (click)="toggleFlagType('Pattern')">Pattern</a>
+    </div>
+</div>
+<div class="clear-trigger"></div>
+<div class="dropdown">
+    <button (click)="toggleDigitalChannel(selectedChannel)">Channel: {{selectedChannel}}</button>
+    <div class="dropdown-content" [ngClass]="{show: showChannels}">
+        <a (click)="toggleDigitalChannel(channel)" *ngFor="#channel of channels">{{channel}}</a>
+    </div>
+</div>
+<div class="clear-trigger"></div>
 <div class="dropdown">
     <button (click)="toggleTriggerMenu(triggerType)">Trigger Type: {{triggerType}}</button>
     <div class="dropdown-content" [ngClass]="{show: showTriggerMenu}">
         <a (click)="toggleTriggerMenu('rising')">Rising</a>
         <a (click)="toggleTriggerMenu('falling')">Falling</a>
-        <a (click)="toggleTriggerMenu('someOther')">SomeOther</a>
+        <a (click)="toggleTriggerMenu('either')">Either</a>
     </div>
 </div>
-   
+<div class="clear-trigger"></div>
+<button (click)="forceTrigger()">Force Trigger Event</button>
