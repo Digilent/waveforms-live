@@ -1,11 +1,25 @@
+Function Gen
+<div class="clear-fgen"></div>
 <button (click)="openFgen(5)">Configure Function Gen</button>
+<div class="clear-fgen"></div>
+<div class="dropdown">
+    <button (click)="toggleWave(waveType)">Wave Type: {{waveType}}</button>
+    <div class="dropdown-content" [ngClass]="{show: showWaves}">
+        <a (click)="toggleWave('sine')">Sine</a>
+        <a (click)="toggleWave('ramp-up')">Ramp-Up</a>
+        <a (click)="toggleWave('ramp-down')">Ramp-Down</a>
+        <a (click)="toggleWave('square')">Square</a>
+        <a (click)="toggleWave('dc')">DC</a>
+        <a (click)="toggleWave('triangle')">Triangle</a>
+    </div>
+</div>
 <ion-list>
     <ion-item>
         <ion-label>Frequency (Hz):</ion-label>
         <ion-input type="number" [(ngModel)]="frequency"></ion-input>
     </ion-item>
     <ion-item>
-        <ion-label>Amplitude (Vpp):</ion-label>
+        <ion-label>Amplitude:</ion-label>
         <ion-input type="number" [(ngModel)]="amplitude"></ion-input>
     </ion-item>
     <ion-item>
@@ -14,23 +28,7 @@
     </ion-item>
     <ion-item>
         <ion-label>Duty Cycle (%):</ion-label>
-        <ion-input [disabled]="!showDutyCycle" type="number" [(ngModel)]="dutyCycle"></ion-input>
+        <ion-input [disabled]="!isSquare()" type="number" [(ngModel)]="dutyCycle"></ion-input>
     </ion-item>
-    <ion-toolbar>
-        <ion-segment [(ngModel)]="waveType" (change)="onSegmentChanged($event)">
-            <ion-segment-button value="sine">
-                Sine
-            </ion-segment-button>
-            <ion-segment-button value="saw">
-                Saw
-            </ion-segment-button>
-            <ion-segment-button value="digitalWave">
-                Digi-Wave
-            </ion-segment-button>
-            <ion-segment-button value="dc">
-                DC
-            </ion-segment-button>
-        </ion-segment>
-    </ion-toolbar>   
 </ion-list>
     

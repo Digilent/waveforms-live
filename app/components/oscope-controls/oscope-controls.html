@@ -2,7 +2,7 @@
     <div *ngFor="#channel of oscopeChannels; #i = index" class="oscopeControlsContainer">
         <ion-item>
             <ion-label stacked class="centered">{{channel}}</ion-label>
-            <ion-checkbox [(ngModel)]="oscopeSwitches[i]"></ion-checkbox>
+            <ion-checkbox [ngModel]="oscopeSwitches[i]" (ngModelChange)="toggleScope(i)"></ion-checkbox>
         </ion-item>
         <ion-item>
             <ion-label>V/div:</ion-label>

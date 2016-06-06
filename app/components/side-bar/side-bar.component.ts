@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component, Output, EventEmitter} from 'angular2/core';
 import {IONIC_DIRECTIVES} from 'ionic-angular';
 
 //Components
@@ -12,8 +12,13 @@ import {OscopeControlsComponent} from '../oscope-controls/oscope-controls.compon
   directives: [IONIC_DIRECTIVES, FgenComponent, TriggerComponent, OscopeControlsComponent]
 })
 export class SideBarComponent { 
+    @Output() toggleSeries: EventEmitter<any> = new EventEmitter();
     
     constructor() {
     
+    }
+    
+    seriesToggle(event) {
+        this.toggleSeries.emit(event);
     }
 }

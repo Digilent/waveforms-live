@@ -1,4 +1,4 @@
-import {Component} from 'angular2/core';
+import {Component, Output, EventEmitter} from 'angular2/core';
 import {IONIC_DIRECTIVES} from 'ionic-angular';
 
 @Component({
@@ -7,6 +7,7 @@ import {IONIC_DIRECTIVES} from 'ionic-angular';
   directives: [IONIC_DIRECTIVES]
 })
 export class OscopeControlsComponent { 
+    @Output() toggleSeries: EventEmitter<any> = new EventEmitter();
     private numOscopeChannels: number;
     private oscopeChannels: string[];
     private oscopeSwitches: boolean[];
@@ -21,7 +22,9 @@ export class OscopeControlsComponent {
     
     toggleScope(scopeNum: number) {
         this.oscopeSwitches[scopeNum] = !this.oscopeSwitches[scopeNum];
+        this.toggleSeries.emit({
+            channel: scopeNum,
+            value: this.oscopeSwitches[scopeNum]
+        });
     }
-    
-    
 }

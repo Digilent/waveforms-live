@@ -10,33 +10,39 @@ modal page
         <ion-list>
             <ion-item>
                 <ion-label>Frequency (Hz):</ion-label>
-                <ion-input type="number" [(ngModel)]="frequency"></ion-input>
+                <ion-input type="number" [disabled]="isDc()" [(ngModel)]="frequency" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Amplitude (Vpp):</ion-label>
-                <ion-input type="number" [(ngModel)]="amplitude"></ion-input>
+                <ion-label>Amplitude:</ion-label>
+                <ion-input type="number" [disabled]="isDc()" [(ngModel)]="amplitude" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
             <ion-item>
                 <ion-label>DC Offset (V):</ion-label>
-                <ion-input type="number" [(ngModel)]="offset"></ion-input>
+                <ion-input type="number" [(ngModel)]="offset" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
             <ion-item>
                 <ion-label>Duty Cycle (%):</ion-label>
-                <ion-input [disabled]="!isDigiWave()" type="number" [(ngModel)]="dutyCycle"></ion-input>
+                <ion-input [disabled]="!isSquare()" type="number" [(ngModel)]="dutyCycle" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
             <ion-toolbar>
                 <ion-segment [(ngModel)]="waveType" (change)="onSegmentChanged($event)">
                     <ion-segment-button value="sine">
                         Sine
                     </ion-segment-button>
-                    <ion-segment-button value="saw">
-                        Saw
+                    <ion-segment-button value="ramp-up">
+                        Ramp-Up
                     </ion-segment-button>
-                    <ion-segment-button value="digitalWave">
-                        Digi-Wave
+                    <ion-segment-button value="ramp-down">
+                        Ramp-Down
+                    </ion-segment-button>
+                    <ion-segment-button value="square">
+                        Square
                     </ion-segment-button>
                     <ion-segment-button value="dc">
                         DC
+                    </ion-segment-button>
+                    <ion-segment-button value="triangle">
+                        Triangle
                     </ion-segment-button>
                 </ion-segment>
             </ion-toolbar>   

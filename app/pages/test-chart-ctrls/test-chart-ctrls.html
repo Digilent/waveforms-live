@@ -12,24 +12,24 @@
             
             <div class="left">
                 <div class="innerCtrls">
-                    <button (click)="toggleControls()">
-                        <ion-icon name="menu"></ion-icon>
-                    </button>
                     <button (click)="chart1.redrawChart()">
                         <ion-icon name="refresh"></ion-icon>
                     </button>
+                    <button>Add Cursor</button>
                 </div>
                 <div class="chartWrapper">
                     <silverNeedleChart #chart1></silverNeedleChart>
                 </div>
             </div>
             
-            <div class="right" *ngIf="controlsVisible">
-                <side-bar></side-bar>
+            <div class="right">
+                <button (click)="toggleControls()">
+                    <ion-icon name="menu"></ion-icon>
+                </button>
+                <side-bar [hidden]="!controlsVisible" (toggleSeries)="toggleSeries($event)"></side-bar>
             </div>
             
         </div>
-        <!--<div class="botwrapper" [ngClass]="{showbot: botVisible}" (click)="toggleBotControls();">-->
         <div class="botwrapper" [ngClass]="{showbot: botVisible}">
             <bottom-bar (headerClicked)="toggleBotControls();"></bottom-bar>
         </div>

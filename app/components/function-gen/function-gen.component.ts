@@ -21,36 +21,53 @@ export class FgenComponent {
     private nav: NavController;
     private showDutyCycle: boolean;
     private waveType: string;
-    private frequency: number;
-    private amplitude: number;
-    private offset: number;
-    private dutyCycle: number;
+    private frequency: string;
+    private amplitude: string;
+    private offset: string;
+    private dutyCycle: string;
+    private showWaves: boolean;
     
     constructor(_nav: NavController) {
         this.nav = _nav;
         this.showDutyCycle = false;
         this.waveType = 'sine';
-        this.frequency = 1000;
-        this.amplitude = 2.5;
-        this.offset = 2.5;
-        this.dutyCycle = 50;
+        this.frequency = '1000';
+        this.amplitude = '2.5';
+        this.offset = '2.5';
+        this.dutyCycle = '50';
+        this.showWaves = false;
+    }
+    
+    toggleWave(waveType: string) {
+        this.showWaves = !this.showWaves;
+        this.waveType = waveType;
     }
     
     openFgen(num) {
-        let modal = Modal.create(ModalFgenPage, {value: num});
+        let modal = Modal.create(ModalFgenPage, {
+            value: num, 
+            waveType: this.waveType,
+            frequency: this.frequency,
+            amplitude: this.amplitude,
+            offset: this.offset,
+            dutyCycle: this.dutyCycle
+        });
         modal.onDismiss(data=> {
-           console.log(data); 
+           console.log(data);
+           this.waveType = data.waveType;
+           this.frequency = data.frequency;
+           this.amplitude = data.amplitude;
+           this.offset = data.offset;
+           this.dutyCycle = data.dutyCycle; 
         });
         this.nav.present(modal);
     }
     
-    onSegmentChanged(event) {
-        if(event.value === 'digitalWave') {
-            this.showDutyCycle = true;
-        } 
-        else {
-            this.showDutyCycle = false;
+    isSquare() {
+        if (this.waveType === 'square') {
+            return true;
         }
+        return false;
     }
     
 }
