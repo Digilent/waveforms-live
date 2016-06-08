@@ -104,12 +104,12 @@ export class TestChartCtrlsPage {
 
     xCursorStartDrag(cursorId, xStartPos) {
         console.log('start');
-        this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.cursorDragListener);
-        this.oscopeChartInner.nativeElement.addEventListener('mouseup', this.xCursorStopDrag.bind(this));
+        //this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.cursorDragListener);
+        //this.oscopeChartInner.nativeElement.addEventListener('mouseup', this.xCursorStopDrag.bind(this));
     }
 
     xCursorStopDrag() {
-        this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.cursorDragListener);
+        //this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.cursorDragListener);
         console.log('done');
         //console.log(this.chart.xAxis[0].plotLinesAndBands[0].options.value);
 
@@ -131,4 +131,11 @@ export class TestChartCtrlsPage {
         });
     }.bind(this);
 
+    singleClick() {
+        console.log('single');
+    }
+
+    runClick() {
+        console.log('run');
+    }
 }

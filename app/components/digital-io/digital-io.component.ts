@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter, Input, OnInit} from 'angular2/core';
+import {Component, Output, EventEmitter, Input} from 'angular2/core';
 import {IONIC_DIRECTIVES, Alert, NavController} from 'ionic-angular';
 import {NgClass} from 'angular2/common';
 
@@ -33,12 +33,6 @@ export class DigitalIoComponent {
         this.nav = _nav;
     }
     
-    ngOnInit() {
-        /*for (let i = 0; i < this.gpioArray.length; i++) {
-            this.outputArray[i] = false;
-        }*/
-    }
-    
     isInput(channel: number) {
         if (this.outputArray[channel] === false) {
             return true;
@@ -58,9 +52,9 @@ export class DigitalIoComponent {
     }
     
     doCheckbox() {
-        let alert = Alert.create();
+        let okFlag: boolean = false;   
+        let alert: Alert = Alert.create();
         alert.setTitle('Select Outputs');
-        let cancelArray: boolean[] = [];
         
         for(let i = 0; i < this.gpioArray.length; i++) {
             if (this.outputArray[i] == true) {
@@ -78,34 +72,37 @@ export class DigitalIoComponent {
                     value: i.toString()
                 });
             }
-            //need to clear to reset outputs with data handler
-            cancelArray[i] = this.outputArray[i];
-            this.outputArray[i] = false;
         }
 
         alert.addButton({
             text: 'Cancel',
-            handler: data=> {
-                console.log(data);
-                for(let i = 0; i < cancelArray.length; i++) {
-                    this.outputArray[i] = cancelArray[i];
-                }
+            handler: data => {
+               return true;
             }
         });
         
         alert.addButton({
-            text: 'Okay',
+            text: 'Done',
             handler: data => {
-                console.log('Checkbox data:', data);
-                for(let i = 0; i < data.length; i++) {
-                    let j = parseInt(data[i]);
-                    this.outputArray[j] = true;
+                okFlag = true;
+                return true;
+            }
+        });
+
+        alert.onDismiss(data => {
+            if (okFlag) {
+                for (let i = 0, j = 0; i < this.outputArray.length; i++) {
+                    if (i == parseInt(data[j])) {
+                        this.outputArray[parseInt(data[i])] = true;
+                        j++;
+                    }
+                    else {
+                        this.outputArray[i] = false;
+                    }
                 }
             }
         });
 
-        this.nav.present(alert).then(() => {
-            
-        });
+        this.nav.present(alert).then(() => {});
     }
 }

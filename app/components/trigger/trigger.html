@@ -1,4 +1,18 @@
-<p>Trigger Settings</p>
+<p>Trigger Settings<button (click)="showAlert()">
+            <ion-icon name="ios-more"></ion-icon>
+        </button></p>
+<div *ngIf="showOptions" class="trigger-dropdown">
+    <ion-list class="border">
+        <ion-item>
+            <ion-label>Delay (s):</ion-label>
+            <ion-input type="number" [(ngModel)]="delay"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label>Level (V):</ion-label>
+            <ion-input type="number" [(ngModel)]="level"></ion-input>
+        </ion-item>
+    </ion-list>
+</div>
 <div class="dropdown">
     <button (click)="toggleFlagType(flagType)">Flag Type: {{flagType}}</button>
     <div class="dropdown-content" [ngClass]="{show: showFlagMenu}">

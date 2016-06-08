@@ -1,5 +1,5 @@
 import {Component} from 'angular2/core';
-import {IONIC_DIRECTIVES, NavController, Modal} from 'ionic-angular';
+import {IONIC_DIRECTIVES, NavController, Alert} from 'ionic-angular';
 import {NgClass} from 'angular2/common';
 
 @Component({
@@ -8,16 +8,22 @@ import {NgClass} from 'angular2/common';
   directives: [IONIC_DIRECTIVES, NgClass]
 })
 export class TriggerComponent {
+    private nav: NavController;
     private showTriggerMenu: boolean;
     private showFlagMenu: boolean;
     public triggerType: string;
     public flagType: string;
     public selectedChannel: string;
     public showChannels: boolean;
+    private delay: string;
+    private level: string;
+
+    private showOptions: boolean;
     
     public channels: string[];
     
-    constructor() {
+    constructor(_nav: NavController) {
+        this.nav = _nav;
         this.showTriggerMenu = false;
         this.showFlagMenu = false;
         this.showChannels = false;
@@ -25,6 +31,9 @@ export class TriggerComponent {
         this.flagType = 'edge';
         this.selectedChannel = 'O1';
         this.channels = ['O1','D1','D2'];
+        this.delay = '1';
+        this.level = '0';
+        this.showOptions = false;
     }
     
     toggleTriggerMenu(newType: string) {
@@ -37,13 +46,17 @@ export class TriggerComponent {
         this.flagType = newType;
     }
     
-    toggleDigitalChannel(selectedChannel) {
+    toggleDigitalChannel(selectedChannel: string) {
         this.showChannels = !this.showChannels;
         this.selectedChannel = selectedChannel;
     }
     
     forceTrigger() {
         console.log('trigger event');
+    }
+
+    showAlert() {
+        this.showOptions = !this.showOptions;
     }
    
 }

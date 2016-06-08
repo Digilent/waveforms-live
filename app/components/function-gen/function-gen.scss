@@ -39,3 +39,23 @@
     z-index: 2;
     display: block;
 }
+
+.fgen-container .powerOff
+{
+    background-color: red;
+}
+
+.fgen-container .powerOn
+{
+    background-color: green;
+}
+
+.fgen-container .powerOff:hover
+{
+    background-color: red;
+}
+
+.fgen-container .powerOn:hover
+{
+    background-color: green;
+}

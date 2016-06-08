@@ -19,7 +19,7 @@ export class OscopeControlsComponent {
         this.oscopeSwitches = [true, false];
         this.vPerDiv = ['1', '1'];
     }
-    
+
     toggleScope(scopeNum: number) {
         this.oscopeSwitches[scopeNum] = !this.oscopeSwitches[scopeNum];
         this.toggleSeries.emit({

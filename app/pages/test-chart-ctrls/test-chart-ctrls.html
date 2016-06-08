@@ -2,33 +2,37 @@
     <button menuToggle>
         <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Chart Control Test Page</ion-title>
+    <ion-title>Oscope</ion-title>
 </ion-navbar>
 
 <ion-content #mycontent>
-
     <div class="vertwrapper">
         <div class="tcwrapper" [ngClass]="{showControls: controlsVisible}">
-            
             <div class="left">
                 <div class="innerCtrls">
                     <button (click)="chart1.redrawChart()">
                         <ion-icon name="refresh"></ion-icon>
                     </button>
                     <button>Add Cursor</button>
+                    <button (click)="singleClick()">
+                        Single
+                        <ion-icon name="play"></ion-icon>
+                    </button>
+                    <button (click)="runClick()">
+                        Run
+                        <ion-icon name="repeat"></ion-icon>
+                    </button>
                 </div>
                 <div class="chartWrapper">
                     <silverNeedleChart #chart1></silverNeedleChart>
                 </div>
-            </div>
-            
+            </div> 
             <div class="right">
                 <button (click)="toggleControls()">
                     <ion-icon name="menu"></ion-icon>
                 </button>
                 <side-bar [hidden]="!controlsVisible" (toggleSeries)="toggleSeries($event)"></side-bar>
-            </div>
-            
+            </div>   
         </div>
         <div class="botwrapper" [ngClass]="{showbot: botVisible}">
             <bottom-bar (headerClicked)="toggleBotControls();"></bottom-bar>

@@ -38,3 +38,14 @@
     z-index: 2;
     display: block;
 }
+
+.trigger-dropdown
+{
+    position: absolute;
+    z-index: 2;
+}
+
+.trigger-dropdown .border
+{
+    border: solid black 1px;
+}

@@ -26,6 +26,7 @@ export class FgenComponent {
     private offset: string;
     private dutyCycle: string;
     private showWaves: boolean;
+    private powerOn: boolean;
     
     constructor(_nav: NavController) {
         this.nav = _nav;
@@ -36,6 +37,7 @@ export class FgenComponent {
         this.offset = '2.5';
         this.dutyCycle = '50';
         this.showWaves = false;
+        this.powerOn = false;
     }
     
     toggleWave(waveType: string) {
@@ -43,6 +45,10 @@ export class FgenComponent {
         this.waveType = waveType;
     }
     
+    togglePower() {
+        this.powerOn = !this.powerOn;
+    }
+
     openFgen(num) {
         let modal = Modal.create(ModalFgenPage, {
             value: num, 
