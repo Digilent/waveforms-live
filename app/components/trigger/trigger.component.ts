@@ -1,5 +1,5 @@
 import {Component} from 'angular2/core';
-import {IONIC_DIRECTIVES, NavController, Alert} from 'ionic-angular';
+import {IONIC_DIRECTIVES} from 'ionic-angular';
 import {NgClass} from 'angular2/common';
 
 @Component({
@@ -8,7 +8,6 @@ import {NgClass} from 'angular2/common';
   directives: [IONIC_DIRECTIVES, NgClass]
 })
 export class TriggerComponent {
-    private nav: NavController;
     private showTriggerMenu: boolean;
     private showFlagMenu: boolean;
     public triggerType: string;
@@ -22,8 +21,7 @@ export class TriggerComponent {
     
     public channels: string[];
     
-    constructor(_nav: NavController) {
-        this.nav = _nav;
+    constructor() {
         this.showTriggerMenu = false;
         this.showFlagMenu = false;
         this.showChannels = false;

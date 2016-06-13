@@ -1,4 +1,4 @@
-import {Component, ViewChild} from 'angular2/core';
+import {Component, ViewChild, ElementRef} from 'angular2/core';
 import {Http, HTTP_PROVIDERS} from 'angular2/http';
 import {IONIC_DIRECTIVES} from 'ionic-angular';
 import {CHART_DIRECTIVES, Highcharts} from 'angular2-highcharts';
@@ -307,6 +307,7 @@ export class OscilloscopeComponent {
 
     xCursorStartDrag(cursorId, xStartPos) {
         console.log('start');
+        console.log(this.oscopeChartInner);
         this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.cursorDragListener);
         this.oscopeChartInner.nativeElement.addEventListener('mouseup', this.xCursorStopDrag.bind(this));
     }
@@ -321,7 +322,8 @@ export class OscilloscopeComponent {
     //
     cursorDragListener = function (event) {
         //TODO FORCE BETWEEN MIN / MAX
-        let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true).toFixed(1);       
+        let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true).toFixed(1);
+        console.log(this.chart.series[0].data[0].x);       
         let pointNum = Math.round((xVal - this.chart.series[0].data[0].x) / this.chart.series[0].options.pointInterval);
         //console.log(this.chart.series[0].data[pointNum].plotY + 15);
         //this.chart.xAxis[0].plotLinesAndBands[0].svgElem.translate(event.clientX - this.xCursorDragStartPos);

@@ -18,6 +18,7 @@
     background-color: purple; 
     padding: 10px;
     width: 100%;
+    height: 100%;
     overflow: hidden;
     display: flex;
     flex-grow: 1;
@@ -33,6 +34,7 @@
 {
     width: 100%;
     overflow: hidden;
+    flex-grow: 0;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -62,6 +64,7 @@
 .tcwrapper.showControls .right 
 {
     flex: 1 0;
+    height: 100%;
     overflow: auto;
     min-width: 545px;
 }
@@ -74,6 +77,7 @@
     display: flex;
     display: -webkit-flex;
     position: relative;
+    height: 100%;
     flex-direction: column;
     -webkit-flex-direction: column;
     flex: 1.5 1;
@@ -82,6 +86,7 @@
 .tcwrapper .left .innerCtrls
 {
     display: block;
+    height: 100%;
     position: relative;
     flex: 0 1 auto;
     -webkit-flex: 0 1 auto;
@@ -92,6 +97,7 @@
 .tcwrapper .left .chartWrapper
 {
     display: block;
+    height: 100%;
     position: relative;
     flex: 1 1 auto;
     -webkit-flex: 1 1 auto;

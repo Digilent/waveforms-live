@@ -82,32 +82,35 @@ export class ModalFgenPage {
         else if (this.waveType === 'dc') {this.drawDc();}
         else if (this.waveType === 'triangle') {this.drawTriangle();}
         else if (this.waveType === 'ramp-down') {this.drawRampDown();}
+        else {alert('wavetype not supported yet');}
     }
     
     drawSine() {
-        //incomplete: need to set up point interval
+        //incomplete: need to set up point interval for x axis
         let waveform = [];
-        let xValues = [];
         let period = 0;
         if (parseFloat(this.frequency) != 0) {
             period = 1 / parseFloat(this.frequency);
         }
         let dt = (2 * period) / this.numPoints;
         for (let i = 0; i < this.numPoints; i++) {
-            waveform[i] = parseFloat(this.amplitude) * Math.sin(((Math.PI * 2) / (this.numPoints / 2)) * i) + parseFloat(this.offset);
+            waveform[i] = [dt * i, parseFloat(this.amplitude) * Math.sin(((Math.PI * 2) / (this.numPoints / 2)) * i) + parseFloat(this.offset)];
         }
-        console.log(dt);
-        this.chart.chart.series[0].options.pointInterval = dt;
-        this.chart.chart.series[0].setData(waveform, true, false, false);
+        this.chart.drawWaveform(0, waveform);
     }
     
     drawRampUp() {
         let waveform = [];
-        for (let i = 0; i < this.numPoints; i++) {
-            waveform[i] = (i % (this.numPoints / 2)) * (parseFloat(this.amplitude) / (this.numPoints / 2)) + 
-            parseFloat(this.offset);
+        let period = 0;
+        if (parseFloat(this.frequency) != 0) {
+            period = 1 / parseFloat(this.frequency);
         }
-        this.chart.chart.series[0].setData(waveform, true, false, false);
+        let dt = (2 * period) / this.numPoints;
+        for (let i = 0; i < this.numPoints; i++) {
+            waveform[i] = [dt * i, (i % (this.numPoints / 2)) * (parseFloat(this.amplitude) / (this.numPoints / 2)) + 
+            parseFloat(this.offset)];
+        }
+        this.chart.drawWaveform(0, waveform);
     }
     
     drawDc() {
@@ -115,34 +118,45 @@ export class ModalFgenPage {
         for (let i = 0; i < this.numPoints; i++) {
             waveform[i] = parseFloat(this.offset);
         }
-        this.chart.chart.series[0].setData(waveform, true, false, false);
+        this.chart.drawWaveform(0, waveform);
     }
     
     drawTriangle() {
-        let waveform: number[] = [];
+        let waveform = [];
+        let period = 0;
+        if (parseFloat(this.frequency) != 0) {
+            period = 1 / parseFloat(this.frequency);
+        }
+        let dt = (2 * period) / this.numPoints;
         for (let i = 0; i < (this.numPoints / 8); i++) {
-            waveform[i] = ((parseFloat(this.amplitude) / (this.numPoints / 8)) * i) + parseFloat(this.offset);
+            waveform[i] = [dt * i, ((parseFloat(this.amplitude) / (this.numPoints / 8)) * i) + parseFloat(this.offset)];
         }
         for (let i = 0; i < (this.numPoints / 4); i++) {
-            waveform[i + (this.numPoints / 8)] = parseFloat(this.amplitude) + parseFloat(this.offset) - 
-            ((parseFloat(this.amplitude) / (this.numPoints / 4)) * 2 * i);
+            waveform[i + (this.numPoints / 8)] = [dt * (i + (this.numPoints / 8)), parseFloat(this.amplitude) + parseFloat(this.offset) - 
+            ((parseFloat(this.amplitude) / (this.numPoints / 4)) * 2 * i)];
         }
         for (let i = 0; i < (this.numPoints / 8); i++) {
-            waveform[i + (this.numPoints * 3 / 8)] = waveform[i] - parseFloat(this.amplitude);
+            waveform[i + (this.numPoints * 3 / 8)] = [dt * (i + (this.numPoints * 3 / 8)), waveform[i][1] - parseFloat(this.amplitude)];
         }
         for (let i = 0; i < (this.numPoints / 2); i++) {
-            waveform[i + this.numPoints / 2] = waveform[i];
+            waveform[i + this.numPoints / 2] = [dt * (i + this.numPoints / 2), (waveform[i])[1]];
         }
-        this.chart.chart.series[0].setData(waveform, true, false, false);
+        console.log(waveform);
+        this.chart.drawWaveform(0, waveform);
     }
     
     drawRampDown() {
         let waveform = [];
-        for (let i = 0; i < this.numPoints; i++) {
-            waveform[i] = ((-1 * i) % (this.numPoints / 2)) * (parseFloat(this.amplitude) / (this.numPoints / 2)) + 
-            parseFloat(this.amplitude) + parseFloat(this.offset);
+        let period = 0;
+        if (parseFloat(this.frequency) != 0) {
+            period = 1 / parseFloat(this.frequency);
         }
-        this.chart.chart.series[0].setData(waveform, true, false, false);
+        let dt = (2 * period) / this.numPoints;
+        for (let i = 0; i < this.numPoints; i++) {
+            waveform[i] = [dt * i, ((-1 * i) % (this.numPoints / 2)) * (parseFloat(this.amplitude) / (this.numPoints / 2)) + 
+            parseFloat(this.amplitude) + parseFloat(this.offset)];
+        }
+        this.chart.drawWaveform(0, waveform);
     }
     
     drawNoise() {
@@ -159,16 +173,21 @@ export class ModalFgenPage {
     
     drawSquare() {
         let waveform = [];
+        let period = 0;
+        if (parseFloat(this.frequency) != 0) {
+            period = 1 / parseFloat(this.frequency);
+        }
+        let dt = (2 * period) / this.numPoints;
         let i = 0;
         for (i = 0; i < (this.numPoints / 2) * (parseFloat(this.dutyCycle) / 100); i++) {
-            waveform[i] = parseFloat(this.offset) + parseFloat(this.amplitude);
+            waveform[i] = [dt * i, parseFloat(this.offset) + parseFloat(this.amplitude)];
         }
         for (; i < (this.numPoints / 2); i++) {
-            waveform[i] = parseFloat(this.offset) - parseFloat(this.amplitude);
+            waveform[i] = [dt * i, parseFloat(this.offset) - parseFloat(this.amplitude)];
         }
         for (let j = 0; i < this.numPoints; i++, j++) {
-            waveform[i] = waveform[j];
+            waveform[i] = [dt * i, waveform[j][1]];
         }
-        this.chart.chart.series[0].setData(waveform, true, false, false);
+        this.chart.drawWaveform(0, waveform);
     }
 }

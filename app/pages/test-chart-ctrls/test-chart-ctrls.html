@@ -13,7 +13,10 @@
                     <button (click)="chart1.redrawChart()">
                         <ion-icon name="refresh"></ion-icon>
                     </button>
-                    <button>Add Cursor</button>
+                    <button [disabled]="chart1.getNumCursors() > 1" (click)="addCursor()">
+                        Add Cursor
+                        <ion-icon name="arrow-round-down"></ion-icon>
+                        </button>
                     <button (click)="singleClick()">
                         Single
                         <ion-icon name="play"></ion-icon>
@@ -22,8 +25,16 @@
                         Run
                         <ion-icon name="repeat"></ion-icon>
                     </button>
+                    <button (click)="exportChart()">
+                        Export
+                        <ion-icon name="download"></ion-icon>
+                    </button>
+                    <button (click)="swagClick()">
+                        Swagify
+                        <ion-icon name="logo-usd"></ion-icon>
+                    </button>
                 </div>
-                <div class="chartWrapper">
+                <div #oscopeChartInner class="chartWrapper">
                     <silverNeedleChart #chart1></silverNeedleChart>
                 </div>
             </div> 
