@@ -5,7 +5,7 @@ import {NgClass} from '@angular/common';
 @Component({
   templateUrl: 'build/components/trigger/trigger.html',
   selector: 'trigger',
-  directives: [IONIC_DIRECTIVES, NgClass]
+  directives: [NgClass]
 })
 export class TriggerComponent {
     private showTriggerMenu: boolean;

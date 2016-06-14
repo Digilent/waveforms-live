@@ -3,8 +3,7 @@ import {IONIC_DIRECTIVES} from 'ionic-angular';
 
 @Component({
   templateUrl: 'build/components/oscope-controls/oscope-controls.html',
-  selector: 'oscope-controls',
-  directives: [IONIC_DIRECTIVES]
+  selector: 'oscope-controls'
 })
 export class OscopeControlsComponent { 
     @Output() toggleSeries: EventEmitter<any> = new EventEmitter();

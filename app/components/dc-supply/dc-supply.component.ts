@@ -5,7 +5,7 @@ import {NgClass} from '@angular/common';
 @Component({
   templateUrl: 'build/components/dc-supply/dc-supply.html',
   selector: 'dc-supply',
-  directives: [IONIC_DIRECTIVES, NgClass]
+  directives: [NgClass]
 })
 export class DcSupplyComponent { 
     @Output() headerClicked: EventEmitter<any> = new EventEmitter();

@@ -9,7 +9,7 @@ import {OscopeControlsComponent} from '../oscope-controls/oscope-controls.compon
 @Component({
   templateUrl: 'build/components/side-bar/side-bar.html',
   selector: 'side-bar',
-  directives: [IONIC_DIRECTIVES, FgenComponent, TriggerComponent, OscopeControlsComponent]
+  directives: [FgenComponent, TriggerComponent, OscopeControlsComponent]
 })
 export class SideBarComponent { 
     @Output() toggleSeries: EventEmitter<any> = new EventEmitter();

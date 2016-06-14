@@ -15,8 +15,7 @@ import {TestPage} from '../../pages/test-page/test-page';
 
 @Component({
   templateUrl: 'build/components/function-gen/function-gen.html',
-  selector: 'fgen',
-  directives: [IONIC_DIRECTIVES]
+  selector: 'fgen'
 })
 export class FgenComponent { 
     private nav: NavController;

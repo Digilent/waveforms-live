@@ -6,7 +6,7 @@ import {SilverNeedleChart} from '../../components/chart/chart.component';
 
 @Component({
     templateUrl: "build/pages/fgen-modal/fgen-modal.html",
-    directives: [IONIC_DIRECTIVES, SilverNeedleChart]
+    directives: [SilverNeedleChart]
 })
 export class ModalFgenPage {
     @ViewChild('chart') chart: SilverNeedleChart;

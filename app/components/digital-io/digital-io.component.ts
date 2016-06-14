@@ -5,7 +5,7 @@ import {NgClass} from '@angular/common';
 @Component({
   templateUrl: 'build/components/digital-io/digital-io.html',
   selector: 'digital-io',
-  directives: [IONIC_DIRECTIVES, NgClass]
+  directives: [NgClass]
 })
 export class DigitalIoComponent { 
     @Output() headerClicked: EventEmitter<any> = new EventEmitter();

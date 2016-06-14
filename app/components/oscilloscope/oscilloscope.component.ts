@@ -8,7 +8,7 @@ import 'rxjs/Rx';
 @Component({
     selector: 'oscilloscope-chart',
     templateUrl: 'build/components/oscilloscope/oscilloscope.html',
-    directives: [CHART_DIRECTIVES, IONIC_DIRECTIVES],
+    directives: [CHART_DIRECTIVES],
     viewProviders: [HTTP_PROVIDERS],
 })
 export class OscilloscopeComponent {
