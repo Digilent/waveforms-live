@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter} from 'angular2/core';
+import {Component, Output, EventEmitter} from '@angular/core';
 import {IONIC_DIRECTIVES} from 'ionic-angular';
 
 @Component({

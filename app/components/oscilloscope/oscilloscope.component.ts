@@ -1,5 +1,5 @@
-import {Component, ViewChild, ElementRef} from 'angular2/core';
-import {Http, HTTP_PROVIDERS} from 'angular2/http';
+import {Component, ViewChild, ElementRef} from '@angular/core';
+import {Http, HTTP_PROVIDERS} from '@angular/http';
 import {IONIC_DIRECTIVES} from 'ionic-angular';
 import {CHART_DIRECTIVES, Highcharts} from 'angular2-highcharts';
 import {Observable} from 'rxjs/Observable';

@@ -1,5 +1,5 @@
 import {Page} from 'ionic-angular';
-import {ViewChild, ElementRef} from 'angular2/core';
+import {ViewChild, ElementRef, Component} from '@angular/core';
 
 //Components
 import {SilverNeedleChart} from '../../components/chart/chart.component';
@@ -7,7 +7,7 @@ import {OscilloscopeComponent} from '../../components/oscilloscope/oscilloscope.
 import {BottomBarComponent} from '../../components/bottom-bar/bottom-bar.component';
 import {SideBarComponent} from '../../components/side-bar/side-bar.component';
 
-@Page({
+@Component({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
     directives: [SilverNeedleChart, OscilloscopeComponent, BottomBarComponent, SideBarComponent]
 })

@@ -1,10 +1,10 @@
 import {Page} from 'ionic-angular';
-
+import {Component} from '@angular/core';
 //Components
 import {SilverNeedleChart} from '../../components/chart/chart.component';
 import {BottomBarComponent} from '../../components/bottom-bar/bottom-bar.component'
 
-@Page({
+@Component({
     templateUrl: 'build/pages/test-chart/test-chart.html',
     directives: [SilverNeedleChart, BottomBarComponent]
 })

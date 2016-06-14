@@ -1,6 +1,6 @@
-import {Component, Output, EventEmitter, Input} from 'angular2/core';
+import {Component, Output, EventEmitter, Input} from '@angular/core';
 import {IONIC_DIRECTIVES, Alert, NavController} from 'ionic-angular';
-import {NgClass} from 'angular2/common';
+import {NgClass} from '@angular/common';
 
 @Component({
   templateUrl: 'build/components/digital-io/digital-io.html',

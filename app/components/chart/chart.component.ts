@@ -1,4 +1,4 @@
-import { Component, Output, Input, EventEmitter, ElementRef } from 'angular2/core';
+import { Component, Output, Input, EventEmitter, ElementRef } from '@angular/core';
 import { CHART_DIRECTIVES } from 'angular2-highcharts';
 
 @Component({

@@ -1,6 +1,7 @@
 import 'es6-shim';
-import {App, IonicApp, Platform, MenuController} from 'ionic-angular';
+import {App, Platform, MenuController, Nav, ionicBootstrap} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
+import {ViewChild, Component} from '@angular/core';
 
 //Pages
 import {HomePage} from './pages/home/home';
@@ -11,23 +12,23 @@ import {TestChartCtrlsPage} from './pages/test-chart-ctrls/test-chart-ctrls';
 import {TestPage} from './pages/test-page/test-page';
 
 /* ---------- Uncomment this to switch to production mode ---------
-import {enableProdMode} from 'angular2/core';
+import {enableProdMode} from '@angular/core';
 enableProdMode();
 -----------------------------------------------------------------*/
 
 
 
-@App({
+@Component({
   templateUrl: 'build/app.html',
-  config: {} // http://ionicframework.com/docs/v2/api/config/Config/
 })
 class MyApp {
   // make HelloIonicPage the root (or first) page
+  @ViewChild(Nav) nav: Nav;
   rootPage: any = HomePage;
   pages: Array<{ title: string, component: any }>;
 
   constructor(
-    private app: IonicApp,
+    private app: App,
     private platform: Platform,
     private menu: MenuController
   ) {
@@ -56,7 +57,10 @@ class MyApp {
     // close the menu when clicking a link from the menu
     this.menu.close();
     // navigate to the new page if it is not the current page
-    let nav = this.app.getComponent('nav');
-    nav.setRoot(page.component);
+    this.nav.setRoot(page.component);
   }
+
+
 }
+
+  ionicBootstrap(MyApp, [], {});

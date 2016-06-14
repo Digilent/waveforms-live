@@ -1,10 +1,10 @@
 import {IONIC_DIRECTIVES, Page, NavParams, ViewController, Platform} from 'ionic-angular';
-import {ViewChild} from 'angular2/core';
+import {ViewChild, Component} from '@angular/core';
 
 //Components
 import {SilverNeedleChart} from '../../components/chart/chart.component';
 
-@Page({
+@Component({
     templateUrl: "build/pages/fgen-modal/fgen-modal.html",
     directives: [IONIC_DIRECTIVES, SilverNeedleChart]
 })

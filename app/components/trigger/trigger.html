@@ -24,7 +24,7 @@
 <div class="dropdown">
     <button (click)="toggleDigitalChannel(selectedChannel)">Channel: {{selectedChannel}}</button>
     <div class="dropdown-content" [ngClass]="{show: showChannels}">
-        <a (click)="toggleDigitalChannel(channel)" *ngFor="#channel of channels">{{channel}}</a>
+        <a (click)="toggleDigitalChannel(channel)" *ngFor="let channel of channels">{{channel}}</a>
     </div>
 </div>
 <div class="clear-trigger"></div>
