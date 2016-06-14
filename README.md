@@ -10,16 +10,19 @@ SilverNeedle (Web WaveForms PoC)
 
 ##Developer Quick Start
 1. Install Ionic2 globally
+
     ```
     npm install -g ionic@beta
     ```
 2. Clone this repository
 3. Change into project directory
 4. Use npm to install dependencies
+
     ```
     npm install
     ```
 5. Test in local browser 
+
     ```
     ionic serve
     ```
