@@ -7,7 +7,7 @@
             <ion-icon name="ios-more"></ion-icon>
         </button>
     </div>
-    <ion-row *ngFor="let channel of gpioArray | slice:4; #i = index" [hidden]="contentHidden">
+    <ion-row *ngFor="let channel of gpioArray | slice:4; let i = index" [hidden]="contentHidden">
         <ion-col width-50>
             <ion-checkbox [disabled]="isInput(i)" [ngClass]="{input: !isInput(i)}"></ion-checkbox>
         </ion-col>

@@ -21,7 +21,7 @@
     height: 100%;
     overflow: hidden;
     display: flex;
-    flex-grow: 1;
+    flex: 10 1;
     flex-direction: row;
   
     -webkit-transition: all 0.5s ease;
@@ -33,8 +33,9 @@
 .botwrapper
 {
     width: 100%;
+    //height: auto;
     overflow: hidden;
-    flex-grow: 0;
+    flex: 0.23 0;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -43,9 +44,10 @@
 
 .showbot
 {
-    height: 264px;
+    //height: 264px;
+    flex: 4.5 0;
     overflow: auto;
-    min-height: 264px;
+    max-height: 264px;
 }
 
 .tcwrapper .right

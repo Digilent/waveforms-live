@@ -25,7 +25,7 @@ modal page
                 <ion-input [disabled]="!isSquare()" type="number" [(ngModel)]="dutyCycle" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
             <ion-toolbar>
-                <ion-segment [(ngModel)]="waveType" (change)="onSegmentChanged($event)">
+                <ion-segment [(ngModel)]="waveType" (ionChange)="onSegmentChanged($event)">
                     <ion-segment-button value="sine">
                         Sine
                     </ion-segment-button>

@@ -3,7 +3,7 @@
         DC POWER SUPPLY
     </div>
     <ion-row [hidden]="contentHidden">
-        <ion-col *ngFor="let supply of voltageSupplies; #i = index">
+        <ion-col *ngFor="let supply of voltageSupplies; let i = index">
             DC Power Supply {{i}}
             <ion-item>
                 <ion-label stacked>Volts</ion-label>

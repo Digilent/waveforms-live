@@ -3,6 +3,7 @@ import {IONIC_DIRECTIVES, NavController, Modal} from 'ionic-angular';
 
 //Pages
 import {ModalFgenPage} from '../../pages/fgen-modal/fgen-modal';
+import {TestPage} from '../../pages/test-page/test-page';
 
 /* Notes for component and modal
 * Eventually receive info from modal and update service with new values
@@ -15,7 +16,7 @@ import {ModalFgenPage} from '../../pages/fgen-modal/fgen-modal';
 @Component({
   templateUrl: 'build/components/function-gen/function-gen.html',
   selector: 'fgen',
-  directives: [IONIC_DIRECTIVES, ModalFgenPage]
+  directives: [IONIC_DIRECTIVES]
 })
 export class FgenComponent { 
     private nav: NavController;
