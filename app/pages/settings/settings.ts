@@ -12,7 +12,7 @@ import {DeviceManagerService} from '../../services/device/device-manager.service
     templateUrl: 'build/pages/settings/settings.html',
 })
 export class SettingsPage {
-    
+
     private nav: NavController;
 
     private deviceManangerService: DeviceManagerService;
@@ -36,12 +36,12 @@ export class SettingsPage {
             (err) => {
                 console.log(err);
             },
-            () => {}
+            () => { }
         )
     }
-    
-    navToDcTestPage()
-    {
+
+    navToDcTestPage() {
+        console.log('nav');
         this.nav.push(DcTestPage);
     }
 }

@@ -6,7 +6,41 @@
 </ion-navbar>
 
 <ion-content padding>
-   
-   {{deviceManagerService.devices[deviceManagerService.activeDeviceIndex].instruments.dc.numChans}}
-   
+
+    <div *ngFor="let chan of activeDevice.instruments.dc.chans; let i = index">
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <h1> {{chan.name}} </h1>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col>
+                    <h4>{{readVoltages[i]}} V </h4>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col width-10>
+                    <ion-input type="text" [(ngModel)]="targetVoltage[i]"></ion-input>
+                </ion-col>
+                <ion-col width-10>
+                    <button (click)="setVoltage(i, targetVoltage[i])">Set</button>
+                    <button (click)="getVoltage(i)">Get</button>
+
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col width-20>
+                    <button block>Enabled</button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <br />
+        <br />
+    </div>
+
+
 </ion-content>

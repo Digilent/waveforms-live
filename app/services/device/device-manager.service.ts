@@ -20,21 +20,19 @@ export class DeviceManagerService {
     constructor(_http: Http) {
         console.log('Device Manager Service Constructor');
         this.http = _http;
-        this.transport = new TransportService(_http, null);        
+        this.transport = new TransportService(_http, null);
     }
 
-    connect(uri) {        
+    connect(uri) {
         this.transport.setUri(uri);
-        
+
         let command = {
             command: "enumerate"
         }
-        
+
         this.transport.writeRead('/', command).subscribe(
-            (data) => {
-                console.log(data._body);
-                let deviceDescriptor = JSON.parse(data._body);
-                console.log(deviceDescriptor);
+            (deviceDescriptor) => {                
+                //console.log('Device Manager: ', deviceDescriptor);
                 let dev = new DeviceComponent(this.http, uri, deviceDescriptor);
                 this.devices.push(dev);
                 this.activeDeviceIndex = 0;
@@ -43,8 +41,12 @@ export class DeviceManagerService {
                 console.log(err);
             },
             () => {
-                console.log('done');
+                //console.log('done');
                 //Complete
             });
+    }
+
+    getActiveDevice() {
+        return this.devices[this.activeDeviceIndex];
     }
 }

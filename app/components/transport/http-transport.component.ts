@@ -23,19 +23,33 @@ export class HttpTransportComponent extends TransportComponent {
 
         this.http = _http;
         this.rootUri = _rootUri;
-
-        this.http.get('https://0u7h6sgzf6.execute-api.us-east-1.amazonaws.com/prod').subscribe((res) => {
-            console.log('HTTP Done: ', res);
-        }, (err) => {
-            console.log(err);
-        })
     }
 
     writeRead(endpoint: string, sendData: Object): Observable<any> {
-        return this.http.post(this.rootUri + endpoint, JSON.stringify(sendData));
+        return Observable.create((observer) => {
+            this.http.post(this.rootUri + endpoint, JSON.stringify(sendData)).subscribe(
+                (data: any) => {
+                    let dataObj = JSON.parse(data._body);
+                    //Handle device errors and warnings
+                    if (dataObj.statusCode < 1) {
+                        observer.next(dataObj);
+                        observer.complete();
+                    }
+                    else {
+                        observer.error(dataObj.statusCode);
+                    }
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            )
+        })
     }
 
     getType() {
-        return 'HTTP';
+        return 'Http';
     }
 }
