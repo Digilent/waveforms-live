@@ -12,10 +12,10 @@
     <button (click)=connect(targetUri);>Connect</button>
 
     <ul>
-        <li *ngFor="let device of deviceManangerService.devices">
+        <li *ngFor="let device of deviceManangerService.devices, let i = index;">
             <h4>{{device.deviceMake}} - {{device.deviceModel}}</h4>
             <ul>
-                <li><button (click)=navToDcTestPage();>DC Supply</button></li>
+                <li><button (click)=navToDcTestPage(i);>DC Supply</button></li>
                 <ul>
                     <li>Number of Channels: {{device.instruments.dc.numChans}}</li>
                     <ul>

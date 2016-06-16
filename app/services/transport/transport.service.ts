@@ -23,11 +23,11 @@ export class TransportService {
         this.transport.setUri(uri);
     }
 
-    //
-    writeRead(endpoint: string, writeData: Object): Observable<any> {
+    /*
+    writeRead(endpoint: string, sendData: Object): Observable<any> {
         return Observable.create((observer) => {
-            this.transport.writeRead(endpoint, writeData).subscribe(
-                (data) => {                    
+            this.transport.writeRead(endpoint, sendData).subscribe(
+                (data) => {
                     observer.next(data);
                     observer.complete();
                 },
@@ -37,6 +37,19 @@ export class TransportService {
                 () => { }
             )
         })
+    }
+    */
+
+    writeRead(endpoint: string, sendData: Object): Observable<any> {
+        return this.transport.writeRead(endpoint, sendData);
+    }
+
+    streamFrom(endpoint: string, sendData: Object, delay = 0): Observable<any> {
+        return this.transport.streamFrom(endpoint, sendData, delay);
+    }
+
+    stopStream() {
+        this.transport.stopStream();
     }
 
     getType() {

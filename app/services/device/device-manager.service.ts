@@ -49,4 +49,8 @@ export class DeviceManagerService {
     getActiveDevice() {
         return this.devices[this.activeDeviceIndex];
     }
+    
+    setActiveDevice(_activeDeviceIndex: number) {
+        this.activeDeviceIndex = _activeDeviceIndex;
+    }
 }

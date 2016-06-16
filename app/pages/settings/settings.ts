@@ -40,8 +40,8 @@ export class SettingsPage {
         )
     }
 
-    navToDcTestPage() {
-        console.log('nav');
+    navToDcTestPage(deviceIndex: number) {
+        this.deviceManangerService.setActiveDevice(deviceIndex);
         this.nav.push(DcTestPage);
     }
 }

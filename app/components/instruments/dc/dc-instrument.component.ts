@@ -48,10 +48,10 @@ export class DcInstrumentComponent {
             command: "getVoltage",
             chan: _chan
         }
-        
+
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, command).subscribe(
-                (data) => {                 
+                (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode < 1) {
                         observer.next(data.voltage / 1000);
@@ -70,7 +70,34 @@ export class DcInstrumentComponent {
             )
         });
     }
+
+    streamVoltage(_chan: number, delay = 0): Observable<number> {
+        let command = {
+            command: "getVoltage",
+            chan: _chan
+        }
         
+        return Observable.create((observer) => {
+            this.transport.streamFrom(this.endpoint, command, delay).subscribe(
+                (data) => {
+                    //Handle device errors and warnings
+                    if (data.statusCode < 1) {
+                        observer.next(data.voltage / 1000);
+                    }
+                    else {
+                        observer.error(data.statusCode);
+                    }
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            )
+        });
+    }
+
 
     //Set the output voltage of the specified DC power supply channel.
     setVoltage(_chan: number, _voltage: number) {
@@ -81,5 +108,10 @@ export class DcInstrumentComponent {
         }
 
         return this.transport.writeRead(this.endpoint, command);
+    }
+    
+    stopStream()
+    {
+        this.transport.stopStream();
     }
 }

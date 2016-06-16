@@ -28,14 +28,16 @@
                 <ion-col width-10>
                     <button (click)="setVoltage(i, targetVoltage[i])">Set</button>
                     <button (click)="getVoltage(i)">Get</button>
-
+                    <ion-item>
+                        <ion-label fixed>Stream Delay:</ion-label>
+                        <ion-input type="text" [(ngModel)]="streamDelay[i]"></ion-input>
+                    </ion-item>
+                    <br /> Stream Delay:
+                    <button (click)="streamVoltage(i)">Stream Read</button>
+                    <br /> Data Frame: {{dataFrame[i]}}
+                    <button (click)="stopStream(i)">Stop Stream</button>
                 </ion-col>
-            </ion-row>
 
-            <ion-row>
-                <ion-col width-20>
-                    <button block>Enabled</button>
-                </ion-col>
             </ion-row>
         </ion-grid>
         <br />
