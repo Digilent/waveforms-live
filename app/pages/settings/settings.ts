@@ -15,8 +15,10 @@ export class SettingsPage {
 
     private nav: NavController;
 
-    private deviceManangerService: DeviceManagerService;
-    private targetUri = 'https://35oopc6de8.execute-api.us-west-2.amazonaws.com/dev';
+    private deviceManangerService: DeviceManagerService;   
+    private localSimDevUri = 'http://localhost:8080';
+    private remotesimDevUri = 'https://35oopc6de8.execute-api.us-west-2.amazonaws.com/dev';
+    
 
     constructor(_nav: NavController, _deviceManagerService: DeviceManagerService) {
         this.nav = _nav;

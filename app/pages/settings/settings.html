@@ -7,10 +7,24 @@
 
 <ion-content padding>
 
-    <p>Connect to a device:</p>
-    <ion-input type="url" [(ngModel)]="targetUri"></ion-input>
-    <button (click)=connect(targetUri);>Connect</button>
+    <h1>Connect to a device:</h1>
 
+    <ion-grid>
+        <ion-row>
+            <ion-col width-25>
+                <h4>Local Simulated Device</h4>
+                <ion-input type="url" [(ngModel)]="localSimDevUri"></ion-input>
+                <button (click)=connect(localSimDevUri);>Connect</button>
+            </ion-col>
+            <ion-col width-25>
+                <h4>Remote Simulated Device</h4>
+                <ion-input type="url" [(ngModel)]="remotesimDevUri"></ion-input>
+                <button (click)=connect(remotesimDevUri);>Connect</button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    
+    <h1> Connected Devices </h1>
     <ul>
         <li *ngFor="let device of deviceManangerService.devices, let i = index;">
             <h4>{{device.deviceMake}} - {{device.deviceModel}}</h4>
