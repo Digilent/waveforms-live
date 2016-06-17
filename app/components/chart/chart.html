@@ -1,1 +1,5 @@
-<chart [options]="options" (load)="onLoad($event.context)"></chart>
+<chart [options]="options" (load)="onLoad($event.context)" (selection)="onPointSelect($event)">
+    <series>
+        <point (select)="onPointSelect($event)"></point>
+    </series>
+</chart>

@@ -14,7 +14,7 @@
                         <ion-icon name="refresh"></ion-icon>
                     </button>
                     <button [disabled]="chart1.getNumCursors() > 1" (click)="addCursor()">
-                        Add Cursor
+                        Add X Cursor
                         <ion-icon name="arrow-round-down"></ion-icon>
                         </button>
                     <button (click)="singleClick()">
@@ -29,13 +29,13 @@
                         Export
                         <ion-icon name="download"></ion-icon>
                     </button>
-                    <button (click)="swagClick()">
+                    <button (click)="setTitle()">
                         Swagify
                         <ion-icon name="logo-usd"></ion-icon>
                     </button>
                 </div>
                 <div #oscopeChartInner class="chartWrapper">
-                    <silverNeedleChart #chart1></silverNeedleChart>
+                    <silverNeedleChart #chart1 (chartLoad)="setContainerRef()"></silverNeedleChart>
                 </div>
             </div> 
             <div class="right">

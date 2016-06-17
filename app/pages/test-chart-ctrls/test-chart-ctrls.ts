@@ -66,8 +66,11 @@ export class TestChartCtrlsPage {
     }
     
     addCursor() {
-        console.log(this.oscopeChartInner.nativeElement.clientHeight);
-        this.chart1.addCursor(this.oscopeChartInner);
+        this.chart1.addCursor();
+    }
+
+    addYCursor() {
+        this.chart1.addYCursor();
     }
 
     singleClick() {
@@ -76,14 +79,25 @@ export class TestChartCtrlsPage {
 
     runClick() {
         console.log('run');
+        this.removeCursors();
     }
 
     exportChart() {
-        this.chart1.exportChart();
+        console.log('export not yet implemented');
+        this.chart1.addYCursor();
     }
 
-    swagClick() {
+    setTitle() {
         //remove
         this.chart1.setTitle('Sup Son? ¯\\_(ツ)_/¯');
+    }
+
+    setContainerRef() {
+        console.log('Setting container element ref in chart component');
+        this.chart1.setElementRef(this.oscopeChartInner);
+    }
+
+    removeCursors() {
+        this.chart1.removeCursors();
     }
 }

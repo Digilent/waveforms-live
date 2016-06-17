@@ -59,7 +59,6 @@ export class FgenComponent {
             dutyCycle: this.dutyCycle
         });
         modal.onDismiss(data=> {
-           console.log(data);
            this.waveType = data.waveType;
            this.frequency = data.frequency;
            this.amplitude = data.amplitude;

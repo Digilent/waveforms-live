@@ -176,6 +176,7 @@ export class OscilloscopeComponent {
                 //console.log(result);
                 this.frameNumber++;
                 let waveform = JSON.parse(result.text());
+                console.log(waveform);
                 this.drawWaveform(this.chart, 0, waveform);
             },
             (err) => {
