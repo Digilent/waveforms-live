@@ -84,6 +84,6 @@ export class TestChartCtrlsPage {
 
     swagClick() {
         //remove
-        this.chart1.setTitle('Sup Son? ¯\\_(ツ)_/¯');
+        this.chart1.setTitle('');
     }
 }

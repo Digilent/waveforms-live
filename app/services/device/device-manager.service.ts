@@ -32,7 +32,7 @@ export class DeviceManagerService {
 
         this.transport.writeRead('/', command).subscribe(
             (deviceDescriptor) => {                
-                //console.log('Device Manager: ', deviceDescriptor);
+                console.log('Device Manager: ', deviceDescriptor);
                 let dev = new DeviceComponent(this.http, uri, deviceDescriptor);
                 this.devices.push(dev);
                 this.activeDeviceIndex = 0;

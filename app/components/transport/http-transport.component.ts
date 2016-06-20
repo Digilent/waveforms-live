@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Http, HTTP_PROVIDERS} from '@angular/http';
+import {Http, Headers, RequestOptions, HTTP_PROVIDERS} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -39,8 +39,17 @@ export class HttpTransportComponent extends TransportComponent {
 
     //Data transmission wrapper to avoid duplicate code. 
     writeReadHelper(http: Http, rootUri: string, endpoint: string, sendData: Object): Observable<any> {
+
+        let uri = rootUri + endpoint;
+        let body = JSON.stringify(sendData);
+        /* - Local simulated device does not handle OPTIONS
+        let headers = new Headers({ 'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers });
+        */
+        
         return Observable.create((observer) => {
-            http.post(rootUri + endpoint, JSON.stringify(sendData)).subscribe(
+            //http.post(uri, body, options).subscribe(
+            http.post(uri, body).subscribe(
                 (data: any) => {
                     let dataObj = JSON.parse(data._body);
                     //Handle device errors and warnings
