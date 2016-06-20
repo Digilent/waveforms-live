@@ -20,7 +20,14 @@ export class SilverNeedleChart {
     private activeSeries: number;
     private numYCursors: number;
 
+    //[x1, series 0 y1, series 1 y1, x2, series 0 y2, series 1 y2]
+    private xCursorPositions: number[];
+    //[y1, y2]
+    private yCursorPositions: number[];
+
     constructor() {
+        this.xCursorPositions = [0, 0, 0, 0, 0, 0];
+        this.yCursorPositions = [0, 0];
         this.activeSeries = 1;
         this.cursorLabel = ['hey','yo','sup','son'];
         this.activeCursor = -1;
@@ -178,19 +185,24 @@ export class SilverNeedleChart {
         }
         this.numXCursors = 0;
         this.numYCursors = 0;
+        this.xCursorPositions = [0, 0, 0, 0, 0, 0];
+        this.yCursorPositions = [0, 0];
     }
 
     addCursor() {
         this.chart.series[0].options.pointInterval = 1;
         console.log('adding cursor');
         this.chart.xAxis[0].addPlotLine({
-            value: this.xPosition,
+            value: this.chart.xAxis[0].dataMin,
             color: 'blue',
             width: 3,
             zIndex: 100 + this.numXCursors,
             id: 'cursor' + this.numXCursors,
         });
-
+        this.xCursorPositions[3 * this.numXCursors] = this.chart.xAxis[0].dataMin;
+        this.xCursorPositions[3 * this.numXCursors + 1] = this.chart.series[0].data[0].y;
+        this.xCursorPositions[3 * this.numXCursors + 2] = this.chart.series[1].data[0].y;
+        console.log(this.xCursorPositions);
         this.cursorLabel[this.numXCursors] = this.chart.renderer.text('Cursor ' + this.numXCursors, 100, 100).add();
         this.chart.xAxis[0].plotLinesAndBands[this.numXCursors].svgElem.element.id = 'cursor' + this.numXCursors;
         //let options = this.chart.options;
@@ -200,13 +212,11 @@ export class SilverNeedleChart {
         };
         //this.chart = new Highcharts.Chart(options);
         //Set Mouse To Pointer On Hover Over
-        console.log( this.chart.xAxis[0].plotLinesAndBands[this.numXCursors]);
         this.chart.xAxis[0].plotLinesAndBands[this.numXCursors].svgElem.css({
             'cursor': 'pointer'
         })
 
             .on('mousedown', (event) => {
-                console.log(event);
                 this.activeCursor = parseInt(event.srcElement.id.slice(-1)) + 1;
                 this.xCursorDragStartPos = event.clientX;
                 this.xCursorStartDrag(this.numXCursors, event.clientX);
@@ -229,7 +239,8 @@ export class SilverNeedleChart {
             zIndex: 102 + this.numYCursors,
             id: 'cursor' + (this.numYCursors + 2)
         });
-
+        this.yCursorPositions[this.numYCursors] = this.chart.yAxis[0].dataMin;
+        console.log(this.yCursorPositions);
         this.cursorLabel[this.numYCursors + 2] = this.chart.renderer.text('Cursor ' + (this.numYCursors + 2), 100, 100).add();
         this.chart.yAxis[0].plotLinesAndBands[this.numYCursors].svgElem.element.id = 'cursor' + (this.numYCursors + 2);
         //let options = this.chart.options;
@@ -283,22 +294,38 @@ export class SilverNeedleChart {
 
     yCursorDragListener = function (event) {
         //console.log(event);
-        let yVal = parseFloat(this.chart.yAxis[0].toValue(event.chartY - this.chart.plotTop - 110)).toFixed(3);
+        //SOME WEIRD Y PIXEL OFFSET SO NEED TO CORRECT BY CALCULATING YDELTA AND ADDING THAT TO YVAL CALCULATION
+        let yDelta = event.layerY - (this.chart.yAxis[0].toPixels(parseFloat(this.chart.yAxis[0].toValue(event.chartY - this.chart.plotTop))));
+        let yVal = parseFloat(this.chart.yAxis[0].toValue(event.chartY - this.chart.plotTop + yDelta)).toFixed(3);
+        let xCor = event.layerX;
+        let yCor = event.layerY;
         if (yVal > this.chart.yAxis[0].dataMax) {
             yVal = this.chart.yAxis[0].dataMax;
+            yCor = this.chart.yAxis[0].toPixels(yVal);
         }
+
         if (yVal < this.chart.yAxis[0].dataMin) {
             yVal = this.chart.yAxis[0].dataMin;
+            yCor = this.chart.yAxis[0].toPixels(yVal);
+        }
+
+        if (xCor > this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMax)) {
+            xCor = this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMax) - 50;
+        }
+
+        if (xCor < this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMin)) {
+            xCor = this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMin);
         }
         //console.log('pointNum: ' + pointNum, this.chart.series[0].data[0].y, this.chart.options.plotOptions.series.pointInterval);
         //console.log(this.chart.series[0].data[pointNum].plotY + 15);
         //this.chart.xAxis[0].plotLinesAndBands[0].svgElem.translate(event.clientX - this.xCursorDragStartPos);
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 3].options.value = yVal;
+        this.yCursorPositions[this.activeCursor - 3] = parseFloat(yVal);
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 3].render();
         this.cursorLabel[this.activeCursor - 1].attr({
             text: yVal + 'V', 
-            x: event.layerX,
-            y: event.layerY - 10,
+            x: xCor,
+            y: yCor - 10,
             zIndex: 99 + this.activeCursor
         });
     }.bind(this);
@@ -307,6 +334,7 @@ export class SilverNeedleChart {
         //TODO FORCE BETWEEN MIN / MAX using variables
         let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true).toFixed(1); 
         let offset = 110;  
+        let yCor = event.layerY;
         if (xVal < 0 || event.chartX < this.chart.plotLeft) {
             xVal = 0;
             //event.chartX = this.chart.plotLeft;
@@ -315,16 +343,25 @@ export class SilverNeedleChart {
             xVal = 6;
             offset = -20;
         }
+        if (yCor > this.chart.yAxis[0].toPixels(this.chart.yAxis[0].dataMin)) {
+            yCor = this.chart.yAxis[0].toPixels(this.chart.yAxis[0].dataMin);
+        }
+        if (yCor < this.chart.yAxis[0].toPixels(this.chart.yAxis[0].dataMax)) {
+            yCor = this.chart.yAxis[0].toPixels(this.chart.yAxis[0].dataMax);
+        }
         let pointNum = Math.round((xVal - this.chart.series[0].data[0].x) / this.chart.options.plotOptions.series.pointInterval);
         //console.log(this.chart.series[0].data[pointNum].plotY + 15);
         //this.chart.xAxis[0].plotLinesAndBands[0].svgElem.translate(event.clientX - this.xCursorDragStartPos);
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = xVal;
+        this.xCursorPositions[3 * this.activeCursor - 3] = parseFloat(xVal);
+        this.xCursorPositions[3 * this.activeCursor - 2] = this.chart.series[0].data[pointNum].y;
+        this.xCursorPositions[3 * this.activeCursor - 1] = this.chart.series[1].data[pointNum].y;
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
         this.cursorLabel[this.activeCursor - 1].attr({
             text: 'Series 1: ' + this.chart.series[0].data[pointNum].y.toFixed(3) + 'V' + 
             '<br>Series 2: ' + this.chart.series[1].data[pointNum].y.toFixed(3) + 'V', 
             x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + offset,
-            y: this.chart.series[0].data[pointNum].plotY - 15,
+            y: yCor,
             zIndex: 99 + this.activeCursor
         });
     }.bind(this);
@@ -361,5 +398,15 @@ export class SilverNeedleChart {
     setElementRef(element) {
         this.oscopeChartInner = element;
         console.log('ElementRef set in chart component :D');
+    }
+
+    getCursorDeltas() {
+        //[xdeltas, series 0 ydeltas on x cursors, series 1 ydeltas on x cursors, ydeltas on y cursors]
+        console.log(this.xCursorPositions, this.yCursorPositions);
+        let xDelta = Math.abs(this.xCursorPositions[3] - this.xCursorPositions[0]);
+        let xDeltaSer0Y = Math.abs(this.xCursorPositions[4] - this.xCursorPositions[1]);
+        let xDeltaSer1Y = Math.abs(this.xCursorPositions[5] - this.xCursorPositions[2]);
+        let yDelta = Math.abs(this.yCursorPositions[1] - this.yCursorPositions[0]);
+        return [xDelta, xDeltaSer0Y, xDeltaSer1Y, yDelta];
     }
 }
