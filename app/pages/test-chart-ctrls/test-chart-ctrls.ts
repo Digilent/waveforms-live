@@ -65,8 +65,8 @@ export class TestChartCtrlsPage {
         this.chart1.chart.series[event.channel].setVisible(event.value, true);
     }
     
-    addCursor() {
-        this.chart1.addCursor();
+    addXCursor() {
+        this.chart1.addXCursor();
     }
 
     addYCursor() {
@@ -83,8 +83,7 @@ export class TestChartCtrlsPage {
     }
 
     exportChart() {
-        console.log('export not yet implemented');
-        this.chart1.addYCursor();
+        this.chart1.exportCsv('SamData');
     }
 
     setTitle() {
@@ -96,6 +95,7 @@ export class TestChartCtrlsPage {
     setContainerRef() {
         console.log('Setting container element ref in chart component');
         this.chart1.setElementRef(this.oscopeChartInner);
+        this.chart1.enableCursors();
     }
 
     removeCursors() {

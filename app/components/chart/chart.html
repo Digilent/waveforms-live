@@ -1,5 +1,17 @@
-<chart [options]="options" (load)="onLoad($event.context)" (selection)="onPointSelect($event)">
-    <series>
-        <point (select)="onPointSelect($event)"></point>
-    </series>
-</chart>
+<div class="chart-component-wrapper">
+    <div class="chart-component-container-div">
+        <chart [options]="options" (load)="onLoad($event.context)" (selection)="onPointSelect($event)">
+            <series>
+                <point (select)="onPointSelect($event)"></point>
+            </series>
+        </chart>
+    </div>
+    <div class="cursor-container" *ngIf="cursorsEnabled">
+        <button (click)="openCursorModal()">Cursors</button>
+        <div style="display: inline-block; background-color: white;vertical-align:middle" *ngIf="numXCursors > 0 || numYCursors > 0">
+            Cur1: {{xCursorPositions[0]}} &Delta;X: {{getCursorDeltas()[0].toFixed(3)}} s
+            <br>
+            Cur2: {{xCursorPositions[3]}} 1/&Delta;X: {{(1/getCursorDeltas()[0]).toFixed(3)}} Hz
+        </div>
+    </div>
+</div>

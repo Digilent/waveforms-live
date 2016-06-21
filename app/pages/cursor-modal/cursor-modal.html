@@ -1,0 +1,30 @@
+<ion-list>
+    <ion-item>
+        <ion-label>Type</ion-label>
+        <ion-select [(ngModel)]="cursorType">
+        <ion-option value="disabled">Disabled</ion-option>
+        <ion-option value="time">Time</ion-option>
+        <ion-option value="track">Track</ion-option>
+        <ion-option value="voltage">Voltage</ion-option>
+        </ion-select>
+    </ion-item>
+    <ion-item>
+        <ion-label>Cursor 1 Channel</ion-label>
+        <ion-select [(ngModel)]="cursor1Chan" [disabled]="cursorType == 'disabled'">
+        <ion-option value="o1">O1</ion-option>
+        <ion-option value="o2">O2</ion-option>
+        </ion-select>
+    </ion-item>
+    <ion-item>
+        <ion-label>Cursor 2 Channel</ion-label>
+        <ion-select [(ngModel)]="cursor2Chan" [disabled]="cursorType == 'disabled'">
+        <ion-option value="o1">O1</ion-option>
+        <ion-option value="o2">O2</ion-option>
+        </ion-select>
+    </ion-item>
+    <ion-item>
+        <button (click)="closeModal(true)">OK</button>
+        <button (click)="closeModal(false)">Cancel</button>
+    </ion-item>
+</ion-list>
+ 

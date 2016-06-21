@@ -1,5 +1,9 @@
-import { Component, Output, Input, EventEmitter, ElementRef } from '@angular/core';
-import { CHART_DIRECTIVES } from 'angular2-highcharts';
+import {Component, Output, Input, EventEmitter, ElementRef} from '@angular/core';
+import {CHART_DIRECTIVES} from 'angular2-highcharts';
+import {NavController, Modal} from 'ionic-angular';
+
+//Pages
+import {ModalCursorPage} from '../../pages/cursor-modal/cursor-modal';
 
 @Component({
     selector: 'silverNeedleChart',
@@ -8,6 +12,7 @@ import { CHART_DIRECTIVES } from 'angular2-highcharts';
 })
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
+    private nav: NavController;
     public chart: Object;
     private options: Object;
     private xPosition: number;
@@ -19,13 +24,22 @@ export class SilverNeedleChart {
     private activeCursor: number;
     private activeSeries: number;
     private numYCursors: number;
+    private cursorType: string;
+    private cursor1Chan: string;
+    private cursor2Chan: string;
+    private cursorsEnabled: boolean;
 
     //[x1, series 0 y1, series 1 y1, x2, series 0 y2, series 1 y2]
     private xCursorPositions: number[];
     //[y1, y2]
     private yCursorPositions: number[];
 
-    constructor() {
+    constructor(_nav: NavController) {
+        this.nav = _nav;
+        this.cursorsEnabled = false;
+        this.cursorType = 'disabled';
+        this.cursor1Chan = 'o1';
+        this.cursor2Chan = 'o2';
         this.xCursorPositions = [0, 0, 0, 0, 0, 0];
         this.yCursorPositions = [0, 0];
         this.activeSeries = 1;
@@ -51,6 +65,9 @@ export class SilverNeedleChart {
                 allowPointSelect: true
             }
             ],
+            legend: {
+                enabled: false
+            },
             yAxis: {
                 gridLineWidth: 1,
                 tickPositioner: function () {
@@ -189,8 +206,7 @@ export class SilverNeedleChart {
         this.yCursorPositions = [0, 0];
     }
 
-    addCursor() {
-        this.chart.series[0].options.pointInterval = 1;
+    addXCursor() {
         console.log('adding cursor');
         this.chart.xAxis[0].addPlotLine({
             value: this.chart.xAxis[0].dataMin,
@@ -402,11 +418,66 @@ export class SilverNeedleChart {
 
     getCursorDeltas() {
         //[xdeltas, series 0 ydeltas on x cursors, series 1 ydeltas on x cursors, ydeltas on y cursors]
-        console.log(this.xCursorPositions, this.yCursorPositions);
         let xDelta = Math.abs(this.xCursorPositions[3] - this.xCursorPositions[0]);
         let xDeltaSer0Y = Math.abs(this.xCursorPositions[4] - this.xCursorPositions[1]);
         let xDeltaSer1Y = Math.abs(this.xCursorPositions[5] - this.xCursorPositions[2]);
         let yDelta = Math.abs(this.yCursorPositions[1] - this.yCursorPositions[0]);
         return [xDelta, xDeltaSer0Y, xDeltaSer1Y, yDelta];
+    }
+
+    exportCsv(fileName: string) {
+        fileName = fileName + '.csv';
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        let pointArray = [];
+        for (let i = 0; i < this.chart.series[0].data.length; i++) {
+            pointArray[i] = this.chart.series[0].data[i].y;
+        }
+        csvContent = csvContent + (pointArray.join());
+        console.log(csvContent);
+        let encodedUri = encodeURI(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+    }
+
+    openCursorModal() {
+        let modal = Modal.create(ModalCursorPage, {
+            cursorType: this.cursorType,
+            cursor1Chan: this.cursor1Chan,
+            cursor2Chan: this.cursor2Chan
+        });
+        modal.onDismiss(data=> {
+            console.log(data);
+            if (data.save) {
+                console.log('saving data');
+                this.cursorType = data.cursorType;
+                this.cursor1Chan = data.cursor1Chan;
+                this.cursor2Chan = data.cursor2Chan;
+                this.handleCursors();
+            }
+        });
+        this.nav.present(modal);
+    }
+
+    handleCursors() {
+        this.removeCursors();
+        if (this.cursorType === 'time') {
+
+        }
+        else if (this.cursorType === 'track') {
+
+        }
+        else if (this.cursorType === 'Voltage') {
+
+        }
+        else {
+            console.log('error in handle cursors()');
+        }
+    }
+
+    enableCursors() {
+        this.cursorsEnabled = true;
     }
 }

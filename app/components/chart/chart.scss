@@ -2,6 +2,29 @@ chart
 {
     display: block;
     position: relative;
-    height: 99%;
+    height: 100%;
     //height: 75%;
 }
+
+.chart-component-wrapper
+{
+    display: block;
+    position: relative;
+    height: 100%;
+}
+
+.chart-component-wrapper .cursor-container
+{
+    display: block;
+    position: absolute;
+    bottom: 35px;
+    background-color: green;
+}
+
+.chart-component-wrapper .chart-component-container-div
+{
+    display: block;
+    position: relative;
+    height: calc(100% - 2 * 35px);
+}
+

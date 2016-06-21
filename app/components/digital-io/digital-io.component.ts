@@ -84,13 +84,6 @@ export class DigitalIoComponent {
         alert.addButton({
             text: 'Done',
             handler: data => {
-                okFlag = true;
-                return true;
-            }
-        });
-
-        alert.onDismiss(data => {
-            if (okFlag) {
                 for (let i = 0, j = 0; i < this.outputArray.length; i++) {
                     if (i == parseInt(data[j])) {
                         this.outputArray[parseInt(data[i])] = true;
@@ -100,6 +93,7 @@ export class DigitalIoComponent {
                         this.outputArray[i] = false;
                     }
                 }
+                return true;
             }
         });
 
