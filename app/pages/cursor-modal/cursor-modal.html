@@ -1,3 +1,4 @@
+<!--
 <ion-list>
     <ion-item>
         <ion-label>Type</ion-label>
@@ -27,4 +28,22 @@
         <button (click)="closeModal(false)">Cancel</button>
     </ion-item>
 </ion-list>
- 
+ -->
+ <ion-list>
+     <ion-item>
+         <button (click)="showPopover($event)">Cursor Type</button>
+         <ion-note item-right>{{cursorType}}</ion-note>
+     </ion-item>
+     <ion-item>
+         <button>Cursor 1 Channel</button>
+         <ion-note item-right>{{cursor1Chan}}</ion-note>
+     </ion-item>
+     <ion-item>
+         <button>Cursor 2 Channel</button>
+         <ion-note item-right>{{cursor2Chan}}</ion-note>
+     </ion-item>
+     <ion-item>
+         <button (click)="closeModal(true)">OK</button>
+         <button (click)="closeModal(false)">Cancel</button>
+     </ion-item>
+ </ion-list>

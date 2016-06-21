@@ -51,14 +51,34 @@ export class ModalCursorPage {
         this.nav.present(popover, {
             ev: event
         });
+        popover.onDismiss(data=> {
+            console.log(data);
+        });
     } 
     
 }
 
 @Component({
   template: `
-    <ion-input></ion-input>
+    <ion-list>
+        <ion-item>
+            <button clear (click)="close('disabled')">disabled</button>
+        </ion-item>
+        <ion-item>
+            <button clear (click)="close('time')">time</button>
+        </ion-item>
+        <ion-item>
+            <button clear (click)="close('voltage')">voltage</button>
+        </ion-item>
+    </ion-list>
   `
 })
 
-export class MyPopover{}
+export class MyPopover{
+    constructor(private viewCtrl: ViewController) {}
+    close(cursorType: string) {
+        this.viewCtrl.dismiss({
+            cursorType: cursorType
+        });
+    }
+}

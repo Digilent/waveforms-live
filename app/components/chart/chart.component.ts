@@ -38,8 +38,8 @@ export class SilverNeedleChart {
         this.nav = _nav;
         this.cursorsEnabled = false;
         this.cursorType = 'disabled';
-        this.cursor1Chan = 'o1';
-        this.cursor2Chan = 'o2';
+        this.cursor1Chan = 'O1';
+        this.cursor2Chan = 'O2';
         this.xCursorPositions = [0, 0, 0, 0, 0, 0];
         this.yCursorPositions = [0, 0];
         this.activeSeries = 1;
@@ -465,6 +465,9 @@ export class SilverNeedleChart {
         this.removeCursors();
         if (this.cursorType === 'time') {
 
+        }
+        else if (this.cursorType === 'disabled') {
+            
         }
         else if (this.cursorType === 'track') {
 
