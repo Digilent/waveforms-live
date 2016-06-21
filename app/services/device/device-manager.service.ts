@@ -1,5 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http, HTTP_PROVIDERS} from '@angular/http';
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/Rx';
 
 //Components
 import {DeviceComponent} from '../../components/device/device.component';
@@ -13,9 +15,8 @@ export class DeviceManagerService {
     private transport: TransportService;
     private http: Http;
 
-    public devices: DeviceComponent[] = [];
+    public devices: Array<DeviceComponent> = [];
     public activeDeviceIndex: number;
-    public connectedDeviceIndex = -1;
 
     constructor(_http: Http) {
         console.log('Device Manager Service Constructor');
@@ -23,33 +24,36 @@ export class DeviceManagerService {
         this.transport = new TransportService(_http, null);
     }
 
-    connect(uri) {
-        this.transport.setUri(uri);
+    connect(uri): Observable<any> {
+        return Observable.create((observer) => {
+            this.transport.setUri(uri);
 
-        let command = {
-            command: "enumerate"
-        }
+            let command = {
+                command: "enumerate"
+            }
 
-        this.transport.writeRead('/', command).subscribe(
-            (deviceDescriptor) => {                
-                console.log('Device Manager: ', deviceDescriptor);
-                let dev = new DeviceComponent(this.http, uri, deviceDescriptor);
-                this.devices.push(dev);
-                this.activeDeviceIndex = 0;
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => {
-                //console.log('done');
-                //Complete
-            });
+            this.transport.writeRead('/', command).subscribe(
+                (deviceDescriptor) => {
+                    console.log('Device Manager: ', deviceDescriptor);
+                    let dev = new DeviceComponent(this.http, uri, deviceDescriptor);
+                    this.activeDeviceIndex = this.devices.push(dev)-1;
+                    observer.next(this.activeDeviceIndex);
+                    observer.complete();
+                },
+                (err) => {
+                    console.log(err);
+                    observer.error(err);
+                },
+                () => {
+                     observer.complete();
+                });
+        });
     }
 
     getActiveDevice() {
         return this.devices[this.activeDeviceIndex];
     }
-    
+
     setActiveDevice(_activeDeviceIndex: number) {
         this.activeDeviceIndex = _activeDeviceIndex;
     }

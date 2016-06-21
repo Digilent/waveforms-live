@@ -18,15 +18,15 @@ export class DcInstrumentComponent {
     public numChans: number;
     public chans: DcChannelComponent[] = [];
 
-    constructor(_transport: TransportService, dcInstrumentDescriptor: any) {
+    constructor(_transport: TransportService, _dcInstrumentDescriptor: any) {
         //Store reference to device transport for communication with device
         this.transport = _transport;
 
         //Populate DC supply parameters
-        this.numChans = dcInstrumentDescriptor.numChans;
+        this.numChans = _dcInstrumentDescriptor.numChans;
 
         //Populate channels        
-        dcInstrumentDescriptor.chans.forEach(dcChanDescriptor => {
+        _dcInstrumentDescriptor.chans.forEach(dcChanDescriptor => {
             this.chans.push(new DcChannelComponent(dcChanDescriptor));
         })
     }

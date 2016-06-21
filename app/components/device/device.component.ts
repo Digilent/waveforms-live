@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {Http, HTTP_PROVIDERS} from '@angular/http';
 
 //Components
+import {AwgInstrumentComponent} from '../instruments/awg/awg-instrument.component';
 import {DcInstrumentComponent} from '../instruments/dc/dc-instrument.component';
 
 //Services
@@ -18,24 +19,28 @@ export class DeviceComponent {
     public deviceModel: string;
     public firmwareVersion;
     public instruments: {
-        //awg: {},
+        awg: AwgInstrumentComponent,
         dc: DcInstrumentComponent,
         //la: {},
         //osc: {},
-    } = {dc: null};
+    } = {
+        awg: null,
+        dc: null
+    };
 
-    constructor(_http: Http, _rootUri:string, deviceDescriptor: any) {
+    constructor(_http: Http, _rootUri: string, deviceDescriptor: any) {
         console.log('Device Contructor');
         //TODO If deviceDescriptor is empty attempt to enumerate the deviceDescriptor
-        
+
         this.rootUri = _rootUri;
         this.transport = new TransportService(_http, this.rootUri);
         this.deviceMake = deviceDescriptor.deviceMake;
         this.deviceModel = deviceDescriptor.deviceModel;
         this.firmwareVersion = deviceDescriptor.firmwareVersion;
 
+        this.instruments.awg = new AwgInstrumentComponent(this.transport, deviceDescriptor.instruments.awg);
         this.instruments.dc = new DcInstrumentComponent(this.transport, deviceDescriptor.instruments.dc);
     }
-    
-    
+
+
 }

@@ -26,7 +26,7 @@ export class SettingsPage {
     }
 
     connect(targetUri: string) {
-        this.deviceManangerService.connect(targetUri);
+        this.deviceManangerService.connect(targetUri).subscribe();
     }
 
     //Test Code
@@ -45,5 +45,9 @@ export class SettingsPage {
     navToDcTestPage(deviceIndex: number) {
         this.deviceManangerService.setActiveDevice(deviceIndex);
         this.nav.push(DcTestPage);
+    }
+    
+    navToAwgTestPage(deviceIndex: number){
+        alert('TODO');
     }
 }

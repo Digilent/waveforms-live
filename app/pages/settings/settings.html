@@ -23,11 +23,30 @@
             </ion-col>
         </ion-row>
     </ion-grid>
-    
+
     <h1> Connected Devices </h1>
     <ul>
         <li *ngFor="let device of deviceManangerService.devices, let i = index;">
             <h4>{{device.deviceMake}} - {{device.deviceModel}}</h4>
+            <!---------- AWG ---------->
+            <ul>
+                <li><button (click)=navToAwgTestPage(i);>AWG</button></li>
+                <li>Number of Channels: {{device.instruments.awg.numChans}}</li>
+                <ul>
+                    <li *ngFor="let awgChan of device.instruments.awg.chans">
+                        <b>{{awgChan.name}}</b>
+                        <ul>
+                            <li>Max Resolution: {{awgChan.resolutionMax}}</li>
+                            <li>Max Buffer Size: {{awgChan.bufferSizeMax}}</li>
+                            <li>Min Frequency: {{awgChan.freqMin}}</li>
+                            <li>Max Frequency: {{awgChan.freqMax}}</li>
+                            <li>Min Voltage: {{awgChan.voltageMin}}</li>
+                            <li>Max Voltage: {{awgChan.voltageMax}}</li>
+                        </ul>
+                    </li>
+                </ul>
+            </ul>
+            <!---------- DC ---------->
             <ul>
                 <li><button (click)=navToDcTestPage(i);>DC Supply</button></li>
                 <ul>
@@ -39,6 +58,9 @@
                                 <li>Voltage Min: {{dcChan.voltageMin}}</li>
                                 <li>Voltage Max: {{dcChan.voltageMax}}</li>
                                 <li>Voltage Increment: {{dcChan.voltageIncrement}}</li>
+                                <li>Current Min: {{dcChan.currenteMin}}</li>
+                                <li>Current Max: {{dcChan.currentMax}}</li>
+                                <li>Current Increment: {{dcChan.currentIncrement}}</li>
                             </ul>
                         </li>
                     </ul>
