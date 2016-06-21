@@ -4,6 +4,8 @@ import {Http, HTTP_PROVIDERS} from '@angular/http';
 //Components
 import {AwgInstrumentComponent} from '../instruments/awg/awg-instrument.component';
 import {DcInstrumentComponent} from '../instruments/dc/dc-instrument.component';
+import {LaInstrumentComponent} from '../instruments/la/la-instrument.component';
+import {OscInstrumentComponent} from '../instruments/osc/osc-instrument.component';
 
 //Services
 import {TransportService} from '../../services/transport/transport.service';
@@ -21,11 +23,13 @@ export class DeviceComponent {
     public instruments: {
         awg: AwgInstrumentComponent,
         dc: DcInstrumentComponent,
-        //la: {},
-        //osc: {},
+        la: {},
+        osc: {},
     } = {
         awg: null,
-        dc: null
+        dc: null,
+        la: null,
+        osc: null
     };
 
     constructor(_http: Http, _rootUri: string, deviceDescriptor: any) {
@@ -40,6 +44,8 @@ export class DeviceComponent {
 
         this.instruments.awg = new AwgInstrumentComponent(this.transport, deviceDescriptor.instruments.awg);
         this.instruments.dc = new DcInstrumentComponent(this.transport, deviceDescriptor.instruments.dc);
+        this.instruments.la = new LaInstrumentComponent(this.transport, deviceDescriptor.instruments.la);
+        this.instruments.osc = new OscInstrumentComponent(this.transport, deviceDescriptor.instruments.osc);
     }
 
 

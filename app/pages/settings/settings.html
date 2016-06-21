@@ -66,6 +66,36 @@
                     </ul>
                 </ul>
             </ul>
+            <!---------- LA ---------->
+            <ul>
+                <li><button (click)=navToLaTestPage(i);>Logic Analyzer</button></li>
+                <ul>
+                    <li>Number of Channels: {{device.instruments.la.numChans}}</li>
+                    <ul>
+                        <li *ngFor="let laChan of device.instruments.la.chans">
+                            <b>{{laChan.name}}</b>
+                        </li>
+                    </ul>
+                </ul>
+            </ul>
+            <!---------- OSC ---------->
+            <ul>
+                <li><button (click)=navToOscTestPage(i);>O-Scope</button></li>
+                <li>Number of Channels: {{device.instruments.osc.numChans}}</li>
+                <ul>
+                    <li *ngFor="let oscChan of device.instruments.osc.chans">
+                        <b>{{oscChan.name}}</b>
+                        <ul>
+                            <li>Max Resolution: {{oscChan.resolutionMax}}</li>
+                            <li>Max Buffer Size: {{oscChan.bufferSizeMax}}</li>
+                            <li>Min Frequency: {{oscChan.freqMin}}</li>
+                            <li>Max Frequency: {{oscChan.freqMax}}</li>
+                            <li>Min Voltage: {{oscChan.voltageMin}}</li>
+                            <li>Max Voltage: {{oscChan.voltageMax}}</li>
+                        </ul>
+                    </li>
+                </ul>
+            </ul>
         </li>
     </ul>
 </ion-content>
