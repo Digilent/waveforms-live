@@ -16,9 +16,6 @@ let postResponse;
 
 function handleRequest(request, response) {
     try {
-        //log the request on console
-        //console.log(request);
-        //Disptach
         dispatcher.dispatch(request, response);
     } catch (err) {
         console.log(err);
@@ -28,27 +25,38 @@ function handleRequest(request, response) {
 //For all your static (js/css/images/etc.) set the directory name (relative path).
 dispatcher.setStatic('resources');
 
-//Device Root
+//Device Root GET
 dispatcher.onGet("/", (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('SilverNeedle Device Simulator');
 });
 
+//Device Root POST
 dispatcher.onPost("/", (req, res) => {
-    //res.writeHead(200, {'Content-Type': 'application/json'});
     postResponse = res;
     device.handler(JSON.parse(req.body), null, sendReply);
 });
 
+//AWG Instrument
+dispatcher.onPost('/awg', (req, res) => {
+    let event = JSON.parse(req.body);
+    event = setEndpoint(event, '/awg');
+    postResponse = res;
+    device.handler(event, null, sendReply);
+});
 
 //DC Instrument
-/*
-command = event["body-json"].command;
-        endpoint = event.context["resource-path"];
-        */
 dispatcher.onPost('/dc', (req, res) => {
     let event = JSON.parse(req.body);
     event = setEndpoint(event, '/dc');
+    postResponse = res;
+    device.handler(event, null, sendReply);
+});
+
+//OSC Instrument
+dispatcher.onPost('/osc', (req, res) => {
+    let event = JSON.parse(req.body);
+    event = setEndpoint(event, '/osc');
     postResponse = res;
     device.handler(event, null, sendReply);
 });
@@ -65,6 +73,7 @@ server.listen(port, function () {
 //Mirrors Lambda functionality by passing response back to requester as the reply body
 function sendReply(error, result) {
     postResponse.setHeader('Access-Control-Allow-Origin', '*');
+    console.log('Reply: ', result, '\n');
     postResponse.end(JSON.stringify(result));
 }
 

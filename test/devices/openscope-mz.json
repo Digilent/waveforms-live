@@ -8,8 +8,27 @@
     },
     "instruments": {
         "awg": {
-            "numChans": 1,
-            "chans": []
+            "numChans": 2,
+            "chans": [
+                {
+                    "name": "Channel0",
+                    "resolutionMax": 10,
+                    "bufferSizeMax": 1024,
+                    "freqMin": 100,
+                    "freqMax": 1000000,
+                    "voltageMin": -5000,
+                    "voltageMax": 5000
+                },
+                {
+                    "name": "Channel2",
+                    "resolutionMax": 10,
+                    "bufferSizeMax": 1024,
+                    "freqMin": 100,
+                    "freqMax": 1000000,
+                    "voltageMin": -5000,
+                    "voltageMax": 5000
+                }
+            ]
         },
         "dc": {
             "numChans": 2,
@@ -40,8 +59,26 @@
         },
         "osc": {
             "numChans": 2,
-            "chans": []
+            "chans": [
+                {
+                    "name": "Channel 0",
+                    "resolutionMax": 10,
+                    "bufferSizeMax": 1024,
+                    "freqMin": 100,
+                    "freqMax": 1000000,
+                    "voltageMin": -5000,
+                    "voltageMax": 5000
+                },
+                {
+                    "name": "Channel 2",
+                    "resolutionMax": 10,
+                    "bufferSizeMax": 1024,
+                    "freqMin": 100,
+                    "freqMax": 1000000,
+                    "voltageMin": -5000,
+                    "voltageMax": 5000
+                }
+            ]
         }
-    },
-    "statusCode": 0
+    }
 }

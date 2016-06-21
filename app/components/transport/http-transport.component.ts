@@ -46,14 +46,16 @@ export class HttpTransportComponent extends TransportComponent {
         let headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
         */
-        
+
         return Observable.create((observer) => {
             //http.post(uri, body, options).subscribe(
             http.post(uri, body).subscribe(
                 (data: any) => {
                     let dataObj = JSON.parse(data._body);
                     //Handle device errors and warnings
-                    if (dataObj.statusCode < 1) {
+                    if (dataObj.statusCode == undefined) {
+                        console.log('Response Missing Status Code');
+                    } else if (dataObj.statusCode < 1) {
                         observer.next(dataObj);
                         observer.complete();
                     }
