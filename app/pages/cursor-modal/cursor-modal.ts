@@ -12,6 +12,8 @@ export class ModalCursorPage {
     private cursorType: string;
     private cursor1Chan: string;
     private cursor2Chan: string;
+    private cursorTypeArray: string[] = ['disabled','time','track','voltage'];
+    private cursorChanArray: string[] = ['O1', 'O2'];
 
     private value: number;
     
@@ -46,13 +48,38 @@ export class ModalCursorPage {
         }
     }
 
-    showPopover(event) {
-        let popover = Popover.create(MyPopover)
+    showPopover(event, type: string) {
+        let popover: Popover;
+        if (type === 'cursorType') {
+            popover = Popover.create(MyPopover, {
+                dataArray: this.cursorTypeArray
+            });
+        }
+        else if (type === 'cursor1Chan' || 'cursor2Chan') {
+            popover = Popover.create(MyPopover, {
+                dataArray: this.cursorChanArray
+            });
+        }
+        else {
+            console.log('error in show popover');
+        }
+
         this.nav.present(popover, {
             ev: event
         });
         popover.onDismiss(data=> {
-            console.log(data);
+            if (type === 'cursorType') {
+                this.cursorType = data.option
+            }
+            else if (type === 'cursor1Chan') {
+                this.cursor1Chan = data.option;
+            }
+            else if (type === 'cursor2Chan') {
+                this.cursor2Chan = data.option;
+            }
+            else {
+                console.log('error in show popover handler');
+            }
         });
     } 
     
@@ -61,24 +88,26 @@ export class ModalCursorPage {
 @Component({
   template: `
     <ion-list>
-        <ion-item>
-            <button clear (click)="close('disabled')">disabled</button>
-        </ion-item>
-        <ion-item>
-            <button clear (click)="close('time')">time</button>
-        </ion-item>
-        <ion-item>
-            <button clear (click)="close('voltage')">voltage</button>
+        <ion-item *ngFor="let data of dataArray">
+            <button clear (click)="close(data)">{{data}}</button>
         </ion-item>
     </ion-list>
   `
 })
 
 export class MyPopover{
-    constructor(private viewCtrl: ViewController) {}
-    close(cursorType: string) {
+    private dataArray: string[];
+
+    constructor(
+        private viewCtrl: ViewController, 
+        private params: NavParams
+    ) {
+          this.dataArray = this.params.get('dataArray');  
+    }
+
+    close(option: string) {
         this.viewCtrl.dismiss({
-            cursorType: cursorType
+            option: option
         });
     }
 }

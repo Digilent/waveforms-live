@@ -31,16 +31,19 @@
  -->
  <ion-list>
      <ion-item>
-         <button (click)="showPopover($event)">Cursor Type</button>
-         <ion-note item-right>{{cursorType}}</ion-note>
+         <h3>Cursor Type</h3>
+         <button clear (click)="showPopover($event, 'cursorType')"> {{cursorType}} <ion-icon name="arrow-dropdown"></ion-icon></button>
+         <ion-note item-right>Current Cursor Type: {{cursorType}}</ion-note>
      </ion-item>
      <ion-item>
-         <button>Cursor 1 Channel</button>
-         <ion-note item-right>{{cursor1Chan}}</ion-note>
+         <h3>Cursor 1 Channel</h3>
+         <button clear (click)="showPopover($event, 'cursor1Chan')"> {{cursor1Chan}} <ion-icon name="arrow-dropdown"></ion-icon></button>
+         <ion-note item-right>Current Channel: {{cursor1Chan}}</ion-note>
      </ion-item>
      <ion-item>
-         <button>Cursor 2 Channel</button>
-         <ion-note item-right>{{cursor2Chan}}</ion-note>
+         <h3>Cursor 2 Channel</h3>
+         <button clear (click)="showPopover($event, 'cursor2Chan')"> {{cursor2Chan}} <ion-icon name="arrow-dropdown"></ion-icon></button>
+         <ion-note item-right>Current Channel: {{cursor2Chan}}</ion-note>
      </ion-item>
      <ion-item>
          <button (click)="closeModal(true)">OK</button>
