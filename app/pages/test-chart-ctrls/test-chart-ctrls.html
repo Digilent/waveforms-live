@@ -13,10 +13,6 @@
                     <button (click)="chart1.redrawChart()">
                         <ion-icon name="refresh"></ion-icon>
                     </button>
-                    <button [disabled]="chart1.getNumCursors() > 1" (click)="addXCursor()">
-                        Add X Cursor
-                        <ion-icon name="arrow-round-down"></ion-icon>
-                        </button>
                     <button (click)="singleClick()">
                         Single
                         <ion-icon name="play"></ion-icon>
@@ -28,22 +24,6 @@
                     <button (click)="exportChart()">
                         Export
                         <ion-icon name="download"></ion-icon>
-                    </button>
-                    <button (click)="setTitle()">
-                        Swagify
-                        <ion-icon name="logo-usd"></ion-icon>
-                    </button>
-                    <button (click)="chart1.addYCursor()">
-                        Add Y Cursor
-                        <ion-icon name="logo-usd"></ion-icon>
-                    </button>
-                    <button (click)="removeCursors()">
-                        Clear Cursors
-                        <ion-icon name="logo-usd"></ion-icon>
-                    </button>
-                    <button (click)="chart1.getCursorDeltas()">
-                        Get Deltas
-                        <ion-icon name="logo-usd"></ion-icon>
                     </button>
                 </div>
                 <div #oscopeChartInner class="chartWrapper">

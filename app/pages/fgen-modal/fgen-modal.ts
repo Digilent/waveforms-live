@@ -67,6 +67,7 @@ export class ModalFgenPage {
     saveInstance(chart: Object) {
         //not actually using right now
         this.newChart = chart;
+        this.chart.clearSeries();
         this.drawWave();
     }
     

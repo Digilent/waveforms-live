@@ -87,11 +87,9 @@ export class ModalCursorPage {
 
 @Component({
   template: `
-    <ion-list>
-        <ion-item *ngFor="let data of dataArray">
-            <button clear (click)="close(data)">{{data}}</button>
-        </ion-item>
-    </ion-list>
+    <ion-item *ngFor="let data of dataArray">
+        <button clear (click)="close(data)">{{data}}</button>
+    </ion-item>
   `
 })
 
