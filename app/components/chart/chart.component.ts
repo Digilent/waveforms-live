@@ -235,18 +235,20 @@ export class SilverNeedleChart {
     }
 
     addXCursor() {
+        //TODO DISPLAY CORRECT INITIAL VALUES FROM EXTREMES RETURN
         console.log('adding x cursor');
+        let extremes = this.chart.xAxis[0].getExtremes();
         let initialValue: number;
         if (this.numXCursors == 0) {
-            initialValue = this.chart.xAxis[0].dataMin;
-            this.xCursorPositions[3 * this.numXCursors] = this.chart.xAxis[0].dataMin;
+            initialValue = extremes.min;
+            this.xCursorPositions[3 * this.numXCursors] = extremes.min;
             this.xCursorPositions[3 * this.numXCursors + 1] = this.chart.series[0].data[0].y;
             this.xCursorPositions[3 * this.numXCursors + 2] = this.chart.series[1].data[0].y;
         }
         else {
             console.log('in else');
-            initialValue = this.chart.xAxis[0].dataMax;
-            this.xCursorPositions[3 * this.numXCursors] = this.chart.xAxis[0].dataMax;
+            initialValue = extremes.max;
+            this.xCursorPositions[3 * this.numXCursors] = extremes.max;
             this.xCursorPositions[3 * this.numXCursors + 1] = this.chart.series[0].data[this.chart.series[0].data.length - 1].y;
             this.xCursorPositions[3 * this.numXCursors + 2] = this.chart.series[1].data[this.chart.series[1].data.length - 1].y;
         }
@@ -539,16 +541,28 @@ export class SilverNeedleChart {
     }
 
     exportCsv(fileName: string) {
+        console.log(this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax);
         this.chart.xAxis[0].setExtremes(0,5);
+        console.log(this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax, this.chart.xAxis[0].getExtremes());
         fileName = fileName + '.csv';
         let csvContent = 'data:text/csv;charset=utf-8,';
         let series1Points = [];
         let series2Points = [];
+        let seriesPointsArray = [series1Points, series2Points];
         let timePoints = [];
-        for (let i = 0; i < this.chart.series[0].data.length; i++) {
-            series1Points[i] = this.chart.series[0].data[i].y;
-            series2Points[i] = this.chart.series[1].data[i].y;
-            timePoints[i] = i * this.chart.options.plotOptions.series.pointInterval;
+        let maxLength = 0;
+        for (let i = 0; i < this.chart.series.length; i++) {
+            if (this.chart.series[i].data.length > length) {
+                for (let j = 0; j < this.chart.series[i].data.length; j++) {
+                    (seriesPointsArray[i])[j] = this.chart.series[i].data[j].y;
+                    timePoints[j] = j * this.chart.options.plotOptions.series.pointInterval;
+                }
+            }
+            else {
+                for (let j = 0; j < this.chart.series[i].data.length; j++) {
+                    (seriesPointsArray[i])[j] = this.chart.series[i].data[j].y;
+                }
+            }
         }
         csvContent = csvContent + (timePoints.join()) + '\n' + (series2Points.join()) + '\n' + (series1Points.join());
         let encodedUri = encodeURI(csvContent);
