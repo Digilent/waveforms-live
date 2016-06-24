@@ -17,6 +17,7 @@ export class SilverNeedleChart {
     public chart: Object;
     private options: Object;
     private xPosition: number;
+    private xPositionPixels: number;
     private yPosition: number;
     private numXCursors: number;
     private cursorLabel: any[];
@@ -41,7 +42,7 @@ export class SilverNeedleChart {
 
     constructor(_nav: NavController) {
         this.timeDivision = 3;
-        this.base = -12;
+        this.base = 12;
         this.nav = _nav;
         this.canPan = false;
         this.cursorsEnabled = false;
@@ -65,6 +66,9 @@ export class SilverNeedleChart {
                 animation: false,
                 //panning: true,
                 //panKey: 'shift'
+            },
+            tooltip: {
+                enabled: false
             },
             series: [{
                 data: [29.9, 36, 47, 57, 67, 71.5, 82, 92, 102, 106.4, 110, 120, 129.2],
@@ -200,7 +204,7 @@ export class SilverNeedleChart {
         this.chart.series[seriesNum].update({
             pointStart: 0,
             pointInterval: waveform.dt
-        })
+        });
         this.chart.reflow();
     }
 
@@ -614,12 +618,15 @@ export class SilverNeedleChart {
     }
 
     onChartClick(event) {
-        if (event.srcElement.localName === 'rect') {
+        console.log(event);
+        if (event.srcElement.localName === 'rect' && this.oscopeChartInner !== undefined) {
             console.log('chart click non cursor');
+            console.log(this.oscopeChartInner);
             this.canPan = true;
             console.log('pan to true');
-            this.panChart();
-            this.xPosition = parseFloat(this.chart.xAxis[0].toValue(event.chartX));
+            this.xPositionPixels = event.chartX;
+            this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.panListener);
+
             console.log('starting x value: ' + this.xPosition);
         }
         else {
@@ -630,19 +637,17 @@ export class SilverNeedleChart {
     clearMouse() {
         console.log('clear mouse');
         this.canPan = false;
-        this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.panListener);
-    }
-
-    panChart() {
-        this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.panListener);
+        if (this.oscopeChartInner !== undefined) {
+            this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.panListener);
+        }
     }
 
     panListener = function(event) {
-        //console.log(event);
-        let newVal = parseFloat(this.chart.xAxis[0].toValue(event.chartX));
-        let difference = newVal - this.xPosition;
+        let newVal = this.chart.xAxis[0].toValue(event.chartX);
+        let oldValinNewWindow = this.chart.xAxis[0].toValue(this.xPositionPixels);
+        let difference = newVal - oldValinNewWindow;
         this.setExtremes(difference);
-        this.xPosition = newVal;
+        this.xPositionPixels = event.chartX;
     }.bind(this);
 
     setExtremes(positionChange: number) {
