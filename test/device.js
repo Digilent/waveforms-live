@@ -113,6 +113,9 @@ exports.handler = (event, context, callback) => {
                 case 'enumerate':
                     callback(null, osc.enumerate());
                     break;
+                case 'runSingle':
+                    callback(null, osc.runSingle(event['body-json'].chans));
+                    break;
                 default:
                     callback(null, 'Unknown Command');
             }
@@ -264,7 +267,14 @@ let dc = {
 
 //------------------------------ OSC ------------------------------
 let osc = {
-    buffers: [[], [], [], [], [], [], [], []],
+    buffers: [
+        [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+        [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+        [],
+        [],
+        [],
+        []
+    ],
 
     //Calibrate
     calibrate: function () {
@@ -280,5 +290,31 @@ let osc = {
         console.log(response);
         return response;
     },
+
+    //Run Single
+    runSingle: function (chans) {
+        let wf = [];
+
+        //Prepare buffer to send
+        for (let i = 0; i < chans.length; i++) {
+            wf[i] = {
+                t0: 0,
+                dt: 1,
+                y: this.buffers[chans[i]]
+            };
+
+            //TODO REMOVE - SIM - Increment voltages to alter signal
+            for (let j = 0; j < this.buffers[chans[i]].length; j++) {
+                this.buffers[chans[i]][j] = this.buffers[chans[i]][j] + 1000;
+            }
+        }
+
+
+
+        return {
+            waveforms: wf,
+            statusCode: statusOk
+        };
+    }
 }
 

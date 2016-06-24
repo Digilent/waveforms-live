@@ -1,0 +1,65 @@
+<ion-navbar *navbar>
+    <button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Osc Test Page</ion-title>
+</ion-navbar>
+
+<ion-content padding>
+    <button (click)=enumerate();>Enumerate</button>
+    <div *ngFor="let chan of activeDevice.instruments.osc.chans; let i = index">
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <h1> {{chan.name}} </h1>
+                    <br />
+                    <ion-row>
+                        <button (click)="runSingle(i)">Run Single</button>
+                    </ion-row>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+    
+    <ion-grid>
+        <ion-row>
+            <ion-col width-25>
+                <h1> Read N Channel </h1>
+                <div *ngFor="let chan of activeDevice.instruments.osc.chans; let i = index">
+                    <ion-item>
+                        <ion-label>{{chan.name}}</ion-label>
+                        <ion-checkbox dark checked="true" [(ngModel)]="chanEnabled[i]"></ion-checkbox>
+                    </ion-item>
+                </div>
+                <button (click)="runSingleNChans()">Read N Chans</button>
+                <button (click)="streamSingleNChans()">Stream N Chans</button>
+                <button (click)="stopStream()">Stop Stream</button>                
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <ion-grid>
+        <ion-row>
+            <ion-col width-33>
+            </ion-col>
+            <ion-col width-33>
+                {{activeDevice.instruments.osc.chans[0].name}}
+            </ion-col>
+            <ion-col width-33>
+                {{activeDevice.instruments.osc.chans[0].name}}
+            </ion-col>
+        </ion-row>
+        <ion-row *ngFor="let buffer of activeDevice.instruments.osc.dataBuffer; let i = index">
+            <ion-col width-33>
+                {{i}}
+            </ion-col>
+            <ion-col width-33 *ngFor="let chan of buffer; let j = index">
+                <span *ngIf=chan>
+                    {{chan.y}}
+                </span>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+
+</ion-content>

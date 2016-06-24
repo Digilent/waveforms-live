@@ -23,8 +23,8 @@ export class DeviceComponent {
     public instruments: {
         awg: AwgInstrumentComponent,
         dc: DcInstrumentComponent,
-        la: {},
-        osc: {},
+        la: LaInstrumentComponent,
+        osc: OscInstrumentComponent,
     } = {
         awg: null,
         dc: null,

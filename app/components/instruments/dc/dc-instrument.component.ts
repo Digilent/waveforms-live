@@ -11,10 +11,10 @@ import {TransportService} from '../../../services/transport/transport.service';
 
 @Component({
 })
-export class DcInstrumentComponent extends InstrumentComponent{
-    
+export class DcInstrumentComponent extends InstrumentComponent {
+
     public chans: DcChannelComponent[] = [];
-    
+
     constructor(_transport: TransportService, _dcInstrumentDescriptor: any) {
         super(_transport, '/dc');
         console.log('DC Instrument Constructor');
@@ -26,16 +26,15 @@ export class DcInstrumentComponent extends InstrumentComponent{
         _dcInstrumentDescriptor.chans.forEach(dcChanDescriptor => {
             this.chans.push(new DcChannelComponent(dcChanDescriptor));
         })
-    } 
+    }
 
-    //Calibrate the DC power supply.
-    //TODO
+    //TODO - Calibrate the DC power supply.
 
     //Get the output voltage(s) of the specified DC power supply channel(s).
-    getVoltages(_chans: Array<number>): Observable<Array<number>> {
+    getVoltages(chans: Array<number>): Observable<Array<number>> {
         let command = {
             command: "getVoltages",
-            chans: _chans
+            chans: chans
         }
 
         return Observable.create((observer) => {
@@ -43,12 +42,12 @@ export class DcInstrumentComponent extends InstrumentComponent{
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode < 1) {
-                           
+
                         //Scale from mV to V                            
                         data.voltages.forEach((element, index, array) => {
                             array[index] = element / 1000;
                         });
-                        
+
                         //Return voltages and complete observer
                         observer.next(data.voltages);
                         observer.complete();
@@ -68,26 +67,27 @@ export class DcInstrumentComponent extends InstrumentComponent{
     }
 
     //Set the output voltage of the specified DC power supply channel.
-    setVoltages(_chans: Array<number>, _voltages: Array<number>) {
-        
+    setVoltages(chans: Array<number>, voltages: Array<number>) {
+
         //Scale voltages into mV before sending
-        _voltages.forEach((element, index, array) => {
-            array[index] =  element * 1000;
+        voltages.forEach((element, index, array) => {
+            array[index] = element * 1000;
         });
-        
+
         //Setup command to transfer
         let command = {
             command: "setVoltages",
-            chans: _chans,
-            voltages: _voltages
+            chans: chans,
+            voltages: voltages
         }
         return this.transport.writeRead(this.endpoint, command);
     }
 
-    streamVoltage(_chan: number, delay = 0): Observable<number> {
+    //Streaming read voltages from the specified channel(s)
+    streamReadVoltages(chans: Array<number>, delay = 0): Observable<Array<number>> {
         let command = {
             command: "getVoltages",
-            chan: _chan
+            chans: chans
         }
 
         return Observable.create((observer) => {
@@ -95,7 +95,11 @@ export class DcInstrumentComponent extends InstrumentComponent{
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode < 1) {
-                        observer.next(data.voltage / 1000);
+                        //Scale from mV to V                            
+                        data.voltages.forEach((element, index, array) => {
+                            array[index] = element / 1000;
+                        });
+                        observer.next(data.voltages);
                     }
                     else {
                         observer.error(data.statusCode);
@@ -111,6 +115,7 @@ export class DcInstrumentComponent extends InstrumentComponent{
         });
     }
 
+    //Stop the current stream
     stopStream() {
         this.transport.stopStream();
     }

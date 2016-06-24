@@ -2,8 +2,9 @@ import {Component} from '@angular/core';
 import {NavController} from 'ionic-angular';
 
 //Pages
-import {DcTestPage} from '../../pages/instrument-test-pages/dc-test/dc-test';
 import {AwgTestPage} from '../../pages/instrument-test-pages/awg-test/awg-test';
+import {DcTestPage} from '../../pages/instrument-test-pages/dc-test/dc-test';
+import {OscTestPage} from '../../pages/instrument-test-pages/osc-test/osc-test';
 
 
 //Services
@@ -42,14 +43,19 @@ export class SettingsPage {
             () => { }
         )
     }
-
+    
+    navToAwgTestPage(deviceIndex: number){
+        this.deviceManangerService.setActiveDevice(deviceIndex);
+        this.nav.push(AwgTestPage);
+    }
+    
     navToDcTestPage(deviceIndex: number) {
         this.deviceManangerService.setActiveDevice(deviceIndex);
         this.nav.push(DcTestPage);
     }
     
-    navToAwgTestPage(deviceIndex: number){
+    navToOscTestPage(deviceIndex: number){
         this.deviceManangerService.setActiveDevice(deviceIndex);
-        this.nav.push(AwgTestPage);
+        this.nav.push(OscTestPage);
     }
 }

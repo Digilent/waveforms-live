@@ -18,6 +18,8 @@
                     </ion-item>
                 </div>
                 <button (click)="bulkRead()">Bulk Read</button>
+                <button (click)="bulkStream()">Bulk Stream</button>
+                <button (click)="stopStream()">Stop Stream</button>
             </ion-col>
         </ion-row>
     </ion-grid>
@@ -50,7 +52,7 @@
                     <br /> Stream Delay:
                     <button (click)="streamVoltage(i)">Stream Read</button>
                     <br /> Data Frame: {{dataFrame[i]}}
-                    <button (click)="stopStream(i)">Stop Stream</button>
+                    <button (click)="stopStream()">Stop Stream</button>
                 </ion-col>
 
             </ion-row>
