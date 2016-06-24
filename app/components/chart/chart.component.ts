@@ -76,13 +76,14 @@ export class SilverNeedleChart {
             },
             {
                 data: [50, 60, 70, 80],
-                allowPointSelect: true
+                allowPointSelect: true,
+                yAxis: 1
             }
             ],
             legend: {
                 enabled: false
             },
-            yAxis: {
+            yAxis: [{
                 gridLineWidth: 1,
                 tickPositioner: function () {
                     let numTicks = 11;
@@ -95,7 +96,18 @@ export class SilverNeedleChart {
                     }
                     return ticks;
                 },
-            },
+                title: {
+                    text: 'Series 0'
+                }
+            }, {
+                gridLineWidth: 1,
+                labels: {
+                    enabled: false
+                },
+                title: {
+                    text: null
+                }
+            }],
             plotOptions: {
                 series: {
                     pointInterval: 2,
@@ -163,6 +175,29 @@ export class SilverNeedleChart {
 
     onPointSelect (event) {
       this.activeSeries = event.context.series._i + 1;
+      for (let i = 0; i < this.chart.yAxis.length; i++) {
+          if (i === this.activeSeries - 1) {
+              this.chart.yAxis[this.activeSeries - 1].update({
+                    labels: {
+                        enabled: true
+                    },
+                    title: {
+                        text: 'Series ' + i
+                    }
+                });
+          }
+          else {
+            this.chart.yAxis[i].update({
+                labels: {
+                    enabled: false
+                },
+                title: {
+                    text: null
+                } 
+            });
+          }
+      }
+      
       console.log('Active Series: ' + this.activeSeries);
     }
     
@@ -656,5 +691,9 @@ export class SilverNeedleChart {
         let max = newPos + this.timeDivision * 5; 
         this.chart.xAxis[0].setExtremes(min, max, true, false);
         this.base = newPos;
+    }
+
+    updateCursorLabels() {
+        console.log('Not yet implemented');
     }
 }
