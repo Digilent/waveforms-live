@@ -1,0 +1,14 @@
+<ion-list>
+    <ion-row *ngFor="let series of numSeries; let i = index">
+        <ion-col>
+            <ion-item>
+                <ion-label>V/div (s):</ion-label>
+                <ion-input type="number" [(ngModel)]="voltsPerDiv[i]"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Offset (V):</ion-label>
+                <ion-input type="number" [(ngModel)]="voltBase[i]"></ion-input>
+            </ion-item>
+        </ion-col>
+    </ion-row>
+</ion-list>

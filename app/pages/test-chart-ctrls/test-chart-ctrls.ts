@@ -6,26 +6,21 @@ import {SilverNeedleChart} from '../../components/chart/chart.component';
 import {OscilloscopeComponent} from '../../components/oscilloscope/oscilloscope.component';
 import {BottomBarComponent} from '../../components/bottom-bar/bottom-bar.component';
 import {SideBarComponent} from '../../components/side-bar/side-bar.component';
+import {XAxisComponent} from '../../components/xaxis-controls/xaxis-controls.component';
+import {YAxisComponent} from '../../components/yaxis-controls/yaxis-controls.component';
 
 @Component({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
-    directives: [SilverNeedleChart, OscilloscopeComponent, BottomBarComponent, SideBarComponent]
+    directives: [SilverNeedleChart, OscilloscopeComponent, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent]
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
     @ViewChild('oscopeChartInner') oscopeChartInner: ElementRef;
-    //@ViewChild('chart2') chart2: OscilloscopeComponent;
 
     public controlsVisible = false;
     public botVisible = false;
     public sideVisible = false;
     
-    private xPosition;
-    private numXCursors;
-    private cursorLabel;
-    private xCursorDragStartPos;
-    
-
     constructor() {
         
     }
@@ -64,14 +59,6 @@ export class TestChartCtrlsPage {
     toggleSeries(event) {
         this.chart1.chart.series[event.channel].setVisible(event.value, true);
     }
-    
-    addXCursor() {
-        this.chart1.addXCursor();
-    }
-
-    addYCursor() {
-        this.chart1.addYCursor();
-    }
 
     singleClick() {
         console.log('single');
@@ -79,7 +66,6 @@ export class TestChartCtrlsPage {
 
     runClick() {
         console.log('run');
-        this.removeCursors();
     }
 
     exportChart() {
@@ -96,9 +82,5 @@ export class TestChartCtrlsPage {
         console.log('Setting container element ref in chart component');
         this.chart1.setElementRef(this.oscopeChartInner);
         this.chart1.enableCursors();
-    }
-
-    removeCursors() {
-        this.chart1.removeCursors();
     }
 }

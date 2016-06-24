@@ -104,6 +104,17 @@ export class SilverNeedleChart {
                 labels: {
                     enabled: false
                 },
+                tickPositioner: function () {
+                    let numTicks = 11;
+                    let ticks = [];
+                    let min = this.chart.yAxis[1].min;
+                    let max = this.chart.yAxis[1].max;
+                    let delta = (max - min) / (numTicks - 1);
+                    for (var i = 0; i < numTicks; i++) {
+                        ticks[i] = (min + i * delta).toFixed(3);
+                    }
+                    return ticks;
+                },
                 title: {
                     text: null
                 }
@@ -274,13 +285,11 @@ export class SilverNeedleChart {
             this.xCursorPositions[3 * this.numXCursors + 2] = this.chart.series[1].data[0].y;
         }
         else {
-            console.log('in else');
             initialValue = extremes.max;
             this.xCursorPositions[3 * this.numXCursors] = extremes.max;
             this.xCursorPositions[3 * this.numXCursors + 1] = this.chart.series[0].data[this.chart.series[0].data.length - 1].y;
             this.xCursorPositions[3 * this.numXCursors + 2] = this.chart.series[1].data[this.chart.series[1].data.length - 1].y;
         }
-        console.log(initialValue, this.xCursorPositions);
         this.chart.xAxis[0].addPlotLine({
             value: initialValue,
             color: 'blue',
@@ -288,7 +297,6 @@ export class SilverNeedleChart {
             zIndex: 100 + this.numXCursors,
             id: 'cursor' + this.numXCursors,
         });
-        console.log(this.xCursorPositions);
         this.cursorLabel[this.numXCursors] = this.chart.renderer.text('Cursor ' + this.numXCursors, 100, 100).add();
         this.chart.xAxis[0].plotLinesAndBands[this.numXCursors].svgElem.element.id = 'cursor' + this.numXCursors;
         //let options = this.chart.options;
@@ -369,7 +377,6 @@ export class SilverNeedleChart {
 
     xCursorStartDrag(cursorId, xStartPos) {
         //console.log('start');
-        console.log(this.oscopeChartInner.nativeElement);
         if (this.cursorType === 'track') {
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.trackCursorDragListener);
         }
@@ -403,7 +410,6 @@ export class SilverNeedleChart {
     }
 
     trackCursorDragListener = function (event) {
-        console.log(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1]);
         let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true).toFixed(1); 
         let offset = 110;  
         let yCor = event.layerY;
@@ -600,7 +606,6 @@ export class SilverNeedleChart {
             cursor2Chan: this.cursor2Chan
         });
         modal.onDismiss(data=> {
-            console.log(data);
             if (data.save) {
                 console.log('saving data');
                 this.cursorType = data.cursorType;
@@ -642,10 +647,8 @@ export class SilverNeedleChart {
 
     clearSeries() {
         let numSeries = this.chart.series.length;
-        console.log(numSeries);
         //remove all series except series 0
         for (let i = 0; i < numSeries - 1; i++) {
-            console.log(this.chart.series);
             this.chart.series[numSeries - i - 1].remove(false);
         }
             //this.chart.series[1].remove(false);
@@ -653,16 +656,11 @@ export class SilverNeedleChart {
     }
 
     onChartClick(event) {
-        console.log(event);
         if (event.srcElement.localName === 'rect' && this.oscopeChartInner !== undefined) {
             console.log('chart click non cursor');
-            console.log(this.oscopeChartInner);
             this.canPan = true;
-            console.log('pan to true');
             this.xPositionPixels = event.chartX;
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.panListener);
-
-            console.log('starting x value: ' + this.xPosition);
         }
         else {
             console.log('cursor click or point click');
