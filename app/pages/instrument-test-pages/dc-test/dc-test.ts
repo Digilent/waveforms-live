@@ -17,21 +17,29 @@ export class DcTestPage {
     private activeDevice: DeviceComponent;
     public targetVoltage: number[] = [0, 0];
     public streamDelay: number[] = [0, 0];
-    public dataFrame: number[] = [0, 0];
+    public dataFrame: number[] = [0, 0];    
+    public bulkReadChannelsEnabled: boolean[] = [false, false, false, false, false, false, false, false];
+    
     @Input() readVoltages: number[] = [0, 0];
+    
 
 
     constructor(_deviceManagerService: DeviceManagerService) {
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
     }
-
-    setVoltage(chan: number, voltage: number) {
-        console.log('set ', chan, ' ', voltage);
-        this.activeDevice.instruments.dc.setVoltage(chan, voltage).subscribe(
+    
+    setVoltage(chan, voltage){
+        let chans = [chan];
+        let voltages = [voltage];
+        this.setVoltages(chans, voltages);
+    }
+    setVoltages(_chans: Array<number>, _voltages: Array<number>) {
+        console.log('set ', _chans, ' ', _voltages);
+        this.activeDevice.instruments.dc.setVoltages(_chans, _voltages).subscribe(
             (data) => {
                 if (data.statusCode == 0) {
-                    console.log('DC Supply channel ', chan, ' set to ', voltage, 'v');
+                    console.log('DC Supply channel ', _chans, ' set to ', _voltages, 'v');
                 }
                 else {
                     console.log('Set Failed');
@@ -42,18 +50,24 @@ export class DcTestPage {
             },
             () => { }
         );
-
-        console.log('Channel: ', chan, ' => ', Math.round(voltage * 1000));
+    }
+    
+    bulkRead(){
+        let chans = [];
+        this.bulkReadChannelsEnabled.forEach((element, index) => {
+            if(element == true){
+                chans.push(index);
+            }
+        });
+        this.getVoltages(chans);
     }
 
-    getVoltage(chan: number) {
-        console.log('get ', chan);
-        this.activeDevice.instruments.dc.getVoltage(chan).subscribe(
-            (data) => {
-                this.readVoltages[chan] = data;
-                this.dataFrame[chan]++;
-                console.log('Frame: ', this.dataFrame[chan]);
-                console.log(data);
+    getVoltages(chans: Array<number>) {
+        this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
+            (voltages) => {
+                voltages.forEach((element, index, array) => {
+                    this.readVoltages[chans[index]] = voltages[index];
+                }) 
             },
             (err) => {
                 console.log(err);

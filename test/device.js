@@ -93,11 +93,11 @@ exports.handler = (event, context, callback) => {
                 case 'enumerate':
                     callback(null, dc.enumerate());
                     break;
-                case 'getVoltage':
-                    callback(null, dc.getVoltage(event['body-json'].chan));
+                case 'getVoltages':
+                    callback(null, dc.getVoltages(event['body-json'].chans));
                     break;
-                case 'setVoltage':
-                    callback(null, dc.setVoltage(event['body-json'].chan, event['body-json'].voltage));
+                case 'setVoltages':
+                    callback(null, dc.setVoltages(event['body-json'].chans, event['body-json'].voltages));
                     break;
                 default:
                     callback(null, 'Unknown Command');
@@ -126,8 +126,9 @@ let device = {
 
     //Enumerate
     enumerate: function () {
-        let response = this.descriptor;
+        let response = device.descriptor;
         response.statusCode = statusOk;
+        console.log(response);
         return response;
     },
 
@@ -178,7 +179,10 @@ let awg = {
 
     //Enumerate
     enumerate: function () {
-        return device.descriptor.awg;
+        let response = device.descriptor.instruments.awg;
+        response.statusCode = statusOk;
+        console.log(response);
+        return response;
     },
 
     //Get Offset
@@ -229,27 +233,36 @@ let dc = {
 
     //Enumerate
     enumerate: function () {
-        return device.descriptor.dc;
+        let response = device.descriptor.instruments.dc;
+        response.statusCode = statusOk;
+        console.log(response);
+        return response;
     },
 
-    //Get Voltage
-    getVoltage: function (chan) {
+    //Get Voltages
+    getVoltages: function (_chans) {
+        let _voltages = [];
+        for (let i = 0; i < _chans.length; i++) {
+            _voltages.push(this.voltages[_chans[i]]);
+        }
         return {
-            voltage: this.voltages[chan],
+            voltages: _voltages,
             statusCode: statusOk
         };
     },
 
-    //Set Voltage
-    setVoltage: function (chan, voltage) {
-        this.voltages[chan] = voltage;
+    //Set Voltages
+    setVoltages: function (_chans, _voltages) {
+        for (let i = 0; i < _chans.length; i++) {
+            this.voltages[_chans[i]] = _voltages[i];
+        };
         return {
             statusCode: statusOk
         };
     }
 }
 
-//------------------------------ AWG ------------------------------
+//------------------------------ OSC ------------------------------
 let osc = {
     buffers: [[], [], [], [], [], [], [], []],
 
@@ -262,7 +275,10 @@ let osc = {
 
     //Enumerate
     enumerate: function () {
-        return device.descriptor.osc;
-    }
+        let response = device.descriptor.instruments.osc;
+        response.statusCode = statusOk;
+        console.log(response);
+        return response;
+    },
 }
 

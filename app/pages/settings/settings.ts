@@ -3,6 +3,7 @@ import {NavController} from 'ionic-angular';
 
 //Pages
 import {DcTestPage} from '../../pages/instrument-test-pages/dc-test/dc-test';
+import {AwgTestPage} from '../../pages/instrument-test-pages/awg-test/awg-test';
 
 
 //Services
@@ -48,6 +49,7 @@ export class SettingsPage {
     }
     
     navToAwgTestPage(deviceIndex: number){
-        alert('TODO');
+        this.deviceManangerService.setActiveDevice(deviceIndex);
+        this.nav.push(AwgTestPage);
     }
 }

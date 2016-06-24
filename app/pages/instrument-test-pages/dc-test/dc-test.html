@@ -7,6 +7,21 @@
 
 <ion-content padding>
 
+    <ion-grid>
+        <ion-row>
+            <ion-col width-25>
+                <h1> Bulk Read </h1>
+                <div *ngFor="let chan of activeDevice.instruments.dc.chans; let i = index">
+                    <ion-item>
+                        <ion-label>{{chan.name}}</ion-label>
+                        <ion-checkbox dark checked="true" [(ngModel)]="bulkReadChannelsEnabled[i]"></ion-checkbox>
+                    </ion-item>
+                </div>
+                <button (click)="bulkRead()">Bulk Read</button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
     <div *ngFor="let chan of activeDevice.instruments.dc.chans; let i = index">
         <ion-grid>
             <ion-row>

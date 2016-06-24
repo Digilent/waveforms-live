@@ -3,6 +3,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
+import {InstrumentComponent} from '../instrument.component';
 import {DcChannelComponent} from './dc-channel.component';
 
 //Services
@@ -10,17 +11,13 @@ import {TransportService} from '../../../services/transport/transport.service';
 
 @Component({
 })
-export class DcInstrumentComponent {
-
-    private transport: TransportService;
-    private endpoint: string = '/dc';
-
-    public numChans: number;
+export class DcInstrumentComponent extends InstrumentComponent{
+    
     public chans: DcChannelComponent[] = [];
-
+    
     constructor(_transport: TransportService, _dcInstrumentDescriptor: any) {
-        //Store reference to device transport for communication with device
-        this.transport = _transport;
+        super(_transport, '/dc');
+        console.log('DC Instrument Constructor');
 
         //Populate DC supply parameters
         this.numChans = _dcInstrumentDescriptor.numChans;
@@ -29,24 +26,16 @@ export class DcInstrumentComponent {
         _dcInstrumentDescriptor.chans.forEach(dcChanDescriptor => {
             this.chans.push(new DcChannelComponent(dcChanDescriptor));
         })
-    }
+    } 
 
     //Calibrate the DC power supply.
     //TODO
 
-    //Enumerate instrument info.
-    enumerate() {
+    //Get the output voltage(s) of the specified DC power supply channel(s).
+    getVoltages(_chans: Array<number>): Observable<Array<number>> {
         let command = {
-            command: 'enumerate'
-        }
-        return this.transport.writeRead(this.endpoint, command);
-    }
-
-    //Get the output voltage of the specified DC power supply channel.
-    getVoltage(_chan: number): Observable<number> {
-        let command = {
-            command: "getVoltage",
-            chan: _chan
+            command: "getVoltages",
+            chans: _chans
         }
 
         return Observable.create((observer) => {
@@ -54,7 +43,14 @@ export class DcInstrumentComponent {
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode < 1) {
-                        observer.next(data.voltage / 1000);
+                           
+                        //Scale from mV to V                            
+                        data.voltages.forEach((element, index, array) => {
+                            array[index] = element / 1000;
+                        });
+                        
+                        //Return voltages and complete observer
+                        observer.next(data.voltages);
                         observer.complete();
                     }
                     else {
@@ -71,12 +67,29 @@ export class DcInstrumentComponent {
         });
     }
 
+    //Set the output voltage of the specified DC power supply channel.
+    setVoltages(_chans: Array<number>, _voltages: Array<number>) {
+        
+        //Scale voltages into mV before sending
+        _voltages.forEach((element, index, array) => {
+            array[index] =  element * 1000;
+        });
+        
+        //Setup command to transfer
+        let command = {
+            command: "setVoltages",
+            chans: _chans,
+            voltages: _voltages
+        }
+        return this.transport.writeRead(this.endpoint, command);
+    }
+
     streamVoltage(_chan: number, delay = 0): Observable<number> {
         let command = {
-            command: "getVoltage",
+            command: "getVoltages",
             chan: _chan
         }
-        
+
         return Observable.create((observer) => {
             this.transport.streamFrom(this.endpoint, command, delay).subscribe(
                 (data) => {
@@ -98,20 +111,7 @@ export class DcInstrumentComponent {
         });
     }
 
-
-    //Set the output voltage of the specified DC power supply channel.
-    setVoltage(_chan: number, _voltage: number) {
-        let command = {
-            command: "setVoltage",
-            chan: _chan,
-            voltage: Math.round(_voltage * 1000)
-        }
-
-        return this.transport.writeRead(this.endpoint, command);
-    }
-    
-    stopStream()
-    {
+    stopStream() {
         this.transport.stopStream();
     }
 }
