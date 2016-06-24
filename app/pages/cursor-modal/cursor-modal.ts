@@ -1,6 +1,9 @@
 import {NavParams, ViewController, Platform, NavController, Popover} from 'ionic-angular';
 import {ViewChild, Component} from '@angular/core';
 
+//Components
+import {GenPopover} from '../../components/gen-popover/gen-popover.component';
+
 @Component({
     templateUrl: "build/pages/cursor-modal/cursor-modal.html"
 })
@@ -51,12 +54,12 @@ export class ModalCursorPage {
     showPopover(event, type: string) {
         let popover: Popover;
         if (type === 'cursorType') {
-            popover = Popover.create(MyPopover, {
+            popover = Popover.create(GenPopover, {
                 dataArray: this.cursorTypeArray
             });
         }
         else if (type === 'cursor1Chan' || 'cursor2Chan') {
-            popover = Popover.create(MyPopover, {
+            popover = Popover.create(GenPopover, {
                 dataArray: this.cursorChanArray
             });
         }
@@ -83,29 +86,4 @@ export class ModalCursorPage {
         });
     } 
     
-}
-
-@Component({
-  template: `
-    <ion-item *ngFor="let data of dataArray">
-        <button clear (click)="close(data)">{{data}}</button>
-    </ion-item>
-  `
-})
-
-export class MyPopover{
-    private dataArray: string[];
-
-    constructor(
-        private viewCtrl: ViewController, 
-        private params: NavParams
-    ) {
-          this.dataArray = this.params.get('dataArray');  
-    }
-
-    close(option: string) {
-        this.viewCtrl.dismiss({
-            option: option
-        });
-    }
 }

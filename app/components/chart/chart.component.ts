@@ -291,11 +291,12 @@ export class SilverNeedleChart {
     addYCursor() {
         console.log('adding Y cursor number: ' + this.numYCursors);
         let initialValue: number;
+        let extremes = this.chart.yAxis[0].getExtremes();
         if (this.numYCursors == 0) {
-            initialValue = this.chart.yAxis[0].dataMin;
+            initialValue = extremes.min;
         }
         else {
-            initialValue = this.chart.yAxis[0].dataMax;
+            initialValue = extremes.max;
         }
         this.chart.yAxis[0].addPlotLine({
             value: initialValue,
@@ -552,7 +553,7 @@ export class SilverNeedleChart {
         let timePoints = [];
         let maxLength = 0;
         for (let i = 0; i < this.chart.series.length; i++) {
-            if (this.chart.series[i].data.length > length) {
+            if (this.chart.series[i].data.length > maxLength) {
                 for (let j = 0; j < this.chart.series[i].data.length; j++) {
                     (seriesPointsArray[i])[j] = this.chart.series[i].data[j].y;
                     timePoints[j] = j * this.chart.options.plotOptions.series.pointInterval;
