@@ -31,12 +31,17 @@ export class SilverNeedleChart {
     private cursorsEnabled: boolean;
     private canPan: boolean;
 
+    private timeDivision: number;
+    private base: number;
+
     //[x1, series 0 y1, series 1 y1, x2, series 0 y2, series 1 y2]
     private xCursorPositions: number[];
     //[y1, y2]
     private yCursorPositions: number[];
 
     constructor(_nav: NavController) {
+        this.timeDivision = 3;
+        this.base = -12;
         this.nav = _nav;
         this.canPan = false;
         this.cursorsEnabled = false;
@@ -155,22 +160,6 @@ export class SilverNeedleChart {
     onPointSelect (event) {
       this.activeSeries = event.context.series._i + 1;
       console.log('Active Series: ' + this.activeSeries);
-    }
-
-    onChartClick(event) {
-        if (event.srcElement.localName === 'rect') {
-            console.log('chart click non cursor');
-            this.canPan = true;
-            console.log('pan to true');
-        }
-        else {
-            console.log('cursor click or point click');
-        }
-    }
-
-    clearMouse() {
-        console.log('clear mouse');
-        this.canPan = false;
     }
     
     /*
@@ -341,6 +330,7 @@ export class SilverNeedleChart {
 
     xCursorStartDrag(cursorId, xStartPos) {
         //console.log('start');
+        console.log(this.oscopeChartInner.nativeElement);
         if (this.cursorType === 'track') {
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.trackCursorDragListener);
         }
@@ -404,7 +394,7 @@ export class SilverNeedleChart {
         //this.chart.xAxis[0].plotLinesAndBands[0].svgElem.translate(event.clientX - this.xCursorDragStartPos);
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[0].data[pointNum1].x;
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[0].data[pointNum1].y;
-        this.xCursorPositions[3 * this.activeCursor - 3] = parseFloat(xVal);
+        this.xCursorPositions[3 * this.activeCursor - 3] = parseFloat(this.chart.series[0].data[pointNum1].x);
         this.xCursorPositions[3 * this.activeCursor - 2] = this.chart.series[0].data[pointNum1].y;
         this.xCursorPositions[3 * this.activeCursor - 1] = this.chart.series[1].data[pointNum2].y;
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
@@ -497,14 +487,6 @@ export class SilverNeedleChart {
             zIndex: 99 + this.activeCursor
         });
     }.bind(this);
-    
-    exportChart() {
-        //see highcharts documentation. Local export requires modules/exporting.js
-        //and modules/offline-exporting.js
-        //this.chart.chart.exportChart();
-        console.log('Export chart in chart component');
-        this.chart.exportChartLocal();   
-    }
 
     setHeight() {
         console.log('Height change not implemented');
@@ -542,9 +524,7 @@ export class SilverNeedleChart {
     }
 
     exportCsv(fileName: string) {
-        console.log(this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax);
         this.chart.xAxis[0].setExtremes(0,5);
-        console.log(this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax, this.chart.xAxis[0].getExtremes());
         fileName = fileName + '.csv';
         let csvContent = 'data:text/csv;charset=utf-8,';
         let series1Points = [];
@@ -631,5 +611,45 @@ export class SilverNeedleChart {
         }
             //this.chart.series[1].remove(false);
         
+    }
+
+    onChartClick(event) {
+        if (event.srcElement.localName === 'rect') {
+            console.log('chart click non cursor');
+            this.canPan = true;
+            console.log('pan to true');
+            this.panChart();
+            this.xPosition = parseFloat(this.chart.xAxis[0].toValue(event.chartX));
+            console.log('starting x value: ' + this.xPosition);
+        }
+        else {
+            console.log('cursor click or point click');
+        }
+    }
+
+    clearMouse() {
+        console.log('clear mouse');
+        this.canPan = false;
+        this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.panListener);
+    }
+
+    panChart() {
+        this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.panListener);
+    }
+
+    panListener = function(event) {
+        //console.log(event);
+        let newVal = parseFloat(this.chart.xAxis[0].toValue(event.chartX));
+        let difference = newVal - this.xPosition;
+        this.setExtremes(difference);
+        this.xPosition = newVal;
+    }.bind(this);
+
+    setExtremes(positionChange: number) {
+        let newPos = this.base - positionChange;
+        let min = newPos - this.timeDivision * 5;
+        let max = newPos + this.timeDivision * 5; 
+        this.chart.xAxis[0].setExtremes(min, max, true, false);
+        this.base = newPos;
     }
 }
