@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IONIC_DIRECTIVES, NavController, Modal} from 'ionic-angular';
+import {NavController, Modal} from 'ionic-angular';
 
 //Pages
 import {ModalFgenPage} from '../../pages/fgen-modal/fgen-modal';

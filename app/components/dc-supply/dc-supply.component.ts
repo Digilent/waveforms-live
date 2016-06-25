@@ -1,5 +1,4 @@
 import {Component, Output, EventEmitter, Input} from '@angular/core';
-import {IONIC_DIRECTIVES} from 'ionic-angular';
 import {NgClass} from '@angular/common';
 
 @Component({

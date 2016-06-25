@@ -1,5 +1,4 @@
 import {Component, Output, EventEmitter} from '@angular/core';
-import {IONIC_DIRECTIVES} from 'ionic-angular';
 
 //Components
 import {FgenComponent} from '../function-gen/function-gen.component';

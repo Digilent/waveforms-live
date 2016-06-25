@@ -1,4 +1,4 @@
-import {IONIC_DIRECTIVES, Page, NavParams, ViewController, Platform} from 'ionic-angular';
+import {Page, NavParams, ViewController, Platform} from 'ionic-angular';
 import {ViewChild, Component} from '@angular/core';
 
 //Components
