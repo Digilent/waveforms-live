@@ -37,6 +37,7 @@ dispatcher.onPost("/", (req, res) => {
     device.handler(JSON.parse(req.body), null, sendReply);
 });
 
+/*
 //AWG Instrument
 dispatcher.onPost('/awg', (req, res) => {
     let event = JSON.parse(req.body);
@@ -60,7 +61,7 @@ dispatcher.onPost('/osc', (req, res) => {
     postResponse = res;
     device.handler(event, null, sendReply);
 });
-
+*/
 
 //Create HTTP server
 var server = http.createServer(handleRequest);
@@ -77,6 +78,7 @@ function sendReply(error, result) {
     postResponse.end(JSON.stringify(result));
 }
 
+/*
 //Set device endpoint and command to be compatible with AWS Lambda
 function setEndpoint(event, endpoint) {
 
@@ -93,3 +95,4 @@ function setEndpoint(event, endpoint) {
 
     return event;
 }
+*/

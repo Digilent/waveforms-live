@@ -16,7 +16,7 @@ export class DcInstrumentComponent extends InstrumentComponent {
     public chans: DcChannelComponent[] = [];
 
     constructor(_transport: TransportService, _dcInstrumentDescriptor: any) {
-        super(_transport, '/dc');
+        super(_transport, '/');
         console.log('DC Instrument Constructor');
 
         //Populate DC supply parameters
@@ -33,7 +33,7 @@ export class DcInstrumentComponent extends InstrumentComponent {
     //Get the output voltage(s) of the specified DC power supply channel(s).
     getVoltages(chans: Array<number>): Observable<Array<number>> {
         let command = {
-            command: "getVoltages",
+            command: "dcGetVoltages",
             chans: chans
         }
 
@@ -68,17 +68,17 @@ export class DcInstrumentComponent extends InstrumentComponent {
 
     //Set the output voltage of the specified DC power supply channel.
     setVoltages(chans: Array<number>, voltages: Array<number>) {
-
         //Scale voltages into mV before sending
+        let scaledVoltages = [];
         voltages.forEach((element, index, array) => {
-            array[index] = element * 1000;
+            scaledVoltages.push(element * 1000);
         });
-
+        
         //Setup command to transfer
         let command = {
-            command: "setVoltages",
+            command: "dcSetVoltages",
             chans: chans,
-            voltages: voltages
+            voltages: scaledVoltages
         }
         return this.transport.writeRead(this.endpoint, command);
     }
@@ -86,7 +86,7 @@ export class DcInstrumentComponent extends InstrumentComponent {
     //Streaming read voltages from the specified channel(s)
     streamReadVoltages(chans: Array<number>, delay = 0): Observable<Array<number>> {
         let command = {
-            command: "getVoltages",
+            command: "dcGetVoltages",
             chans: chans
         }
 

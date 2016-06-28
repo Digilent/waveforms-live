@@ -20,106 +20,76 @@ let statusOk = 0;
 //------------------------------ Handler ------------------------------
 exports.handler = (event, context, callback) => {
 
-    //Parse out command and endpoint to work with Lambda and local NodeJS
-    let command = '';
-    let endpoint = '/';
-
-    if (event["body-json"]) {
-        command = event["body-json"].command;
-        endpoint = event.context["resource-path"];
-    } else {
-        command = event.command;
-    }
+    //Parse out command    
+    let command = event.command;
 
     //Log event data
     console.log('Event: ', event);
-    console.log('Endpoint: ', endpoint);
     console.log('Command: ', command);
 
-    //-------------------- Process Commands --------------------
-    switch (endpoint) {
+    //-------------------- Process Commands --------------------    
+    switch (command) {
+
         //---------- Device ----------
-        case '/':
-            switch (command) {
-                case 'enumerate':
-                    callback(null, device.enumerate());
-                    break;
-                case 'getMake':
-                    callback(null, device.getMake());
-                    break;
-                case 'getModel':
-                    callback(null, device.getModel());
-                    break;
-                case 'getFirmwareVersion':
-                    callback(null, device.getFirmwareVersion());
-                    break;
-                case 'getInstruments':
-                    callback(null, device.getInstruments());
-                    break;
-                case 'getId':
-                    callback(null, device.getId());
-                    break;
-                default:
-                    callback(null, 'Unknown Command');
-            }
+        case 'enumerate':
+            callback(null, device.enumerate());
+            break;
+        case 'getMake':
+            callback(null, device.getMake());
+            break;
+        case 'getModel':
+            callback(null, device.getModel());
+            break;
+        case 'getFirmwareVersion':
+            callback(null, device.getFirmwareVersion());
+            break;
+        case 'getInstruments':
+            callback(null, device.getInstruments());
+            break;
+        case 'getId':
+            callback(null, device.getId());
             break;
 
-        //---------- AWG ----------
-        case '/awg':
-            switch (command) {
-                case 'calibrate':
-                    callback(null, awg.calibrate());
-                    break;
-                case 'enumerate':
-                    callback(null, awg.enumerate());
-                    break;
-                case 'getOffset':
-                    callback(null, awg.getOffset(event['body-json'].chan));
-                    break;
-                case 'setOffset':
-                    callback(null, awg.setOffset(event['body-json'].chan, event['body-json'].offset));
-                    break;
-                default:
-                    callback(null, 'Unknown Command');
-            }
+        //---------- AWG ----------            
+        case 'awgCalibrate':
+            callback(null, awg.calibrate());
+            break;
+        case 'awgEnumerate':
+            callback(null, awg.enumerate());
+            break;
+        case 'awgGetOffsets':
+            callback(null, awg.getOffsets(event.chans));
+            break;
+        case 'awgSetOffsets':
+            callback(null, awg.setOffsets(event.chans, event.offsets));
             break;
 
-        //---------- DC ----------
-        case '/dc':
-            switch (command) {
-                case 'calibrate':
-                    callback(null, dc.calibrate());
-                    break;
-                case 'enumerate':
-                    callback(null, dc.enumerate());
-                    break;
-                case 'getVoltages':
-                    callback(null, dc.getVoltages(event['body-json'].chans));
-                    break;
-                case 'setVoltages':
-                    callback(null, dc.setVoltages(event['body-json'].chans, event['body-json'].voltages));
-                    break;
-                default:
-                    callback(null, 'Unknown Command');
-            }
+        //---------- DC ----------            
+        case 'dcCalibrate':
+            callback(null, dc.calibrate());
+            break;
+        case 'dcEnumerate':
+            callback(null, dc.enumerate());
+            break;
+        case 'dcGetVoltages':
+            callback(null, dc.getVoltages(event.chans));
+            break;
+        case 'dcSetVoltages':
+            callback(null, dc.setVoltages(event.chans, event.voltages));
             break;
 
-        //---------- OSC ----------
-        case '/osc':
-            switch (command) {
-                case 'calibrate':
-                    callback(null, osc.calibrate());
-                    break;
-                case 'enumerate':
-                    callback(null, osc.enumerate());
-                    break;
-                case 'runSingle':
-                    callback(null, osc.runSingle(event['body-json'].chans));
-                    break;
-                default:
-                    callback(null, 'Unknown Command');
-            }
+        //---------- OSC ----------            
+        case 'oscCalibrate':
+            callback(null, osc.calibrate());
             break;
+        case 'oscEnumerate':
+            callback(null, osc.enumerate());
+            break;
+        case 'oscRunSingle':
+            callback(null, osc.runSingle(event.chans));
+            break;
+        default:
+            callback(null, 'Unknown Command');
     }
 };
 
@@ -189,23 +159,29 @@ let awg = {
     },
 
     //Get Offset
-    getOffset: function (chan) {
+    getOffsets: function (_chans) {
+        let _offsets = [];
+        for (let i = 0; i < _chans.length; i++) {
+            _offsets.push(this.offsets[_chans[i]]);
+        }
         return {
-            offset: this.offsets[chan],
+            offsets: _offsets,
             statusCode: statusOk
         };
     },
 
     //Set Offset
-    setOffset: function (chan, offset) {
-        this.offsets[chan] = offset;
+    setOffsets: function (_chans, _offsets) {
+        for (let i = 0; i < _chans.length; i++) {
+            this.offsets[_chans[i]] = _offsets[i];
+        };
         return {
             statusCode: statusOk
         };
     },
 
     //Set Custom Waveform
-    setCustomWaveform: function (chan, numSamples, sampleRate, offset, samples) {
+    setCustomWaveforms: function (chan, numSamples, sampleRate, offset, samples) {
         this.numSamples[chan] = numSamples;
         this.sampleRates[chan] = sampleRate;
         this.offsets[chan] = offset;
@@ -216,7 +192,7 @@ let awg = {
     },
 
     //Set Waveform
-    setWaveform: function (chan, type, freq, amplitude, offset) {
+    setWaveforms: function (chan, type, freq, amplitude, offset) {
         return {
             statusCode: statusOk
         };
@@ -308,8 +284,6 @@ let osc = {
                 this.buffers[chans[i]][j] = this.buffers[chans[i]][j] + 1000;
             }
         }
-
-
 
         return {
             waveforms: wf,

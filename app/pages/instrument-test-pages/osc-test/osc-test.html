@@ -14,7 +14,7 @@
                     <h1> {{chan.name}} </h1>
                     <br />
                     <ion-row>
-                        <button (click)="runSingle(i)">Run Single</button>
+                        <button (click)="runSingle([i])">Run Single</button>
                     </ion-row>
                 </ion-col>
             </ion-row>
@@ -31,6 +31,10 @@
                         <ion-checkbox dark checked="true" [(ngModel)]="chanEnabled[i]"></ion-checkbox>
                     </ion-item>
                 </div>
+                <br />
+                Buffer {{activeDevice.instruments.osc.dataBufferWriteIndex}} of {{activeDevice.instruments.osc.numDataBuffers}}
+                <br />             
+                <br />             
                 <button (click)="runSingleNChans()">Read N Chans</button>
                 <button (click)="streamSingleNChans()">Stream N Chans</button>
                 <button (click)="stopStream()">Stop Stream</button>                

@@ -3,6 +3,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
+import {InstrumentComponent} from '../instrument.component';
 import {AwgChannelComponent} from './awg-channel.component';
 
 //Services
@@ -10,15 +11,14 @@ import {TransportService} from '../../../services/transport/transport.service';
 
 @Component({
 })
-export class AwgInstrumentComponent {
-
-    private transport: TransportService;
-    private endpoint: string = '/awg';
+export class AwgInstrumentComponent extends InstrumentComponent {
 
     public numChans: number;
     public chans: Array<AwgChannelComponent> = [];
 
     constructor(_transport: TransportService, _awgInstrumentDescriptor: any) {
+        super(_transport, '/');
+
         //Store reference to device transport for communication with device
         this.transport = _transport;
 
@@ -34,33 +34,31 @@ export class AwgInstrumentComponent {
     //Enumerate instrument info.
     enumerate(): Observable<number> {
         let command = {
-            command: 'enumerate'
+            command: 'awgEnumerate'
         }
         return this.transport.writeRead(this.endpoint, command);
     }
 
-    //Set the offset voltage for the specified channel.
-    setOffset(_chan: number): Observable<number> {
-        let command = {
-            command: 'setOffset',
-            chan: _chan
-        }
-        return this.transport.writeRead(this.endpoint, command);
-    }
-    
     //Get the offset voltage for the specified channel.
-    getOffset(_chan: number): Observable<number> {
+    getOffsets(_chan: Array<number>): Observable<Array<number>> {
         let command = {
-            command: "getOffset",
-            chan: _chan
+            command: "awgGetOffsets",
+            chans: _chan
         }
 
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, command).subscribe(
                 (data) => {
                     //Handle device errors and warnings
-                    if (data.statusCode < 1) {
-                        observer.next(data.offset / 1000);
+                    if (data.statusCode == 0) {
+
+                        //Scale from mV to V                            
+                        data.offsets.forEach((element, index, array) => {
+                            array[index] = element / 1000;
+                        });
+
+                        //Return voltages and complete observer
+                        observer.next(data.offsets);
                         observer.complete();
                     }
                     else {
@@ -76,12 +74,20 @@ export class AwgInstrumentComponent {
             )
         });
     }
-    
-    //Get the offset voltage for the specified channel.
-    setOffsets(_chans: Array<number>): Observable<number> {
+
+    //Set the offset voltage for the specified channel.
+    setOffsets(chans: Array<number>, offsets: Array<number>): Observable<number> {
+
+        //Scale offsets into mV before sending
+        let scaledOffsets = [];
+        offsets.forEach((element, index, array) => {
+            scaledOffsets.push(element * 1000);
+        });
+
         let command = {
-            command: "setOffset",
-            chans: _chans
+            command: "awgSetOffsets",
+            chans: chans,
+            offsets: scaledOffsets
         }
 
         return Observable.create((observer) => {

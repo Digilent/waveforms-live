@@ -22,22 +22,21 @@ export class DcTestPage {
 
     @Input() readVoltages: number[] = [0, 0];
 
-
-
     constructor(_deviceManagerService: DeviceManagerService) {
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
     }
 
-    //Set a single voltage
-    setVoltage(chan, voltage) {
-        let chans = [chan];
-        let voltages = [voltage];
-        this.setVoltages(chans, voltages);
-    }
-    
+
     //Set N voltages
     setVoltages(_chans: Array<number>, _voltages: Array<number>) {
+
+        if (typeof _voltages[0] == 'string') {
+            _voltages.forEach((element, index, array) => {
+                array[index] = parseFloat(element);
+            });
+        }
+
         console.log('set ', _chans, ' ', _voltages);
         this.activeDevice.instruments.dc.setVoltages(_chans, _voltages).subscribe(
             (data) => {

@@ -22,7 +22,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
 
 
     constructor(_transport: TransportService, _oscInstrumentDescriptor: any) {
-        super(_transport, '/osc');
+        super(_transport, '/');
         console.log('OSC Instrument Constructor');
 
         //Populate DC supply parameters
@@ -40,6 +40,14 @@ export class OscInstrumentComponent extends InstrumentComponent {
     }
 
     runSingle(chans: Array<number>): Observable<Array<WaveformComponent>> {
+
+        //If no channels are active no need to talk to hardware
+        if (chans.length == 0) {
+            return Observable.create((observer) => {
+                observer.complete();
+            });
+        }
+
         let command = {
             command: "runSingle",
             chans: chans
@@ -51,13 +59,13 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     //Handle device errors and warnings
                     if (data.statusCode == 0) {
                         //Clear buffer then parse data into empty buffer
-                        this.dataBuffer[this.dataBufferWriteIndex] = [];                        
+                        this.dataBuffer[this.dataBufferWriteIndex] = [];
                         data.waveforms.forEach((element, index, array) => {
                             this.dataBuffer[this.dataBufferWriteIndex][chans[index]] = new WaveformComponent(element);
                         });
                         //Return voltages and complete observer
                         observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
-                        this.dataBufferWriteIndex = (this.dataBufferWriteIndex+1) % this.numDataBuffers;
+                        this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
                         //console.log(this.dataBuffer);
                         observer.complete();
                     }
@@ -74,11 +82,18 @@ export class OscInstrumentComponent extends InstrumentComponent {
             )
         });
     }
-    
-   
-    
+
+
+
     streamRunSingle(chans: Array<number>, delay = 0): Observable<Array<WaveformComponent>> {
-         let command = {
+        //If no channels are active no need to talk to hardware
+        if (chans.length == 0) {
+            return Observable.create((observer) => {
+                observer.complete();
+            });
+        }
+
+        let command = {
             command: "runSingle",
             chans: chans
         }
@@ -88,14 +103,14 @@ export class OscInstrumentComponent extends InstrumentComponent {
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode == 0) {
-                       //Clear buffer then parse data into empty buffer
-                        this.dataBuffer[this.dataBufferWriteIndex] = [];                        
+                        //Clear buffer then parse data into empty buffer
+                        this.dataBuffer[this.dataBufferWriteIndex] = [];
                         data.waveforms.forEach((element, index, array) => {
                             this.dataBuffer[this.dataBufferWriteIndex][chans[index]] = new WaveformComponent(element);
                         });
                         //Return voltages and complete observer
                         observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
-                        this.dataBufferWriteIndex = (this.dataBufferWriteIndex+1) % this.numDataBuffers;
+                        this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
                     }
                     else {
                         observer.error(data.statusCode);
@@ -110,5 +125,5 @@ export class OscInstrumentComponent extends InstrumentComponent {
             )
         });
     }
-    
+
 }
