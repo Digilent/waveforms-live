@@ -35,6 +35,9 @@ export class SilverNeedleChart {
     private timeDivision: number;
     private base: number;
 
+    private voltDivision: number[];
+    private voltBase: number[];
+
     //[x1, series 0 y1, series 1 y1, x2, series 0 y2, series 1 y2]
     private xCursorPositions: number[];
     //[y1, y2]
@@ -679,11 +682,11 @@ export class SilverNeedleChart {
         let newVal = this.chart.xAxis[0].toValue(event.chartX);
         let oldValinNewWindow = this.chart.xAxis[0].toValue(this.xPositionPixels);
         let difference = newVal - oldValinNewWindow;
-        this.setExtremes(difference);
+        this.setXExtremes(difference);
         this.xPositionPixels = event.chartX;
     }.bind(this);
 
-    setExtremes(positionChange: number) {
+    setXExtremes(positionChange: number) {
         let newPos = this.base - positionChange;
         let min = newPos - this.timeDivision * 5;
         let max = newPos + this.timeDivision * 5; 
@@ -691,7 +694,32 @@ export class SilverNeedleChart {
         this.base = newPos;
     }
 
+    setYExtremes(seriesSettings: any) {
+        let offset = seriesSettings.voltBase;
+        let min = offset - (seriesSettings.voltsPerDiv * 5);
+        let max = offset + (seriesSettings.voltsPerDiv * 5);
+        this.chart.yAxis[seriesSettings.seriesNum].setExtremes(min, max);
+    }
+
     updateCursorLabels() {
         console.log('Not yet implemented');
+    }
+
+    setTimeSettings(timeObj: any) {
+        this.timeDivision = timeObj.timePerDiv;
+        this.base = timeObj.base;
+        let min = this.base - (this.timeDivision * 5);
+        let max = this.base + (this.timeDivision * 5);
+        this.chart.xAxis[0].setExtremes(min, max, true, false);
+    }
+
+    setSeriesSettings(seriesSettings: any) {
+        this.voltDivision = seriesSettings.voltsPerDiv;
+        this.voltBase = seriesSettings.voltBase;
+        this.setYExtremes(seriesSettings);
+    }
+
+    setActiveSeries(seriesNum) {
+        this.activeSeries = seriesNum;
     }
 }
