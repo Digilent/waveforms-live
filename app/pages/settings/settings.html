@@ -1,0 +1,101 @@
+<ion-navbar *navbar>
+    <button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Settings</ion-title>
+</ion-navbar>
+
+<ion-content padding>
+
+    <h1>Connect to a device:</h1>
+
+    <ion-grid>
+        <ion-row>
+            <ion-col width-25>
+                <h4>Local Simulated Device</h4>
+                <ion-input type="url" [(ngModel)]="localSimDevUri"></ion-input>
+                <button (click)=connect(localSimDevUri);>Connect</button>
+            </ion-col>
+            <ion-col width-25>
+                <h4>Remote Simulated Device</h4>
+                <ion-input type="url" [(ngModel)]="remotesimDevUri"></ion-input>
+                <button (click)=connect(remotesimDevUri);>Connect</button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <h1> Connected Devices </h1>
+    <ul>
+        <li *ngFor="let device of deviceManangerService.devices, let i = index;">
+            <h4>{{device.deviceMake}} - {{device.deviceModel}}</h4>
+            <!---------- AWG ---------->
+            <ul>
+                <li><button (click)=navToAwgTestPage(i);>AWG</button></li>
+                <li>Number of Channels: {{device.instruments.awg.numChans}}</li>
+                <ul>
+                    <li *ngFor="let awgChan of device.instruments.awg.chans">
+                        <b>{{awgChan.name}}</b>
+                        <ul>
+                            <li>Max Resolution: {{awgChan.resolutionMax}}</li>
+                            <li>Max Buffer Size: {{awgChan.bufferSizeMax}}</li>
+                            <li>Min Frequency: {{awgChan.freqMin}}</li>
+                            <li>Max Frequency: {{awgChan.freqMax}}</li>
+                            <li>Min Voltage: {{awgChan.voltageMin}}</li>
+                            <li>Max Voltage: {{awgChan.voltageMax}}</li>
+                        </ul>
+                    </li>
+                </ul>
+            </ul>
+            <!---------- DC ---------->
+            <ul>
+                <li><button (click)=navToDcTestPage(i);>DC Supply</button></li>
+                <ul>
+                    <li>Number of Channels: {{device.instruments.dc.numChans}}</li>
+                    <ul>
+                        <li *ngFor="let dcChan of device.instruments.dc.chans">
+                            <b>{{dcChan.name}}</b>
+                            <ul>
+                                <li>Voltage Min: {{dcChan.voltageMin}}</li>
+                                <li>Voltage Max: {{dcChan.voltageMax}}</li>
+                                <li>Voltage Increment: {{dcChan.voltageIncrement}}</li>
+                                <li>Current Min: {{dcChan.currenteMin}}</li>
+                                <li>Current Max: {{dcChan.currentMax}}</li>
+                                <li>Current Increment: {{dcChan.currentIncrement}}</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </ul>
+            </ul>
+            <!---------- LA ---------->
+            <ul>
+                <li><button (click)=navToLaTestPage(i);>Logic Analyzer</button></li>
+                <ul>
+                    <li>Number of Channels: {{device.instruments.la.numChans}}</li>
+                    <ul>
+                        <li *ngFor="let laChan of device.instruments.la.chans">
+                            <b>{{laChan.name}}</b>
+                        </li>
+                    </ul>
+                </ul>
+            </ul>
+            <!---------- OSC ---------->
+            <ul>
+                <li><button (click)=navToOscTestPage(i);>O-Scope</button></li>
+                <li>Number of Channels: {{device.instruments.osc.numChans}}</li>
+                <ul>
+                    <li *ngFor="let oscChan of device.instruments.osc.chans">
+                        <b>{{oscChan.name}}</b>
+                        <ul>
+                            <li>Max Resolution: {{oscChan.resolutionMax}}</li>
+                            <li>Max Buffer Size: {{oscChan.bufferSizeMax}}</li>
+                            <li>Min Frequency: {{oscChan.freqMin}}</li>
+                            <li>Max Frequency: {{oscChan.freqMax}}</li>
+                            <li>Min Voltage: {{oscChan.voltageMin}}</li>
+                            <li>Max Voltage: {{oscChan.voltageMax}}</li>
+                        </ul>
+                    </li>
+                </ul>
+            </ul>
+        </li>
+    </ul>
+</ion-content>

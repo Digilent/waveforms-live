@@ -2,14 +2,18 @@ import 'es6-shim';
 import {App, Platform, MenuController, Nav, ionicBootstrap} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
 import {ViewChild, Component} from '@angular/core';
+import {HTTP_PROVIDERS} from '@angular/http';
 
 //Pages
 import {HomePage} from './pages/home/home';
-import {OscilloscopePage} from './pages/oscilloscope/oscilloscope';
 import {SideControlsPage} from './pages/sidecontrols/sidecontrols';
 import {TestChartPage} from './pages/test-chart/test-chart';
 import {TestChartCtrlsPage} from './pages/test-chart-ctrls/test-chart-ctrls';
 import {TestPage} from './pages/test-page/test-page';
+import {SettingsPage} from './pages/settings/settings';
+
+//Services
+import {DeviceManagerService} from './services/device/device-manager.service';
 
 /* ---------- Uncomment this to switch to production mode ---------
 import {enableProdMode} from '@angular/core';
@@ -30,18 +34,20 @@ class MyApp {
   constructor(
     private app: App,
     private platform: Platform,
-    private menu: MenuController
+    private menu: MenuController,
+    private deviceManager: DeviceManagerService
+
   ) {
     this.initializeApp();
 
     // set our app's pages
     this.pages = [
       { title: 'Home', component: HomePage },
-      { title: 'Oscilloscope', component: OscilloscopePage },
       { title: 'SideControls', component: SideControlsPage },
       { title: 'Test Chart', component: TestChartPage },
       { title: 'Test Chart Controls', component: TestChartCtrlsPage },
-      { title: 'Test Page', component: TestPage}
+      { title: 'Test Page', component: TestPage },
+      { title: 'Settings', component: SettingsPage }
     ];
   }
 
@@ -63,4 +69,4 @@ class MyApp {
 
 }
 
-  ionicBootstrap(MyApp, [], {});
+ionicBootstrap(MyApp, [HTTP_PROVIDERS, DeviceManagerService], {});
