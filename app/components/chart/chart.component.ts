@@ -38,6 +38,8 @@ export class SilverNeedleChart {
     private voltDivision: number[];
     private voltBase: number[];
 
+    private hoverLabel: ElementRef;
+
     //[x1, series 0 y1, series 1 y1, x2, series 0 y2, series 1 y2]
     private xCursorPositions: number[];
     //[y1, y2]
@@ -71,7 +73,7 @@ export class SilverNeedleChart {
                 //panKey: 'shift'
             },
             tooltip: {
-                enabled: false
+                enabled: true
             },
             series: [{
                 data: [29.9, 36, 47, 57, 67, 71.5, 82, 92, 102, 106.4, 110, 120, 129.2],
@@ -125,7 +127,8 @@ export class SilverNeedleChart {
             plotOptions: {
                 series: {
                     pointInterval: 2,
-                    pointStart: 0
+                    pointStart: 0,
+                    stickyTracking: false
                 }
             },
             credits: {
@@ -184,35 +187,49 @@ export class SilverNeedleChart {
         //Redraw chart to scale chart to container size
         this.redrawChart()
         this.chartLoad.emit(this.chart);
-        
+        this.hoverLabel = this.chart.renderer.label('x: <br> y: ', 0, 0, 'callout', 0, 0)
+            .css({
+                color: '#FFFFFF'
+            })
+            .attr({
+                fill: 'rgba(0, 0, 0, 0.75)',
+                padding: 8,
+                r: 5,
+                zIndex: -1,
+                hidden: true
+            })
+            .add();
     }
 
     onPointSelect (event) {
       this.activeSeries = event.context.series._i + 1;
-      for (let i = 0; i < this.chart.yAxis.length; i++) {
-          if (i === this.activeSeries - 1) {
-              this.chart.yAxis[this.activeSeries - 1].update({
+      console.log('Active Series: ' + this.activeSeries);
+      this.updateYAxisLabels();
+    }
+
+    updateYAxisLabels() {
+        for (let i = 0; i < this.chart.yAxis.length; i++) {
+            if (i === this.activeSeries - 1) {
+                this.chart.yAxis[this.activeSeries - 1].update({
+                        labels: {
+                            enabled: true
+                        },
+                        title: {
+                            text: 'Series ' + i
+                        }
+                    });
+            }
+            else {
+                this.chart.yAxis[i].update({
                     labels: {
-                        enabled: true
+                        enabled: false
                     },
                     title: {
-                        text: 'Series ' + i
-                    }
+                        text: null
+                    } 
                 });
-          }
-          else {
-            this.chart.yAxis[i].update({
-                labels: {
-                    enabled: false
-                },
-                title: {
-                    text: null
-                } 
-            });
-          }
-      }
-      
-      console.log('Active Series: ' + this.activeSeries);
+            }
+        }
     }
     
     /*
@@ -664,6 +681,9 @@ export class SilverNeedleChart {
             this.canPan = true;
             this.xPositionPixels = event.chartX;
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.panListener);
+            if (this.hoverLabel.element !== undefined) {
+                this.hoverLabel.destroy();
+            }
         }
         else {
             console.log('cursor click or point click');
@@ -719,7 +739,10 @@ export class SilverNeedleChart {
         this.setYExtremes(seriesSettings);
     }
 
-    setActiveSeries(seriesNum) {
+    setActiveSeries(seriesNum: number) {
         this.activeSeries = seriesNum;
+        this.updateYAxisLabels();
     }
+
+
 }

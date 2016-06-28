@@ -14,8 +14,8 @@ export class YAxisComponent {
     private numSeries: number[] = [0, 1];
     
     constructor() {
-        this.voltsPerDiv = ['10','5'];
-        this.voltBase = ['50', '12'];
+        this.voltsPerDiv = ['11','3'];
+        this.voltBase = ['78', '65'];
     }
 
     seriesChanged(seriesNum: number) {
@@ -24,5 +24,9 @@ export class YAxisComponent {
             voltsPerDiv: parseFloat(this.voltsPerDiv[seriesNum]),
             voltBase: parseFloat(this.voltBase[seriesNum])
         });
+    }
+
+    setActiveSeries(i) {
+        this.chart.setActiveSeries(i + 1);
     }
 }
