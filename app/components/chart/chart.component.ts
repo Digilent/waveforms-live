@@ -90,6 +90,10 @@ export class SilverNeedleChart {
             },
             yAxis: [{
                 gridLineWidth: 1,
+                offset: 0,
+                labels: {
+                    format: '{value:.3f}'
+                },
                 tickPositioner: function () {
                     let numTicks = 11;
                     let ticks = [];
@@ -106,8 +110,10 @@ export class SilverNeedleChart {
                 }
             }, {
                 gridLineWidth: 1,
+                offset: 0,
                 labels: {
-                    enabled: false
+                    enabled: false,
+                    format: '{value:.3f}'
                 },
                 tickPositioner: function () {
                     let numTicks = 11;

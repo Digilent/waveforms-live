@@ -10,20 +10,17 @@
         <div class="tcwrapper" [ngClass]="{showControls: controlsVisible}">
             <div class="left">
                 <div class="innerCtrls">
-                    <button (click)="chart1.redrawChart()">
-                        <ion-icon name="refresh"></ion-icon>
+                    <button (click)="exportChart()">
+                        Export
+                        <ion-icon name="download"></ion-icon>
                     </button>
-                    <button (click)="singleClick()">
+                    <button end (click)="singleClick()">
                         Single
                         <ion-icon name="play"></ion-icon>
                     </button>
                     <button (click)="runClick()">
                         Run
                         <ion-icon name="repeat"></ion-icon>
-                    </button>
-                    <button (click)="exportChart()">
-                        Export
-                        <ion-icon name="download"></ion-icon>
                     </button>
                 </div>
                 <div #oscopeChartInner class="chartWrapper">
