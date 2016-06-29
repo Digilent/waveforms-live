@@ -49,7 +49,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
 
         let command = {
-            command: "runSingle",
+            command: "oscRunSingle",
             chans: chans
         }
 
@@ -94,7 +94,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
 
         let command = {
-            command: "runSingle",
+            command: "oscRunSingle",
             chans: chans
         }
 
