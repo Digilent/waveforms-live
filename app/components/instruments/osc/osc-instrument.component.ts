@@ -18,7 +18,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
     private numDataBuffers = 8;
     public chans: OscChannelComponent[] = [];
     public dataBuffer: Array<Array<WaveformComponent>> = [];
-    private dataBufferWriteIndex: number = 0;
+    public dataBufferWriteIndex: number = 0;
 
 
     constructor(_transport: TransportService, _oscInstrumentDescriptor: any) {
@@ -49,7 +49,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
 
         let command = {
-            command: "runSingle",
+            command: "oscRunSingle",
             chans: chans
         }
 
@@ -94,7 +94,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
 
         let command = {
-            command: "runSingle",
+            command: "oscRunSingle",
             chans: chans
         }
 

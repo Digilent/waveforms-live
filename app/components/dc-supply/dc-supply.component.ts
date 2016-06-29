@@ -51,7 +51,6 @@ export class DcSupplyComponent {
                 this.voltages[i] = "5.00";
                 this.currents[i] = "1.00";
             }
-            console.log(this.voltages);
             this.voltageSupplies = channelNumArray;
         }
     }
@@ -77,7 +76,7 @@ export class DcSupplyComponent {
     getVoltages(chans: Array<number>) {
         this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
             (voltages) => {
-                console.log(voltages);
+                console.log('Voltages are currently: ' + voltages);
             },
             (err) => {
                 console.log(err);

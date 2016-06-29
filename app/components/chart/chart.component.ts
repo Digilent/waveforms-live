@@ -33,7 +33,7 @@ export class SilverNeedleChart {
     private canPan: boolean;
 
     private timeDivision: number;
-    private base: number;
+    public base: number;
 
     private voltDivision: number[];
     private voltBase: number[];
@@ -208,7 +208,8 @@ export class SilverNeedleChart {
     }
 
     onPointSelect (event) {
-      this.activeSeries = event.context.series._i + 1;
+        console.log(event);
+      this.activeSeries = event.context.series.index + 1;
       console.log('Active Series: ' + this.activeSeries);
       this.updateYAxisLabels();
     }
@@ -272,6 +273,7 @@ export class SilverNeedleChart {
 
     drawWaveform(seriesNum: number, waveform: any) {
         //console.log(this.chart.series[0].options.pointInterval);
+        console.log(seriesNum);
         this.chart.series[seriesNum].setData(waveform.y, true, false, false);
         this.chart.series[seriesNum].update({
             pointStart: 0,

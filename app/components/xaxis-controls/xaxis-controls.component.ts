@@ -18,9 +18,10 @@ export class XAxisComponent {
     }
 
     timeChanged() {
+        this.chart.base = parseFloat(this.chart.base.toString());
         this.chart.setTimeSettings({
             timePerDiv: parseFloat(this.timePerDiv),
-            base: parseFloat(this.base)
+            base: this.chart.base
         });
     }
 }

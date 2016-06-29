@@ -1,4 +1,4 @@
-import {Page} from 'ionic-angular';
+import {Toast, NavController} from 'ionic-angular';
 import {ViewChild, ElementRef, Component} from '@angular/core';
 
 //Components
@@ -8,6 +8,8 @@ import {BottomBarComponent} from '../../components/bottom-bar/bottom-bar.compone
 import {SideBarComponent} from '../../components/side-bar/side-bar.component';
 import {XAxisComponent} from '../../components/xaxis-controls/xaxis-controls.component';
 import {YAxisComponent} from '../../components/yaxis-controls/yaxis-controls.component';
+
+import {DeviceComponent} from '../../components/device/device.component';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
@@ -20,15 +22,36 @@ import {DeviceManagerService} from '../../services/device/device-manager.service
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
     @ViewChild('oscopeChartInner') oscopeChartInner: ElementRef;
-
+    private nav: NavController;
     public controlsVisible = false;
     public botVisible = false;
     public sideVisible = false;
+    private running: boolean = false;
     
     private deviceManagerService: DeviceManagerService;
+    private activeDevice: DeviceComponent;
 
-    constructor(_deviceManagerService: DeviceManagerService) {
+    private oscopeChans: number[];
+
+    constructor(_deviceManagerService: DeviceManagerService, _nav: NavController) {
         this.deviceManagerService = _deviceManagerService;
+        this.activeDevice = this.deviceManagerService.getActiveDevice();
+        this.nav = _nav;
+    }
+
+    ngOnInit() {
+        if (this.deviceManagerService.activeDeviceIndex === undefined) {
+            console.log('in if');
+            let toast = Toast.create({
+                message: 'You currently have no device connected. Please visit the settings page.',
+                showCloseButton: true
+            });
+
+            this.nav.present(toast);
+        }
+        else {
+            this.oscopeChans = [0, 1];
+        }
     }
 
     toggleControls() {
@@ -67,11 +90,40 @@ export class TestChartCtrlsPage {
     }
 
     singleClick() {
-        console.log('single');
+        console.log(this.activeDevice.instruments.osc);
+
+        //let chans = this.activeDevice.instruments.osc.chans;
+        this.activeDevice.instruments.osc.runSingle(this.oscopeChans).subscribe(
+            (buffer) => {
+                console.log(this.activeDevice.instruments.osc.dataBufferWriteIndex);
+                this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
+                this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
+            },
+            (err) => {
+                console.log('OSC Run Single Failed.');
+            }
+        );
     }
 
     runClick() {
         console.log('run');
+        this.running = true;
+        this.activeDevice.instruments.osc.streamRunSingle(this.oscopeChans).subscribe(
+            (buffer) => {
+                console.log(this.activeDevice.instruments.osc.dataBuffer);
+                this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
+                this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
+            },
+            (err) => {
+                console.log('OSC Run Single Failed.');
+            }
+        );
+    }
+
+    stopClick() {
+        console.log('stop');
+        this.running = false;
+        this.activeDevice.instruments.dc.stopStream();
     }
 
     exportChart() {

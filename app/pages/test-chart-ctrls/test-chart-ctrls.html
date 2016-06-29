@@ -18,9 +18,13 @@
                         Single
                         <ion-icon name="play"></ion-icon>
                     </button>
-                    <button (click)="runClick()">
+                    <button (click)="runClick()" *ngIf="!running">
                         Run
                         <ion-icon name="repeat"></ion-icon>
+                    </button>
+                    <button (click)="stopClick()" *ngIf="running">
+                        Stop
+                        <ion-icon name="hand"></ion-icon>
                     </button>
                 </div>
                 <div #oscopeChartInner class="chartWrapper">
