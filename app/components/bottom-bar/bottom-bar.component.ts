@@ -4,6 +4,9 @@ import {Component, Output, EventEmitter} from '@angular/core';
 import {DigitalIoComponent} from '../digital-io/digital-io.component';
 import {DcSupplyComponent} from '../dc-supply/dc-supply.component';
 
+//Services
+import {DeviceManagerService} from '../../services/device/device-manager.service';
+
 @Component({
     selector: 'bottom-bar',
     templateUrl: 'build/components/bottom-bar/bottom-bar.html',
@@ -12,9 +15,11 @@ import {DcSupplyComponent} from '../dc-supply/dc-supply.component';
 export class BottomBarComponent {
     @Output() headerClicked: EventEmitter<any> = new EventEmitter;
     public contentHidden: boolean;
-    
-    constructor() {
+    private deviceManagerService: DeviceManagerService;
+
+    constructor(_deviceManagerService: DeviceManagerService) {
         this.contentHidden = true;
+        this.deviceManagerService = _deviceManagerService;
     }
 
     holy() {

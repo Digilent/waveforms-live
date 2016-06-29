@@ -1,6 +1,12 @@
 import {Component, Output, EventEmitter, Input} from '@angular/core';
 import {NgClass} from '@angular/common';
 
+//Components
+import {DeviceComponent} from '../../components/device/device.component';
+
+//Services
+import {DeviceManagerService} from '../../services/device/device-manager.service';
+
 @Component({
   templateUrl: 'build/components/dc-supply/dc-supply.html',
   selector: 'dc-supply',
@@ -9,7 +15,7 @@ import {NgClass} from '@angular/common';
 export class DcSupplyComponent { 
     @Output() headerClicked: EventEmitter<any> = new EventEmitter();
     @Input() contentHidden: boolean;
-    private voltageSupplies: number[];
+    private voltageSupplies: any[];
     private voltages: string[];
     private currents: string[];
     private dcPower: boolean;
@@ -17,8 +23,11 @@ export class DcSupplyComponent {
     private maxCurrents: number[];
     private correctVoltages: boolean[];
     private correctCurrents: boolean[];
+
+    private deviceManagerService: DeviceManagerService;
+    private activeDevice: DeviceComponent;
     
-    constructor() {
+    constructor(_deviceManagerService: DeviceManagerService) {
         this.voltageSupplies = [0, 1, 2];
         this.contentHidden = true;
         this.voltages = ['5.00', '5.00', '-5.00'];
@@ -28,6 +37,55 @@ export class DcSupplyComponent {
         this.maxCurrents = [1, 1, 1];
         this.correctCurrents = [true, true, true];
         this.correctVoltages = [true, true, true];
+
+        this.deviceManagerService = _deviceManagerService;
+        this.activeDevice = this.deviceManagerService.getActiveDevice();
+    }
+
+    ngOnInit() {
+        if (this.activeDevice !== undefined) {
+            let channelNumArray = [];
+            this.voltages = [];
+            for (let i = 0; i < this.activeDevice.instruments.dc.numChans; i++) {
+                channelNumArray[i] = this.activeDevice.instruments.dc.chans[i].currentIncrement;
+                this.voltages[i] = "5.00";
+                this.currents[i] = "1.00";
+            }
+            console.log(this.voltages);
+            this.voltageSupplies = channelNumArray;
+        }
+    }
+
+    setVoltages(chans: Array<number>, voltages: Array<number>) {
+        console.log(this.activeDevice.instruments.dc);
+        this.activeDevice.instruments.dc.setVoltages(chans, voltages).subscribe(
+            (data) => {
+                if (data.statusCode == 0) {
+                    console.log('DC channels: ' + chans + ' set to ' + voltages);
+                }
+                else {
+                    console.log('DC set n chan failed');
+                }
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {}
+        );
+    }
+
+    getVoltages(chans: Array<number>) {
+        this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
+            (voltages) => {
+                console.log(voltages);
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {
+                console.log('getVoltage Done');
+            }
+        )
     }
     
     togglePower() {
@@ -37,6 +95,12 @@ export class DcSupplyComponent {
             }
         }
         this.dcPower = !this.dcPower;
+        if (this.dcPower) {
+            this.setVoltages(this.voltageSupplies, this.voltages.map(Number));
+        }
+        else {
+            this.getVoltages(this.voltageSupplies);
+        }
     }
 
     validateSupply(supplyNum: number) {

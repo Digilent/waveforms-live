@@ -9,6 +9,10 @@ import {SideBarComponent} from '../../components/side-bar/side-bar.component';
 import {XAxisComponent} from '../../components/xaxis-controls/xaxis-controls.component';
 import {YAxisComponent} from '../../components/yaxis-controls/yaxis-controls.component';
 
+//Services
+import {DeviceManagerService} from '../../services/device/device-manager.service';
+
+
 @Component({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
     directives: [SilverNeedleChart, OscilloscopeComponent, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent]
@@ -21,8 +25,10 @@ export class TestChartCtrlsPage {
     public botVisible = false;
     public sideVisible = false;
     
-    constructor() {
-        
+    private deviceManagerService: DeviceManagerService;
+
+    constructor(_deviceManagerService: DeviceManagerService) {
+        this.deviceManagerService = _deviceManagerService;
     }
 
     toggleControls() {
