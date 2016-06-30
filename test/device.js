@@ -63,6 +63,12 @@ exports.handler = (event, context, callback) => {
         case 'awgSetOffsets':
             callback(null, awg.setOffsets(event.chans, event.offsets));
             break;
+        case 'awgGetSettings':
+            callback(null, awg.getSettings(event.chans));
+            break;
+        case 'awgSetSettings':
+            callback(null, awg.setSettings(event.chans, event.settings));
+            break;
 
         //---------- DC ----------            
         case 'dcCalibrate':
@@ -193,6 +199,35 @@ let awg = {
 
     //Set Waveform
     setWaveforms: function (chan, type, freq, amplitude, offset) {
+        return {
+            statusCode: statusOk
+        };
+    },
+
+    //Get All Settings
+    getSettings: function (chans) {
+        let settingsArray = [];
+        for (let i = 0; i < chans.length; i++) {
+            settingsArray.push({
+                index: i,
+                numSamples: this.numSamples[i],
+                sampleRate: this.sampleRates[i],
+                offset: this.offsets[i]
+            });
+        }
+        return {
+            settingsArray,
+            statusCode: statusOk
+        };
+    },
+
+    //Set All Settings
+    setSettings: function (chans, settings) {
+        for (let i = 0; i < chans.length; i++) {
+            this.numSamples[chans[i]] = settings[i].numSamples;
+            this.sampleRates[chans[i]] = settings[i].sampleRate;
+            this.offsets[chans[i]] = settings[i].offset;
+        }
         return {
             statusCode: statusOk
         };

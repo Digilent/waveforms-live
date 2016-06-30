@@ -39,6 +39,62 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         return this.transport.writeRead(this.endpoint, command);
     }
 
+    //Get all settings for the specified channels.
+    getSettings(chans: number[]): Observable<Array<any>> {
+        let command = {
+            command: 'awgGetSettings',
+            chans: chans
+        }
+
+        return Observable.create((observer) => {
+            this.transport.writeRead(this.endpoint, command).subscribe(
+                (data) => {
+                    if (data.statusCode == 0) {
+                        observer.next(data);
+                        observer.complete();
+                    }
+                    else {
+                        observer.err(data.statusCode);
+                    }
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            );
+        });
+    }
+
+    setSettings(chans: number[], settings: Array<Object>): Observable<Array<any>> {
+        let command = {
+            command: 'awgSetSettings',
+            chans: chans,
+            settings: settings
+        }
+
+        return Observable.create((observer) => {
+            this.transport.writeRead(this.endpoint, command).subscribe(
+                (data) => {
+                    if (data.statusCode == 0) {
+                        observer.next(data);
+                        observer.complete();
+                    }
+                    else {
+                        observer.err(data.statusCode);
+                    }
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            );
+        });
+    }
+
     //Get the offset voltage for the specified channel.
     getOffsets(_chan: Array<number>): Observable<Array<number>> {
         let command = {
