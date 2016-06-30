@@ -38,8 +38,6 @@ export class SilverNeedleChart {
     private voltDivision: number[];
     private voltBase: number[];
 
-    private hoverLabel: ElementRef;
-
     //[x1, series 0 y1, series 1 y1, x2, series 0 y2, series 1 y2]
     private xCursorPositions: number[];
     //[y1, y2]
@@ -193,18 +191,6 @@ export class SilverNeedleChart {
         //Redraw chart to scale chart to container size
         this.redrawChart()
         this.chartLoad.emit(this.chart);
-        this.hoverLabel = this.chart.renderer.label('x: <br> y: ', 0, 0, 'callout', 0, 0)
-            .css({
-                color: '#FFFFFF'
-            })
-            .attr({
-                fill: 'rgba(0, 0, 0, 0.75)',
-                padding: 8,
-                r: 5,
-                zIndex: -1,
-                hidden: true
-            })
-            .add();
     }
 
     onPointSelect (event) {
@@ -257,6 +243,7 @@ export class SilverNeedleChart {
         {
             this.chart.reflow();
             console.log('redrawChart()');
+            this.updateCursorLabels();
         }  
     }
 
@@ -273,13 +260,13 @@ export class SilverNeedleChart {
 
     drawWaveform(seriesNum: number, waveform: any) {
         //console.log(this.chart.series[0].options.pointInterval);
-        console.log(seriesNum);
         this.chart.series[seriesNum].setData(waveform.y, true, false, false);
         this.chart.series[seriesNum].update({
             pointStart: waveform.t0,
             pointInterval: waveform.dt
         });
         this.chart.reflow();
+        this.updateCursorLabels();
     }
 
     removeCursors() {
@@ -339,7 +326,6 @@ export class SilverNeedleChart {
         })
 
             .on('mousedown', (event) => {
-                console.log(event);
                 this.activeCursor = parseInt(event.srcElement.id.slice(-1)) + 1;
                 this.xCursorDragStartPos = event.clientX;
                 this.xCursorStartDrag(this.numXCursors, event.clientX);
@@ -439,11 +425,11 @@ export class SilverNeedleChart {
     }
 
     trackCursorDragListener = function (event) {
-        let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true).toFixed(1); 
+        let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true).toFixed(3); 
         let offset = 110;  
         let yCor = event.layerY;
-        if (xVal < 0 || event.chartX < this.chart.plotLeft) {
-            xVal = 0;
+        if (xVal < this.chart.series[0].data[0].x || event.chartX < this.chart.plotLeft) {
+            xVal = this.chart.series[0].data[0].x;
             //event.chartX = this.chart.plotLeft;
         }
         if (xVal > this.chart.series[0].data[this.chart.series[0].data.length -1].x || event.chartX > this.oscopeChartInner.nativeElement.clientWidth - this.chart.plotLeft) {
@@ -456,7 +442,8 @@ export class SilverNeedleChart {
         if (yCor < this.chart.yAxis[0].toPixels(this.chart.yAxis[0].dataMax)) {
             yCor = this.chart.yAxis[0].toPixels(this.chart.yAxis[0].dataMax);
         }
-        let pointNum = Math.round((xVal - this.chart.series[0].data[0].x) / this.chart.options.plotOptions.series.pointInterval);
+        
+        let pointNum = Math.round((xVal - this.chart.series[0].data[0].x) / this.chart.series[0].pointInterval);
         let pointNum1 = pointNum;
         let pointNum2 = pointNum;
         //Need to add case for series[0] limit to length
@@ -524,8 +511,8 @@ export class SilverNeedleChart {
         let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true).toFixed(1); 
         let offset = 110;  
         let yCor = event.layerY;
-        if (xVal < 0 || event.chartX < this.chart.plotLeft) {
-            xVal = 0;
+        if (xVal < this.chart.series[0].data[0].x || event.chartX < this.chart.plotLeft) {
+            xVal = this.chart.series[0].data[0].x;
             //event.chartX = this.chart.plotLeft;
         }
         if (xVal > this.chart.series[0].data[this.chart.series[0].data.length -1].x || event.chartX > this.oscopeChartInner.nativeElement.clientWidth - this.chart.plotLeft) {
@@ -538,7 +525,7 @@ export class SilverNeedleChart {
         if (yCor < this.chart.yAxis[0].toPixels(this.chart.yAxis[0].dataMax)) {
             yCor = this.chart.yAxis[0].toPixels(this.chart.yAxis[0].dataMax);
         }
-        let pointNum = Math.round((xVal - this.chart.series[0].data[0].x) / this.chart.options.plotOptions.series.pointInterval);
+        let pointNum = Math.round((xVal - this.chart.series[0].data[0].x) / this.chart.series[0].pointInterval);
         let pointNum1 = pointNum;
         let pointNum2 = pointNum;
         //Need to add case for series[0] limit to length
@@ -684,24 +671,16 @@ export class SilverNeedleChart {
     }
 
     onChartClick(event) {
-        console.log(event);
-        console.log(this.chart.yAxis[this.activeSeries - 1].plotLinesAndBands);
         if (event.srcElement.localName === 'rect' && this.oscopeChartInner !== undefined) {
-            console.log('chart click non cursor');
             this.canPan = true;
             this.xPositionPixels = event.chartX;
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.panListener);
-            if (this.hoverLabel.element !== undefined) {
-                this.hoverLabel.destroy();
-            }
         }
         else {
-            console.log('cursor click or point click');
         }
     }
 
     clearMouse() {
-        console.log('clear mouse');
         this.canPan = false;
         if (this.oscopeChartInner !== undefined) {
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.panListener);
@@ -731,8 +710,31 @@ export class SilverNeedleChart {
         this.chart.yAxis[seriesSettings.seriesNum].setExtremes(min, max);
     }
 
-    updateCursorLabels() {
-        console.log('Not yet implemented');
+    updateCursorLabels() {        
+        if (this.cursorType === 'disabled') {
+            return;
+        }
+
+        else if (this.cursorType === 'time' || this.cursorType === 'track') {
+            for (let i = 0; i < 2; i++) {
+                //let pointNum = Math.round((this.chart.xAxis[0].plotLinesAndBands[i].options.value - this.chart.xAxis[0].plotLinesAndBands[i].axis.dataMin) / this.chart.series[0].pointInterval);
+                if (typeof(this.cursorLabel[i]) === 'object') {
+                    this.cursorLabel[i].attr({
+                        x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i].options.value),
+                    });
+                }
+            }
+        }
+
+        else if (this.cursorType === 'voltage') {
+            //labels stay in place but the actual lines don't move. *shrug*
+            return;
+        }
+
+        else {
+            console.log('error updating cursor labels');
+        }
+        
     }
 
     setTimeSettings(timeObj: any) {

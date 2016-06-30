@@ -30,7 +30,7 @@ export class TimelineComponent {
     }
 
     decrementBuffer() {
-        if (this.activeDevice.instruments.osc.activeBuffer === '1') {
+        if (parseInt(this.activeDevice.instruments.osc.activeBuffer) < 2) {
             return;
         }
         this.activeDevice.instruments.osc.activeBuffer = (parseInt(this.activeDevice.instruments.osc.activeBuffer) - 1).toString();
@@ -38,9 +38,10 @@ export class TimelineComponent {
     }
 
     activeBufferChange() {
-        if (parseInt(this.activeDevice.instruments.osc.activeBuffer) > this.activeDevice.instruments.osc.numDataBuffers || parseInt(this.activeDevice.instruments.osc.activeBuffer) < 0) {
+        if (parseInt(this.activeDevice.instruments.osc.activeBuffer) > this.activeDevice.instruments.osc.dataBufferFillSize || parseInt(this.activeDevice.instruments.osc.activeBuffer) < 1 || this.activeDevice.instruments.osc.activeBuffer === '') {
             this.activeDevice.instruments.osc.activeBuffer = this.activeDevice.instruments.osc.dataBufferFillSize.toString();
-            console.log('Invalid buffer number. Active buffer set to: ' + this.activeDevice.instruments.osc.activeBuffer);
+            console.log('entry error: showing newest buffer');
+            this.loadBuffer();
         }
         else {
             this.loadBuffer();
