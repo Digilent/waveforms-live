@@ -15,10 +15,12 @@ import {TransportService} from '../../../services/transport/transport.service';
 export class OscInstrumentComponent extends InstrumentComponent {
 
     public numChans: number;
-    private numDataBuffers = 8;
+    public numDataBuffers = 8;
     public chans: OscChannelComponent[] = [];
     public dataBuffer: Array<Array<WaveformComponent>> = [];
     public dataBufferWriteIndex: number = 0;
+    public dataBufferFillSize: number = 0;
+    public activeBuffer: string = '0';
 
 
     constructor(_transport: TransportService, _oscInstrumentDescriptor: any) {
@@ -67,6 +69,13 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
                         this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
                         //console.log(this.dataBuffer);
+                        if (this.dataBufferFillSize < this.numDataBuffers) {
+                            this.dataBufferFillSize++;
+                            this.activeBuffer = this.dataBufferFillSize.toString();
+                        }
+                        else {
+                            this.activeBuffer = (this.numDataBuffers).toString();
+                        }
                         observer.complete();
                     }
                     else {
@@ -111,6 +120,13 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         //Return voltages and complete observer
                         observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
                         this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
+                        if (this.dataBufferFillSize < this.numDataBuffers) {
+                            this.dataBufferFillSize++;
+                            this.activeBuffer = this.dataBufferFillSize.toString();
+                        }
+                        else {
+                            this.activeBuffer = '8';
+                        }
                     }
                     else {
                         observer.error(data.statusCode);

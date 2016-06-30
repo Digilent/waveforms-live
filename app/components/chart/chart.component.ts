@@ -276,7 +276,7 @@ export class SilverNeedleChart {
         console.log(seriesNum);
         this.chart.series[seriesNum].setData(waveform.y, true, false, false);
         this.chart.series[seriesNum].update({
-            pointStart: 0,
+            pointStart: waveform.t0,
             pointInterval: waveform.dt
         });
         this.chart.reflow();
@@ -339,6 +339,7 @@ export class SilverNeedleChart {
         })
 
             .on('mousedown', (event) => {
+                console.log(event);
                 this.activeCursor = parseInt(event.srcElement.id.slice(-1)) + 1;
                 this.xCursorDragStartPos = event.clientX;
                 this.xCursorStartDrag(this.numXCursors, event.clientX);
@@ -597,7 +598,6 @@ export class SilverNeedleChart {
     }
 
     exportCsv(fileName: string) {
-        this.chart.xAxis[0].setExtremes(0,5);
         fileName = fileName + '.csv';
         let csvContent = 'data:text/csv;charset=utf-8,';
         let series1Points = [];
@@ -684,6 +684,8 @@ export class SilverNeedleChart {
     }
 
     onChartClick(event) {
+        console.log(event);
+        console.log(this.chart.yAxis[this.activeSeries - 1].plotLinesAndBands);
         if (event.srcElement.localName === 'rect' && this.oscopeChartInner !== undefined) {
             console.log('chart click non cursor');
             this.canPan = true;

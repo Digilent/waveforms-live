@@ -8,6 +8,7 @@ import {BottomBarComponent} from '../../components/bottom-bar/bottom-bar.compone
 import {SideBarComponent} from '../../components/side-bar/side-bar.component';
 import {XAxisComponent} from '../../components/xaxis-controls/xaxis-controls.component';
 import {YAxisComponent} from '../../components/yaxis-controls/yaxis-controls.component';
+import {TimelineComponent} from '../../components/timeline/timeline.component';
 
 import {DeviceComponent} from '../../components/device/device.component';
 
@@ -17,7 +18,7 @@ import {DeviceManagerService} from '../../services/device/device-manager.service
 
 @Component({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
-    directives: [SilverNeedleChart, OscilloscopeComponent, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent]
+    directives: [SilverNeedleChart, OscilloscopeComponent, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent, TimelineComponent]
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
@@ -32,6 +33,8 @@ export class TestChartCtrlsPage {
     private activeDevice: DeviceComponent;
 
     private oscopeChans: number[];
+
+    private chartReady: boolean = false;
 
     constructor(_deviceManagerService: DeviceManagerService, _nav: NavController) {
         this.deviceManagerService = _deviceManagerService;
@@ -51,6 +54,7 @@ export class TestChartCtrlsPage {
         }
         else {
             this.oscopeChans = [0, 1];
+            this.chartReady = true;
         }
     }
 
