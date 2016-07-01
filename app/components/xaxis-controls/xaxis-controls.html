@@ -1,6 +1,7 @@
 <ion-list>
     <ion-item-group>
         <ion-item-divider light>Time Settings</ion-item-divider>
+        <ion-item><button (click)="buttonClick()">Autoscale X-Axis</button></ion-item>
         <ion-item>
             <ion-label>time/div (s):</ion-label>
             <ion-input type="number" [(ngModel)]="timePerDiv" (ngModelChange)="timeChanged()"></ion-input>

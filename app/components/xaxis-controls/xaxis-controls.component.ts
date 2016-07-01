@@ -24,4 +24,8 @@ export class XAxisComponent {
             base: this.chart.base
         });
     }
+
+    buttonClick() {
+        console.log(this.chart.autoscaleAxis('x', 0));
+    }
 }

@@ -756,5 +756,17 @@ export class SilverNeedleChart {
         this.updateYAxisLabels();
     }
 
+    autoscaleAxis(axis: string, axisIndex: number) {
+        if (axis === 'x') {
+            this.chart.xAxis[axisIndex].setExtremes(this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax);
+        }
+        else if (axis === 'y') {
+            
+        }
+        else {
+            console.log('invalid axis');
+        }
+    }
+
 
 }

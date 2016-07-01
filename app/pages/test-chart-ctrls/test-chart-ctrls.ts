@@ -137,7 +137,6 @@ export class TestChartCtrlsPage {
     setTitle() {
         //remove
         this.chart1.setTitle('Sup Son? ¯\\_(ツ)_/¯');
-        console.log(this.chart1.getCursorDeltas());
     }
 
     setContainerRef() {

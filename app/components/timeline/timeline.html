@@ -1,7 +1,7 @@
 <span>
     <button (click)="decrementBuffer()">Previous</button>
     Buffer: 
-    <ion-input style="width: 20%; display: inline-block" [(ngModel)]="activeDevice.instruments.osc.activeBuffer" (ngModelChange)="activeBufferChange()"></ion-input>
+    <ion-input style="width: 50px; display: inline-block" [(ngModel)]="activeDevice.instruments.osc.activeBuffer" (ngModelChange)="activeBufferChange()"></ion-input>
     of {{activeDevice.instruments.osc.dataBufferFillSize}}
     <button (click)="incrementBuffer()">Next</button>
 </span>
