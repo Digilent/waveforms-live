@@ -20,12 +20,12 @@ export class XAxisComponent {
     timeChanged() {
         this.chart.base = parseFloat(this.chart.base.toString());
         this.chart.setTimeSettings({
-            timePerDiv: parseFloat(this.timePerDiv),
+            timePerDiv: this.chart.timeDivision,
             base: this.chart.base
         });
     }
 
-    buttonClick() {
-        console.log(this.chart.autoscaleAxis('x', 0));
+    autoscaleX() {
+        this.chart.autoscaleAxis('x', 0);
     }
 }
