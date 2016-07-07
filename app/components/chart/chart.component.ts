@@ -15,6 +15,8 @@ export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     private nav: NavController;
     public chart: Object;
+    public timelineChart: Object;
+    private timelineOptions: Object;
     private options: Object;
     private xPosition: number;
     private xPositionPixels: number;
@@ -33,6 +35,8 @@ export class SilverNeedleChart {
     private cursor2Chan: string;
     private cursorsEnabled: boolean;
     private canPan: boolean;
+
+    private timelineView: boolean = false;
 
     public timeDivision: number = 1;
     public base: number = 0;
@@ -63,6 +67,70 @@ export class SilverNeedleChart {
         this.yPosition = 0;
         this.numXCursors = 0;
         this.numYCursors = 0;
+        this.timelineOptions = {
+            chart: {
+                type: 'line',
+                zoomType: '',
+                title: '',
+                animation: false
+            },
+            title: {
+                text: null
+            },
+            tooltip: {
+                enabled: false
+            },
+            series: [{
+                data: [29.9, 36, 47, 57, 67, 71.5, 82, 92, 102, 106.4, 110, 120, 129.2],
+            },
+                {
+                    data: [50, 60, 70, 80],
+                    yAxis: 1
+                }
+            ],
+            legend: {
+                enabled: false
+            },
+            yAxis: [{
+                offset: 0,
+                title: {
+                    text: null
+                },
+                labels: {
+                    enabled: false
+                }
+            }, {
+                offset: 0,
+                title: {
+                    text: null
+                },
+                labels: {
+                    enabled: false
+                }
+            }],
+            credits: {
+                enabled: false
+            },
+            xAxis: {
+                labels: {
+                    enabled: false
+                }
+            },
+            plotOptions: {
+                series: {
+                    states: {
+                        hover: {
+                            enabled: false
+                        }
+                    }
+                },
+                line: {
+                    marker: {
+                        enabled: false
+                    }
+                }
+            }
+        };
         this.options = {
             chart: {
                 type: 'line',
@@ -191,8 +259,14 @@ export class SilverNeedleChart {
         this.chart = chartInstance;
         
         //Redraw chart to scale chart to container size
-        this.redrawChart()
+        this.redrawChart();
         this.chartLoad.emit(this.chart);
+    }
+
+    onTimelineLoad(chartInstance) {
+        console.log(chartInstance);
+        this.timelineChart = chartInstance;
+        this.timelineChart.reflow();
     }
 
     onPointSelect (event) {
@@ -267,6 +341,8 @@ export class SilverNeedleChart {
             pointStart: waveform.t0,
             pointInterval: waveform.dt
         });
+        this.timelineChart.series[seriesNum].setData(waveform.y, true, false, false);
+        this.timelineChart.reflow();
         this.chart.reflow();
         this.updateCursorLabels();
     }
@@ -746,6 +822,12 @@ export class SilverNeedleChart {
 
     enableCursors() {
         this.cursorsEnabled = true;
+        console.log(this.cursorsEnabled);
+        //Wait for ngClass to apply css class and reflow chart to fill correctly. 
+        //TODO check for ngclass event that fires on class change.
+        setTimeout(() => {
+            this.chart.reflow();
+        }, 50);
     }
 
     clearSeries() {
@@ -818,6 +900,7 @@ export class SilverNeedleChart {
         let min = offset - (parseFloat(seriesSettings.voltsPerDiv) * 5);
         let max = offset + (parseFloat(seriesSettings.voltsPerDiv) * 5);
         this.chart.yAxis[seriesSettings.seriesNum].setExtremes(min, max);
+        this.updateCursorLabels();
     }
 
     updateCursorLabels() {        
@@ -866,6 +949,7 @@ export class SilverNeedleChart {
         let min = this.base - (this.timeDivision * 5);
         let max = this.base + (this.timeDivision * 5);
         this.chart.xAxis[0].setExtremes(min, max, true, false);
+        this.updateCursorLabels();
     }
 
     setSeriesSettings(seriesSettings: any) {
@@ -897,5 +981,39 @@ export class SilverNeedleChart {
         this.updateCursorLabels();
     }
 
+    enableTimelineView() {
+        this.timelineView = true;
+        setTimeout(() => {
+            this.chart.reflow();
+        }, 50);
+    }
+
+    isCursorTimeline() {
+        if (this.cursorsEnabled && this.timelineView) {
+            return true;
+        }
+        return false;
+    }
+
+    isCursorOnly() {
+        if (this.cursorsEnabled && !this.timelineView) {
+            return true;
+        }
+        return false;
+    }
+
+    isTimelineOnly() {
+        if (!this.cursorsEnabled && this.timelineView) {
+            return true;
+        }
+        return false;
+    }
+
+    isVanilla() {
+        if (!this.cursorsEnabled && !this.timelineView) {
+            return true;
+        }
+        return false;
+    }
 
 }

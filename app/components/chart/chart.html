@@ -1,12 +1,19 @@
+<div class="timeline-wrapper" *ngIf="timelineView">
+    <chart [options]="timelineOptions" (load)="onTimelineLoad($event.context)"></chart>
+</div>
 <div class="chart-component-wrapper">
-    <div class="chart-component-container-div" [ngClass]="{pan: canPan}">
+    <div class="chart-component-container-div" [ngClass]="{pan: canPan, 
+        'chart-component-container-div-cursor-timeline': isCursorTimeline(),
+        'chart-component-container-div-cursor-only': isCursorOnly(),
+        'chart-component-container-div-timeline-only': isTimelineOnly(),
+        'chart-component-container-div-vanilla': isVanilla()}">
         <chart [options]="options" (load)="onLoad($event.context)" (mousedown)="onChartClick($event)" (mouseup)="clearMouse()">
             <series>
                 <point (click)="onPointSelect($event)"></point>
             </series>
         </chart>
     </div>
-    <div class="cursor-container" *ngIf="cursorsEnabled">
+    <div class="cursor-container" *ngIf="true">
         <button (click)="openCursorModal()">Cursors</button>
         <div style="display: inline-block; background-color: white;vertical-align:middle" *ngIf="cursorType === 'time'">
             Cur1: {{xCursorPositions[0].toFixed(3)}}s &Delta;X: {{getCursorDeltas()[0].toFixed(3)}} s

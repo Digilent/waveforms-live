@@ -143,5 +143,6 @@ export class TestChartCtrlsPage {
         console.log('Setting container element ref in chart component');
         this.chart1.setElementRef(this.oscopeChartInner);
         this.chart1.enableCursors();
+        this.chart1.enableTimelineView();
     }
 }

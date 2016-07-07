@@ -1,4 +1,4 @@
-chart 
+.chart-component-wrapper chart 
 {
     display: block;
     position: relative;
@@ -16,20 +16,52 @@ chart
 .chart-component-wrapper .cursor-container
 {
     display: block;
-    position: absolute;
-    bottom: 35px;
     background-color: green;
 }
 
-.chart-component-wrapper .chart-component-container-div
+.chart-component-wrapper .chart-component-container-div-cursor-only
 {
     display: block;
     position: relative;
-    height: calc(100% - 2 * 35px);
+    height: calc(100% - 2 * 40px);
+}
+
+.chart-component-wrapper .chart-component-container-div-cursor-timeline
+{
+    display: block;
+    position: relative;
+    height: calc(100% - 2 * 40px - 100px);
+}
+
+.chart-component-wrapper .chart-component-container-div-timeline-only
+{
+    display: block;
+    position: relative;
+    height: calc(100% - 100px);
+}
+
+.chart-component-wrapper .chart-component-container-div-vanilla
+{
+    display: block;
+    position: relative;
+    height: 100%;
 }
 
 .chart-component-wrapper .pan
 {
     cursor: e-resize;
+}
+
+.timeline-wrapper {
+    display: block;
+    position: relative;
+    height: 100px;
+    width: 100%;
+}
+
+.timeline-wrapper chart {
+    display: block;
+    position: relative;
+    height: 100%;
 }
 
