@@ -22,6 +22,7 @@ export class SilverNeedleChart {
     private yPosition: number;
     private numXCursors: number;
     private cursorLabel: any[];
+    private cursorAnchors: any[] = [0, 0, 0, 0];
     private xCursorDragStartPos: any;
     private oscopeChartInner: ElementRef;
     private activeCursor: number;
@@ -192,6 +193,24 @@ export class SilverNeedleChart {
         //Redraw chart to scale chart to container size
         this.redrawChart()
         this.chartLoad.emit(this.chart);
+        this.cursorAnchors[0] = this.chart.renderer.rect(this.chart.plotLeft, this.chart.yAxis[0].toPixels(this.voltBase[0]), 10, 10, 1)
+            .attr({
+                'stroke-width': 2,
+                stroke: 'black',
+                fill: 'yellow',
+                zIndex: 3,
+                id: 'testrec0'
+            })
+            .add();
+        this.cursorAnchors[1] = this.chart.renderer.rect(this.chart.plotLeft, this.chart.yAxis[0].toPixels(this.voltBase[0]), 10, 10, 1)
+            .attr({
+                'stroke-width': 2,
+                stroke: 'black',
+                fill: 'yellow',
+                zIndex: 3,
+                id: 'testrec1'
+            })
+            .add();
     }
 
     onPointSelect (event) {
@@ -275,10 +294,12 @@ export class SilverNeedleChart {
         this.chart.xAxis[0].removePlotLine('cursor1');
         this.chart.yAxis[0].removePlotLine('cursor2');
         this.chart.yAxis[0].removePlotLine('cursor3');
-        console.log(this.cursorLabel);
+        console.log(this.cursorLabel, this.cursorAnchors);
         for (let i = 0; i < this.cursorLabel.length; i++) {
             if (typeof(this.cursorLabel[i]) === 'object') {
                 this.cursorLabel[i].destroy();
+                this.cursorAnchors[i].destroy();
+                this.cursorAnchors[i] = 'empty';
                 this.cursorLabel[i] = 'empty';
                 console.log('rekt label ' + i);
             }
@@ -509,7 +530,8 @@ export class SilverNeedleChart {
     }.bind(this);
 
     cursorDragListener = function (event) {
-        let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true).toFixed(1); 
+        console.log(event);
+        let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true); 
         let offset = 110;  
         let yCor = event.layerY;
         if (xVal < this.chart.series[0].data[0].x || event.chartX < this.chart.plotLeft) {
@@ -548,18 +570,19 @@ export class SilverNeedleChart {
             y: yCor,
             zIndex: 99 + this.activeCursor
         });
+        console.log(this.cursorAnchors);
+        this.cursorAnchors[this.activeCursor - 1].attr({
+            x: event.chartX - 6,
+            y: this.chart.plotTop - 12,
+            width: 10,
+            height: 10,
+            'stroke-width': 2,
+            stroke: 'black',
+            fill: 'yellow',
+            zIndex: 3,
+            id: 'testrec'
+        });
     }.bind(this);
-
-    setHeight() {
-        console.log('Height change not implemented');
-        //this.chart.
-        /*
-        console.log(this.chart.container);
-        this.chart.container = this.oscopeChartInner;
-        this.chart.reflow();
-        console.log(this.chart.container);
-        */
-    }
 
     setTitle(newTitle: string) {
         this.chart.setTitle({
@@ -672,7 +695,7 @@ export class SilverNeedleChart {
     }
 
     onChartClick(event) {
-        if (event.srcElement.localName === 'rect' && this.oscopeChartInner !== undefined) {
+        if (event.srcElement.localName === 'rect' && this.oscopeChartInner !== undefined && event.srcElement.id === '') {
             this.canPan = true;
             this.xPositionPixels = event.chartX;
             this.yPositionPixels = event.chartY;
@@ -700,6 +723,7 @@ export class SilverNeedleChart {
         let oldValinNewWindow = this.chart.xAxis[0].toValue(this.xPositionPixels);
         let difference = newVal - oldValinNewWindow;
         this.setXExtremes(difference);
+        this.updateCursorLabels();
         this.xPositionPixels = event.chartX;
     }.bind(this);
 
@@ -713,24 +737,19 @@ export class SilverNeedleChart {
             voltBase: parseFloat(this.voltBase[this.activeSeries - 1]) - difference
         };
         this.setYExtremes(seriesSettings);
-        this.voltBase[this.activeSeries - 1] = parseFloat(this.voltBase[this.activeSeries - 1]) - difference;
+        this.voltBase[this.activeSeries - 1] = (parseFloat(this.voltBase[this.activeSeries - 1]) - difference).toFixed(3);
         this.yPositionPixels = event.chartY;
     }.bind(this);
-
-    clearVert() {
-        console.log('clear vert');
-    }
 
     setXExtremes(positionChange: number) {
         let newPos = this.base - positionChange;
         let min = newPos - this.timeDivision * 5;
         let max = newPos + this.timeDivision * 5; 
         this.chart.xAxis[0].setExtremes(min, max, true, false);
-        this.base = newPos;
+        this.base = parseFloat(newPos.toFixed(3));
     }
 
     setYExtremes(seriesSettings: any) {
-        console.log(seriesSettings);
         let offset = parseFloat(seriesSettings.voltBase);
         let min = offset - (parseFloat(seriesSettings.voltsPerDiv) * 5);
         let max = offset + (parseFloat(seriesSettings.voltsPerDiv) * 5);
@@ -748,6 +767,9 @@ export class SilverNeedleChart {
                 if (typeof(this.cursorLabel[i]) === 'object') {
                     this.cursorLabel[i].attr({
                         x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i].options.value),
+                    });
+                    this.cursorAnchors[i].attr({
+                        x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i].options.value) - 6
                     });
                 }
             }

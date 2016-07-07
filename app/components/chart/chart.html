@@ -2,7 +2,7 @@
     <div class="chart-component-container-div" [ngClass]="{pan: canPan}">
         <chart [options]="options" (load)="onLoad($event.context)" (mousedown)="onChartClick($event)" (mouseup)="clearMouse()">
             <series>
-                <point (click)="onPointSelect($event)" (mouseup)="clearVert()"></point>
+                <point (click)="onPointSelect($event)"></point>
             </series>
         </chart>
     </div>
