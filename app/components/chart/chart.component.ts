@@ -193,24 +193,6 @@ export class SilverNeedleChart {
         //Redraw chart to scale chart to container size
         this.redrawChart()
         this.chartLoad.emit(this.chart);
-        this.cursorAnchors[0] = this.chart.renderer.rect(this.chart.plotLeft, this.chart.yAxis[0].toPixels(this.voltBase[0]), 10, 10, 1)
-            .attr({
-                'stroke-width': 2,
-                stroke: 'black',
-                fill: 'yellow',
-                zIndex: 3,
-                id: 'testrec0'
-            })
-            .add();
-        this.cursorAnchors[1] = this.chart.renderer.rect(this.chart.plotLeft, this.chart.yAxis[0].toPixels(this.voltBase[0]), 10, 10, 1)
-            .attr({
-                'stroke-width': 2,
-                stroke: 'black',
-                fill: 'yellow',
-                zIndex: 3,
-                id: 'testrec1'
-            })
-            .add();
     }
 
     onPointSelect (event) {
@@ -357,6 +339,28 @@ export class SilverNeedleChart {
                 //console.log('stop')
                 this.activeCursor = -1;
             });
+        this.cursorAnchors[this.numXCursors] = this.chart.renderer.rect(this.chart.plotLeft, this.chart.yAxis[0].toPixels(this.voltBase[0]), 10, 10, 1)
+            .attr({
+                'stroke-width': 2,
+                stroke: 'black',
+                fill: 'yellow',
+                zIndex: 3,
+                id: ('testrec' + this.numXCursors.toString())
+            })
+            .css({
+                'cursor': 'pointer'
+            })
+            .add()
+            .on('mousedown', (event) => {
+                this.activeCursor = parseInt(event.srcElement.id.slice(-1)) + 1;
+                this.xCursorDragStartPos = event.clientX;
+                this.xCursorStartDrag(this.numXCursors, event.clientX);
+            })
+            .on('mouseup', (event) => {
+                //console.log('mouse released on cursor');
+                //console.log('stop')
+                this.activeCursor = -1;
+            });
 
         this.numXCursors++;
     }
@@ -450,6 +454,13 @@ export class SilverNeedleChart {
         let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true).toFixed(3); 
         let offset = 110;  
         let yCor = event.layerY;
+        let xCor = event.layerX;
+        if (xCor < this.chart.plotLeft) {
+            xCor = this.chart.plotLeft;
+        }
+        if (xCor > this.chart.xAxis[0].toPixels(this.chart.xAxis[0].max)) {
+            xCor = this.chart.xAxis[0].toPixels(this.chart.xAxis[0].max);
+        }
         if (xVal < this.chart.series[0].data[0].x || event.chartX < this.chart.plotLeft) {
             xVal = this.chart.series[0].data[0].x;
             //event.chartX = this.chart.plotLeft;
@@ -488,6 +499,16 @@ export class SilverNeedleChart {
             x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + offset,
             y: yCor,
             zIndex: 99 + this.activeCursor
+        });
+        this.cursorAnchors[this.activeCursor - 1].attr({
+            x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + this.chart.plotLeft - 6,
+            y: this.chart.plotTop - 12,
+            width: 10,
+            height: 10,
+            'stroke-width': 2,
+            stroke: 'black',
+            fill: 'yellow',
+            zIndex: 3,
         });
     }.bind(this);
 
@@ -530,17 +551,24 @@ export class SilverNeedleChart {
     }.bind(this);
 
     cursorDragListener = function (event) {
-        console.log(event);
         let xVal = this.chart.xAxis[0].translate(event.layerX - this.chart.plotLeft, true); 
         let offset = 110;  
         let yCor = event.layerY;
+        let xCor = event.layerX;
+        if (xCor < this.chart.plotLeft) {
+            xCor = this.chart.plotLeft;
+        }
+        if (xCor > this.chart.xAxis[0].toPixels(this.chart.xAxis[0].max)) {
+            xCor = this.chart.xAxis[0].toPixels(this.chart.xAxis[0].max);
+        }
         if (xVal < this.chart.series[0].data[0].x || event.chartX < this.chart.plotLeft) {
             xVal = this.chart.series[0].data[0].x;
             //event.chartX = this.chart.plotLeft;
         }
-        if (xVal > this.chart.series[0].data[this.chart.series[0].data.length -1].x || event.chartX > this.oscopeChartInner.nativeElement.clientWidth - this.chart.plotLeft) {
+        if (xVal > this.chart.series[0].data[this.chart.series[0].data.length -1].x || event.chartX > this.chart.xAxis[0].toPixels(this.chart.xAxis[0].max)) {
             xVal = this.chart.series[0].data[this.chart.series[0].data.length -1].x;
             offset = -20;
+            console.log('doot');
         }
         if (yCor > this.chart.yAxis[0].toPixels(this.chart.yAxis[0].min)) {
             yCor = this.chart.yAxis[0].toPixels(this.chart.yAxis[0].min);
@@ -570,9 +598,8 @@ export class SilverNeedleChart {
             y: yCor,
             zIndex: 99 + this.activeCursor
         });
-        console.log(this.cursorAnchors);
         this.cursorAnchors[this.activeCursor - 1].attr({
-            x: event.chartX - 6,
+            x: xCor - 6,
             y: this.chart.plotTop - 12,
             width: 10,
             height: 10,
@@ -580,7 +607,6 @@ export class SilverNeedleChart {
             stroke: 'black',
             fill: 'yellow',
             zIndex: 3,
-            id: 'testrec'
         });
     }.bind(this);
 
