@@ -386,6 +386,27 @@ export class SilverNeedleChart {
         //console.log((this.chart.yAxis[0].dataMin).toPixels());
         if (this.cursorType !== 'track') {
             this.cursorLabel[this.numYCursors + 2] = this.chart.renderer.text('Cursor ' + (this.numYCursors + 2), 100, 500).add();
+            this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.rect(this.chart.plotLeft, this.chart.yAxis[0].toPixels(this.voltBase[0]), 10, 10, 1)
+            .attr({
+                'stroke-width': 2,
+                stroke: 'black',
+                fill: 'yellow',
+                zIndex: 3,
+                id: ('testrec' + (this.numYCursors + 2).toString())
+            })
+            .css({
+                'cursor': 'pointer'
+            })
+            .add()
+            .on('mousedown', (event) => {
+                this.activeCursor = parseInt(event.srcElement.id.slice(-1)) + 1;
+                this.yCursorStartDrag(this.numYCursors, event.clientY);
+            })
+            .on('mouseup', (event) => {
+                //console.log('mouse released on cursor');
+                //console.log('stop')
+                this.activeCursor = -1;
+            });
         }
         this.chart.yAxis[0].plotLinesAndBands[this.numYCursors].svgElem.element.id = 'cursor' + (this.numYCursors + 2);
         //let options = this.chart.options;
@@ -519,6 +540,9 @@ export class SilverNeedleChart {
         let yVal = parseFloat(this.chart.yAxis[0].toValue(event.chartY - this.chart.plotTop + yDelta)).toFixed(3);
         let xCor = event.layerX;
         let yCor = event.layerY;
+        if (event.chartY === undefined) {
+            return;
+        }
         if (yVal > this.chart.yAxis[0].dataMax) {
             yVal = this.chart.yAxis[0].dataMax;
             yCor = this.chart.yAxis[0].toPixels(yVal);
@@ -536,6 +560,10 @@ export class SilverNeedleChart {
         if (xCor < this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMin)) {
             xCor = this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMin);
         }
+        
+        if (yCor > this.chart.yAxis[0].toPixels(this.chart.yAxis[0].min)) {
+            yCor = this.chart.yAxis[0].toPixels(this.chart.yAxis[0].min);
+        }
         //console.log('pointNum: ' + pointNum, this.chart.series[0].data[0].y, this.chart.options.plotOptions.series.pointInterval);
         //console.log(this.chart.series[0].data[pointNum].plotY + 15);
         //this.chart.xAxis[0].plotLinesAndBands[0].svgElem.translate(event.clientX - this.xCursorDragStartPos);
@@ -547,6 +575,16 @@ export class SilverNeedleChart {
             x: xCor,
             y: yCor - 10,
             zIndex: 99 + this.activeCursor
+        });
+        this.cursorAnchors[this.activeCursor - 1].attr({
+            x: this.chart.plotLeft - 12,
+            y: yCor - 6,
+            width: 10,
+            height: 10,
+            'stroke-width': 2,
+            stroke: 'black',
+            fill: 'yellow',
+            zIndex: 3,
         });
     }.bind(this);
 
@@ -802,8 +840,18 @@ export class SilverNeedleChart {
         }
 
         else if (this.cursorType === 'voltage') {
-            //labels stay in place but the actual lines don't move. *shrug*
-            return;
+            for (let i = 2; i < 4; i++) {
+                //let pointNum = Math.round((this.chart.xAxis[0].plotLinesAndBands[i].options.value - this.chart.xAxis[0].plotLinesAndBands[i].axis.dataMin) / this.chart.series[0].pointInterval);
+                if (typeof(this.cursorLabel[i]) === 'object') {
+                    this.cursorLabel[i].attr({
+                        y: this.chart.yAxis[0].toPixels(this.chart.yAxis[0].plotLinesAndBands[i - 2].options.value),
+                    });
+                    this.cursorAnchors[i].attr({
+                        y: this.chart.yAxis[0].toPixels(this.chart.yAxis[0].plotLinesAndBands[i - 2].options.value) - 6,
+                        x: this.chart.plotLeft - 12
+                    });
+                }
+            }
         }
 
         else {
@@ -829,6 +877,7 @@ export class SilverNeedleChart {
     setActiveSeries(seriesNum: number) {
         this.activeSeries = seriesNum;
         this.updateYAxisLabels();
+        this.updateCursorLabels();
     }
 
     autoscaleAxis(axis: string, axisIndex: number) {
@@ -845,6 +894,7 @@ export class SilverNeedleChart {
         else {
             console.log('invalid axis');
         }
+        this.updateCursorLabels();
     }
 
 
