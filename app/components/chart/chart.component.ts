@@ -37,6 +37,7 @@ export class SilverNeedleChart {
     private canPan: boolean;
 
     private timelineView: boolean = false;
+    private timelineBounds: number[] = [0, 0, 0, 0];
 
     public timeDivision: number = 1;
     public base: number = 0;
@@ -78,15 +79,19 @@ export class SilverNeedleChart {
                 text: null
             },
             tooltip: {
-                enabled: false
+                enabled: true
             },
             series: [{
                 data: [29.9, 36, 47, 57, 67, 71.5, 82, 92, 102, 106.4, 110, 120, 129.2],
-            },
-                {
-                    data: [50, 60, 70, 80],
-                    yAxis: 1
-                }
+            }, {
+                data: [50, 60, 70, 80],
+                yAxis: 0
+            }, {
+                type: 'area',
+                lineWidth: 0,
+                color: 'rgba(156, 156, 156, .5)',
+                data: [[0, 0], [0, 0], [0, 0], [0, 0]]
+            }
             ],
             legend: {
                 enabled: false
@@ -114,10 +119,13 @@ export class SilverNeedleChart {
             xAxis: {
                 labels: {
                     enabled: false
-                }
+                },
             },
             plotOptions: {
                 series: {
+                    pointInterval: 2,
+                    pointStart: 0,
+                    stickyTracking: false,
                     states: {
                         hover: {
                             enabled: false
@@ -313,14 +321,17 @@ export class SilverNeedleChart {
     }
     */
     
-    redrawChart()
-    {
-      if(this.chart != undefined)
-        {
+    redrawChart() {
+        if (this.chart != undefined && this.timelineChart != undefined) {
             this.chart.reflow();
+            this.timelineChart.reflow();
             console.log('redrawChart()');
             this.updateCursorLabels();
-        }  
+        }
+        else if (this.chart != undefined) {
+            this.chart.reflow();
+            this.updateCursorLabels();
+        }
     }
 
     setXView(position, secsPerDiv) {
@@ -341,10 +352,18 @@ export class SilverNeedleChart {
             pointStart: waveform.t0,
             pointInterval: waveform.dt
         });
+        //Update point interval in timeline as well to show where user view is in timeline
         this.timelineChart.series[seriesNum].setData(waveform.y, true, false, false);
+        this.timelineChart.series[seriesNum].update({
+            pointStart: waveform.t0,
+            pointInterval: waveform.dt
+        });
         this.timelineChart.reflow();
         this.chart.reflow();
         this.updateCursorLabels();
+        let extremesX = this.timelineChart.xAxis[0].getExtremes();
+        let extremesY = this.timelineChart.yAxis[0].getExtremes();
+        this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
     }
 
     removeCursors() {
@@ -893,6 +912,8 @@ export class SilverNeedleChart {
         let max = newPos + this.timeDivision * 5; 
         this.chart.xAxis[0].setExtremes(min, max, true, false);
         this.base = parseFloat(newPos.toFixed(3));
+        console.log(this.timelineBounds);
+        this.timelineChart.series[2].setData([[min, -1], [min, this.timelineBounds[3]], [max, this.timelineBounds[3]], [max, -1]], true, false, false);
     }
 
     setYExtremes(seriesSettings: any) {
