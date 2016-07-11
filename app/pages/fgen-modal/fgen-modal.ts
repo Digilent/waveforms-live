@@ -69,6 +69,7 @@ export class ModalFgenPage {
         this.newChart = chart;
         this.chart.clearSeries();
         this.drawWave();
+        this.chart.redrawChart();
     }
     
     onSegmentChanged(event) {

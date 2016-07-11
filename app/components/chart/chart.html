@@ -13,7 +13,7 @@
             </series>
         </chart>
     </div>
-    <div class="cursor-container" *ngIf="true">
+    <div class="cursor-container" *ngIf="cursorsEnabled">
         <button (click)="openCursorModal()">Cursors</button>
         <div style="display: inline-block; background-color: white;vertical-align:middle" *ngIf="cursorType === 'time'">
             Cur1: {{xCursorPositions[0].toFixed(3)}}s &Delta;X: {{getCursorDeltas()[0].toFixed(3)}} s

@@ -102,6 +102,7 @@ export class FgenComponent {
     }
 
     openFgen(num) {
+        console.log('in open fgen');
         let modal = Modal.create(ModalFgenPage, {
             value: num, 
             waveType: this.waveType,
@@ -118,6 +119,7 @@ export class FgenComponent {
            this.dutyCycle = data.dutyCycle; 
         });
         this.nav.present(modal);
+        console.log('modal present');
     }
     
     isSquare() {
