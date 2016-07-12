@@ -116,12 +116,12 @@ export class SilverNeedleChart {
                     enabled: false
                 },
                 plotBands: [{ // mark the weekend
-                    color: '#000000',
+                    color: 'rgba(182,191,190,0.5)',
                     from: 0,
                     to: 0,
                     id: 'plot-band-1'
                 },{
-                    color: '#000000',
+                    color: 'rgba(182,191,190,0.5)',
                     from: 0,
                     to: 0,
                     id: 'plot-band-2'
@@ -925,28 +925,30 @@ export class SilverNeedleChart {
         this.timelineChart.xAxis[0].addPlotBand({
             from: this.timelineBounds[0],
             to: min,
-            color: '#000000',
+            color: 'rgba(182,191,190,0.5)',
             id: 'plot-band-1'
         });
         this.timelineChart.xAxis[0].addPlotBand({
             from: max,
             to: this.timelineBounds[1],
-            color: '#000000',
+            color: 'rgba(182,191,190,0.5)',
             id: 'plot-band-2'
         });
         let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
         let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
         this.timelineChart.xAxis[0].addPlotLine({
             value: val1,
-            color: '#000000',
+            color: 'rgba(182,191,190,0.5)',
             width: 10,
-            id: 'left'
+            id: 'left',
+            zIndex: 100
         });
         this.timelineChart.xAxis[0].addPlotLine({
             value: val2,
-            color: '#000000',
+            color: 'rgba(182,191,190,0.5)',
             width: 10,
-            id: 'right'
+            id: 'right',
+            zIndex: 100
         });
         this.attachPlotLineEvents();
     }
@@ -1013,28 +1015,30 @@ export class SilverNeedleChart {
             this.timelineChart.xAxis[0].addPlotBand({
                 from: this.timelineBounds[0],
                 to: min,
-                color: '#000000',
+                color: 'rgba(182,191,190,0.5)',
                 id: 'plot-band-1'
             });
             this.timelineChart.xAxis[0].addPlotBand({
                 from: max,
                 to: this.timelineBounds[1],
-                color: '#000000',
+                color: 'rgba(182,191,190,0.5)',
                 id: 'plot-band-2'
             });
             let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
             let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
             this.timelineChart.xAxis[0].addPlotLine({
                 value: val1,
-                color: '#000000',
+                color: 'rgba(182,191,190,0.5)',
                 width: 10,
-                id: 'left'
+                id: 'left',
+                zIndex: 100
             });
             this.timelineChart.xAxis[0].addPlotLine({
                 value: val2,
-                color: '#000000',
+                color: 'rgba(182,191,190,0.5)',
                 width: 10,
-                id: 'right'
+                id: 'right',
+                zIndex: 100
             });
             this.attachPlotLineEvents();
             console.log(this.timelineChart.xAxis[0].plotLinesAndBands);
@@ -1111,16 +1115,21 @@ export class SilverNeedleChart {
     }
 
     attachPlotLineEvents() {
-        console.log(this.timelineChart.xAxis[0].plotLinesAndBands);
-        this.timelineChart.xAxis[0].plotLinesAndBands[3].svgElem.css({
-            'cursor': 'pointer'
-        })
-            .on('mousedown', (event) => {
-                console.log('mousedown');
-            })
-            .on('mouseup', (event) => {
-                console.log('mouseup');
-            });
+        for (let i = 0; i < 2; i++) {
+            if (this.timelineChart.xAxis[0].plotLinesAndBands[i + 2].svgElem !== undefined) {
+                this.timelineChart.xAxis[0].plotLinesAndBands[i + 2].svgElem.css({
+                    'cursor': 'pointer'
+                })
+                    .on('mousedown', (event) => {
+                        console.log('mousedown' + i);
+                    })
+                    .on('mouseup', (event) => {
+                        console.log('mouseup' + i);
+                    });
+            }
+        
+        }
+
     }
 
 }
