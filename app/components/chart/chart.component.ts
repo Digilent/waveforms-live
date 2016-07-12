@@ -35,6 +35,8 @@ export class SilverNeedleChart {
     private cursor2Chan: string;
     private cursorsEnabled: boolean;
     private canPan: boolean;
+    private activeTimeLine: number;
+    private chartBounds: Object = null;
 
     private timelineView: boolean = false;
     private timelineBounds: number[] = [0, 0, 0, 0];
@@ -51,6 +53,7 @@ export class SilverNeedleChart {
     private yCursorPositions: number[];
 
     constructor(_nav: NavController) {
+        this.activeTimeLine = -1;
         this.timeDivision = 3;
         this.base = 12;
         this.nav = _nav;
@@ -126,6 +129,19 @@ export class SilverNeedleChart {
                     to: 0,
                     id: 'plot-band-2'
                 }],
+                plotLines: [{
+                    value: 0,
+                    color: 'rgba(182,191,190,0.5)',
+                    width: 10,
+                    id: 'left',
+                    zIndex: 100
+                }, {
+                    value: 0,
+                    color: 'rgba(182,191,190,0.5)',
+                    width: 10,
+                    id: 'right',
+                    zIndex: 100
+                }]
             },
             plotOptions: {
                 series: {
@@ -281,6 +297,8 @@ export class SilverNeedleChart {
         console.log(chartInstance);
         this.timelineChart = chartInstance;
         this.timelineChart.reflow();
+        console.log(this.timelineChart.xAxis[0].plotLinesAndBands);
+        this.attachPlotLineEvents();
     }
 
     onPointSelect (event) {
@@ -314,18 +332,6 @@ export class SilverNeedleChart {
             }
         }
     }
-    
-    /*
-    ngAfterViewChecked()
-    {
-        console.log('AfterViewChecked');
-        if(this.chart != undefined)
-        {
-            this.chart.reflow();
-            console.log('reflew!');
-        }
-    }
-    */
     
     redrawChart() {
         if (this.chart != undefined && this.timelineChart != undefined) {
@@ -918,38 +924,10 @@ export class SilverNeedleChart {
         let max = newPos + this.timeDivision * 5; 
         this.chart.xAxis[0].setExtremes(min, max, true, false);
         this.base = parseFloat(newPos.toFixed(3));
-        this.timelineChart.xAxis[0].removePlotBand('plot-band-1');
-        this.timelineChart.xAxis[0].removePlotBand('plot-band-2');
-        this.timelineChart.xAxis[0].removePlotBand('left');
-        this.timelineChart.xAxis[0].removePlotBand('right');
-        this.timelineChart.xAxis[0].addPlotBand({
-            from: this.timelineBounds[0],
-            to: min,
-            color: 'rgba(182,191,190,0.5)',
-            id: 'plot-band-1'
-        });
-        this.timelineChart.xAxis[0].addPlotBand({
-            from: max,
-            to: this.timelineBounds[1],
-            color: 'rgba(182,191,190,0.5)',
-            id: 'plot-band-2'
-        });
+        this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
         let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
         let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
-        this.timelineChart.xAxis[0].addPlotLine({
-            value: val1,
-            color: 'rgba(182,191,190,0.5)',
-            width: 10,
-            id: 'left',
-            zIndex: 100
-        });
-        this.timelineChart.xAxis[0].addPlotLine({
-            value: val2,
-            color: 'rgba(182,191,190,0.5)',
-            width: 10,
-            id: 'right',
-            zIndex: 100
-        });
+        this.updatePlotLines([0, 1], [val1, val2]);
         this.attachPlotLineEvents();
     }
 
@@ -1008,40 +986,11 @@ export class SilverNeedleChart {
         let max = this.base + (this.timeDivision * 5);
         this.chart.xAxis[0].setExtremes(min, max, true, false);
         if (this.timelineView) {
-            this.timelineChart.xAxis[0].removePlotBand('plot-band-1');
-            this.timelineChart.xAxis[0].removePlotBand('plot-band-2');
-            this.timelineChart.xAxis[0].removePlotLine('left');
-            this.timelineChart.xAxis[0].removePlotLine('right');
-            this.timelineChart.xAxis[0].addPlotBand({
-                from: this.timelineBounds[0],
-                to: min,
-                color: 'rgba(182,191,190,0.5)',
-                id: 'plot-band-1'
-            });
-            this.timelineChart.xAxis[0].addPlotBand({
-                from: max,
-                to: this.timelineBounds[1],
-                color: 'rgba(182,191,190,0.5)',
-                id: 'plot-band-2'
-            });
+            this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
             let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
             let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
-            this.timelineChart.xAxis[0].addPlotLine({
-                value: val1,
-                color: 'rgba(182,191,190,0.5)',
-                width: 10,
-                id: 'left',
-                zIndex: 100
-            });
-            this.timelineChart.xAxis[0].addPlotLine({
-                value: val2,
-                color: 'rgba(182,191,190,0.5)',
-                width: 10,
-                id: 'right',
-                zIndex: 100
-            });
+            this.updatePlotLines([0, 1], [val1, val2]);
             this.attachPlotLineEvents();
-            console.log(this.timelineChart.xAxis[0].plotLinesAndBands);
         }
         this.updateCursorLabels();
     }
@@ -1116,20 +1065,68 @@ export class SilverNeedleChart {
 
     attachPlotLineEvents() {
         for (let i = 0; i < 2; i++) {
-            if (this.timelineChart.xAxis[0].plotLinesAndBands[i + 2].svgElem !== undefined) {
-                this.timelineChart.xAxis[0].plotLinesAndBands[i + 2].svgElem.css({
+            if (this.timelineChart.xAxis[0].plotLinesAndBands[i].svgElem !== undefined) {
+                this.timelineChart.xAxis[0].plotLinesAndBands[i].svgElem.css({
                     'cursor': 'pointer'
                 })
                     .on('mousedown', (event) => {
                         console.log('mousedown' + i);
+                        this.startTimelineDrag(i);
                     })
                     .on('mouseup', (event) => {
                         console.log('mouseup' + i);
+                        this.clearDragListener(i);
                     });
             }
         
         }
 
+    }
+
+    startTimelineDrag(lineNum: number) {
+        this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.timelineDragListener);
+        this.activeTimeLine = lineNum;
+        this.chartBounds = this.chart.xAxis[0].getExtremes();
+    }
+
+    clearDragListener(lineNum: number) {
+        this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.timelineDragListener);
+        this.activeTimeLine = -1;
+    }
+
+    timelineDragListener = function(event) {
+        let newVal = this.timelineChart.xAxis[0].toValue(event.chartX);
+        let xCor: number;
+        if (this.activeTimeLine === 0) {
+            this.updatePlotBands([2], [[this.timelineBounds[0], newVal]]);
+            xCor = event.chartX - 5;
+            this.timelineChart.xAxis[0].plotLinesAndBands[0].options.value = this.timelineChart.xAxis[0].toValue(xCor);
+            this.timelineChart.xAxis[0].plotLinesAndBands[0].render();
+            this.chart.xAxis[0].setExtremes(this.timelineChart.xAxis[0].toValue(event.chartX), this.chartBounds.max);
+        }
+        else if (this.activeTimeLine === 1) {
+            this.updatePlotBands([3], [[newVal, this.timelineBounds[1]]]);
+            xCor = event.chartX + 5;
+            this.timelineChart.xAxis[0].plotLinesAndBands[1].options.value = this.timelineChart.xAxis[0].toValue(xCor);
+            this.timelineChart.xAxis[0].plotLinesAndBands[1].render();
+            this.chart.xAxis[0].setExtremes(this.chartBounds.min, this.timelineChart.xAxis[0].toValue(event.chartX));
+        }
+        
+    }.bind(this);
+
+    updatePlotBands(indices: number[], values: Array<number[]>) {
+        for (let i = 0; i < indices.length; i++) {
+            this.timelineChart.xAxis[0].plotLinesAndBands[indices[i]].options.from = values[i][0];
+            this.timelineChart.xAxis[0].plotLinesAndBands[indices[i]].options.to = values[i][1];
+            this.timelineChart.xAxis[0].plotLinesAndBands[indices[i]].render();
+        }
+    }
+
+    updatePlotLines(indices: number[], values: number[]) {
+        for (let i = 0; i < indices.length; i++) {
+            this.timelineChart.xAxis[0].plotLinesAndBands[indices[i]].options.value = values[i];
+            this.timelineChart.xAxis[0].plotLinesAndBands[indices[i]].render()
+        }
     }
 
 }
