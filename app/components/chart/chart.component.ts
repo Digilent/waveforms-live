@@ -377,6 +377,11 @@ export class SilverNeedleChart {
             let extremesX = this.timelineChart.xAxis[0].getExtremes();
             let extremesY = this.timelineChart.yAxis[0].getExtremes();
             this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
+            let chartExtremes = this.chart.xAxis[0].getExtremes();
+            let left = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(chartExtremes.min) - 5);
+            let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(chartExtremes.max) + 5);
+            this.updatePlotBands([2, 3], [[extremesX.min, chartExtremes.min], [chartExtremes.max, extremesX.max]]);
+            this.updatePlotLines([0, 1], [left, right]);
         }
     }
 
@@ -1012,6 +1017,12 @@ export class SilverNeedleChart {
             this.chart.xAxis[axisIndex].setExtremes(this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax);
             this.timeDivision = parseFloat(((this.chart.xAxis[0].dataMax - this.chart.xAxis[0].dataMin) / 10).toFixed(3));
             this.base = parseFloat(((this.chart.xAxis[0].dataMax + this.chart.xAxis[0].dataMin) / 2).toFixed(3));
+            let extremes = this.chart.xAxis[0].getExtremes();
+            console.log(extremes);
+            this.updatePlotBands([2, 3], [[this.timelineBounds[0], extremes.dataMin], [extremes.dataMax, this.timelineBounds[1]]]);
+            let left = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(extremes.dataMin) - 5);
+            let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(extremes.dataMax) + 5);
+            this.updatePlotLines([0, 1], [left, right]);
         }
         else if (axis === 'y') {
             this.chart.yAxis[axisIndex].setExtremes(this.chart.yAxis[axisIndex].dataMin, this.chart.yAxis[axisIndex].dataMax);
