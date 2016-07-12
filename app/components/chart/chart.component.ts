@@ -1111,6 +1111,9 @@ export class SilverNeedleChart {
             this.timelineChart.xAxis[0].plotLinesAndBands[1].render();
             this.chart.xAxis[0].setExtremes(this.chartBounds.min, this.timelineChart.xAxis[0].toValue(event.chartX));
         }
+        let newExtremes = this.chart.xAxis[0].getExtremes();
+        this.base = ((newExtremes.min + newExtremes.max) / 2).toFixed(3);
+        this.timeDivision = ((newExtremes.max - newExtremes.min) / 10).toFixed(3);
         
     }.bind(this);
 
