@@ -80,7 +80,7 @@ export class SilverNeedleChart {
                 text: null
             },
             tooltip: {
-                enabled: true
+                enabled: false
             },
             series: [{
                 data: [29.9, 36, 47, 57, 67, 71.5, 82, 92, 102, 106.4, 110, 120, 129.2],
@@ -116,12 +116,12 @@ export class SilverNeedleChart {
                     enabled: false
                 },
                 plotBands: [{ // mark the weekend
-                    color: '#FCFFC5',
+                    color: '#000000',
                     from: 0,
                     to: 0,
                     id: 'plot-band-1'
                 },{
-                    color: '#FCFFC5',
+                    color: '#000000',
                     from: 0,
                     to: 0,
                     id: 'plot-band-2'
@@ -396,7 +396,6 @@ export class SilverNeedleChart {
     }
 
     addXCursor() {
-        //TODO DISPLAY CORRECT INITIAL VALUES FROM EXTREMES RETURN
         console.log('adding x cursor');
         let extremes = this.chart.xAxis[0].getExtremes();
         let initialValue: number;
@@ -709,7 +708,6 @@ export class SilverNeedleChart {
         if (xVal > this.chart.series[0].data[this.chart.series[0].data.length -1].x || event.chartX > this.chart.xAxis[0].toPixels(this.chart.xAxis[0].max)) {
             xVal = this.chart.series[0].data[this.chart.series[0].data.length -1].x;
             offset = -20;
-            console.log('doot');
         }
         if (yCor > this.chart.yAxis[0].toPixels(this.chart.yAxis[0].min)) {
             yCor = this.chart.yAxis[0].toPixels(this.chart.yAxis[0].min);
@@ -920,23 +918,37 @@ export class SilverNeedleChart {
         let max = newPos + this.timeDivision * 5; 
         this.chart.xAxis[0].setExtremes(min, max, true, false);
         this.base = parseFloat(newPos.toFixed(3));
-        console.log(this.timelineBounds);
-        console.log('min: ' + min, 'max: ' + max);
-        console.log(this.timelineChart.xAxis[0].plotLinesAndBands);
         this.timelineChart.xAxis[0].removePlotBand('plot-band-1');
         this.timelineChart.xAxis[0].removePlotBand('plot-band-2');
+        this.timelineChart.xAxis[0].removePlotBand('left');
+        this.timelineChart.xAxis[0].removePlotBand('right');
         this.timelineChart.xAxis[0].addPlotBand({
             from: this.timelineBounds[0],
             to: min,
-            color: '#FCFFC5',
+            color: '#000000',
             id: 'plot-band-1'
         });
         this.timelineChart.xAxis[0].addPlotBand({
             from: max,
             to: this.timelineBounds[1],
-            color: '#FCFFC5',
+            color: '#000000',
             id: 'plot-band-2'
         });
+        let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
+        let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
+        this.timelineChart.xAxis[0].addPlotLine({
+            value: val1,
+            color: '#000000',
+            width: 10,
+            id: 'left'
+        });
+        this.timelineChart.xAxis[0].addPlotLine({
+            value: val2,
+            color: '#000000',
+            width: 10,
+            id: 'right'
+        });
+        this.attachPlotLineEvents();
     }
 
     setYExtremes(seriesSettings: any) {
@@ -993,6 +1005,40 @@ export class SilverNeedleChart {
         let min = this.base - (this.timeDivision * 5);
         let max = this.base + (this.timeDivision * 5);
         this.chart.xAxis[0].setExtremes(min, max, true, false);
+        if (this.timelineView) {
+            this.timelineChart.xAxis[0].removePlotBand('plot-band-1');
+            this.timelineChart.xAxis[0].removePlotBand('plot-band-2');
+            this.timelineChart.xAxis[0].removePlotLine('left');
+            this.timelineChart.xAxis[0].removePlotLine('right');
+            this.timelineChart.xAxis[0].addPlotBand({
+                from: this.timelineBounds[0],
+                to: min,
+                color: '#000000',
+                id: 'plot-band-1'
+            });
+            this.timelineChart.xAxis[0].addPlotBand({
+                from: max,
+                to: this.timelineBounds[1],
+                color: '#000000',
+                id: 'plot-band-2'
+            });
+            let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
+            let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
+            this.timelineChart.xAxis[0].addPlotLine({
+                value: val1,
+                color: '#000000',
+                width: 10,
+                id: 'left'
+            });
+            this.timelineChart.xAxis[0].addPlotLine({
+                value: val2,
+                color: '#000000',
+                width: 10,
+                id: 'right'
+            });
+            this.attachPlotLineEvents();
+            console.log(this.timelineChart.xAxis[0].plotLinesAndBands);
+        }
         this.updateCursorLabels();
     }
 
@@ -1058,6 +1104,23 @@ export class SilverNeedleChart {
             return true;
         }
         return false;
+    }
+
+    timelineChartClick(event) {
+        //console.log(event);
+    }
+
+    attachPlotLineEvents() {
+        console.log(this.timelineChart.xAxis[0].plotLinesAndBands);
+        this.timelineChart.xAxis[0].plotLinesAndBands[3].svgElem.css({
+            'cursor': 'pointer'
+        })
+            .on('mousedown', (event) => {
+                console.log('mousedown');
+            })
+            .on('mouseup', (event) => {
+                console.log('mouseup');
+            });
     }
 
 }
