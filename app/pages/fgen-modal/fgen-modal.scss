@@ -11,10 +11,16 @@
     background-color: green;
 }
 
-@media only screen and (min-height: 768px) and (min-width: 768px){
+@media only screen and (min-height: 768px) and (min-width: 768px)
+{
     .modal-wrapper
     {
         width: 95%;
         left: calc(50% - (95%/2));
     }
+}
+
+.modal-wrapper .modal-fgen-page
+{
+    width: 100%;
 }

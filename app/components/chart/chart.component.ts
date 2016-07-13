@@ -407,6 +407,7 @@ export class SilverNeedleChart {
 
     addXCursor() {
         console.log('adding x cursor');
+        console.log(this.chart.series[0].color);
         let extremes = this.chart.xAxis[0].getExtremes();
         let initialValue: number;
         if (this.numXCursors == 0) {
@@ -430,9 +431,6 @@ export class SilverNeedleChart {
         });
         this.cursorLabel[this.numXCursors] = this.chart.renderer.text('Cursor ' + this.numXCursors, 100, 100).add();
         this.chart.xAxis[0].plotLinesAndBands[this.numXCursors].svgElem.element.id = 'cursor' + this.numXCursors;
-        this.chart.options.chart.events.click = function (event) {
-            console.log('chart click');
-        };
         this.chart.xAxis[0].plotLinesAndBands[this.numXCursors].svgElem.css({
             'cursor': 'pointer'
         })
@@ -445,13 +443,13 @@ export class SilverNeedleChart {
             .on('mouseup', (event) => {
                 this.activeCursor = -1;
             });
-        this.cursorAnchors[this.numXCursors] = this.chart.renderer.rect(this.chart.plotLeft, this.chart.yAxis[0].toPixels(this.voltBase[0]), 10, 10, 1)
+        this.cursorAnchors[this.numXCursors] = this.chart.renderer.rect(this.chart.xAxis[0].toPixels(initialValue) - 5, this.chart.plotTop - 12, 10, 10, 1)
             .attr({
                 'stroke-width': 2,
                 stroke: 'black',
                 fill: 'yellow',
                 zIndex: 3,
-                id: ('testrec' + this.numXCursors.toString())
+                id: ('cursorAnchor' + this.numXCursors.toString())
             })
             .css({
                 'cursor': 'pointer'
@@ -489,13 +487,13 @@ export class SilverNeedleChart {
         this.yCursorPositions[this.numYCursors] = initialValue;
         if (this.cursorType !== 'track') {
             this.cursorLabel[this.numYCursors + 2] = this.chart.renderer.text('Cursor ' + (this.numYCursors + 2), 100, 500).add();
-            this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.rect(this.chart.plotLeft, this.chart.yAxis[0].toPixels(this.voltBase[0]), 10, 10, 1)
+            this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.rect(this.chart.plotLeft - 12, this.chart.yAxis[0].toPixels(initialValue) - 6, 10, 10, 1)
             .attr({
                 'stroke-width': 2,
                 stroke: 'black',
                 fill: 'yellow',
                 zIndex: 3,
-                id: ('testrec' + (this.numYCursors + 2).toString())
+                id: ('cursorAnchor' + (this.numYCursors + 2).toString())
             })
             .css({
                 'cursor': 'pointer'
@@ -789,7 +787,7 @@ export class SilverNeedleChart {
         });
         modal.onDismiss(data=> {
             if (data.save) {
-                console.log('saving data');
+                console.log('saving data', data);
                 this.cursorType = data.cursorType;
                 this.cursor1Chan = data.cursor1Chan;
                 this.cursor2Chan = data.cursor2Chan;
@@ -1038,11 +1036,9 @@ export class SilverNeedleChart {
     }
 
     timelineChartClick(event) {
-        console.log(event);
         let chartExtremes = this.chart.xAxis[0].getExtremes();
         let value = this.timelineChart.xAxis[0].toValue(event.chartX)
         if (value > chartExtremes.min && value < chartExtremes.max) {
-            console.log('between');
             this.xPositionPixels = event.chartX;
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.timelineWhiteDragListener);
         }
@@ -1099,11 +1095,10 @@ export class SilverNeedleChart {
         let newExtremes = this.chart.xAxis[0].getExtremes();
         this.base = ((newExtremes.min + newExtremes.max) / 2).toFixed(3);
         this.timeDivision = ((newExtremes.max - newExtremes.min) / 10).toFixed(3);
-        
+        this.updateCursorLabels();
     }.bind(this);
 
     timelineWhiteDragListener = function(event) {
-        console.log(event);
         let newVal = this.timelineChart.xAxis[0].toValue(event.chartX);
         let oldValinNewWindow = this.timelineChart.xAxis[0].toValue(this.xPositionPixels);
         let difference = oldValinNewWindow - newVal;

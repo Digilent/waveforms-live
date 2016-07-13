@@ -14,6 +14,7 @@ import {SettingsPage} from './pages/settings/settings';
 
 //Services
 import {DeviceManagerService} from './services/device/device-manager.service';
+import {StorageService} from './services/storage/storage.service';
 
 /* ---------- Uncomment this to switch to production mode ---------
 import {enableProdMode} from '@angular/core';
@@ -69,4 +70,4 @@ class MyApp {
 
 }
 
-ionicBootstrap(MyApp, [HTTP_PROVIDERS, DeviceManagerService], {});
+ionicBootstrap(MyApp, [HTTP_PROVIDERS, DeviceManagerService, StorageService], {});

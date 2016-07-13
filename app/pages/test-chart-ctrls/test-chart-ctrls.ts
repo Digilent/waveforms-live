@@ -14,6 +14,7 @@ import {DeviceComponent} from '../../components/device/device.component';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
+import {StorageService} from '../../services/storage/storage.service';
 
 
 @Component({
@@ -31,15 +32,17 @@ export class TestChartCtrlsPage {
     
     private deviceManagerService: DeviceManagerService;
     private activeDevice: DeviceComponent;
+    private storage: StorageService;
 
     private oscopeChans: number[];
 
     private chartReady: boolean = false;
 
-    constructor(_deviceManagerService: DeviceManagerService, _nav: NavController) {
+    constructor(_deviceManagerService: DeviceManagerService, _nav: NavController, _storage: StorageService) {
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.nav = _nav;
+        this.storage = _storage;
     }
 
     ngOnInit() {
@@ -99,7 +102,6 @@ export class TestChartCtrlsPage {
         //let chans = this.activeDevice.instruments.osc.chans;
         this.activeDevice.instruments.osc.runSingle(this.oscopeChans).subscribe(
             (buffer) => {
-                console.log(this.activeDevice.instruments.osc.dataBufferWriteIndex);
                 this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
                 this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
             },
@@ -107,6 +109,16 @@ export class TestChartCtrlsPage {
                 console.log('OSC Run Single Failed.');
             }
         );
+        this.storage.clearAll();
+        this.storage.saveData('user1', JSON.stringify({name:'Sam',age:'27 or 28 *shrug*'}));
+        this.storage.saveData('user0', JSON.stringify({name:'Dharsan',age:22}));
+        this.storage.getData('user0').then((data) => {
+            console.log('user0: ' + data);
+        });
+        this.storage.getData('user1').then((data) => {
+            console.log('user1: ' + data);
+        });
+        
     }
 
     runClick() {
