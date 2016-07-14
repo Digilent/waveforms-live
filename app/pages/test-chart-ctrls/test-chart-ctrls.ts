@@ -97,8 +97,6 @@ export class TestChartCtrlsPage {
     }
 
     singleClick() {
-        console.log(this.activeDevice.instruments.osc);
-
         //let chans = this.activeDevice.instruments.osc.chans;
         this.activeDevice.instruments.osc.runSingle(this.oscopeChans).subscribe(
             (buffer) => {

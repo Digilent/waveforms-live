@@ -14,8 +14,8 @@ export class StorageService {
         return this.storage.get(name);
     }
 
-    saveData(name: string, JsonString: string) {
-        this.storage.set(name, JsonString);
+    saveData(name: string, jsonString: string) {
+        this.storage.set(name, jsonString);
     }
 
     removeDataByKey(key: string) {
@@ -24,5 +24,9 @@ export class StorageService {
 
     clearAll() {
         this.storage.clear();
+    }
+
+    advancedQuery(query: string, params: Array<any>) {
+        return this.storage.query(query, params);
     }
 }

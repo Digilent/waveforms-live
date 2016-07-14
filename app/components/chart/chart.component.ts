@@ -294,10 +294,8 @@ export class SilverNeedleChart {
     }
 
     onTimelineLoad(chartInstance) {
-        console.log(chartInstance);
         this.timelineChart = chartInstance;
         this.timelineChart.reflow();
-        console.log(this.timelineChart.xAxis[0].plotLinesAndBands);
         this.attachPlotLineEvents();
     }
 
