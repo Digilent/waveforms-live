@@ -38,6 +38,8 @@ export class SilverNeedleChart {
     private activeTimeLine: number;
     private chartBoundsX: Object = null;
     private chartBoundsY: Object = null;
+    private inTimelineDrag: boolean = false;
+    private activeChannels = [0, 0];
 
     private timelineView: boolean = false;
     private timelineBounds: number[] = [0, 0, 0, 0];
@@ -298,6 +300,17 @@ export class SilverNeedleChart {
         this.timelineChart = chartInstance;
         this.timelineChart.reflow();
         this.attachPlotLineEvents();
+        this.autoscaleAxis('x', 0);
+        this.autoscaleAxis('y', 0);
+        this.autoscaleAxis('y', 1);
+        let extremesX = this.timelineChart.xAxis[0].getExtremes();
+        let extremesY = this.timelineChart.yAxis[0].getExtremes();
+        this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
+        this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+        let left = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(this.chartBoundsX.min) - 5);
+        let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(this.chartBoundsX.max) + 5);
+        this.updatePlotBands([2, 3], [[extremesX.min, this.chartBoundsX.min], [this.chartBoundsX.max, extremesX.max]]);
+        this.updatePlotLines([0, 1], [left, right]);
     }
 
     onPointSelect (event) {
@@ -409,27 +422,29 @@ export class SilverNeedleChart {
         console.log(this.chart.series[0].color);
         let extremes = this.chart.xAxis[0].getExtremes();
         let initialValue: number;
-        let activeChannel = -1;
         let style: string = null;
+        let color: string = null;
         if (this.numXCursors == 0) {
             initialValue = extremes.min;
-            activeChannel = parseInt(this.cursor1Chan.slice(-1));
+            this.activeChannels[0] = parseInt(this.cursor1Chan.slice(-1));
             this.xCursorPositions[3 * this.numXCursors] = extremes.min;
             this.xCursorPositions[3 * this.numXCursors + 1] = this.chart.series[0].data[0].y;
             this.xCursorPositions[3 * this.numXCursors + 2] = this.chart.series[1].data[0].y;
             style = 'longdash';
+            color = this.chart.series[this.activeChannels[0] - 1].color;
         }
         else {
             initialValue = extremes.max;
-            activeChannel = parseInt(this.cursor2Chan.slice(-1));
+            this.activeChannels[1] = parseInt(this.cursor2Chan.slice(-1));
             this.xCursorPositions[3 * this.numXCursors] = extremes.max;
             this.xCursorPositions[3 * this.numXCursors + 1] = this.chart.series[0].data[this.chart.series[0].data.length - 1].y;
             this.xCursorPositions[3 * this.numXCursors + 2] = this.chart.series[1].data[this.chart.series[1].data.length - 1].y;
             style = 'dash';
+            color = this.chart.series[this.activeChannels[1] - 1].color;
         }
         this.chart.xAxis[0].addPlotLine({
             value: initialValue,
-            color: 'blue',
+            color: color,
             dashStyle: style,
             width: 3,
             zIndex: 100 + this.numXCursors,
@@ -481,21 +496,23 @@ export class SilverNeedleChart {
         console.log('adding Y cursor number: ' + this.numYCursors);
         let initialValue: number;
         let extremes = this.chart.yAxis[0].getExtremes();
-        let activeChannel = -1;
         let style: string = null;
+        let color: string = null;
         if (this.numYCursors == 0) {
             initialValue = extremes.min;
-            activeChannel = parseInt(this.cursor1Chan.slice(-1));
+            this.activeChannels[0] = parseInt(this.cursor1Chan.slice(-1));
             style = 'longdash';
+            color = this.chart.series[this.activeChannels[0] - 1].color;
         }
         else {
             initialValue = extremes.max;
-            activeChannel = parseInt(this.cursor2Chan.slice(-1));
+            this.activeChannels[1] = parseInt(this.cursor2Chan.slice(-1));
             style = 'dash';
+            color = this.chart.series[this.activeChannels[1] - 1].color;
         }
         this.chart.yAxis[0].addPlotLine({
             value: initialValue,
-            color: 'red',
+            color: color,
             dashStyle: style,
             width: 3,
             zIndex: 102 + this.numYCursors,
@@ -594,14 +611,14 @@ export class SilverNeedleChart {
             yCor = this.chart.yAxis[0].toPixels(this.chartBoundsY.max);
         }
         let xVal = this.chart.xAxis[0].translate(xCor - this.chart.plotLeft, true).toFixed(3); 
-        let pointNum = Math.round((xVal - this.chart.series[0].xData[0]) / this.chart.series[0].pointInterval);
+        let pointNum = Math.round((xVal - this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].xData[0]) / this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].pointInterval);
         let pointNum1 = pointNum;
         let pointNum2 = pointNum;
         if (pointNum > this.chart.series[1].xData.length - 1) {
             pointNum2 = this.chart.series[1].xData.length - 1;
         }
-        this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[0].data[pointNum1].x;
-        this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[0].data[pointNum1].y;
+        this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].x;
+        this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].y;
         this.xCursorPositions[3 * this.activeCursor - 3] = parseFloat(this.chart.series[0].data[pointNum1].x);
         this.xCursorPositions[3 * this.activeCursor - 2] = this.chart.series[0].data[pointNum1].y;
         this.xCursorPositions[3 * this.activeCursor - 1] = this.chart.series[1].data[pointNum2].y;
@@ -1041,7 +1058,7 @@ export class SilverNeedleChart {
     timelineChartClick(event) {
         let chartExtremes = this.chart.xAxis[0].getExtremes();
         let value = this.timelineChart.xAxis[0].toValue(event.chartX)
-        if (value > chartExtremes.min && value < chartExtremes.max) {
+        if (value > chartExtremes.min && value < chartExtremes.max && !this.inTimelineDrag) {
             this.xPositionPixels = event.chartX;
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.timelineWhiteDragListener);
         }
@@ -1054,10 +1071,12 @@ export class SilverNeedleChart {
                     'cursor': 'pointer'
                 })
                     .on('mousedown', (event) => {
+                        this.inTimelineDrag = true;
                         console.log('mousedown' + i);
                         this.startTimelineDrag(i);
                     })
                     .on('mouseup', (event) => {
+                        this.inTimelineDrag = false;
                         console.log('mouseup' + i);
                         this.clearDragListener(i);
                     });

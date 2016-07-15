@@ -16,12 +16,12 @@
     <div class="cursor-container" *ngIf="cursorsEnabled">
         <button (click)="openCursorModal()">Cursors</button>
         <div style="display: inline-block; background-color: white;vertical-align:middle" *ngIf="cursorType === 'time'">
-            Cur1: {{xCursorPositions[0].toFixed(3)}}s &Delta;X: {{getCursorDeltas()[0].toFixed(3)}} s
+            Cur1: {{xCursorPositions[0].toFixed(3)}}s ({{xCursorPositions[1].toFixed(3)}}V) &Delta;X: {{getCursorDeltas()[0].toFixed(3)}} s
             <br>
-            Cur2: {{xCursorPositions[3].toFixed(3)}}s 1/&Delta;X: {{(1/getCursorDeltas()[0]).toFixed(3)}} Hz
+            Cur2: {{xCursorPositions[3].toFixed(3)}}s ({{xCursorPositions[4].toFixed(3)}}V) 1/&Delta;X: {{(1/getCursorDeltas()[0]).toFixed(3)}} Hz
         </div>
         <div style="display: inline-block; background-color: white;vertical-align:middle" *ngIf="cursorType === 'track'">
-            Cur1: {{xCursorPositions[0].toFixed(3)}}s ({{xCursorPositions[1].toFixed(3)}}V) &Delta;X: {{getCursorDeltas()[0].toFixed(3)}} s
+            Cur1: {{xCursorPositions[0].toFixed(3)}}s ({{xCursorPositions[1].toFixed(3)}}V) &Delta;X: {{getCursorDeltas()[0].toFixed(3)}} s &Delta;Y: {{(xCursorPositions[1] - xCursorPositions[4]).toFixed(3)}} V
             <br>
             Cur2: {{xCursorPositions[3].toFixed(3)}}s ({{xCursorPositions[4].toFixed(3)}}V) 1/&Delta;X: {{(1/getCursorDeltas()[0]).toFixed(3)}} Hz
         </div>
