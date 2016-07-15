@@ -1,4 +1,5 @@
 {
+    "command": "enumerate",
     "deviceMake": "Digilent",
     "deviceModel": "OpenScope-MZ",
     "firmwareVersion": {
@@ -80,5 +81,7 @@
                 }
             ]
         }
-    }
+    },
+    "statusCode": 0,
+    "wait": 0
 }

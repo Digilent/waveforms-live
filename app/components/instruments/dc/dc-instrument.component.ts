@@ -33,23 +33,36 @@ export class DcInstrumentComponent extends InstrumentComponent {
     //Get the output voltage(s) of the specified DC power supply channel(s).
     getVoltages(chans: Array<number>): Observable<Array<number>> {
         let command = {
-            command: "dcGetVoltages",
-            chans: chans
+            "dc": {}
         }
+        chans.forEach((element, index, array) => {
+            console.log(index);
+            command.dc[chans[index]] =
+            [
+                {
+                    "command": "getVoltage"
+                }
+            ]
+        });
 
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, command).subscribe(
                 (data) => {
                     //Handle device errors and warnings
+                    console.log(data);
                     if (data.statusCode < 1) {
+                        let voltages = [];
 
                         //Scale from mV to V                            
-                        data.voltages.forEach((element, index, array) => {
-                            array[index] = element / 1000;
-                        });
+                        for (let voltageRead in data.dc) {
+                            if (voltageRead !== 'statusCode') {
+                                //hopefully the voltage is located in the first object in the 0th index of the array of the channel property in the dc object in the response object.
+                                voltages.push(data.dc[voltageRead][0].voltage / 1000);
+                            }
+                        }
 
                         //Return voltages and complete observer
-                        observer.next(data.voltages);
+                        observer.next(voltages);
                         observer.complete();
                     }
                     else {
@@ -70,16 +83,20 @@ export class DcInstrumentComponent extends InstrumentComponent {
     setVoltages(chans: Array<number>, voltages: Array<number>) {
         //Scale voltages into mV before sending
         let scaledVoltages = [];
+        let command = {
+            "dc": {}
+        }
         voltages.forEach((element, index, array) => {
             scaledVoltages.push(element * 1000);
+            command.dc[chans[index]] =
+            [
+                {
+                    "command": "setVoltage",
+                    "voltage": (element * 1000)
+                }
+            ]
         });
         
-        //Setup command to transfer
-        let command = {
-            command: "dcSetVoltages",
-            chans: chans,
-            voltages: scaledVoltages
-        }
         return this.transport.writeRead(this.endpoint, command);
     }
 

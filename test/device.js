@@ -17,87 +17,134 @@ fs.readFile('./devices/openscope-mz.json', 'utf8', function (err, data) {
 //Statuses    
 let statusOk = 0;
 
-//------------------------------ Handler ------------------------------
-exports.handler = (event, context, callback) => {
+//Command Process 
+let processCommands = function (instrument, commandObject, params) {
+    let command = instrument + commandObject.command;
 
-    //Parse out command    
-    let command = event.command;
-
-    //Log event data
-    console.log('Event: ', event);
-    console.log('Command: ', command);
-
-    //-------------------- Process Commands --------------------    
     switch (command) {
-
         //---------- Device ----------
-        case 'enumerate':
-            callback(null, device.enumerate());
-            break;
+        case 'deviceenumerate':
+            return device.enumerate();
+            //break;
         case 'getMake':
-            callback(null, device.getMake());
+            //callback(null, device.getMake());
             break;
         case 'getModel':
-            callback(null, device.getModel());
+            //callback(null, device.getModel());
             break;
         case 'getFirmwareVersion':
-            callback(null, device.getFirmwareVersion());
+            //callback(null, device.getFirmwareVersion());
             break;
         case 'getInstruments':
-            callback(null, device.getInstruments());
+            //callback(null, device.getInstruments());
             break;
         case 'getId':
-            callback(null, device.getId());
+            //callback(null, device.getId());
             break;
 
         //---------- AWG ----------            
         case 'awgCalibrate':
-            callback(null, awg.calibrate());
+            //callback(null, awg.calibrate());
             break;
         case 'awgEnumerate':
-            callback(null, awg.enumerate());
+            //callback(null, awg.enumerate());
             break;
         case 'awgGetOffsets':
-            callback(null, awg.getOffsets(event.chans));
+            //callback(null, awg.getOffsets(event.chans));
             break;
         case 'awgSetOffsets':
-            callback(null, awg.setOffsets(event.chans, event.offsets));
+            //callback(null, awg.setOffsets(event.chans, event.offsets));
             break;
         case 'awgGetSettings':
-            callback(null, awg.getSettings(event.chans));
+            //callback(null, awg.getSettings(event.chans));
             break;
         case 'awgSetSettings':
-            callback(null, awg.setSettings(event.chans, event.settings));
+            //callback(null, awg.setSettings(event.chans, event.settings));
             break;
 
         //---------- DC ----------            
         case 'dcCalibrate':
-            callback(null, dc.calibrate());
+            //callback(null, dc.calibrate());
             break;
         case 'dcEnumerate':
-            callback(null, dc.enumerate());
+            //callback(null, dc.enumerate());
             break;
         case 'dcGetVoltages':
-            callback(null, dc.getVoltages(event.chans));
+            //callback(null, dc.getVoltages(event.chans));
             break;
         case 'dcSetVoltages':
-            callback(null, dc.setVoltages(event.chans, event.voltages));
+            //callback(null, dc.setVoltages(event.chans, event.voltages));
             break;
+        case 'dcsetVoltage':
+            return dc.setVoltage(params[0], commandObject.voltage);
+        case 'dcgetVoltage':
+            return dc.getVoltage(params[0]);
 
         //---------- OSC ----------            
         case 'oscCalibrate':
-            callback(null, osc.calibrate());
+            //callback(null, osc.calibrate());
             break;
         case 'oscEnumerate':
-            callback(null, osc.enumerate());
+            //callback(null, osc.enumerate());
             break;
         case 'oscRunSingle':
-            callback(null, osc.runSingle(event.chans));
+            //callback(null, osc.runSingle(event.chans));
             break;
         default:
-            callback(null, 'Unknown Command');
+        //callback(null, 'Unknown Command');
     }
 };
+
+//------------------------------ Handler ------------------------------
+exports.handler = (event, context, callback) => {  
+
+    //Log event data
+    console.log('Event: ', event);
+
+    //Initialize reponse object
+    let responseObject = {};
+
+    for (let instrument in event) {
+        //create property on response object
+        responseObject[instrument] = {};
+        if (event[instrument][0].command !== undefined) {
+            if (instrument === 'device') {
+                responseObject[instrument] = [];
+                responseObject[instrument].push(processCommands(instrument, event[instrument][0], []));
+            }
+            else {
+                responseObject[instrument] = processCommands(instrument, event[instrument][0], []);
+            }
+
+        }
+
+        for (let channel in event[instrument]) {
+            if (event[instrument][channel][0] !== undefined) {
+                //create property on response object 
+                responseObject[instrument][channel] = [];
+                event[instrument][channel].forEach((element, index, array) => {
+                    responseObject[instrument][channel].push(processCommands(instrument, event[instrument][channel][index], [channel]));
+                });
+                
+            }
+
+        }
+    }
+    //set initial value to 1 to catch case where no function was called since for loop won't run
+    let sumStatusCode = 1;
+    //TODO FIX AFTER NEW FORMAT
+    for (let functionReturn in responseObject) {
+        sumStatusCode = 0;
+        if (responseObject[functionReturn].statusCode === 1) {
+            sumStatusCode = 1;
+            break;
+        }
+    }
+    responseObject.statusCode = sumStatusCode
+    callback(null, responseObject);
+
+}  
+    
 
 //------------------------------ Device ------------------------------
 let device = {
@@ -261,6 +308,23 @@ let dc = {
         }
         return {
             voltages: _voltages,
+            statusCode: statusOk
+        };
+    },
+
+    getVoltage: function(_chan, _voltage) {
+        return {
+            command: 'getVoltage',
+            voltage: this.voltages[_chan],
+            statusCode: statusOk,
+            wait: 100
+        }
+    },
+
+    setVoltage: function(_chan, _voltage) {
+        console.log('setting ' + _chan + ' to ' + _voltage + 'mV');
+        this.voltages[_chan] = _voltage;
+        return {
             statusCode: statusOk
         };
     },

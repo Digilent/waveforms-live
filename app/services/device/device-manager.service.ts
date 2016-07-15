@@ -29,14 +29,19 @@ export class DeviceManagerService {
             this.transport.setUri(uri);
 
             let command = {
-                command: "enumerate"
+                'device': [
+                    {
+                        command: 'enumerate'
+                    }
+                ]
             }
 
             this.transport.writeRead('/', command).subscribe(
                 (deviceDescriptor) => {
                     console.log('Device Manager: ', deviceDescriptor);
-                    let dev = new DeviceComponent(this.http, uri, deviceDescriptor);
+                    let dev = new DeviceComponent(this.http, uri, deviceDescriptor.device[0]);
                     this.activeDeviceIndex = this.devices.push(dev)-1;
+                    console.log(this.devices);
                     observer.next(this.activeDeviceIndex);
                     observer.complete();
                 },
