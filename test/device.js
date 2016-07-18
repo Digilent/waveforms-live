@@ -102,6 +102,7 @@ exports.handler = (event, context, callback) => {
 
     //Initialize reponse object
     let responseObject = {};
+    let sumStatusCode = 0;
 
     for (let instrument in event) {
         //create property on response object
@@ -109,10 +110,12 @@ exports.handler = (event, context, callback) => {
         if (event[instrument][0].command !== undefined) {
             if (instrument === 'device') {
                 responseObject[instrument] = [];
-                responseObject[instrument].push(processCommands(instrument, event[instrument][0], []));
+                let activeIndex = responseObject[instrument].push(processCommands(instrument, event[instrument][0], [])) - 1;
+                sumStatusCode += responseObject[instrument][activeIndex].statusCode;
             }
             else {
                 responseObject[instrument] = processCommands(instrument, event[instrument][0], []);
+                sumStatusCode += responseObject[instrument].statusCode;
             }
 
         }
@@ -122,21 +125,12 @@ exports.handler = (event, context, callback) => {
                 //create property on response object 
                 responseObject[instrument][channel] = [];
                 event[instrument][channel].forEach((element, index, array) => {
-                    responseObject[instrument][channel].push(processCommands(instrument, event[instrument][channel][index], [channel]));
+                    let activeIndex = responseObject[instrument][channel].push(processCommands(instrument, event[instrument][channel][index], [channel])) - 1;
+                    sumStatusCode += responseObject[instrument][channel][activeIndex].statusCode;
                 });
                 
             }
 
-        }
-    }
-    //set initial value to 1 to catch case where no function was called since for loop won't run
-    let sumStatusCode = 1;
-    //TODO FIX AFTER NEW FORMAT
-    for (let functionReturn in responseObject) {
-        sumStatusCode = 0;
-        if (responseObject[functionReturn].statusCode === 1) {
-            sumStatusCode = 1;
-            break;
         }
     }
     responseObject.statusCode = sumStatusCode
