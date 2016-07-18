@@ -1142,18 +1142,26 @@ export class SilverNeedleChart {
         let newVal = this.timelineChart.xAxis[0].toValue(event.chartX);
         let xCor: number;
         if (this.activeTimeLine === 0) {
-            this.updatePlotBands([2], [[this.timelineBounds[0], newVal]]);
             xCor = event.chartX - 5;
+            if (event.chartX > this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from)){
+                xCor = this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from) - 5;
+                newVal = this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from;
+            }
+            this.updatePlotBands([2], [[this.timelineBounds[0], newVal]]);
             this.timelineChart.xAxis[0].plotLinesAndBands[0].options.value = this.timelineChart.xAxis[0].toValue(xCor);
             this.timelineChart.xAxis[0].plotLinesAndBands[0].render();
-            this.chart.xAxis[0].setExtremes(this.timelineChart.xAxis[0].toValue(event.chartX), this.chartBoundsX.max);
+            this.chart.xAxis[0].setExtremes(this.timelineChart.xAxis[0].toValue(xCor + 5), this.chartBoundsX.max);
         }
         else if (this.activeTimeLine === 1) {
-            this.updatePlotBands([3], [[newVal, this.timelineBounds[1]]]);
             xCor = event.chartX + 5;
+            if (event.chartX < this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[2].options.to)){
+                xCor = this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[2].options.to) + 5;
+                newVal = this.timelineChart.xAxis[0].plotLinesAndBands[2].options.to;
+            }
+            this.updatePlotBands([3], [[newVal, this.timelineBounds[1]]]);
             this.timelineChart.xAxis[0].plotLinesAndBands[1].options.value = this.timelineChart.xAxis[0].toValue(xCor);
             this.timelineChart.xAxis[0].plotLinesAndBands[1].render();
-            this.chart.xAxis[0].setExtremes(this.chartBoundsX.min, this.timelineChart.xAxis[0].toValue(event.chartX));
+            this.chart.xAxis[0].setExtremes(this.chartBoundsX.min, this.timelineChart.xAxis[0].toValue(xCor - 5));
         }
         let newExtremes = this.chart.xAxis[0].getExtremes();
         this.base = ((newExtremes.min + newExtremes.max) / 2).toFixed(3);
