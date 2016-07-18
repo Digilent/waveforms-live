@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "del": "2.2.0",
+    "electron-prebuilt": "^1.2.7",
     "gulp": "3.9.1",
     "gulp-watch": "4.3.5",
     "ionic-gulp-browserify-typescript": "^1.1.0",
@@ -38,5 +39,11 @@
   ],
   "cordovaPlatforms": [],
   "name": "doot",
-  "description": "doot: An Ionic project"
+  "description": "doot: An Ionic project",
+
+  "scripts": {
+    "electron": "electron .",
+    "electron dist": "electron ."
+  },
+  "main": "electron.js"
 }

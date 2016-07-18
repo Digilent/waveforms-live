@@ -26,3 +26,8 @@ SilverNeedle (Web WaveForms PoC)
     ```
     ionic serve
     ```
+6. Run via Electron
+
+    ```
+    ./node_modules/.bin/electron .
+    ```
