@@ -87,9 +87,8 @@ let processCommands = function (instrument, commandObject, params) {
         case 'oscEnumerate':
             //callback(null, osc.enumerate());
             break;
-        case 'oscRunSingle':
-            //callback(null, osc.runSingle(event.chans));
-            break;
+        case 'oscrunSingle':
+            return osc.runSingle(params[0]);
         default:
         //callback(null, 'Unknown Command');
     }
@@ -390,7 +389,7 @@ let osc = {
         for (let i = 0; i < chans.length; i++) {
             let y = [];
             for (var j = 0; j < numSamples; j++) {
-                y[j] = Math.sin((Math.PI / 180) * ((360 * ((dt / 1000 * j * sigFreq) + clockTimeOffset)) + phaseOffset + i * 90));
+                y[j] = Math.sin((Math.PI / 180) * ((360 * ((dt / 1000 * j * sigFreq) + clockTimeOffset)) + phaseOffset + 90 * parseInt(chans)));
             }
             wfs[i] = {
                 't0': clockTimeOffset,

@@ -51,9 +51,16 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
 
         let command = {
-            command: "oscRunSingle",
-            chans: chans
+            "osc": {}
         }
+        chans.forEach((element, index, array) => {
+            command.osc[chans[index]] =
+            [
+                {
+                    "command": "runSingle"
+                }
+            ]
+        });
 
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, command).subscribe(
@@ -62,9 +69,12 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     if (data.statusCode == 0) {
                         //Clear buffer then parse data into empty buffer
                         this.dataBuffer[this.dataBufferWriteIndex] = [];
-                        data.waveforms.forEach((element, index, array) => {
+                        for (let channel in data.osc) {
+                            this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel)] = new WaveformComponent(data.osc[channel][0].waveforms[0]);
+                        }
+                        /*data.waveforms.forEach((element, index, array) => {
                             this.dataBuffer[this.dataBufferWriteIndex][chans[index]] = new WaveformComponent(element);
-                        });
+                        });*/
                         //Return voltages and complete observer
                         observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
                         this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
