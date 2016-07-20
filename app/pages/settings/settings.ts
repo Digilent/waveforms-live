@@ -9,6 +9,7 @@ import {OscTestPage} from '../../pages/instrument-test-pages/osc-test/osc-test';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
+import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
     templateUrl: 'build/pages/settings/settings.html',
@@ -20,11 +21,13 @@ export class SettingsPage {
     private deviceManangerService: DeviceManagerService;   
     private localSimDevUri = 'http://localhost:8080';
     private remotesimDevUri = 'https://35oopc6de8.execute-api.us-west-2.amazonaws.com/dev';
-    
+    private storageService: StorageService;
 
-    constructor(_nav: NavController, _deviceManagerService: DeviceManagerService) {
+    constructor(_nav: NavController, _deviceManagerService: DeviceManagerService, _storageService: StorageService) {
         this.nav = _nav;
         this.deviceManangerService = _deviceManagerService;
+        this.storageService = _storageService;
+        console.log('settings constructor');
     }
 
     connect(targetUri: string) {
@@ -57,5 +60,15 @@ export class SettingsPage {
     navToOscTestPage(deviceIndex: number){
         this.deviceManangerService.setActiveDevice(deviceIndex);
         this.nav.push(OscTestPage);
+    }
+
+    sqlSave() {
+        this.storageService.saveSettings();
+        console.log('savingSettings');
+    }
+
+    sqlLoad() {
+        this.storageService.loadSettings();
+        console.log('loadingSettings');
     }
 }

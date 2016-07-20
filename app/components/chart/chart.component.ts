@@ -1012,8 +1012,8 @@ export class SilverNeedleChart {
     }
 
     setTimeSettings(timeObj: any) {
-        this.timeDivision = timeObj.timePerDiv;
-        this.base = timeObj.base;
+        this.timeDivision = parseFloat(timeObj.timePerDiv);
+        this.base = parseFloat(timeObj.base);
         let min = this.base - (this.timeDivision * 5);
         let max = this.base + (this.timeDivision * 5);
         this.chart.xAxis[0].setExtremes(min, max, true, false);

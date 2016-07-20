@@ -29,7 +29,7 @@ enableProdMode();
 class MyApp {
   // make HelloIonicPage the root (or first) page
   @ViewChild(Nav) nav: Nav;
-  rootPage: any = HomePage;
+  rootPage: any = SettingsPage;
   pages: Array<{ title: string, component: any }>;
 
   constructor(
@@ -64,7 +64,13 @@ class MyApp {
     // close the menu when clicking a link from the menu
     this.menu.close();
     // navigate to the new page if it is not the current page
-    this.nav.setRoot(page.component);
+    if (page.component === TestChartCtrlsPage) {
+      this.nav.setRoot(page.component);
+    }
+    else {
+      this.nav.push(page.component);
+    }
+
   }
 
 

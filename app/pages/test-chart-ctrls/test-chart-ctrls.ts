@@ -106,17 +106,7 @@ export class TestChartCtrlsPage {
             (err) => {
                 console.log('OSC Run Single Failed.');
             }
-        );
-        this.storage.clearAll();
-        this.storage.saveData('user1', JSON.stringify({name:'Sam',age:'27 or 28 *shrug*'}));
-        this.storage.saveData('user0', JSON.stringify({name:'Dharsan',age:22}));
-        this.storage.getData('user0').then((data) => {
-            console.log('user0: ' + data);
-        });
-        this.storage.getData('user1').then((data) => {
-            console.log('user1: ' + data);
-        });
-        
+        );        
     }
 
     runClick() {

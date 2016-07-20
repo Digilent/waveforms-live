@@ -6,6 +6,7 @@ import {DeviceComponent} from '../../components/device/device.component';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
+import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
   templateUrl: 'build/components/dc-supply/dc-supply.html',
@@ -26,8 +27,11 @@ export class DcSupplyComponent {
 
     private deviceManagerService: DeviceManagerService;
     private activeDevice: DeviceComponent;
+
+    private storageService: StorageService;
+    private storageEventListener: EventEmitter<any>;
     
-    constructor(_deviceManagerService: DeviceManagerService) {
+    constructor(_deviceManagerService: DeviceManagerService, _storageService: StorageService) {
         this.voltageSupplies = [0, 1, 2];
         this.contentHidden = true;
         this.voltages = ['5.00', '5.00', '-5.00'];
@@ -40,6 +44,19 @@ export class DcSupplyComponent {
 
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
+        console.log('dc supply component constructor');
+        this.storageService = _storageService;
+        this.storageEventListener = this.storageService.saveLoadEventEmitter.subscribe((data) => {
+            console.log(data);
+            if (data === 'save') {
+                this.storageService.saveData('dcSupplyVoltages', JSON.stringify(this.voltages));
+            }
+            else if (data === 'load') {
+                this.storageService.getData('dcSupplyVoltages').then((data) => {
+                    this.voltages = JSON.parse(data);
+                });
+            }
+        });
     }
 
     ngOnInit() {
@@ -53,6 +70,11 @@ export class DcSupplyComponent {
             }
             this.voltageSupplies = channelNumArray;
         }
+    }
+
+    ngOnDestroy() {
+        console.log('ngondestroy');
+        this.storageEventListener.unsubscribe();
     }
 
     setVoltages(chans: Array<number>, voltages: Array<number>) {

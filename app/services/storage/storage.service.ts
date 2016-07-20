@@ -1,9 +1,12 @@
 import {Storage, SqlStorage} from 'ionic-angular';
-import {Injectable} from '@angular/core';
+import {Injectable, EventEmitter} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/Rx';
 
 @Injectable()
 export class StorageService {
     private storage: Storage;
+    public saveLoadEventEmitter: EventEmitter<any> = new EventEmitter();
 
     constructor() {
         this.storage = new Storage(SqlStorage, {name:'settings'});
@@ -28,5 +31,17 @@ export class StorageService {
 
     advancedQuery(query: string, params: Array<any>) {
         return this.storage.query(query, params);
+    }
+
+    saveSettings() {
+        console.log('in storage service about to emit');
+        this.saveLoadEventEmitter.next('save');
+        console.log('emitted from storage service with .next');
+    }
+
+    loadSettings() {
+        console.log('in storage service about to emit');
+        this.saveLoadEventEmitter.next('load');
+        console.log('emitted from storage service with .next');
     }
 }

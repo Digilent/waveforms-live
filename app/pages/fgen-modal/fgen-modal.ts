@@ -28,6 +28,7 @@ export class ModalFgenPage {
         _viewCtrl: ViewController,
         _params: NavParams
     ) {
+        console.log('fgen modal constructor');
         this.platform = _platform;
         this.viewCtrl = _viewCtrl;
         this.params = _params;

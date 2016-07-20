@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, EventEmitter} from '@angular/core';
 import {NavController, Modal} from 'ionic-angular';
 
 //Pages
@@ -10,6 +10,7 @@ import {DeviceComponent} from '../../components/device/device.component';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
+import {StorageService} from '../../services/storage/storage.service';
 
 /* Notes for component and modal
 * Eventually receive info from modal and update service with new values
@@ -35,8 +36,11 @@ export class FgenComponent {
     private powerOn: boolean;
     private deviceManagerService: DeviceManagerService;
     private activeDevice: DeviceComponent;
+
+    private storageService: StorageService;
+    private storageEventListener: EventEmitter<any>;
     
-    constructor(_nav: NavController, _deviceManagerService: DeviceManagerService) {
+    constructor(_nav: NavController, _deviceManagerService: DeviceManagerService, _storageService: StorageService) {
         this.nav = _nav;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
@@ -48,6 +52,35 @@ export class FgenComponent {
         this.dutyCycle = '50';
         this.showWaves = false;
         this.powerOn = false;
+
+        this.storageService = _storageService;
+        this.storageEventListener = this.storageService.saveLoadEventEmitter.subscribe((data) => {
+            console.log(data);
+            if (data === 'save') {
+                this.storageService.saveData('awg', JSON.stringify({
+                    waveType: this.waveType,
+                    frequency: this.frequency,
+                    amplitude: this.amplitude,
+                    offset: this.offset,
+                    dutyCycle: this.dutyCycle
+                }));
+            }
+            else if (data === 'load') {
+                this.storageService.getData('awg').then((data) => {
+                    let dataObject = JSON.parse(data);
+                    console.log(dataObject);
+                    this.waveType = dataObject.waveType;
+                    this.frequency = dataObject.frequency;
+                    this.amplitude = dataObject.amplitude;
+                    this.offset = dataObject.offset;
+                    this.dutyCycle = dataObject.dutyCycle; 
+                });
+            }
+        });
+    }
+
+    ngOnDestroy() {
+        this.storageEventListener.unsubscribe();
     }
     
     toggleWave(waveType: string) {
