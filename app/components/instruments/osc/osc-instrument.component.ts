@@ -69,12 +69,19 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     if (data.statusCode == 0) {
                         //Clear buffer then parse data into empty buffer
                         this.dataBuffer[this.dataBufferWriteIndex] = [];
+                        let typedArray = null;
                         for (let channel in data.osc) {
+                            
+                            typedArray = new Int16Array(data.osc[channel][0].waveforms[0].y);
+                            //If .map on typedArray returns 0 cuz type which is cool I suppose
+                            let testArray = Array.prototype.slice.call(typedArray);
+                            let realArray = testArray.map((voltage) => {
+                                return voltage / 1000;
+                            });
+                            data.osc[channel][0].waveforms[0].y = realArray;
                             this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel)] = new WaveformComponent(data.osc[channel][0].waveforms[0]);
                         }
-                        /*data.waveforms.forEach((element, index, array) => {
-                            this.dataBuffer[this.dataBufferWriteIndex][chans[index]] = new WaveformComponent(element);
-                        });*/
+                        
                         //Return voltages and complete observer
                         observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
                         this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;

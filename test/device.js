@@ -383,7 +383,7 @@ let osc = {
         for (let i = 0; i < chans.length; i++) {
             let y = [];
             for (var j = 0; j < numSamples; j++) {
-                y[j] = Math.sin((Math.PI / 180) * ((360 * ((dt / 1000 * j * sigFreq) + clockTimeOffset)) + phaseOffset + 90 * parseInt(chans)));
+                y[j] = parseInt(1000 * Math.sin((Math.PI / 180) * ((360 * ((dt / 1000 * j * sigFreq) + clockTimeOffset)) + phaseOffset + 90 * parseInt(chans))));
             }
             wfs[i] = {
                 't0': clockTimeOffset,
