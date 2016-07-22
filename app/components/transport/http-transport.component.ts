@@ -51,17 +51,40 @@ export class HttpTransportComponent extends TransportComponent {
             //http.post(uri, body, options).subscribe(
             http.post(uri, body).subscribe(
                 (data: any) => {
-                    let dataObj = JSON.parse(data._body);
-                    //Handle device errors and warnings
-                    if (dataObj.statusCode == undefined) {
-                        console.log('Response Missing Status Code');
-                    } else if (dataObj.statusCode < 1) {
-                        observer.next(dataObj);
-                        observer.complete();
+
+                    if (data._body.charAt(0) === '-') {
+                        console.log('hey it worked lol');
+                        console.log(data);
+                        let myRe = /{(.*?)}}/;
+                        let regexArray = myRe.exec(data._body);
+                        let command = JSON.parse(regexArray[0]);
+                        //console.log(command);
+                        let binaryIndex = data._body.indexOf('\r\n------WebKitFormBoundarylBu1yd0XWA4m1C6A--\r\n');
+                        let binaryData = data._body.substring(binaryIndex - 80, binaryIndex + 0);
+                        let arrayTest = [];
+                        for (let i = 0, j = 0; i < binaryData.length; i++, j++) {
+                            arrayTest[j] = binaryData.charCodeAt(i);
+                        }
+                        
+                        let typedArray = new Int16Array(arrayTest);
+                        //Works -_-
+                        console.log(String.fromCharCode(0xE4).charCodeAt(0));
+                        console.log(arrayTest, typedArray);
                     }
                     else {
-                        observer.error(dataObj.statusCode);
+                        let dataObj = JSON.parse(data._body);
+                        //Handle device errors and warnings
+                        if (dataObj.statusCode == undefined) {
+                            console.log('Response Missing Status Code');
+                        } else if (dataObj.statusCode < 1) {
+                            observer.next(dataObj);
+                            observer.complete();
+                        }
+                        else {
+                            observer.error(dataObj.statusCode);
+                        }
                     }
+
                 },
                 (err) => {
                     observer.error(err);

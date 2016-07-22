@@ -41,6 +41,42 @@ export class OscInstrumentComponent extends InstrumentComponent {
         })
     }
 
+    runSingleBinary(chans: number[]): Observable<Array<WaveformComponent>> {
+        if (chans.length == 0) {
+            return Observable.create((observer) => {
+                observer.complete();
+            });
+        }
+
+        let command = {
+            "osc": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.osc[chans[index]] =
+            [
+                {
+                    "command": "runSingle"
+                }
+            ]
+        });
+
+        return Observable.create((observer) => {
+            this.transport.writeRead('/binary', command).subscribe(
+                (data) => {
+                    console.log(data);
+                    //Handle device errors and warnings
+                    observer.complete();
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            )
+        });
+    }
+
     runSingle(chans: Array<number>): Observable<Array<WaveformComponent>> {
 
         //If no channels are active no need to talk to hardware

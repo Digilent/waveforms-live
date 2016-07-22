@@ -106,7 +106,18 @@ export class TestChartCtrlsPage {
             (err) => {
                 console.log('OSC Run Single Failed.');
             }
-        );        
+        );     
+        this.activeDevice.instruments.osc.runSingleBinary(this.oscopeChans).subscribe(
+            (data) => {
+                console.log(data);
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {
+                console.log('binary finished in test chart ctrls');
+            }
+        );   
     }
 
     runClick() {

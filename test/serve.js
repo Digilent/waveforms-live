@@ -1,6 +1,7 @@
 //Http server
 let http = require('http');
 let dispatcher = require('httpdispatcher');
+var fs = require("fs");
 
 //Configure Port
 let port = 8080;
@@ -27,14 +28,64 @@ dispatcher.setStatic('resources');
 
 //Device Root GET
 dispatcher.onGet("/", (req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('SilverNeedle Device Simulator');
+
+    res.end('Silver Needle Device Simulator');
 });
 
 //Device Root POST
 dispatcher.onPost("/", (req, res) => {
     postResponse = res;
     device.handler(JSON.parse(req.body), null, sendReply);
+});
+
+//Echo POST
+dispatcher.onPost("/echo", (req, res) => {
+    console.log(req);
+    postResponse = res;
+    postResponse.setHeader('Access-Control-Allow-Origin', '*');
+    postResponse.end('Logged');
+});
+
+//Binary Test Data
+dispatcher.onPost("/binary", (req, res) => {
+    let command = {
+        "osc": {
+            "0": [
+                {
+                    "command": "writeBuffer",
+                    "statusCode": 0,
+                    "wait": 100
+                }
+            ]
+        }
+    };
+
+    res.writeHead(200, {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundarya0sbopXx2fAewhB6'
+    });
+    let body = "------WebKitFormBoundarylBu1yd0XWA4m1C6A\r\n"
+    body += "Content-Disposition: form-data; name=\"commands\"\r\n\r\n";
+    body += JSON.stringify(command) + "\r\n";
+    body += "------WebKitFormBoundarylBu1yd0XWA4m1C6A\r\n"
+    res.write(body, 'utf8');
+
+    //Manually Create Binary Buffer
+    /*
+    let data = new Int16Array(2);
+    data[0] = 0b0000110011100100;  //3300
+    data[1] = 0b0001001110001000;  //5000
+    res.write(Buffer.from(data.buffer));    //Gets a reference of type buffer to the array data 
+    */
+
+    //Load binary data from hex file
+    res.write("Content-Disposition: form-data; name=\"buffer0\"\r\nContent-Transfer-Encoding: binary\r\n\r\n", 'utf8');
+    data = fs.readFileSync('./dataBuffer.hex');
+    console.log(Buffer.from(data));
+    res.write(Buffer.from(data));
+    res.write("\r\n------WebKitFormBoundarylBu1yd0XWA4m1C6A--\r\n", 'utf8');
+    
+    res.end();
 });
 
 /*
