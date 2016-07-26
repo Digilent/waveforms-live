@@ -360,7 +360,7 @@ let osc = {
     },
 
     //Run Single
-    runSingle: function (chans) {
+    runSingle: function (chan) {
 
         //---------- Simulate Signal ----------
         //Set default values
@@ -379,21 +379,23 @@ let osc = {
         var clockTimeOffset = (d.getTime() % 3600000) / 1000;
 
         //Build Y point arrays
-        let wfs = [];
-        for (let i = 0; i < chans.length; i++) {
-            let y = [];
-            for (var j = 0; j < numSamples; j++) {
-                y[j] = parseInt(1000 * Math.sin((Math.PI / 180) * ((360 * ((dt / 1000 * j * sigFreq) + clockTimeOffset)) + phaseOffset + 90 * parseInt(chans))));
-            }
-            wfs[i] = {
-                't0': clockTimeOffset,
-                'dt': dt,
-                'y': y,
-            };
+        let wf = null;
+
+        let y = [];
+        for (var j = 0; j < numSamples; j++) {
+            y[j] = parseInt(1000 * Math.sin((Math.PI / 180) * ((360 * ((dt / 1000 * j * sigFreq) + clockTimeOffset)) + phaseOffset + 90 * parseInt(chan))));
         }
+        let typedArray = new Int16Array(y);
+        console.log(Buffer.from(typedArray));
+        wf = {
+            't0': clockTimeOffset,
+            'dt': dt,
+            'y': y
+        };
+
 
         return {
-            waveforms: wfs,
+            waveform: wf,
             statusCode: statusOk
         };
     }

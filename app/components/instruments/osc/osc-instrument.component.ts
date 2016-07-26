@@ -53,11 +53,11 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
         chans.forEach((element, index, array) => {
             command.osc[chans[index]] =
-            [
-                {
-                    "command": "runSingle"
-                }
-            ]
+                [
+                    {
+                        "command": "runSingle"
+                    }
+                ]
         });
 
         return Observable.create((observer) => {
@@ -91,11 +91,11 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
         chans.forEach((element, index, array) => {
             command.osc[chans[index]] =
-            [
-                {
-                    "command": "runSingle"
-                }
-            ]
+                [
+                    {
+                        "command": "runSingle"
+                    }
+                ]
         });
 
         return Observable.create((observer) => {
@@ -107,17 +107,16 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         this.dataBuffer[this.dataBufferWriteIndex] = [];
                         let typedArray = null;
                         for (let channel in data.osc) {
-                            
-                            typedArray = new Int16Array(data.osc[channel][0].waveforms[0].y);
+                            typedArray = new Int16Array(data.osc[channel][0].waveform.y);
                             //If .map on typedArray returns 0 cuz type which is cool I suppose
-                            let testArray = Array.prototype.slice.call(typedArray);
+                            let testArray = Array.prototype.slice.call(data.osc[channel][0].waveform.y);
                             let realArray = testArray.map((voltage) => {
                                 return voltage / 1000;
                             });
-                            data.osc[channel][0].waveforms[0].y = realArray;
-                            this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel)] = new WaveformComponent(data.osc[channel][0].waveforms[0]);
+                            data.osc[channel][0].waveform.y = realArray;
+                            this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel)] = new WaveformComponent(data.osc[channel][0].waveform);
                         }
-                        
+
                         //Return voltages and complete observer
                         observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
                         this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
@@ -160,11 +159,11 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
         chans.forEach((element, index, array) => {
             command.osc[chans[index]] =
-            [
-                {
-                    "command": "runSingle"
-                }
-            ]
+                [
+                    {
+                        "command": "runSingle"
+                    }
+                ]
         });
 
         return Observable.create((observer) => {
@@ -175,7 +174,11 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         //Clear buffer then parse data into empty buffer
                         this.dataBuffer[this.dataBufferWriteIndex] = [];
                         for (let channel in data.osc) {
-                            this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel)] = new WaveformComponent(data.osc[channel][0].waveforms[0]);
+                            let scaledPoints = [];
+                            data.osc[parseInt(channel)][0].waveform.y.forEach((element, index, array) => {
+                                data.osc[parseInt(channel)][0].waveform.y[index] = element / 1000;
+                            });
+                            this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel)] = new WaveformComponent(data.osc[channel][0].waveform);
                         }
                         //Return voltages and complete observer
                         observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
