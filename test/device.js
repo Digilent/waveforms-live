@@ -386,7 +386,7 @@ let osc = {
             y[j] = parseInt(1000 * Math.sin((Math.PI / 180) * ((360 * ((dt / 1000 * j * sigFreq) + clockTimeOffset)) + phaseOffset + 90 * parseInt(chan))));
         }
         let typedArray = new Int16Array(y);
-        console.log(Buffer.from(typedArray));
+        //console.log(Buffer.from(typedArray));
         wf = {
             't0': clockTimeOffset,
             'dt': dt,
