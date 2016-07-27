@@ -42,9 +42,16 @@ export class AwgInstrumentComponent extends InstrumentComponent {
     //Get all settings for the specified channels.
     getSettings(chans: number[]): Observable<Array<any>> {
         let command = {
-            command: 'awgGetSettings',
-            chans: chans
+            "awg": {}
         }
+        chans.forEach((element, index, array) => {
+            command.awg[chans[index]] =
+                [
+                    {
+                        "command": "getSetting"
+                    }
+                ]
+        });
 
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, command).subscribe(
@@ -69,10 +76,17 @@ export class AwgInstrumentComponent extends InstrumentComponent {
 
     setSettings(chans: number[], settings: Array<Object>): Observable<Array<any>> {
         let command = {
-            command: 'awgSetSettings',
-            chans: chans,
-            settings: settings
+            "awg": {}
         }
+        chans.forEach((element, index, array) => {
+            command.awg[chans[index]] =
+                [
+                    {
+                        "command": "setSetting",
+                        "settings": settings[index]
+                    }
+                ]
+        });
 
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, command).subscribe(

@@ -20,7 +20,7 @@ let statusOk = 0;
 //Command Process 
 let processCommands = function (instrument, commandObject, params) {
     let command = instrument + commandObject.command;
-
+    console.log(command);
     switch (command) {
         //---------- Device ----------
         case 'deviceenumerate':
@@ -55,12 +55,12 @@ let processCommands = function (instrument, commandObject, params) {
         case 'awgSetOffsets':
             //callback(null, awg.setOffsets(event.chans, event.offsets));
             break;
-        case 'awgGetSettings':
-            //callback(null, awg.getSettings(event.chans));
-            break;
-        case 'awgSetSettings':
-            //callback(null, awg.setSettings(event.chans, event.settings));
-            break;
+        case 'awggetSetting':
+        console.log('get settings');
+            return awg.getSetting(params[0]);
+        case 'awgsetSetting':
+            console.log('set settings');
+            return awg.setSetting(params[0], commandObject.settings);
 
         //---------- DC ----------            
         case 'dcCalibrate':
@@ -245,29 +245,26 @@ let awg = {
     },
 
     //Get All Settings
-    getSettings: function (chans) {
-        let settingsArray = [];
-        for (let i = 0; i < chans.length; i++) {
-            settingsArray.push({
-                index: i,
-                numSamples: this.numSamples[i],
-                sampleRate: this.sampleRates[i],
-                offset: this.offsets[i]
-            });
-        }
+    getSetting: function (chan) {
+        let settings = {};
+
+
+        settings.numSamples = this.numSamples[parseInt(chan)];
+        settings.sampleRate = this.sampleRates[parseInt(chan)];
+        settings.offset = this.offsets[parseInt(chan)];
+
+
         return {
-            settingsArray,
+            settings: settings,
             statusCode: statusOk
         };
     },
 
     //Set All Settings
-    setSettings: function (chans, settings) {
-        for (let i = 0; i < chans.length; i++) {
-            this.numSamples[chans[i]] = settings[i].numSamples;
-            this.sampleRates[chans[i]] = settings[i].sampleRate;
-            this.offsets[chans[i]] = settings[i].offset;
-        }
+    setSetting: function (chan, settings) {
+        this.numSamples[parseInt(chan)] = settings.numSamples;
+        this.sampleRates[parseInt(chan)] = settings.sampleRate;
+        this.offsets[parseInt(chan)] = settings.offset;
         return {
             statusCode: statusOk
         };
