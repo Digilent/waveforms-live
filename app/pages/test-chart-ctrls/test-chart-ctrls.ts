@@ -98,7 +98,16 @@ export class TestChartCtrlsPage {
 
     singleClick() {
         //let chans = this.activeDevice.instruments.osc.chans;
-        this.activeDevice.instruments.osc.runSingle(this.oscopeChans).subscribe(
+        let multipliers = [];
+        for (let i = 0; i < this.oscopeChans.length; i++) {
+            if (this.chart1.voltageMultipliers[i] === 'mV') {
+                multipliers[i] = 1;
+            }
+            else {
+                multipliers[i] = 1/1000;
+            }
+        }
+        this.activeDevice.instruments.osc.runSingle(this.oscopeChans, multipliers).subscribe(
             (buffer) => {
                 this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
                 this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);

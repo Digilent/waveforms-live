@@ -77,7 +77,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         });
     }
 
-    runSingle(chans: Array<number>): Observable<Array<WaveformComponent>> {
+    runSingle(chans: Array<number>, voltageMultipliers: number[]): Observable<Array<WaveformComponent>> {
 
         //If no channels are active no need to talk to hardware
         if (chans.length == 0) {
@@ -111,7 +111,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                             //If .map on typedArray returns 0 cuz type which is cool I suppose
                             let testArray = Array.prototype.slice.call(data.osc[channel][0].waveform.y);
                             let realArray = testArray.map((voltage) => {
-                                return voltage / 1000;
+                                return voltage * voltageMultipliers[parseInt(channel)];
                             });
                             data.osc[channel][0].waveform.y = realArray;
                             this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel)] = new WaveformComponent(data.osc[channel][0].waveform);
