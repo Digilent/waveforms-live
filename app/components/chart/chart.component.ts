@@ -46,7 +46,7 @@ export class SilverNeedleChart {
 
     public timeDivision: number = 1;
     public base: number = 0;
-    public numSeries: number[] = [0, 1, 2];
+    public numSeries: number[] = [0, 1];
 
     public voltDivision: number[] = [1, 1];
     public voltBase: number[] = [0, 0];
@@ -379,6 +379,7 @@ export class SilverNeedleChart {
             this.chart.series[seriesNum].setData(waveform.y, true, false, false);
         }
         else {
+            this.numSeries.push(seriesNum);
             this.addYAxis(seriesNum);
             let options = {
                 data: waveform.y,

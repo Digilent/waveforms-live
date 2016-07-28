@@ -1,5 +1,5 @@
 <ion-list>
-    <ion-item-group *ngFor="let series of chart.chart.series; let i = index" (click)="setActiveSeries(i)">
+    <ion-item-group *ngFor="let series of chart.numSeries; let i = index" (click)="setActiveSeries(i)">
         <ion-item-divider light>Series {{i}} Settings</ion-item-divider>
         <ion-item><button (click)="autoscaleY(i)">Autoscale Series {{i}}</button></ion-item>
         <ion-item>
