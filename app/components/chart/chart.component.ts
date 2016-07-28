@@ -46,6 +46,7 @@ export class SilverNeedleChart {
 
     public timeDivision: number = 1;
     public base: number = 0;
+    public numSeries: number[] = [0, 1, 2];
 
     public voltDivision: number[] = [1, 1];
     public voltBase: number[] = [0, 0];
@@ -369,8 +370,30 @@ export class SilverNeedleChart {
         this.chart.xAxis[0].setExtremes(min, max);
     }
 
+    getNumAxes() {
+        return this.chart.yAxis.length;
+    }
+
     drawWaveform(seriesNum: number, waveform: any) {
-        this.chart.series[seriesNum].setData(waveform.y, true, false, false);
+        if (seriesNum < this.chart.yAxis.length) {
+            this.chart.series[seriesNum].setData(waveform.y, true, false, false);
+        }
+        else {
+            this.addYAxis(seriesNum);
+            let options = {
+                data: waveform.y,
+                allowPointSelect: true,
+                yAxis: seriesNum
+            };
+            this.chart.addSeries(options, false, false);
+            if (this.timelineView) {
+                let timelineOptions = {
+                    data: waveform.y,
+                };
+                this.timelineChart.addSeries(timelineOptions, false, false);
+            }
+        }
+
         this.chart.series[seriesNum].update({
             pointStart: waveform.t0,
             pointInterval: waveform.dt
@@ -1037,6 +1060,35 @@ export class SilverNeedleChart {
         this.activeSeries = seriesNum;
         this.updateYAxisLabels();
         this.updateCursorLabels();
+    }
+
+    addYAxis(axisNum: number) {
+        if (this.chart.yAxis.length !== axisNum) {
+            return;
+        }
+        let options = {
+            gridLineWidth: 1,
+            offset: 0,
+            labels: {
+                enabled: false,
+                format: '{value:.3f}'
+            },
+            tickPositioner: function () {
+                let numTicks = 11;
+                let ticks = [];
+                let min = this.chart.yAxis[axisNum].min;
+                let max = this.chart.yAxis[axisNum].max;
+                let delta = (max - min) / (numTicks - 1);
+                for (var i = 0; i < numTicks; i++) {
+                    ticks[i] = (min + i * delta).toFixed(3);
+                }
+                return ticks;
+            },
+            title: {
+                text: null
+            }
+        };
+        this.chart.addAxis(options, false, false, false);
     }
 
     autoscaleAxis(axis: string, axisIndex: number) {
