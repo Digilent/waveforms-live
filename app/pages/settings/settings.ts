@@ -22,6 +22,7 @@ export class SettingsPage {
     private localSimDevUri = 'http://localhost:8080';
     private remotesimDevUri = 'https://35oopc6de8.execute-api.us-west-2.amazonaws.com/dev';
     private storageService: StorageService;
+    private showExtraInfo: boolean = false;
 
     constructor(_nav: NavController, _deviceManagerService: DeviceManagerService, _storageService: StorageService) {
         this.nav = _nav;
@@ -45,6 +46,10 @@ export class SettingsPage {
             },
             () => { }
         )
+    }
+
+    showInfo() {
+        this.showExtraInfo = !this.showExtraInfo;
     }
     
     navToAwgTestPage(deviceIndex: number){

@@ -102,7 +102,7 @@ export class TestChartCtrlsPage {
             (buffer) => {
                 this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
                 this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
-                this.chart1.drawWaveform(2, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
+                //this.chart1.drawWaveform(2, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
             },
             (err) => {
                 console.log('OSC Run Single Failed.');

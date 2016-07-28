@@ -29,9 +29,9 @@
     <h1> Connected Devices </h1>
     <ul>
         <li *ngFor="let device of deviceManangerService.devices, let i = index;">
-            <h4>{{device.deviceMake}} - {{device.deviceModel}}</h4>
+            <h4 (click)="showInfo()">{{device.deviceMake}} - {{device.deviceModel}}</h4>
             <!---------- AWG ---------->
-            <ul>
+            <ul *ngIf="showExtraInfo">
                 <li><button (click)=navToAwgTestPage(i);>AWG</button></li>
                 <li>Number of Channels: {{device.instruments.awg.numChans}}</li>
                 <ul>
@@ -49,7 +49,7 @@
                 </ul>
             </ul>
             <!---------- DC ---------->
-            <ul>
+            <ul *ngIf="showExtraInfo">
                 <li><button (click)=navToDcTestPage(i);>DC Supply</button></li>
                 <ul>
                     <li>Number of Channels: {{device.instruments.dc.numChans}}</li>
@@ -69,7 +69,7 @@
                 </ul>
             </ul>
             <!---------- LA ---------->
-            <ul>
+            <ul *ngIf="showExtraInfo">
                 <li><button (click)=navToLaTestPage(i);>Logic Analyzer</button></li>
                 <ul>
                     <li>Number of Channels: {{device.instruments.la.numChans}}</li>
@@ -81,7 +81,7 @@
                 </ul>
             </ul>
             <!---------- OSC ---------->
-            <ul>
+            <ul *ngIf="showExtraInfo">
                 <li><button (click)=navToOscTestPage(i);>O-Scope</button></li>
                 <li>Number of Channels: {{device.instruments.osc.numChans}}</li>
                 <ul>
