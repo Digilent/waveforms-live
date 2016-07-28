@@ -56,6 +56,9 @@ export class SilverNeedleChart {
     //[y1, y2]
     private yCursorPositions: number[];
 
+    public voltageMultipliers: string[] = ['V', 'V'];
+    public multipliers: string[] = ['mV', 'V'];
+
     constructor(_nav: NavController) {
         this.activeTimeLine = -1;
         this.timeDivision = 3;
