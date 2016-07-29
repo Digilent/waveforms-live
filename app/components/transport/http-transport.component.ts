@@ -53,7 +53,7 @@ export class HttpTransportComponent extends TransportComponent {
                 (data: any) => {
                     if (data._body.charAt(0) === '-') {
                         console.log('hey it worked lol');
-                        console.log(data);
+                        console.log(typeof(data._body),data);
                         let myRe = /{(.*?)}}/;
                         let regexArray = myRe.exec(data._body);
                         let command = JSON.parse(regexArray[0]);
@@ -61,11 +61,15 @@ export class HttpTransportComponent extends TransportComponent {
                         let binaryIndex = data._body.indexOf('\r\n------WebKitFormBoundarylBu1yd0XWA4m1C6A--\r\n');
                         let binaryData = data._body.substring(binaryIndex - 80, binaryIndex + 0);
                         let arrayTest = [];
+                        let doot = [];
                         for (let i = 0, j = 0; i < binaryData.length / 2; i = i + 2, j++) {
                             arrayTest[j] = binaryData.charCodeAt(i) << 8 | binaryData.charCodeAt(i + 1);
+                            doot[j] = binaryData.charAt[j];
                         } 
                         
                         let typedArray = new Int16Array(arrayTest);
+                        let whosie = new Int16Array(doot);
+                        console.log(typedArray, whosie);
                         //Works -_-
                     }
                     else {

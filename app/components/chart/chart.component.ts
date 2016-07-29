@@ -423,6 +423,17 @@ export class SilverNeedleChart {
         }
     }
 
+    clearExtraSeries(usedSeries: number[]) {
+        if (this.chart.series.length <= usedSeries.length) {
+            return;
+        }
+        let lengthExists = this.chart.series.length;
+        for (let i = usedSeries.length; i < lengthExists; i++) {
+            this.chart.series[i].remove(false);
+            this.chart.yAxis[i].remove(false);
+        }
+    }
+
     removeCursors() {
         this.chart.xAxis[0].removePlotLine('cursor0');
         this.chart.xAxis[0].removePlotLine('cursor1');

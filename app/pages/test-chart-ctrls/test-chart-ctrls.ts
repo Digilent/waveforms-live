@@ -109,6 +109,8 @@ export class TestChartCtrlsPage {
         }
         this.activeDevice.instruments.osc.runSingle(this.oscopeChans, multipliers).subscribe(
             (buffer) => {
+                //Pass in the series you're about to draw
+                this.chart1.clearExtraSeries([0, 1, 2]);
                 this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
                 this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
                 //this.chart1.drawWaveform(2, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);

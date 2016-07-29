@@ -80,7 +80,8 @@ dispatcher.onPost("/binary", (req, res) => {
 
     //Load binary data from hex file
     res.write("Content-Disposition: form-data; name=\"buffer0\"\r\nContent-Type: application/octet-stream\r\n\r\n", 'utf8');
-    data = fs.readFileSync('./dataBuffer.hex', 'binary');
+    data = fs.readFileSync('./dataBuffer.hex');
+    console.log(Buffer.from(data));
     res.write(Buffer.from(data));
     res.write("\r\n------WebKitFormBoundarylBu1yd0XWA4m1C6A--\r\n", 'utf8');
     
