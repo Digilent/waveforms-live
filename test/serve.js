@@ -4,7 +4,8 @@ let dispatcher = require('httpdispatcher');
 var fs = require("fs");
 
 //Configure Port
-let port = 8080;
+let hostname = '0.0.0.0';
+let port = 8888;
 if (process.argv[2]) {
     port = process.argv[2];
 }
@@ -48,43 +49,33 @@ dispatcher.onPost("/echo", (req, res) => {
 
 //Binary Test Data
 dispatcher.onPost("/binary", (req, res) => {
+    res.writeHead(200, {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/octet-stream'
+    });
+    
     let command = {
         "osc": {
             "0": [
                 {
-                    "command": "runSingle",
-                    "statusCode": 0,
-                    "wait": 100
+                    "command": "read"
                 }
             ]
         }
     };
-
-    res.writeHead(200, {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundarya0sbopXx2fAewhB6'
-    });
-    let body = "------WebKitFormBoundarylBu1yd0XWA4m1C6A\r\n"
-    body += "Content-Disposition: form-data; name=\"commands\"\r\n\r\n";
-    body += JSON.stringify(command) + "\r\n";
-    body += "------WebKitFormBoundarylBu1yd0XWA4m1C6A\r\n"
-    res.write(body, 'utf8');
-
-    //Manually Create Binary Buffer
-    /*
-    let data = new Int16Array(2);
-    data[0] = 0b0000110011100100;  //3300
-    data[1] = 0b0001001110001000;  //5000
-    res.write(Buffer.from(data.buffer));    //Gets a reference of type buffer to the array data 
-    */
-
-    //Load binary data from hex file
-    res.write("Content-Disposition: form-data; name=\"buffer0\"\r\nContent-Type: application/octet-stream\r\n\r\n", 'utf8');
-    data = fs.readFileSync('./dataBuffer.hex');
-    console.log(Buffer.from(data));
-    res.write(Buffer.from(data));
-    res.write("\r\n------WebKitFormBoundarylBu1yd0XWA4m1C6A--\r\n", 'utf8');
-    
+    let stringCommand = JSON.stringify(command);
+    let binaryIndex = stringCommand.length;
+    binaryIndex = (binaryIndex + binaryIndex.toString().length + 2).toString() + '\r\n';
+    console.log(binaryIndex);
+    let rawFileRead = fs.readFileSync('./dataBuffer.hex');
+    console.log(typeof(rawFileRead), rawFileRead.length);
+    let data = new Int16Array(rawFileRead.length / 2);
+    for (let i = 0, j = 0; i < rawFileRead.length; i = i + 2, j++) {
+        data[j] = rawFileRead[i] << 8 | rawFileRead[i + 1];
+    }
+    res.write(binaryIndex);
+    res.write(stringCommand);
+    res.write(Buffer.from(data.buffer), null);
     res.end();
 });
 
@@ -118,8 +109,9 @@ dispatcher.onPost('/osc', (req, res) => {
 var server = http.createServer(handleRequest);
 
 //Start HTTP server
-server.listen(port, function () {
-    console.log("Server listening on: http://localhost:%s\n", port)
+//server.listen(port, hostname, function () {
+server.listen(port, hostname, function () {
+    console.log("Server listening on: http://%s:%s\n", hostname, port);
 });
 
 //Mirrors Lambda functionality by passing response back to requester as the reply body

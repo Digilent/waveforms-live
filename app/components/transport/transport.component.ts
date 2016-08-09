@@ -13,6 +13,7 @@ export abstract class TransportComponent {
     }
 
     abstract writeRead(endpoint: string, sendData: Object) : Observable<any>;
+    abstract writeReadBinary(endpoint: string, sendData: Object) : Observable<any>;
     abstract streamFrom(endpoint: string, sendData: Object, delay?: number) : Observable<any>;
     abstract stopStream(): void;
         

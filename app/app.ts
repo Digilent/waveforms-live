@@ -43,7 +43,7 @@ class MyApp {
 
     // set our app's pages
     this.pages = [
-      //{ title: 'Home', component: HomePage },
+      { title: 'Home', component: HomePage },
       //{ title: 'SideControls', component: SideControlsPage },
       //{ title: 'Test Chart', component: TestChartPage },
       { title: 'Test Chart Controls', component: TestChartCtrlsPage },

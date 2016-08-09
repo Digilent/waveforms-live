@@ -1261,21 +1261,22 @@ export class SilverNeedleChart {
     }
 
     changeMultiplier(seriesNum: number, multiplier: string, previousSetting: string) {
+        console.log(this.chart.series);
         if (multiplier === previousSetting) {
             return;
         }
         if (multiplier === 'mV') {
             let newValArray = [];
-            this.chart.series[seriesNum].data.forEach((element, index, array) => {
-                newValArray[index] = parseFloat(element.y) * 1000;
+            this.chart.series[seriesNum].yData.forEach((element, index, array) => {
+                newValArray[index] = parseFloat(element) * 1000;
             });
             this.chart.series[seriesNum].setData(newValArray, true, false, false);
             this.chart.reflow();
         }
         else if (multiplier === 'V') {
             let newValArray = [];
-            this.chart.series[seriesNum].data.forEach((element, index, array) => {
-                newValArray[index] = parseFloat(element.y) / 1000;
+            this.chart.series[seriesNum].yData.forEach((element, index, array) => {
+                newValArray[index] = parseFloat(element) / 1000;
             });
             this.chart.series[seriesNum].setData(newValArray, true, false, false);
             this.chart.reflow();

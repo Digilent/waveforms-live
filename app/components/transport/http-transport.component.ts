@@ -68,7 +68,7 @@ export class HttpTransportComponent extends TransportComponent {
                         } 
                         
                         let typedArray = new Int16Array(arrayTest);
-                        let whosie = new Int16Array(doot);
+                        let whosie = new Int16Array(Buffer.from(binaryData), 0, 80);
                         console.log(typedArray, whosie);
                         //Works -_-
                     }
@@ -99,6 +99,58 @@ export class HttpTransportComponent extends TransportComponent {
 
     writeRead(endpoint: string, sendData: Object): Observable<any> {
         return this.writeReadHelper(this.http, this.rootUri, endpoint, sendData);
+    }
+
+    writeReadBinary(endpoint: string, sendData: Object): Observable<any> {
+        return this.writeReadBinaryHelper(this.http, this.rootUri, endpoint, sendData);
+    }
+
+    writeReadBinaryHelper(http: Http, rootUri: string, endpoint: string, sendData: Object): Observable<any> {
+
+        let uri = rootUri + endpoint;
+        let body = JSON.stringify(sendData);
+        /* - Local simulated device does not handle OPTIONS
+        let headers = new Headers({ 'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers });
+        */
+
+        return Observable.create((observer) => {
+            //http.post(uri, body, options).subscribe(
+            //TODO cleanup command and shiet
+            var XHR = new XMLHttpRequest();
+            let FD = new FormData();
+            let command = {
+                "awg": {
+                    "0": [
+                        {
+                            "command": "writeBuffer"
+                        }
+                    ]
+                }
+            };
+
+            FD.append('commands', JSON.stringify(command));
+            FD.append('buffer0', 'THIS COULD BE SOME BINARY DATA...WHY NOT?');
+
+            // We define what will happen if the data are successfully sent
+            XHR.addEventListener("load", function (event) {
+                console.log('response received');
+                observer.next(event.currentTarget.response);
+                observer.complete();
+            });
+
+            // We define what will happen in case of error
+            XHR.addEventListener("error", function (event) {
+                observer.error('TX Error: ', event);
+            });
+
+
+            // We setup our request
+            XHR.open("POST", "http://localhost:8888/binary");
+            XHR.responseType = 'arraybuffer';
+            // The data sent are the one the user provide in the form
+            XHR.send(FD);
+        });
     }
 
     streamFrom(endpoint: string, sendData: Object, delay = 0): Observable<any> {

@@ -44,6 +44,10 @@ export class TransportService {
         return this.transport.writeRead(endpoint, sendData);
     }
 
+    writeReadBinary(endpoint: string, sendData: Object): Observable<any> {
+        return this.transport.writeReadBinary(endpoint, sendData);
+    }
+
     streamFrom(endpoint: string, sendData: Object, delay = 0): Observable<any> {
         return this.transport.streamFrom(endpoint, sendData, delay);
     }
