@@ -41,7 +41,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         })
     }
 
-    runSingleBinary(chans: number[]): Observable<Array<WaveformComponent>> {
+    runSingleBinary(chans: number[], voltageMultipliers: number[]): Observable<Array<WaveformComponent>> {
         if (chans.length == 0) {
             return Observable.create((observer) => {
                 observer.complete();
@@ -68,9 +68,28 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     let binaryIndexStringLength = megaString.indexOf('\r\n');
                     let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
                     let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex));
+                    console.log(megaString.substring(binaryIndexStringLength + 2, binaryIndex));
                     console.log(command);
                     let binaryData = new Int16Array(event.currentTarget.response.slice(binaryIndex));
-                    console.log(binaryData);
+                    let testDoot = Array.prototype.slice.call(binaryData);
+                    console.log(binaryData, typeof (binaryData), typeof (testDoot), testDoot);
+
+                    let realArray = testDoot.map((voltage) => {
+                        return voltage * voltageMultipliers[0];
+                    });
+                    command.osc[0][0].waveform.y = realArray;
+                    this.dataBuffer[this.dataBufferWriteIndex][0] = new WaveformComponent(command.osc[0][0].waveform);
+
+                    observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
+                    this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
+                    //console.log(this.dataBuffer);
+                    if (this.dataBufferFillSize < this.numDataBuffers) {
+                        this.dataBufferFillSize++;
+                        this.activeBuffer = this.dataBufferFillSize.toString();
+                    }
+                    else {
+                        this.activeBuffer = (this.numDataBuffers).toString();
+                    }
                     //Handle device errors and warnings
                     observer.complete();
                 },

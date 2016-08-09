@@ -424,6 +424,7 @@ export class SilverNeedleChart {
     }
 
     clearExtraSeries(usedSeries: number[]) {
+        this.numSeries = usedSeries;
         if (this.chart.series.length <= usedSeries.length) {
             return;
         }
@@ -432,6 +433,13 @@ export class SilverNeedleChart {
             this.chart.series[i].remove(false);
             this.chart.yAxis[i].remove(false);
         }
+        if (this.timelineView) {
+            for (let i = usedSeries.length; i < lengthExists; i++) {
+                this.timelineChart.series[i].remove(false);
+                this.timelineChart.yAxis[i].remove(false);
+            }
+        }
+        console.log(this.chart.series, this.chart.yAxis);
     }
 
     removeCursors() {
@@ -1261,7 +1269,6 @@ export class SilverNeedleChart {
     }
 
     changeMultiplier(seriesNum: number, multiplier: string, previousSetting: string) {
-        console.log(this.chart.series);
         if (multiplier === previousSetting) {
             return;
         }

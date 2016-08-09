@@ -82,7 +82,6 @@ export class YAxisComponent {
             ev: event
         });
         popover.onDismiss(data => {
-            console.log(data);
             this.chart.changeMultiplier(i, data.option, this.chart.voltageMultipliers[i]);
             this.chart.voltageMultipliers[i] = data.option;
         });

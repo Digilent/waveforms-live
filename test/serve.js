@@ -54,25 +54,67 @@ dispatcher.onPost("/binary", (req, res) => {
         'Content-Type': 'application/octet-stream'
     });
     
+
+
+
+    //File read
+/*    let rawFileRead = fs.readFileSync('./dataBuffer.hex');
+
+
+    console.log(typeof (rawFileRead), rawFileRead.length);
+    let data = new Int16Array(rawFileRead.length / 2);
+    for (let i = 0, j = 0; i < rawFileRead.length; i = i + 2, j++) {
+        data[j] = rawFileRead[i] << 8 | rawFileRead[i + 1];
+    }*/
+
+
+    //Start sin wave sim
+    let sampleRate = 1000;
+    let numSamples = 1000;
+    let sigFreq = 100;
+    let t0 = 0;
+    let phaseOffset = 0;
+
+    //Calculate dt - time between data points
+    var dt = 1 / sampleRate * 1000;
+
+    //Calculate start time offset to simulate continuously running signal
+    var d = new Date();
+    //Clock time in seconds.  Rolls ever every hour.
+    var clockTimeOffset = (d.getTime() % 3600000) / 1000;
+
+    //Build Y point arrays
+    let wf = null;
+
+    let y = [];
+    for (var j = 0; j < numSamples; j++) {
+        y[j] = parseInt(1000 * Math.sin((Math.PI / 180) * ((360 * ((dt / 1000 * j * sigFreq) + clockTimeOffset)) + phaseOffset + 90 )));
+    }
+    let data = new Int16Array(y);
+    //console.log(Buffer.from(typedArray));
+    wf = {
+        't0': clockTimeOffset,
+        'dt': dt
+    };
+    //end sine wave sim
+
     let command = {
         "osc": {
             "0": [
                 {
-                    "command": "read"
+                    "command": "read",
+                    "waveform": wf,
+                    "statusCode": 0
                 }
             ]
         }
     };
+
     let stringCommand = JSON.stringify(command);
     let binaryIndex = stringCommand.length;
     binaryIndex = (binaryIndex + binaryIndex.toString().length + 2).toString() + '\r\n';
     console.log(binaryIndex);
-    let rawFileRead = fs.readFileSync('./dataBuffer.hex');
-    console.log(typeof(rawFileRead), rawFileRead.length);
-    let data = new Int16Array(rawFileRead.length / 2);
-    for (let i = 0, j = 0; i < rawFileRead.length; i = i + 2, j++) {
-        data[j] = rawFileRead[i] << 8 | rawFileRead[i + 1];
-    }
+
     res.write(binaryIndex);
     res.write(stringCommand);
     res.write(Buffer.from(data.buffer), null);
