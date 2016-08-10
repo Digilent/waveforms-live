@@ -55,8 +55,8 @@ export class HttpTransportComponent extends TransportComponent {
 
             // We define what will happen if the data are successfully sent
             XHR.addEventListener("load", function (event) {
-                console.log(XHR.getResponseHeader('Content-Type'), event);
-                console.log('response received');
+                //console.log(XHR.getResponseHeader('Content-Type'), event);
+                //console.log('response received');
                 observer.next(event.currentTarget.response);
                 observer.complete();
             });
@@ -86,7 +86,7 @@ export class HttpTransportComponent extends TransportComponent {
             let getData = function (writeReadHelper, streamState: any, http: Http, rootUri: string, endpoint: string, sendData: Object, delay: number) {
                 writeReadHelper(http, rootUri, endpoint, sendData).subscribe(
                     (data: any) => {
-                        console.log('Inner Read ', i, ' >> ', data);
+                        //console.log('Inner Read ', i, ' >> ', data);
                         observer.next(data)
                     },
                     (err) => {

@@ -28,8 +28,8 @@
                         <ion-icon name="hand"></ion-icon>
                     </button>
                 </div>
-                <div #oscopeChartInner class="chartWrapper">
-                    <silverNeedleChart #chart1 (chartLoad)="setContainerRef()"></silverNeedleChart>
+                <div class="chartWrapper">
+                    <silverNeedleChart #chart1 (chartLoad)="initSettings()"></silverNeedleChart>
                 </div>
             </div> 
             <div class="controls-wrapper">

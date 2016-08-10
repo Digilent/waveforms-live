@@ -1,6 +1,5 @@
 'use strict';
 
-//Todo - provide AWS Lambda alternative for loading device
 //Load device descriptor from file
 var fs = require("fs");
 fs.readFile('./devices/openscope-mz.json', 'utf8', function (err, data) {
@@ -9,8 +8,6 @@ fs.readFile('./devices/openscope-mz.json', 'utf8', function (err, data) {
     }
     else {
         device.descriptor = JSON.parse(data);
-        console.log(device.descriptor);
-        console.log();
     }
 });
 
@@ -19,14 +16,9 @@ let statusOk = 0;
 
 //Process binary data to create correct response
 let processBinaryDataAndSend = function(commandObject, res) {
-    //console.log(JSON.stringify(commandObject));
     let binaryDataContainer = {};
     let binaryOffset = 0;
     for (let channel in commandObject.osc) {
-        //for each channel take out binary data and note length.
-        //remove waveform.y from commandObject
-        //after both chans get the binary index
-        //use binary index plus initial length to get offset for other binary data
         binaryDataContainer[channel] = commandObject.osc[channel][0].waveform.y;
         commandObject.osc[channel][0].offset = binaryOffset;
         binaryOffset += commandObject.osc[channel][0].length; 
@@ -49,7 +41,6 @@ let processBinaryDataAndSend = function(commandObject, res) {
 //Command Process 
 let processCommands = function (instrument, commandObject, params) {
     let command = instrument + commandObject.command;
-    console.log(command);
     switch (command) {
         //---------- Device ----------
         case 'deviceenumerate':
@@ -85,10 +76,8 @@ let processCommands = function (instrument, commandObject, params) {
             //callback(null, awg.setOffsets(event.chans, event.offsets));
             break;
         case 'awggetSetting':
-        console.log('get settings');
             return awg.getSetting(params[0]);
         case 'awgsetSetting':
-            console.log('set settings');
             return awg.setSetting(params[0], commandObject.settings);
 
         //---------- DC ----------            
@@ -430,7 +419,7 @@ let osc = {
             'dt': dt,
             'y': typedArray
         };
-        //length is 2x the array length cuz 2 bytes per entry
+        //length is 2x the array length because 2 bytes per entry
         return {
             waveform: wf,
             length: 2 * typedArray.length,

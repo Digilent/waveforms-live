@@ -78,10 +78,8 @@ export class DcSupplyComponent {
     }
 
     setVoltages(chans: Array<number>, voltages: Array<number>) {
-        console.log(this.activeDevice.instruments.dc);
         this.activeDevice.instruments.dc.setVoltages(chans, voltages).subscribe(
             (data) => {
-                console.log(data);
                 if (data.statusCode == 0) {
                     console.log('DC channels: ' + chans + ' set to ' + voltages);
                 }
@@ -105,7 +103,7 @@ export class DcSupplyComponent {
                 console.log(err);
             },
             () => {
-                console.log('getVoltage Done');
+                //console.log('getVoltage Done');
             }
         )
     }

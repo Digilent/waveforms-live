@@ -12,13 +12,13 @@ export class WaveformComponent {
     constructor(t0: number, dt: number, y: Array<number>)
     constructor(wfDescOrT0: any | number, dt?: number, y?: Array<number>) {
         if (typeof (wfDescOrT0) === 'number') {
-            console.log('Waveform Parametric Constructor: ', wfDescOrT0);
+            //console.log('Waveform Parametric Constructor: ', wfDescOrT0);
             //Construct waveform from parameters
             this.t0 = <number>wfDescOrT0;
             this.dt = dt;
             this.y = y;
         } else {
-            console.log('Waveform Descriptor Constructor: ', wfDescOrT0);
+            //console.log('Waveform Descriptor Constructor: ', wfDescOrT0);
             //Construct waveform from waveform descriptor object                    
             this.t0 = wfDescOrT0.t0;
             this.dt = wfDescOrT0.dt;

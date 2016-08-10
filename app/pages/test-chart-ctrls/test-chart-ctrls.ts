@@ -23,7 +23,6 @@ import {StorageService} from '../../services/storage/storage.service';
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
-    @ViewChild('oscopeChartInner') oscopeChartInner: ElementRef;
     private nav: NavController;
     public controlsVisible = false;
     public botVisible = false;
@@ -98,16 +97,16 @@ export class TestChartCtrlsPage {
         }
         this.activeDevice.instruments.osc.runSingleBinary(this.oscopeChans, multipliers).subscribe(
             (data) => {
-                console.log(data);
+                //console.log(data);
                 this.chart1.clearExtraSeries([0, 1]);
                 this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
                 this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
             },
             (err) => {
-                console.log(err);
+                //console.log(err);
             },
             () => {
-                console.log('binary finished in test chart ctrls');
+                //console.log('binary finished in test chart ctrls');
             }
         );   
     }
@@ -126,7 +125,6 @@ export class TestChartCtrlsPage {
         this.running = true;
         this.activeDevice.instruments.osc.streamRunSingle(this.oscopeChans, multipliers).subscribe(
             (buffer) => {
-                console.log(this.activeDevice.instruments.osc.dataBuffer);
                 this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
                 this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
             },
@@ -151,9 +149,7 @@ export class TestChartCtrlsPage {
         this.chart1.setTitle('Sup Son? ¯\\_(ツ)_/¯');
     }
 
-    setContainerRef() {
-        console.log('Setting container element ref in chart component');
-        this.chart1.setElementRef(this.oscopeChartInner);
+    initSettings() {
         this.chart1.enableCursors();
         this.chart1.enableTimelineView();
     }

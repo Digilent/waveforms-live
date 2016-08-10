@@ -36,14 +36,11 @@ export class DeviceManagerService {
                 ]
             }
 
-            this.transport.writeRead('/', JSON.stringify(command)).subscribe(
+            this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (deviceDescriptor) => {
-                    console.log('Device Manager: ', deviceDescriptor);
                     let response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(deviceDescriptor.slice(0))));
-                    console.log(response);
                     let dev = new DeviceComponent(this.http, uri, response.device[0]);
                     this.activeDeviceIndex = this.devices.push(dev)-1;
-                    console.log(this.devices);
                     observer.next(this.activeDeviceIndex);
                     observer.complete();
                 },

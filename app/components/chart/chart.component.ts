@@ -1,4 +1,4 @@
-import {Component, Output, Input, EventEmitter, ElementRef} from '@angular/core';
+import {Component, Output, Input, EventEmitter, ElementRef, ViewChild} from '@angular/core';
 import {CHART_DIRECTIVES} from 'angular2-highcharts';
 import {NavController, Modal} from 'ionic-angular';
 import {NgClass} from '@angular/common';
@@ -13,6 +13,7 @@ import {ModalCursorPage} from '../../pages/cursor-modal/cursor-modal';
 })
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
+    @ViewChild('oscopeChartInner') oscopeChartInner: ElementRef;
     private nav: NavController;
     public chart: Object;
     public timelineChart: Object;
@@ -26,7 +27,7 @@ export class SilverNeedleChart {
     private cursorLabel: any[];
     private cursorAnchors: any[] = [0, 0, 0, 0];
     private xCursorDragStartPos: any;
-    private oscopeChartInner: ElementRef;
+    //private oscopeChartInner: ElementRef;
     private activeCursor: number;
     private activeSeries: number;
     private numYCursors: number;
@@ -448,20 +449,17 @@ export class SilverNeedleChart {
         this.chart.yAxis[0].removePlotLine('cursor2');
         this.chart.yAxis[0].removePlotLine('cursor3');
         if (this.timelineView) {
-            console.log(this.timelineChart.xAxis[0].plotLinesAndBands, this.timelineChart.yAxis[0].plotLinesAndBands);
             this.timelineChart.xAxis[0].removePlotLine('timelineCursor0');
             this.timelineChart.xAxis[0].removePlotLine('timelineCursor1');
             this.timelineChart.yAxis[0].removePlotLine('timelineCursor2');
             this.timelineChart.yAxis[0].removePlotLine('timelineCursor3');
         }
-        console.log(this.cursorLabel, this.cursorAnchors);
         for (let i = 0; i < this.cursorLabel.length; i++) {
             if (typeof(this.cursorLabel[i]) === 'object') {
                 this.cursorLabel[i].destroy();
                 this.cursorAnchors[i].destroy();
                 this.cursorAnchors[i] = 'empty';
                 this.cursorLabel[i] = 'empty';
-                console.log('rekt label ' + i);
             }
         }
         this.numXCursors = 0;
@@ -471,8 +469,6 @@ export class SilverNeedleChart {
     }
 
     addXCursor() {
-        console.log('adding x cursor');
-        console.log(this.chart.series[0].color);
         let extremes = this.chart.xAxis[0].getExtremes();
         let initialValue: number;
         let style: string = null;
@@ -512,7 +508,6 @@ export class SilverNeedleChart {
                 zIndex: 100 + this.numXCursors,
                 id: 'timelineCursor' + this.numXCursors
             });
-            console.log(this.timelineChart.xAxis[0].plotLinesAndBands);
         }
         this.cursorLabel[this.numXCursors] = this.chart.renderer.text('Cursor ' + this.numXCursors, 100, 100).add();
         this.chart.xAxis[0].plotLinesAndBands[this.numXCursors].svgElem.element.id = 'cursor' + this.numXCursors;
@@ -557,7 +552,6 @@ export class SilverNeedleChart {
     }
 
     addYCursor() {
-        console.log('adding Y cursor number: ' + this.numYCursors);
         let initialValue: number;
         let extremes = this.chart.yAxis[0].getExtremes();
         let style: string = null;
@@ -593,7 +587,6 @@ export class SilverNeedleChart {
                     zIndex: 100 + this.numXCursors,
                     id: 'timelineCursor' + (this.numYCursors + 2)
                 });
-                console.log(this.timelineChart.yAxis[0].plotLinesAndBands);
             }
             this.cursorLabel[this.numYCursors + 2] = this.chart.renderer.text('Cursor ' + (this.numYCursors + 2), 100, 500).add();
             this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.rect(this.chart.plotLeft - 12, this.chart.yAxis[0].toPixels(initialValue) - 6, 10, 10, 1)
@@ -633,7 +626,6 @@ export class SilverNeedleChart {
                 }
             })
             .on('mouseup', (event) => {
-                console.log('Ystop')
                 this.activeCursor = -1;
             });
 
@@ -843,8 +835,7 @@ export class SilverNeedleChart {
     }
 
     setElementRef(element) {
-        this.oscopeChartInner = element;
-        console.log('ElementRef set in chart component :D');
+        //this.oscopeChartInner = element;
     }
 
     getCursorDeltas() {
@@ -894,7 +885,6 @@ export class SilverNeedleChart {
         });
         modal.onDismiss(data=> {
             if (data.save) {
-                console.log('saving data', data);
                 this.cursorType = data.cursorType;
                 this.cursor1Chan = data.cursor1Chan;
                 this.cursor2Chan = data.cursor2Chan;
@@ -930,7 +920,6 @@ export class SilverNeedleChart {
 
     enableCursors() {
         this.cursorsEnabled = true;
-        console.log(this.cursorsEnabled);
         //Wait for ngClass to apply css class and reflow chart to fill correctly. 
         //TODO check for ngclass event that fires on class change.
         setTimeout(() => {
@@ -1188,12 +1177,12 @@ export class SilverNeedleChart {
                 })
                     .on('mousedown', (event) => {
                         this.inTimelineDrag = true;
-                        console.log('mousedown' + i);
+                        //console.log('mousedown' + i);
                         this.startTimelineDrag(i);
                     })
                     .on('mouseup', (event) => {
                         this.inTimelineDrag = false;
-                        console.log('mouseup' + i);
+                        //console.log('mouseup' + i);
                         this.clearDragListener(i);
                     });
             }

@@ -63,12 +63,10 @@ export class YAxisComponent {
 
     setActiveSeries(i) {
         this.chart.setActiveSeries(i + 1);
-        console.log('hi');
     }
 
     autoscaleY(i) {
         this.chart.autoscaleAxis('y', i);
-        console.log(this.chart.voltBase, this.chart.voltDivision);
     }
 
     changeMultiplier(i, event) {

@@ -36,7 +36,6 @@ export class DcInstrumentComponent extends InstrumentComponent {
             "dc": {}
         }
         chans.forEach((element, index, array) => {
-            console.log(index);
             command.dc[chans[index]] =
             [
                 {
@@ -50,7 +49,6 @@ export class DcInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    console.log(data);
                     if (data.statusCode < 1) {
                         let voltages = [];
 
@@ -103,7 +101,6 @@ export class DcInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    console.log(data);
                     if (data.statusCode < 1) {
                         observer.next(data);
                         observer.complete();
