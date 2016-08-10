@@ -27,7 +27,6 @@ export class SilverNeedleChart {
     private cursorLabel: any[];
     private cursorAnchors: any[] = [0, 0, 0, 0];
     private xCursorDragStartPos: any;
-    //private oscopeChartInner: ElementRef;
     private activeCursor: number;
     private activeSeries: number;
     private numYCursors: number;
@@ -41,6 +40,7 @@ export class SilverNeedleChart {
     private chartBoundsY: Object = null;
     private inTimelineDrag: boolean = false;
     private activeChannels = [0, 0];
+    private autoscaleAll: boolean = true;
 
     private timelineView: boolean = false;
     private timelineBounds: number[] = [0, 0, 0, 0];
@@ -319,9 +319,7 @@ export class SilverNeedleChart {
     }
 
     onPointSelect (event) {
-        console.log(event);
         this.activeSeries = event.context.series.index + 1;
-        console.log('Active Series: ' + this.activeSeries);
         this.updateYAxisLabels();
     }
 
@@ -421,6 +419,9 @@ export class SilverNeedleChart {
             let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(this.chartBoundsX.max) + 5);
             this.updatePlotBands([2, 3], [[extremesX.min, this.chartBoundsX.min], [this.chartBoundsX.max, extremesX.max]]);
             this.updatePlotLines([0, 1], [left, right]);
+        }
+        if (this.autoscaleAll) {
+            this.autoscaleAllAxes();
         }
     }
 
@@ -1101,6 +1102,17 @@ export class SilverNeedleChart {
             }
         };
         this.chart.addAxis(options, false, false, false);
+    }
+
+    autoscaleAllAxes() {
+        this.autoscaleAxis('x', 0);
+        for (let i = 0; i < this.chart.yAxis.length; i++) {
+            this.autoscaleAxis('y', i);
+        }
+    }
+
+    toggleAutoscale() {
+        this.autoscaleAll = !this.autoscaleAll;
     }
 
     autoscaleAxis(axis: string, axisIndex: number) {

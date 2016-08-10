@@ -53,6 +53,10 @@ export class YAxisComponent {
         this.storageEventListener.unsubscribe();
     }
 
+    turnOnAutoscale() {
+        this.chart.toggleAutoscale();
+    }
+
     seriesChanged(seriesNum: number) {
         this.chart.setSeriesSettings({
             seriesNum: seriesNum,
@@ -70,7 +74,6 @@ export class YAxisComponent {
     }
 
     changeMultiplier(i, event) {
-        console.log(event);
         let popover: Popover;
         popover = Popover.create(GenPopover, {
             dataArray: this.chart.multipliers

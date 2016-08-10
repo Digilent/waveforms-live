@@ -1,3 +1,4 @@
+<button (click)="turnOnAutoscale()">Autoscale All</button>
 <ion-list>
     <ion-item-group *ngFor="let series of chart.numSeries; let i = index" (click)="setActiveSeries(i)">
         <ion-item-divider light>Series {{i}} Settings</ion-item-divider>
