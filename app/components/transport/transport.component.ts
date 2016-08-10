@@ -12,9 +12,8 @@ export abstract class TransportComponent {
         console.log('Generic Transport Contructor');
     }
 
-    abstract writeRead(endpoint: string, sendData: Object) : Observable<any>;
-    abstract writeReadBinary(endpoint: string, sendData: Object) : Observable<any>;
-    abstract streamFrom(endpoint: string, sendData: Object, delay?: number) : Observable<any>;
+    abstract writeRead(endpoint: string, sendData: any, dataType: string) : Observable<any>;
+    abstract streamFrom(endpoint: string, sendData: any, dataType: string, delay?: number) : Observable<any>;
     abstract stopStream(): void;
         
     //Update the URI used by the transport

@@ -63,19 +63,9 @@ export class TestChartCtrlsPage {
 
     toggleControls() {
         this.controlsVisible = !this.controlsVisible;
-        //this.chart1.options.chart.height = 400;
-        //this.chart1.redrawChart();
-
         setTimeout(() => {
             this.chart1.redrawChart();
         }, 550);
-
-        /*
-        for (let i = 0; i < 10; i++) {
-            this.chart1.redrawChart();
-        }
-        */
-        //console.log(this.controlsVisible);
     }
     
     toggleBotControls() {
@@ -97,7 +87,6 @@ export class TestChartCtrlsPage {
     }
 
     singleClick() {
-        //let chans = this.activeDevice.instruments.osc.chans;
         let multipliers = [];
         for (let i = 0; i < this.oscopeChans.length; i++) {
             if (this.chart1.voltageMultipliers[i] === 'mV') {
@@ -107,23 +96,12 @@ export class TestChartCtrlsPage {
                 multipliers[i] = 1/1000;
             }
         }
-        /*this.activeDevice.instruments.osc.runSingle(this.oscopeChans, multipliers).subscribe(
-            (buffer) => {
-                //Pass in the series you're about to draw
-                this.chart1.clearExtraSeries([0, 1]);
-                this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
-                this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
-                //this.chart1.drawWaveform(2, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
-            },
-            (err) => {
-                console.log('OSC Run Single Failed.');
-            }
-        );     */
         this.activeDevice.instruments.osc.runSingleBinary(this.oscopeChans, multipliers).subscribe(
             (data) => {
                 console.log(data);
-                this.chart1.clearExtraSeries([0]);
+                this.chart1.clearExtraSeries([0, 1]);
                 this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
+                this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
             },
             (err) => {
                 console.log(err);
@@ -136,8 +114,17 @@ export class TestChartCtrlsPage {
 
     runClick() {
         console.log('run');
+        let multipliers = [];
+        for (let i = 0; i < this.oscopeChans.length; i++) {
+            if (this.chart1.voltageMultipliers[i] === 'mV') {
+                multipliers[i] = 1;
+            }
+            else {
+                multipliers[i] = 1 / 1000;
+            }
+        }
         this.running = true;
-        this.activeDevice.instruments.osc.streamRunSingle(this.oscopeChans).subscribe(
+        this.activeDevice.instruments.osc.streamRunSingle(this.oscopeChans, multipliers).subscribe(
             (buffer) => {
                 console.log(this.activeDevice.instruments.osc.dataBuffer);
                 this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);

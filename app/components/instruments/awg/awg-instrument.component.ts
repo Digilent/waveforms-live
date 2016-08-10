@@ -36,7 +36,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         let command = {
             command: 'awgEnumerate'
         }
-        return this.transport.writeRead(this.endpoint, JSON.stringify(command));
+        return this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json');
     }
 
     //Get all settings for the specified channels.
@@ -54,8 +54,9 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
-                (data) => {
+            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
                     if (data.statusCode == 0) {
                         observer.next(data);
                         observer.complete();
@@ -89,8 +90,9 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
-                (data) => {
+            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
                     if (data.statusCode == 0) {
                         observer.next(data);
                         observer.complete();
@@ -117,7 +119,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         }
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
+            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode == 0) {
@@ -161,7 +163,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         }
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
+            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode < 1) {

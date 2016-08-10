@@ -40,16 +40,12 @@ export class TransportService {
     }
     */
 
-    writeRead(endpoint: string, sendData: Object): Observable<any> {
-        return this.transport.writeRead(endpoint, sendData);
+    writeRead(endpoint: string, sendData: any, dataType: string): Observable<any> {
+        return this.transport.writeRead(endpoint, sendData, dataType);
     }
 
-    writeReadBinary(endpoint: string, sendData: Object): Observable<any> {
-        return this.transport.writeReadBinary(endpoint, sendData);
-    }
-
-    streamFrom(endpoint: string, sendData: Object, delay = 0): Observable<any> {
-        return this.transport.streamFrom(endpoint, sendData, delay);
+    streamFrom(endpoint: string, sendData: Object, dataType: string, delay = 0): Observable<any> {
+        return this.transport.streamFrom(endpoint, sendData, dataType, delay);
     }
 
     stopStream() {

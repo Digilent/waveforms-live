@@ -61,28 +61,23 @@ export class OscInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeReadBinary('/binary', JSON.stringify(command)).subscribe(
+            this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (data) => {
-                    console.log(data);
                     let megaString = String.fromCharCode.apply(null, new Int8Array(data.slice(0)));
                     let binaryIndexStringLength = megaString.indexOf('\r\n');
                     let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
                     let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex));
-                    console.log(megaString.substring(binaryIndexStringLength + 2, binaryIndex));
-                    console.log(command);
-                    let binaryData = new Int16Array(data.slice(binaryIndex));
-                    let testDoot = Array.prototype.slice.call(binaryData);
-                    console.log(binaryData, typeof (binaryData), typeof (testDoot), testDoot);
-
-                    let realArray = testDoot.map((voltage) => {
-                        return voltage * voltageMultipliers[0];
-                    });
-                    command.osc[0][0].waveform.y = realArray;
-                    this.dataBuffer[this.dataBufferWriteIndex][0] = new WaveformComponent(command.osc[0][0].waveform);
-
+                    for (let channel in command.osc) {
+                        let binaryData = new Int16Array(data.slice(binaryIndex + command.osc[channel][0].offset, binaryIndex + command.osc[channel][0].offset + command.osc[channel][0].length));
+                        let untypedArray = Array.prototype.slice.call(binaryData);
+                        let scaledArray = untypedArray.map((voltage) => {
+                            return voltage * voltageMultipliers[0];
+                        });
+                        command.osc[channel][0].waveform.y = scaledArray;
+                        this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel)] = new WaveformComponent(command.osc[parseInt(channel)][0].waveform);
+                    }
                     observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
                     this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
-                    //console.log(this.dataBuffer);
                     if (this.dataBufferFillSize < this.numDataBuffers) {
                         this.dataBufferFillSize++;
                         this.activeBuffer = this.dataBufferFillSize.toString();
@@ -125,7 +120,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
+            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode == 0) {
@@ -146,7 +141,6 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         //Return voltages and complete observer
                         observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
                         this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
-                        //console.log(this.dataBuffer);
                         if (this.dataBufferFillSize < this.numDataBuffers) {
                             this.dataBufferFillSize++;
                             this.activeBuffer = this.dataBufferFillSize.toString();
@@ -172,7 +166,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
 
 
 
-    streamRunSingle(chans: Array<number>, delay = 0): Observable<Array<WaveformComponent>> {
+    streamRunSingle(chans: Array<number>, voltageMultipliers: number[], delay = 0): Observable<Array<WaveformComponent>> {
         //If no channels are active no need to talk to hardware
         if (chans.length == 0) {
             return Observable.create((observer) => {
@@ -193,32 +187,30 @@ export class OscInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.streamFrom(this.endpoint, JSON.stringify(command), delay).subscribe(
+            this.transport.streamFrom(this.endpoint, JSON.stringify(command), 'json', delay).subscribe(
                 (data) => {
                     //Handle device errors and warnings
-                    if (data.statusCode == 0) {
-                        //Clear buffer then parse data into empty buffer
-                        this.dataBuffer[this.dataBufferWriteIndex] = [];
-                        for (let channel in data.osc) {
-                            let scaledPoints = [];
-                            data.osc[parseInt(channel)][0].waveform.y.forEach((element, index, array) => {
-                                data.osc[parseInt(channel)][0].waveform.y[index] = element / 1000;
-                            });
-                            this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel)] = new WaveformComponent(data.osc[channel][0].waveform);
-                        }
-                        //Return voltages and complete observer
-                        observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
-                        this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
-                        if (this.dataBufferFillSize < this.numDataBuffers) {
-                            this.dataBufferFillSize++;
-                            this.activeBuffer = this.dataBufferFillSize.toString();
-                        }
-                        else {
-                            this.activeBuffer = '8';
-                        }
+                    let megaString = String.fromCharCode.apply(null, new Int8Array(data.slice(0)));
+                    let binaryIndexStringLength = megaString.indexOf('\r\n');
+                    let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
+                    let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex));
+                    for (let channel in command.osc) {
+                        let binaryData = new Int16Array(data.slice(binaryIndex + command.osc[channel][0].offset, binaryIndex + command.osc[channel][0].offset + command.osc[channel][0].length));
+                        let untypedArray = Array.prototype.slice.call(binaryData);
+                        let scaledArray = untypedArray.map((voltage) => {
+                            return voltage * voltageMultipliers[0];
+                        });
+                        command.osc[channel][0].waveform.y = scaledArray;
+                        this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel)] = new WaveformComponent(command.osc[parseInt(channel)][0].waveform);
+                    }
+                    observer.next(this.dataBuffer[this.dataBufferWriteIndex]);
+                    this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
+                    if (this.dataBufferFillSize < this.numDataBuffers) {
+                        this.dataBufferFillSize++;
+                        this.activeBuffer = this.dataBufferFillSize.toString();
                     }
                     else {
-                        observer.error(data.statusCode);
+                        this.activeBuffer = (this.numDataBuffers).toString();
                     }
                 },
                 (err) => {

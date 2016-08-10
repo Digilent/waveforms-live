@@ -17,6 +17,35 @@ fs.readFile('./devices/openscope-mz.json', 'utf8', function (err, data) {
 //Statuses    
 let statusOk = 0;
 
+//Process binary data to create correct response
+let processBinaryDataAndSend = function(commandObject, res) {
+    //console.log(JSON.stringify(commandObject));
+    let binaryDataContainer = {};
+    let binaryOffset = 0;
+    for (let channel in commandObject.osc) {
+        //for each channel take out binary data and note length.
+        //remove waveform.y from commandObject
+        //after both chans get the binary index
+        //use binary index plus initial length to get offset for other binary data
+        binaryDataContainer[channel] = commandObject.osc[channel][0].waveform.y;
+        commandObject.osc[channel][0].offset = binaryOffset;
+        binaryOffset += commandObject.osc[channel][0].length; 
+        delete commandObject.osc[channel][0].waveform.y;
+    }
+    let stringCommand = JSON.stringify(commandObject);
+    let binaryIndex = stringCommand.length;
+    binaryIndex = (binaryIndex + binaryIndex.toString().length + 2).toString() + '\r\n';
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Content-Type', 'application/octet-stream');
+    console.log('Reply: sent');
+    res.write(binaryIndex);
+    res.write(stringCommand);
+    for (let bufferNum in binaryDataContainer) {
+        res.write(Buffer.from(binaryDataContainer[bufferNum].buffer));
+    }
+    res.end();
+}
+
 //Command Process 
 let processCommands = function (instrument, commandObject, params) {
     let command = instrument + commandObject.command;
@@ -95,7 +124,7 @@ let processCommands = function (instrument, commandObject, params) {
 };
 
 //------------------------------ Handler ------------------------------
-exports.handler = (event, context, callback) => {  
+exports.handler = (event, context, postResponse) => {  
 
     //Log event data
     console.log('Event: ', event);
@@ -103,6 +132,7 @@ exports.handler = (event, context, callback) => {
     //Initialize reponse object
     let responseObject = {};
     let sumStatusCode = 0;
+    let binaryDataFlag = 0;
 
     for (let instrument in event) {
         //create property on response object
@@ -132,9 +162,21 @@ exports.handler = (event, context, callback) => {
             }
 
         }
+        if (instrument === 'osc') {
+            binaryDataFlag = 1;
+        }
     }
     responseObject.statusCode = sumStatusCode
-    callback(null, responseObject);
+    if (binaryDataFlag) {
+        processBinaryDataAndSend(responseObject, postResponse);
+    }
+    else {
+        postResponse.setHeader('Access-Control-Allow-Origin', '*');
+        postResponse.setHeader('Content-Type', 'application/json');
+        console.log('Reply: ', responseObject, '\n');
+        postResponse.end(JSON.stringify(responseObject));
+    }
+
 
 }  
     
@@ -383,16 +425,16 @@ let osc = {
             y[j] = parseInt(1000 * Math.sin((Math.PI / 180) * ((360 * ((dt / 1000 * j * sigFreq) + clockTimeOffset)) + phaseOffset + 90 * parseInt(chan))));
         }
         let typedArray = new Int16Array(y);
-        //console.log(Buffer.from(typedArray));
         wf = {
             't0': clockTimeOffset,
             'dt': dt,
-            'y': y
+            'y': typedArray
         };
-
-
+        //length is 2x the array length cuz 2 bytes per entry
         return {
             waveform: wf,
+            length: 2 * typedArray.length,
+            offset: null,
             statusCode: statusOk
         };
     }

@@ -46,7 +46,7 @@ export class DcInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
+            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
@@ -99,7 +99,7 @@ export class DcInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
+            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
@@ -130,7 +130,7 @@ export class DcInstrumentComponent extends InstrumentComponent {
         }
 
         return Observable.create((observer) => {
-            this.transport.streamFrom(this.endpoint, JSON.stringify(command), delay).subscribe(
+            this.transport.streamFrom(this.endpoint, JSON.stringify(command), 'json', delay).subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
                     //Handle device errors and warnings

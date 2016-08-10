@@ -25,10 +25,10 @@ export abstract class InstrumentComponent {
     //abstract checkStatus(statusCode: number) : Observable<any>;
 
     //Enumerate instrument info.
-    enumerate(): Observable<number> {
+    /*enumerate(): Observable<number> {
         let command = {
             command: 'enumerate'
         }
         return this.transport.writeRead(this.endpoint, command);
-    }
+    }*/
 }

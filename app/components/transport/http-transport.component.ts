@@ -38,58 +38,14 @@ export class HttpTransportComponent extends TransportComponent {
     }
 
     //Data transmission wrapper to avoid duplicate code. 
-    writeReadHelperOLDNOUSE(http: Http, rootUri: string, endpoint: string, sendData: Object): Observable<any> {
+    writeRead(endpoint: string, sendData: any, dataType: string): Observable<any> {
+        return this.writeReadHelper(this.http, this.rootUri, endpoint, sendData, dataType);
+    }
+
+    writeReadHelper(http: Http, rootUri: string, endpoint: string, sendData: any, dataType: string): Observable<any> {
 
         let uri = rootUri + endpoint;
         let body = sendData;
-        /* - Local simulated device does not handle OPTIONS
-        let headers = new Headers({ 'Content-Type': 'application/json' });
-        let options = new RequestOptions({ headers: headers });
-        */
-
-        return Observable.create((observer) => {
-            //http.post(uri, body, options).subscribe(
-            http.post(uri, body).subscribe(
-                (data: any) => {
-                    let dataObj = JSON.parse(data._body);
-                    //Handle device errors and warnings
-                    if (dataObj.statusCode == undefined) {
-                        console.log('Response Missing Status Code');
-                    } else if (dataObj.statusCode < 1) {
-                        observer.next(dataObj);
-                        observer.complete();
-                    }
-                    else {
-                        observer.error(dataObj.statusCode);
-                    }
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            )
-        })
-    }
-
-    writeRead(endpoint: string, sendData: Object): Observable<any> {
-        return this.writeReadHelper(this.http, this.rootUri, endpoint, sendData);
-    }
-
-    writeReadBinary(endpoint: string, sendData: Object): Observable<any> {
-        return this.writeReadHelper(this.http, this.rootUri, endpoint, sendData);
-    }
-
-    writeReadHelper(http: Http, rootUri: string, endpoint: string, sendData: Object): Observable<any> {
-
-        let uri = rootUri + endpoint;
-        let body = sendData;
-        console.log(body);
-        /* - Local simulated device does not handle OPTIONS
-        let headers = new Headers({ 'Content-Type': 'application/json' });
-        let options = new RequestOptions({ headers: headers });
-        */
 
         return Observable.create((observer) => {
             //http.post(uri, body, options).subscribe(
@@ -99,6 +55,7 @@ export class HttpTransportComponent extends TransportComponent {
 
             // We define what will happen if the data are successfully sent
             XHR.addEventListener("load", function (event) {
+                console.log(XHR.getResponseHeader('Content-Type'), event);
                 console.log('response received');
                 observer.next(event.currentTarget.response);
                 observer.complete();
@@ -120,7 +77,7 @@ export class HttpTransportComponent extends TransportComponent {
         });
     }
 
-    streamFrom(endpoint: string, sendData: Object, delay = 0): Observable<any> {
+    streamFrom(endpoint: string, sendData: any, dataType: string, delay = 0): Observable<any> {
         this.streamState.mode = 'continuous';
 
         return Observable.create((observer) => {
@@ -150,30 +107,6 @@ export class HttpTransportComponent extends TransportComponent {
             getData(this.writeReadHelper, this.streamState, this.http, this.rootUri, endpoint, sendData, delay);
         });
     }
-
-    /*
-        streamFrom(endpoint: string, sendData: Object): Observable<any> {
-            this.streaming = true;
-            return Observable.create((observer) => {
-                this.writeRead(endpoint, sendData).subscribe(
-                    (data: any) => {
-                        console.log('new streaming data');
-                        observer.next(data);
-                    },
-                    (err) => {
-                        observer.error(err);
-                    },
-                    () => {
-                        if (this.streaming == true) {
-                            this.streamFrom(endpoint, sendData);
-                        } else {
-                            console.log('done streaming');
-                            observer.complete();
-                        }
-                    });
-            });
-        }
-    */
 
     stopStream() {
         this.streamState.mode = 'off';

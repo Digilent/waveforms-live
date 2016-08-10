@@ -36,7 +36,7 @@ dispatcher.onGet("/", (req, res) => {
 //Device Root POST
 dispatcher.onPost("/", (req, res) => {
     postResponse = res;
-    device.handler(JSON.parse(req.body), null, sendReply);
+    device.handler(JSON.parse(req.body), null, res);
 });
 
 //Echo POST
@@ -53,7 +53,7 @@ dispatcher.onPost("/binary", (req, res) => {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/octet-stream'
     });
-    
+    console.log(req.headers);
 
 
 
@@ -159,6 +159,7 @@ server.listen(port, hostname, function () {
 //Mirrors Lambda functionality by passing response back to requester as the reply body
 function sendReply(error, result) {
     postResponse.setHeader('Access-Control-Allow-Origin', '*');
+    postResponse.setHeader('Content-Type', 'application/json');
     console.log('Reply: ', result, '\n');
     postResponse.end(JSON.stringify(result));
 }
