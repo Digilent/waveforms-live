@@ -38,10 +38,10 @@ export class HttpTransportComponent extends TransportComponent {
     }
 
     //Data transmission wrapper to avoid duplicate code. 
-    writeReadHelper(http: Http, rootUri: string, endpoint: string, sendData: Object): Observable<any> {
+    writeReadHelperOLDNOUSE(http: Http, rootUri: string, endpoint: string, sendData: Object): Observable<any> {
 
         let uri = rootUri + endpoint;
-        let body = JSON.stringify(sendData);
+        let body = sendData;
         /* - Local simulated device does not handle OPTIONS
         let headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
@@ -51,41 +51,17 @@ export class HttpTransportComponent extends TransportComponent {
             //http.post(uri, body, options).subscribe(
             http.post(uri, body).subscribe(
                 (data: any) => {
-                    if (data._body.charAt(0) === '-') {
-                        console.log('hey it worked lol');
-                        console.log(typeof(data._body),data);
-                        let myRe = /{(.*?)}}/;
-                        let regexArray = myRe.exec(data._body);
-                        let command = JSON.parse(regexArray[0]);
-                        console.log(command);
-                        let binaryIndex = data._body.indexOf('\r\n------WebKitFormBoundarylBu1yd0XWA4m1C6A--\r\n');
-                        let binaryData = data._body.substring(binaryIndex - 80, binaryIndex + 0);
-                        let arrayTest = [];
-                        let doot = [];
-                        for (let i = 0, j = 0; i < binaryData.length / 2; i = i + 2, j++) {
-                            arrayTest[j] = binaryData.charCodeAt(i) << 8 | binaryData.charCodeAt(i + 1);
-                            doot[j] = binaryData.charAt[j];
-                        } 
-                        
-                        let typedArray = new Int16Array(arrayTest);
-                        let whosie = new Int16Array(Buffer.from(binaryData), 0, 80);
-                        console.log(typedArray, whosie);
-                        //Works -_-
+                    let dataObj = JSON.parse(data._body);
+                    //Handle device errors and warnings
+                    if (dataObj.statusCode == undefined) {
+                        console.log('Response Missing Status Code');
+                    } else if (dataObj.statusCode < 1) {
+                        observer.next(dataObj);
+                        observer.complete();
                     }
                     else {
-                        let dataObj = JSON.parse(data._body);
-                        //Handle device errors and warnings
-                        if (dataObj.statusCode == undefined) {
-                            console.log('Response Missing Status Code');
-                        } else if (dataObj.statusCode < 1) {
-                            observer.next(dataObj);
-                            observer.complete();
-                        }
-                        else {
-                            observer.error(dataObj.statusCode);
-                        }
+                        observer.error(dataObj.statusCode);
                     }
-
                 },
                 (err) => {
                     observer.error(err);
@@ -102,13 +78,14 @@ export class HttpTransportComponent extends TransportComponent {
     }
 
     writeReadBinary(endpoint: string, sendData: Object): Observable<any> {
-        return this.writeReadBinaryHelper(this.http, this.rootUri, endpoint, sendData);
+        return this.writeReadHelper(this.http, this.rootUri, endpoint, sendData);
     }
 
-    writeReadBinaryHelper(http: Http, rootUri: string, endpoint: string, sendData: Object): Observable<any> {
+    writeReadHelper(http: Http, rootUri: string, endpoint: string, sendData: Object): Observable<any> {
 
         let uri = rootUri + endpoint;
-        let body = JSON.stringify(sendData);
+        let body = sendData;
+        console.log(body);
         /* - Local simulated device does not handle OPTIONS
         let headers = new Headers({ 'Content-Type': 'application/json' });
         let options = new RequestOptions({ headers: headers });
@@ -117,20 +94,8 @@ export class HttpTransportComponent extends TransportComponent {
         return Observable.create((observer) => {
             //http.post(uri, body, options).subscribe(
             //TODO cleanup command and shiet
-            var XHR = new XMLHttpRequest();
-            let FD = new FormData();
-            let command = {
-                "awg": {
-                    "0": [
-                        {
-                            "command": "writeBuffer"
-                        }
-                    ]
-                }
-            };
+            let XHR = new XMLHttpRequest();
 
-            FD.append('commands', JSON.stringify(command));
-            FD.append('buffer0', 'THIS COULD BE SOME BINARY DATA...WHY NOT?');
 
             // We define what will happen if the data are successfully sent
             XHR.addEventListener("load", function (event) {
@@ -146,10 +111,12 @@ export class HttpTransportComponent extends TransportComponent {
 
 
             // We setup our request
-            XHR.open("POST", "http://localhost:8888/binary");
+            XHR.open("POST", uri);
             XHR.responseType = 'arraybuffer';
+            //Setting request header content type as application json causes nodejs error?
+            //XHR.setRequestHeader("Content-Type", "application/json");
             // The data sent are the one the user provide in the form
-            XHR.send(FD);
+            XHR.send(body);
         });
     }
 

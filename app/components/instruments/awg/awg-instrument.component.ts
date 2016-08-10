@@ -36,7 +36,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         let command = {
             command: 'awgEnumerate'
         }
-        return this.transport.writeRead(this.endpoint, command);
+        return this.transport.writeRead(this.endpoint, JSON.stringify(command));
     }
 
     //Get all settings for the specified channels.
@@ -54,7 +54,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, command).subscribe(
+            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
                 (data) => {
                     if (data.statusCode == 0) {
                         observer.next(data);
@@ -89,7 +89,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, command).subscribe(
+            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
                 (data) => {
                     if (data.statusCode == 0) {
                         observer.next(data);
@@ -117,7 +117,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         }
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, command).subscribe(
+            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode == 0) {
@@ -161,7 +161,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         }
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, command).subscribe(
+            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode < 1) {

@@ -61,16 +61,16 @@ export class OscInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeReadBinary('/binary', command).subscribe(
+            this.transport.writeReadBinary('/binary', JSON.stringify(command)).subscribe(
                 (data) => {
                     console.log(data);
-                    let megaString = String.fromCharCode.apply(null, new Int8Array(event.currentTarget.response.slice(0)));
+                    let megaString = String.fromCharCode.apply(null, new Int8Array(data.slice(0)));
                     let binaryIndexStringLength = megaString.indexOf('\r\n');
                     let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
                     let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex));
                     console.log(megaString.substring(binaryIndexStringLength + 2, binaryIndex));
                     console.log(command);
-                    let binaryData = new Int16Array(event.currentTarget.response.slice(binaryIndex));
+                    let binaryData = new Int16Array(data.slice(binaryIndex));
                     let testDoot = Array.prototype.slice.call(binaryData);
                     console.log(binaryData, typeof (binaryData), typeof (testDoot), testDoot);
 
@@ -125,7 +125,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, command).subscribe(
+            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode == 0) {
@@ -193,7 +193,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.streamFrom(this.endpoint, command, delay).subscribe(
+            this.transport.streamFrom(this.endpoint, JSON.stringify(command), delay).subscribe(
                 (data) => {
                     //Handle device errors and warnings
                     if (data.statusCode == 0) {

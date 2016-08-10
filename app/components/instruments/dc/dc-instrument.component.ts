@@ -46,9 +46,10 @@ export class DcInstrumentComponent extends InstrumentComponent {
         });
 
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, command).subscribe(
-                (data) => {
+            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
+                (arrayBuffer) => {
                     //Handle device errors and warnings
+                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
                     console.log(data);
                     if (data.statusCode < 1) {
                         let voltages = [];
@@ -89,15 +90,36 @@ export class DcInstrumentComponent extends InstrumentComponent {
         voltages.forEach((element, index, array) => {
             scaledVoltages.push(element * 1000);
             command.dc[chans[index]] =
-            [
-                {
-                    "command": "setVoltage",
-                    "voltage": (element * 1000)
-                }
-            ]
+                [
+                    {
+                        "command": "setVoltage",
+                        "voltage": (element * 1000)
+                    }
+                ]
         });
-        
-        return this.transport.writeRead(this.endpoint, command);
+
+        return Observable.create((observer) => {
+            this.transport.writeRead(this.endpoint, JSON.stringify(command)).subscribe(
+                (arrayBuffer) => {
+                    //Handle device errors and warnings
+                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    console.log(data);
+                    if (data.statusCode < 1) {
+                        observer.next(data);
+                        observer.complete();
+                    }
+                    else {
+                        observer.error(data.statusCode);
+                    }
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            )
+        });
     }
 
     //Streaming read voltages from the specified channel(s)
@@ -108,8 +130,9 @@ export class DcInstrumentComponent extends InstrumentComponent {
         }
 
         return Observable.create((observer) => {
-            this.transport.streamFrom(this.endpoint, command, delay).subscribe(
-                (data) => {
+            this.transport.streamFrom(this.endpoint, JSON.stringify(command), delay).subscribe(
+                (arrayBuffer) => {
+                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
                     //Handle device errors and warnings
                     if (data.statusCode < 1) {
                         //Scale from mV to V                            
