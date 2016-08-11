@@ -1,4 +1,4 @@
-import {Page, NavParams, ViewController, Platform} from 'ionic-angular';
+import {NavParams, ViewController, Platform} from 'ionic-angular';
 import {ViewChild, Component} from '@angular/core';
 
 //Components
@@ -18,7 +18,6 @@ export class ModalFgenPage {
     private amplitude: string;
     private offset: string;
     private dutyCycle: string;
-    private newChart: any;
     private numPoints: number;
     
     public value: number;
@@ -66,9 +65,8 @@ export class ModalFgenPage {
     }
     
     saveInstance(chart: Object) {
-        //not actually using right now
-        this.newChart = chart;
-        this.chart.clearSeries();
+        this.chart.setTitle('AWG Configuration');
+        this.chart.clearExtraSeries([0]);
         this.drawWave();
         this.chart.redrawChart();
     }

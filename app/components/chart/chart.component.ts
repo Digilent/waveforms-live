@@ -14,6 +14,7 @@ import {ModalCursorPage} from '../../pages/cursor-modal/cursor-modal';
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     @ViewChild('oscopeChartInner') oscopeChartInner: ElementRef;
+    @ViewChild('timelineChartInner') timelineChartInner: ElementRef;
     private nav: NavController;
     public chart: Object;
     public timelineChart: Object;
@@ -126,7 +127,7 @@ export class SilverNeedleChart {
                 labels: {
                     enabled: false
                 },
-                plotBands: [{ // mark the weekend
+                plotBands: [{
                     color: 'rgba(182,191,190,0.5)',
                     from: 0,
                     to: 0,
@@ -441,7 +442,6 @@ export class SilverNeedleChart {
                 this.timelineChart.yAxis[i].remove(false);
             }
         }
-        console.log(this.chart.series, this.chart.yAxis);
     }
 
     removeCursors() {
@@ -728,23 +728,20 @@ export class SilverNeedleChart {
             yVal = this.chart.yAxis[0].dataMax;
             yCor = this.chart.yAxis[0].toPixels(yVal);
         }
-
         if (yVal < this.chart.yAxis[0].dataMin) {
             yVal = this.chart.yAxis[0].dataMin;
             yCor = this.chart.yAxis[0].toPixels(yVal);
         }
-
         if (xCor > this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMax)) {
             xCor = this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMax) - 50;
         }
-
         if (xCor < this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMin)) {
             xCor = this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMin);
         }
-        
         if (yCor > this.chart.yAxis[0].toPixels(this.chart.yAxis[0].min)) {
             yCor = this.chart.yAxis[0].toPixels(this.chart.yAxis[0].min);
         }
+
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 3].options.value = yVal;
         if (this.timelineView) {
             this.timelineChart.yAxis[0].plotLinesAndBands[this.activeCursor - 3].options.value = yVal;
@@ -786,17 +783,14 @@ export class SilverNeedleChart {
         else if (yCor < this.chart.yAxis[0].toPixels(this.chartBoundsY.max)) {
             yCor = this.chart.yAxis[0].toPixels(this.chartBoundsY.max);
         }
+
         let xVal = this.chart.xAxis[0].translate(xCor - this.chart.plotLeft, true); 
         let pointNum = Math.round((xVal - this.chart.series[0].xData[0]) / this.chart.series[0].pointInterval);
         let pointNum1 = pointNum;
         let pointNum2 = pointNum;
-        //Need to add case for series[0] limit to length
-        //Ask if all data will have equal num points?
         if (pointNum > this.chart.series[1].yData.length - 1) {
             pointNum2 = this.chart.series[1].yData.length - 1;
         }
-        //console.log(this.chart.series[0].data[pointNum].plotY + 15);
-        //this.chart.xAxis[0].plotLinesAndBands[0].svgElem.translate(event.clientX - this.xCursorDragStartPos);
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = xVal;
         if (this.timelineView) {
             this.timelineChart.xAxis[0].plotLinesAndBands[this.activeCursor + 3].options.value = xVal;
@@ -829,14 +823,6 @@ export class SilverNeedleChart {
         this.chart.setTitle({
             text: newTitle
         });
-    }
-
-    getNumCursors() {
-        return this.numXCursors;
-    }
-
-    setElementRef(element) {
-        //this.oscopeChartInner = element;
     }
 
     getCursorDeltas() {
@@ -928,18 +914,9 @@ export class SilverNeedleChart {
         }, 50);
     }
 
-    clearSeries() {
-        let numSeries = this.chart.series.length;
-        //remove all series except series 0
-        for (let i = 0; i < numSeries - 1; i++) {
-            this.chart.series[numSeries - i - 1].remove(false);
-        }
-            //this.chart.series[1].remove(false);
-        
-    }
-
     onChartClick(event) {
-        if (event.srcElement.localName === 'rect' && this.oscopeChartInner !== undefined && event.srcElement.id === '') {
+        //check cursors enabled to see if the chart is 'interactive'. Added to remove pan from fgen config modal
+        if (event.srcElement.localName === 'rect' && this.oscopeChartInner !== undefined && event.srcElement.id === '' && this.cursorsEnabled) {
             this.canPan = true;
             this.xPositionPixels = event.chartX;
             this.yPositionPixels = event.chartY;
@@ -950,8 +927,6 @@ export class SilverNeedleChart {
                 this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.panListener);
             }
         }
-        else {
-        }
     }
 
     clearMouse() {
@@ -959,7 +934,9 @@ export class SilverNeedleChart {
         if (this.oscopeChartInner !== undefined) {
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.panListener);
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.verticalOffsetListener);
-            this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.timelineWhiteDragListener);
+            if (this.timelineView && this.timelineChartInner !== undefined) {
+                this.timelineChartInner.nativeElement.removeEventListener('mousemove', this.timelineWhiteDragListener);
+            }
         }
     }
 
@@ -989,14 +966,16 @@ export class SilverNeedleChart {
     setXExtremes(positionChange: number) {
         let newPos = this.base - positionChange;
         let min = newPos - this.timeDivision * 5;
-        let max = newPos + this.timeDivision * 5; 
+        let max = newPos + this.timeDivision * 5;
         this.chart.xAxis[0].setExtremes(min, max, true, false);
         this.base = parseFloat(newPos.toFixed(3));
-        this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
-        let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
-        let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
-        this.updatePlotLines([0, 1], [val1, val2]);
-        this.attachPlotLineEvents();
+        if (this.timelineView) {
+            this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
+            let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
+            let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
+            this.updatePlotLines([0, 1], [val1, val2]);
+            this.attachPlotLineEvents();
+        }
     }
 
     setYExtremes(seriesSettings: any) {
@@ -1120,11 +1099,14 @@ export class SilverNeedleChart {
             this.chart.xAxis[axisIndex].setExtremes(this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax);
             this.timeDivision = parseFloat(((this.chart.xAxis[0].dataMax - this.chart.xAxis[0].dataMin) / 10).toFixed(3));
             this.base = parseFloat(((this.chart.xAxis[0].dataMax + this.chart.xAxis[0].dataMin) / 2).toFixed(3));
-            let extremes = this.chart.xAxis[0].getExtremes();
-            this.updatePlotBands([2, 3], [[this.timelineBounds[0], extremes.dataMin], [extremes.dataMax, this.timelineBounds[1]]]);
-            let left = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(extremes.dataMin) - 5);
-            let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(extremes.dataMax) + 5);
-            this.updatePlotLines([0, 1], [left, right]);
+            if (this.timelineView) {
+                let extremes = this.chart.xAxis[0].getExtremes();
+                this.updatePlotBands([2, 3], [[this.timelineBounds[0], extremes.dataMin], [extremes.dataMax, this.timelineBounds[1]]]);
+                let left = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(extremes.dataMin) - 5);
+                let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(extremes.dataMax) + 5);
+                this.updatePlotLines([0, 1], [left, right]);
+
+            }
         }
         else if (axis === 'y') {
             this.chart.yAxis[axisIndex].setExtremes(this.chart.yAxis[axisIndex].dataMin, this.chart.yAxis[axisIndex].dataMax);
@@ -1177,7 +1159,7 @@ export class SilverNeedleChart {
         let value = this.timelineChart.xAxis[0].toValue(event.chartX)
         if (value > chartExtremes.min && value < chartExtremes.max && !this.inTimelineDrag) {
             this.xPositionPixels = event.chartX;
-            this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.timelineWhiteDragListener);
+            this.timelineChartInner.nativeElement.addEventListener('mousemove', this.timelineWhiteDragListener);
         }
     }
 
@@ -1204,13 +1186,13 @@ export class SilverNeedleChart {
     }
 
     startTimelineDrag(lineNum: number) {
-        this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.timelineDragListener);
+        this.timelineChartInner.nativeElement.addEventListener('mousemove', this.timelineDragListener);
         this.activeTimeLine = lineNum;
         this.chartBoundsX = this.chart.xAxis[0].getExtremes();
     }
 
     clearDragListener(lineNum: number) {
-        this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.timelineDragListener);
+        this.timelineChartInner.nativeElement.removeEventListener('mousemove', this.timelineDragListener);
         this.activeTimeLine = -1;
     }
 

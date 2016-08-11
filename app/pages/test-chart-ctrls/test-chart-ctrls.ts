@@ -95,7 +95,7 @@ export class TestChartCtrlsPage {
                 multipliers[i] = 1/1000;
             }
         }
-        this.activeDevice.instruments.osc.runSingleBinary(this.oscopeChans, multipliers).subscribe(
+        this.activeDevice.instruments.osc.runSingle(this.oscopeChans, multipliers).subscribe(
             (data) => {
                 //console.log(data);
                 this.chart1.clearExtraSeries([0, 1]);

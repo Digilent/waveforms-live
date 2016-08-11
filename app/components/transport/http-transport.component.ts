@@ -72,7 +72,6 @@ export class HttpTransportComponent extends TransportComponent {
             XHR.responseType = 'arraybuffer';
             //Setting request header content type as application json causes nodejs error?
             //XHR.setRequestHeader("Content-Type", "application/json");
-            // The data sent are the one the user provide in the form
             XHR.send(body);
         });
     }
