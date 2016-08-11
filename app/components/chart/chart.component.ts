@@ -1,6 +1,6 @@
 import {Component, Output, Input, EventEmitter, ElementRef, ViewChild} from '@angular/core';
 import {CHART_DIRECTIVES} from 'angular2-highcharts';
-import {NavController, Modal} from 'ionic-angular';
+import {ModalController} from 'ionic-angular';
 import {NgClass} from '@angular/common';
 
 //Pages
@@ -15,7 +15,6 @@ export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     @ViewChild('oscopeChartInner') oscopeChartInner: ElementRef;
     @ViewChild('timelineChartInner') timelineChartInner: ElementRef;
-    private nav: NavController;
     public chart: Object;
     public timelineChart: Object;
     private timelineOptions: Object;
@@ -60,12 +59,13 @@ export class SilverNeedleChart {
 
     public voltageMultipliers: string[] = ['V', 'V'];
     public multipliers: string[] = ['mV', 'V'];
+    private modalCtrl: ModalController;
 
-    constructor(_nav: NavController) {
+    constructor(_modalCtrl: ModalController) {
+        this.modalCtrl = _modalCtrl;
         this.activeTimeLine = -1;
         this.timeDivision = 3;
         this.base = 12;
-        this.nav = _nav;
         this.canPan = false;
         this.cursorsEnabled = false;
         this.timelineView = false;
@@ -865,12 +865,12 @@ export class SilverNeedleChart {
     }
 
     openCursorModal() {
-        let modal = Modal.create(ModalCursorPage, {
+        let modal = this.modalCtrl.create(ModalCursorPage, {
             cursorType: this.cursorType,
             cursor1Chan: this.cursor1Chan,
             cursor2Chan: this.cursor2Chan
         });
-        modal.onDismiss(data=> {
+        modal.onDidDismiss(data=> {
             if (data.save) {
                 this.cursorType = data.cursorType;
                 this.cursor1Chan = data.cursor1Chan;
@@ -878,7 +878,7 @@ export class SilverNeedleChart {
                 this.handleCursors();
             }
         });
-        this.nav.present(modal);
+        modal.present();
     }
 
     handleCursors() {

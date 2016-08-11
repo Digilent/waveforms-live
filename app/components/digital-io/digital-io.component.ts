@@ -1,5 +1,5 @@
 import {Component, Output, EventEmitter, Input} from '@angular/core';
-import {Alert, NavController} from 'ionic-angular';
+import {AlertController} from 'ionic-angular';
 import {NgClass} from '@angular/common';
 
 @Component({
@@ -13,13 +13,13 @@ export class DigitalIoComponent {
     private numGpio: number;
     private gpioArray: number[];
     private showMenu: boolean;
-    public nav: NavController;
-    
+    private alertCtrl: AlertController
     private outputArray: boolean[];
     
     private gpioObject: Object;
     
-    constructor(_nav: NavController) {
+    constructor(_alertCtrl: AlertController) {
+        this.alertCtrl = _alertCtrl;
         this.numGpio = 8;
         this.gpioArray = [0, 1, 2, 3, 4, 5, 6, 7];
         this.gpioObject = {
@@ -30,7 +30,6 @@ export class DigitalIoComponent {
         this.contentHidden = true;
         this.showMenu = false;
         
-        this.nav = _nav;
     }
     
     isInput(channel: number) {
@@ -53,7 +52,7 @@ export class DigitalIoComponent {
     
     doCheckbox() {
         let okFlag: boolean = false;   
-        let alert: Alert = Alert.create();
+        let alert = this.alertCtrl.create();
         alert.setTitle('Select Outputs');
         
         for(let i = 0; i < this.gpioArray.length; i++) {
@@ -97,6 +96,6 @@ export class DigitalIoComponent {
             }
         });
 
-        this.nav.present(alert).then(() => {});
+        alert.present();
     }
 }

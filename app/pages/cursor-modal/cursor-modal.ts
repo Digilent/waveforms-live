@@ -1,4 +1,4 @@
-import {NavParams, ViewController, Platform, NavController, Popover} from 'ionic-angular';
+import {NavParams, ViewController, Platform, PopoverController} from 'ionic-angular';
 import {ViewChild, Component} from '@angular/core';
 
 //Components
@@ -11,7 +11,6 @@ export class ModalCursorPage {
     private platform: Platform;
     private viewCtrl: ViewController;
     private params: NavParams;
-    private nav: NavController;
     private cursorType: string;
     private cursor1Chan: string;
     private cursor2Chan: string;
@@ -19,17 +18,18 @@ export class ModalCursorPage {
     private cursorChanArray: string[] = ['O1', 'O2'];
 
     private value: number;
+    private popoverCtrl: PopoverController;
     
     constructor(
         _platform: Platform,
         _viewCtrl: ViewController,
         _params: NavParams,
-        _nav: NavController
+        _popoverCtrl: PopoverController
     ) {
+        this.popoverCtrl = _popoverCtrl;
         this.platform = _platform;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
-        this.nav = _nav;
         this.cursorType = this.params.get('cursorType');
         this.cursor1Chan = this.params.get('cursor1Chan');
         this.cursor2Chan = this.params.get('cursor2Chan');
@@ -52,14 +52,14 @@ export class ModalCursorPage {
     }
 
     showPopover(event, type: string) {
-        let popover: Popover;
+        let popover;
         if (type === 'cursorType') {
-            popover = Popover.create(GenPopover, {
+            popover = this.popoverCtrl.create(GenPopover, {
                 dataArray: this.cursorTypeArray
             });
         }
         else if (type === 'cursor1Chan' || 'cursor2Chan') {
-            popover = Popover.create(GenPopover, {
+            popover = this.popoverCtrl.create(GenPopover, {
                 dataArray: this.cursorChanArray
             });
         }
@@ -67,10 +67,10 @@ export class ModalCursorPage {
             console.log('error in show popover');
         }
 
-        this.nav.present(popover, {
+        popover.present({
             ev: event
         });
-        popover.onDismiss(data=> {
+        popover.onDidDismiss(data=> {
             if (type === 'cursorType') {
                 this.cursorType = data.option
             }

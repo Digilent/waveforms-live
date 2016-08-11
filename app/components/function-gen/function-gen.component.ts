@@ -1,5 +1,5 @@
 import {Component, EventEmitter} from '@angular/core';
-import {NavController, Modal} from 'ionic-angular';
+import {ModalController} from 'ionic-angular';
 
 //Pages
 import {ModalFgenPage} from '../../pages/fgen-modal/fgen-modal';
@@ -25,7 +25,6 @@ import {StorageService} from '../../services/storage/storage.service';
   selector: 'fgen'
 })
 export class FgenComponent { 
-    private nav: NavController;
     private showDutyCycle: boolean;
     private waveType: string;
     private frequency: string;
@@ -39,9 +38,10 @@ export class FgenComponent {
 
     private storageService: StorageService;
     private storageEventListener: EventEmitter<any>;
+    private modalCtrl: ModalController;
     
-    constructor(_nav: NavController, _deviceManagerService: DeviceManagerService, _storageService: StorageService) {
-        this.nav = _nav;
+    constructor(_deviceManagerService: DeviceManagerService, _storageService: StorageService, _modalCtrl: ModalController) {
+        this.modalCtrl = _modalCtrl;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.showDutyCycle = false;
@@ -136,7 +136,7 @@ export class FgenComponent {
 
     openFgen(num) {
         console.log('in open fgen');
-        let modal = Modal.create(ModalFgenPage, {
+        let modal = this.modalCtrl.create(ModalFgenPage, {
             value: num, 
             waveType: this.waveType,
             frequency: this.frequency,
@@ -144,14 +144,14 @@ export class FgenComponent {
             offset: this.offset,
             dutyCycle: this.dutyCycle
         });
-        modal.onDismiss(data=> {
+        modal.onDidDismiss(data=> {
            this.waveType = data.waveType;
            this.frequency = data.frequency;
            this.amplitude = data.amplitude;
            this.offset = data.offset;
            this.dutyCycle = data.dutyCycle; 
         });
-        this.nav.present(modal);
+        modal.present();
         console.log('modal present');
     }
     

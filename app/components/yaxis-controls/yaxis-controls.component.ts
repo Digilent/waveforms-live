@@ -1,5 +1,5 @@
 import {Component, Output, EventEmitter, Input} from '@angular/core';
-import {NavParams, ViewController, NavController, Popover} from 'ionic-angular';
+import {NavParams, ViewController, PopoverController} from 'ionic-angular';
 
 //Components
 import {SilverNeedleChart} from '../chart/chart.component';
@@ -17,12 +17,12 @@ export class YAxisComponent {
     private numSeries: number[] = [0, 1];
     private storageService: StorageService;
     private storageEventListener: EventEmitter<any>;
-    private nav: NavController;
     private viewCtrl: ViewController;
     private params: NavParams;
+    private popoverCtrl: PopoverController;
     
-    constructor(_storageService: StorageService, _nav: NavController, _viewCtrl: ViewController, _params: NavParams) {
-        this.nav = _nav;
+    constructor(_storageService: StorageService, _viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController) {
+        this.popoverCtrl = _popoverCtrl;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
         this.storageService = _storageService;
@@ -74,15 +74,14 @@ export class YAxisComponent {
     }
 
     changeMultiplier(i, event) {
-        let popover: Popover;
-        popover = Popover.create(GenPopover, {
+        let popover = this.popoverCtrl.create(GenPopover, {
             dataArray: this.chart.multipliers
         });
 
-        this.nav.present(popover, {
+        popover.present({
             ev: event
         });
-        popover.onDismiss(data => {
+        popover.onDidDismiss(data => {
             this.chart.changeMultiplier(i, data.option, this.chart.voltageMultipliers[i]);
             this.chart.voltageMultipliers[i] = data.option;
         });

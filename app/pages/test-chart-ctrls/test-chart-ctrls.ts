@@ -1,4 +1,4 @@
-import {Toast, NavController} from 'ionic-angular';
+import {ToastController} from 'ionic-angular';
 import {ViewChild, ElementRef, Component} from '@angular/core';
 
 //Components
@@ -23,7 +23,6 @@ import {StorageService} from '../../services/storage/storage.service';
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
-    private nav: NavController;
     public controlsVisible = false;
     public botVisible = false;
     public sideVisible = false;
@@ -36,23 +35,24 @@ export class TestChartCtrlsPage {
     private oscopeChans: number[];
 
     private chartReady: boolean = false;
+    private toastCtrl: ToastController;
 
-    constructor(_deviceManagerService: DeviceManagerService, _nav: NavController, _storage: StorageService) {
+    constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController) {
+        this.toastCtrl = _toastCtrl;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
-        this.nav = _nav;
         this.storage = _storage;
     }
 
     ngOnInit() {
         if (this.deviceManagerService.activeDeviceIndex === undefined) {
             console.log('in if');
-            let toast = Toast.create({
+            let toast = this.toastCtrl.create({
                 message: 'You currently have no device connected. Please visit the settings page.',
                 showCloseButton: true
             });
 
-            this.nav.present(toast);
+            toast.present();
         }
         else {
             this.oscopeChans = [0, 1];
