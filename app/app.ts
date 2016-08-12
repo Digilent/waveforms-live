@@ -35,9 +35,7 @@ class MyApp {
   constructor(
     private app: App,
     private platform: Platform,
-    private menu: MenuController,
-    private deviceManager: DeviceManagerService
-
+    private menu: MenuController
   ) {
     this.initializeApp();
 

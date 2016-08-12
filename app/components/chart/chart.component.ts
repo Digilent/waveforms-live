@@ -403,7 +403,7 @@ export class SilverNeedleChart {
             pointInterval: waveform.dt
         });
         //Update point interval in timeline as well to show where user view is in timeline
-        this.chart.reflow();
+        this.chart.redraw(false);
         this.updateCursorLabels();
         if (this.timelineView) {
             this.timelineChart.series[seriesNum].setData(waveform.y, true, false, false);
@@ -411,7 +411,7 @@ export class SilverNeedleChart {
                 pointStart: waveform.t0,
                 pointInterval: waveform.dt
             });
-            this.timelineChart.reflow();
+            this.timelineChart.redraw();
             let extremesX = this.timelineChart.xAxis[0].getExtremes();
             let extremesY = this.timelineChart.yAxis[0].getExtremes();
             this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
@@ -911,7 +911,7 @@ export class SilverNeedleChart {
         //TODO check for ngclass event that fires on class change.
         setTimeout(() => {
             this.chart.reflow();
-        }, 50);
+        }, 100);
     }
 
     onChartClick(event) {
@@ -1123,7 +1123,8 @@ export class SilverNeedleChart {
         this.timelineView = true;
         setTimeout(() => {
             this.chart.reflow();
-        }, 50);
+            this.timelineChart.reflow();
+        }, 200);
     }
 
     isCursorTimeline() {
@@ -1261,7 +1262,7 @@ export class SilverNeedleChart {
                 newValArray[index] = parseFloat(element) * 1000;
             });
             this.chart.series[seriesNum].setData(newValArray, true, false, false);
-            this.chart.reflow();
+            this.chart.redraw(false);
         }
         else if (multiplier === 'V') {
             let newValArray = [];
@@ -1269,7 +1270,7 @@ export class SilverNeedleChart {
                 newValArray[index] = parseFloat(element) / 1000;
             });
             this.chart.series[seriesNum].setData(newValArray, true, false, false);
-            this.chart.reflow();
+            this.chart.redraw(false);
         }
     }
 

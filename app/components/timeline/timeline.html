@@ -1,4 +1,5 @@
 <span>
+    <button (click)="playBuffers()">Play</button>
     <button (click)="decrementBuffer()">Previous</button>
     Buffer: 
     <ion-input style="width: 50px; display: inline-block" [(ngModel)]="activeDevice.instruments.osc.activeBuffer" (ngModelChange)="activeBufferChange()"></ion-input>

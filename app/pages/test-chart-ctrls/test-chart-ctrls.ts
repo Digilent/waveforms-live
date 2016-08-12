@@ -144,11 +144,6 @@ export class TestChartCtrlsPage {
         this.chart1.exportCsv('SamData');
     }
 
-    setTitle() {
-        //remove
-        this.chart1.setTitle('Sup Son? ¯\\_(ツ)_/¯');
-    }
-
     initSettings() {
         this.chart1.enableCursors();
         this.chart1.enableTimelineView();
