@@ -1,6 +1,6 @@
 .wrapper
 {
-    background-color: purple;
+    //background-color: purple;
     padding-left: 0;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
@@ -10,7 +10,7 @@
 
 .controls
 {
-    background-color: green;
+    //background-color: green;
     z-index: 1000;
     position: fixed;
     left: 250px;
@@ -27,7 +27,7 @@
 
 .graph
 {
-    background-color: red;   
+    //background-color: red;   
     position: absolute;
     padding: 15px;
     margin-right: 15px;
@@ -46,7 +46,7 @@
 
 .wrapper.controlsVisible .graph
 {
-    background-color: blue;
+    //background-color: blue;
     position: absolute;
     margin-right: 15px;
 }

@@ -1,6 +1,6 @@
 .vertwrapper
 {
-    background-color: silver; 
+    //background-color: silver; 
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -15,8 +15,8 @@
 
 .tcwrapper
 {
-    background-color: purple; 
-    padding: 10px;
+    //background-color: purple; 
+    //padding: 10px;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -52,7 +52,7 @@
 
 .tcwrapper .right
 {
-    background-color: green;
+    background-color: #003366;
     display: block;
     //width: 0%;
     min-height:100%; 
@@ -73,8 +73,8 @@
 
 .tcwrapper .left
 {  
-    background-color: red;
-    padding: 10px;
+    background-color: #CCCCCC;
+    //padding: 10px;
     overflow: hidden;
     display: flex;
     display: -webkit-flex;
@@ -92,7 +92,7 @@
     position: relative;
     flex: 0 1 auto;
     -webkit-flex: 0 1 auto;
-    background-color: orange;  
+    //background-color: orange;  
     text-align: right;
 }
 
@@ -103,7 +103,7 @@
     position: relative;
     flex: 1 1 auto;
     -webkit-flex: 1 1 auto;
-    background-color: yellow; 
+    //background-color: yellow; 
    
 }
 

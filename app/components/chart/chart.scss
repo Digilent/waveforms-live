@@ -16,21 +16,28 @@
 .chart-component-wrapper .cursor-container
 {
     display: block;
-    background-color: green;
+    //background-color: green;
+}
+
+.chart-component-wrapper .cursor-container .info-container
+{
+    display: inline-block; 
+    //background-color: white;
+    vertical-align: middle;
 }
 
 .chart-component-wrapper .chart-component-container-div-cursor-only
 {
     display: block;
     position: relative;
-    height: calc(100% - 2 * 40px);
+    height: calc(100% - 2 * 45px);
 }
 
 .chart-component-wrapper .chart-component-container-div-cursor-timeline
 {
     display: block;
     position: relative;
-    height: calc(100% - 2 * 40px - 100px);
+    height: calc(100% - 2 * 45px - 100px);
 }
 
 .chart-component-wrapper .chart-component-container-div-timeline-only
