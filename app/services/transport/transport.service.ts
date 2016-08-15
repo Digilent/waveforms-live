@@ -19,39 +19,27 @@ export class TransportService {
         this.transport = new HttpTransportComponent(this.http, _uri);
     }
 
+    //Set transport uri
     setUri(uri) {
         this.transport.setUri(uri);
     }
 
-    /*
-    writeRead(endpoint: string, sendData: Object): Observable<any> {
-        return Observable.create((observer) => {
-            this.transport.writeRead(endpoint, sendData).subscribe(
-                (data) => {
-                    observer.next(data);
-                    observer.complete();
-                },
-                (err) => {
-                    console.log(err);
-                },
-                () => { }
-            )
-        })
-    }
-    */
-
+    //Call writeRead on transport component
     writeRead(endpoint: string, sendData: any, dataType: string): Observable<any> {
         return this.transport.writeRead(endpoint, sendData, dataType);
     }
 
+    //Call streamFrom on stransport component
     streamFrom(endpoint: string, sendData: Object, dataType: string, delay = 0): Observable<any> {
         return this.transport.streamFrom(endpoint, sendData, dataType, delay);
     }
 
+    //Stop all transport streams
     stopStream() {
         this.transport.stopStream();
     }
 
+    //Get type of transport service (parent)
     getType() {
         return 'Parent';
     }

@@ -41,6 +41,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         })
     }
 
+    //Tell OpenScope to run once and return a buffer
     runSingle(chans: number[], voltageMultipliers: number[]): Observable<Array<WaveformComponent>> {
         if (chans.length == 0) {
             return Observable.create((observer) => {
@@ -97,7 +98,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         });
     }
 
-
+    //Stream buffers using multiple single calls
     streamRunSingle(chans: Array<number>, voltageMultipliers: number[], delay = 0): Observable<Array<WaveformComponent>> {
         //If no channels are active no need to talk to hardware
         if (chans.length == 0) {
@@ -153,6 +154,10 @@ export class OscInstrumentComponent extends InstrumentComponent {
                 }
             )
         });
+    }
+
+    stopStream() {
+        this.transport.stopStream();
     }
 
 }

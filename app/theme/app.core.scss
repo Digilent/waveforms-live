@@ -10,13 +10,11 @@
 
 //Pages
 @import "../pages/home/home";
-@import "../pages/sidecontrols/sidecontrols";
 @import "../pages/test-chart-ctrls/test-chart-ctrls";
 @import "../pages/fgen-modal/fgen-modal";
 @import "../pages/cursor-modal/cursor-modal";
 
 //Components
-//@import "../components/oscilloscope/oscilloscope";
 @import "../components/chart/chart";
 @import "../components/bottom-bar/bottom-bar";
 @import "../components/digital-io/digital-io";
@@ -24,3 +22,4 @@
 @import "../components/trigger/trigger";
 @import "../components/oscope-controls/oscope-controls";
 @import "../components/function-gen/function-gen";
+@import "../components/timeline/timeline";

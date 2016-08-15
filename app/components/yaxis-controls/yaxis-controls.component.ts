@@ -49,14 +49,17 @@ export class YAxisComponent {
         });
     }
 
+    //Remove storage event listener to prevent memory leaks
     ngOnDestroy() {
         this.storageEventListener.unsubscribe();
     }
 
+    //Toggle chart autoscaling for all axes
     turnOnAutoscale() {
         this.chart.toggleAutoscale();
     }
 
+    //Called when series settings are changed. Updates chart series settings
     seriesChanged(seriesNum: number) {
         this.chart.setSeriesSettings({
             seriesNum: seriesNum,
@@ -65,14 +68,17 @@ export class YAxisComponent {
         });
     }
 
+    //Set active series on the chart component
     setActiveSeries(i) {
         this.chart.setActiveSeries(i + 1);
     }
 
+    //Autoscale a specific y axis
     autoscaleY(i) {
         this.chart.autoscaleAxis('y', i);
     }
 
+    //Change multiplier for specific series
     changeMultiplier(i, event) {
         let popover = this.popoverCtrl.create(GenPopover, {
             dataArray: this.chart.multipliers

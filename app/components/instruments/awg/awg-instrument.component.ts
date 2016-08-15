@@ -31,7 +31,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         })
     }
 
-    //Enumerate instrument info.
+    //Enumerate instrument info
     enumerate(): Observable<number> {
         let command = {
             command: 'awgEnumerate'
@@ -39,7 +39,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         return this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json');
     }
 
-    //Get all settings for the specified channels.
+    //Get all settings for the specified channels
     getSettings(chans: number[]): Observable<Array<any>> {
         let command = {
             "awg": {}
@@ -75,6 +75,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         });
     }
 
+    //Set all settings for the specified channels
     setSettings(chans: number[], settings: Array<Object>): Observable<Array<any>> {
         let command = {
             "awg": {}

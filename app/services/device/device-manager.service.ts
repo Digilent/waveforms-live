@@ -24,6 +24,7 @@ export class DeviceManagerService {
         this.transport = new TransportService(_http, null);
     }
 
+    //Connect to device and send enumerate command
     connect(uri): Observable<any> {
         return Observable.create((observer) => {
             this.transport.setUri(uri);
@@ -54,10 +55,12 @@ export class DeviceManagerService {
         });
     }
 
+    //Return active device
     getActiveDevice() {
         return this.devices[this.activeDeviceIndex];
     }
 
+    //Sets active device
     setActiveDevice(_activeDeviceIndex: number) {
         this.activeDeviceIndex = _activeDeviceIndex;
     }

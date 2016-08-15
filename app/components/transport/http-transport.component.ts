@@ -22,9 +22,6 @@ export class HttpTransportComponent extends TransportComponent {
     private dataSource;
     private dataSourceSubscription;
 
-    //private dataSource: ;;
-    //private dataSourceSubscription: any; 
-
     constructor(_http: Http, _rootUri: string) {
         console.log('Transport HTTP Contructor');
         super();
@@ -48,15 +45,11 @@ export class HttpTransportComponent extends TransportComponent {
         let body = sendData;
 
         return Observable.create((observer) => {
-            //http.post(uri, body, options).subscribe(
-            //TODO cleanup command and shiet
             let XHR = new XMLHttpRequest();
 
 
             // We define what will happen if the data are successfully sent
             XHR.addEventListener("load", function (event) {
-                //console.log(XHR.getResponseHeader('Content-Type'), event);
-                //console.log('response received');
                 observer.next(event.currentTarget.response);
                 observer.complete();
             });
@@ -69,6 +62,7 @@ export class HttpTransportComponent extends TransportComponent {
 
             // We setup our request
             XHR.open("POST", uri);
+            //Set resposne type as arraybuffer to receive response as bytes
             XHR.responseType = 'arraybuffer';
             //Setting request header content type as application json causes nodejs error?
             //XHR.setRequestHeader("Content-Type", "application/json");
@@ -76,6 +70,7 @@ export class HttpTransportComponent extends TransportComponent {
         });
     }
 
+    //Stream via back to back xhr calls
     streamFrom(endpoint: string, sendData: any, dataType: string, delay = 0): Observable<any> {
         this.streamState.mode = 'continuous';
 
@@ -107,10 +102,12 @@ export class HttpTransportComponent extends TransportComponent {
         });
     }
 
+    //Sets stream to off
     stopStream() {
         this.streamState.mode = 'off';
     }
 
+    //Get transport type
     getType() {
         return 'Http';
     }

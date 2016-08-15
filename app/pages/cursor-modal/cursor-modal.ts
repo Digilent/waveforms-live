@@ -35,6 +35,7 @@ export class ModalCursorPage {
         this.cursor2Chan = this.params.get('cursor2Chan');
     }
 
+    //Close modal and save settings if they are changed
     closeModal(save: boolean) {
         if (save) {
             this.viewCtrl.dismiss({
@@ -51,6 +52,7 @@ export class ModalCursorPage {
         }
     }
 
+    //Show cursor settings popover and return data as a navparam on dismiss
     showPopover(event, type: string) {
         let popover;
         if (type === 'cursorType') {

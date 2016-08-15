@@ -39,10 +39,12 @@ export class XAxisComponent {
         });
     }
 
+    //Remove storage event listener to prevent memory leaks
     ngOnDestroy() {
         this.storageEventListener.unsubscribe();
     }    
 
+    //Called when time settings are changed. Update chart component with new settings and call setTimeSettings
     timeChanged() {
         this.chart.base = parseFloat(this.chart.base.toString());
         this.chart.setTimeSettings({
@@ -51,6 +53,7 @@ export class XAxisComponent {
         });
     }
 
+    //Call chart autoscale on the x axis
     autoscaleX() {
         this.chart.autoscaleAxis('x', 0);
     }

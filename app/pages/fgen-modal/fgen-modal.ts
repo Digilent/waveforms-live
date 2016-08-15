@@ -27,7 +27,6 @@ export class ModalFgenPage {
         _viewCtrl: ViewController,
         _params: NavParams
     ) {
-        console.log('fgen modal constructor');
         this.platform = _platform;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
@@ -40,6 +39,7 @@ export class ModalFgenPage {
         this.numPoints = 1000;
     }
 
+    //Called when fgen modal is closed. Returns data
     closeModal() {
         this.viewCtrl.dismiss({
             waveType: this.waveType,
@@ -50,6 +50,7 @@ export class ModalFgenPage {
         });
     }
     
+    //Determines if current wave type is square
     isSquare() {
         if (this.waveType === 'square') {
             return true;
@@ -57,6 +58,7 @@ export class ModalFgenPage {
         return false;
     }
     
+    //Determines if current wave type is dc
     isDc() {
         if (this.waveType === 'dc') {
             return true;
@@ -64,17 +66,20 @@ export class ModalFgenPage {
         return false;
     }
     
-    saveInstance(chart: Object) {
+    //Initialize chart for awg config
+    initChart(chart: Object) {
         this.chart.setTitle('AWG Configuration');
         this.chart.clearExtraSeries([0]);
         this.drawWave();
         this.chart.redrawChart();
     }
     
+    //When a different tab is selected, draw new wavetype
     onSegmentChanged(event) {
         this.drawWave();
     }
     
+    //Case structure to determine which wavetype to draw
     drawWave() {
         if (this.waveType === 'sine') {this.drawSine();}
         else if (this.waveType === 'ramp-up') {this.drawRampUp();}
@@ -85,6 +90,7 @@ export class ModalFgenPage {
         else {alert('wavetype not supported yet');}
     }
     
+    //Draws sine wave
     drawSine() {
         //incomplete: need to set up point interval for x axis
         let waveform = {
@@ -104,6 +110,7 @@ export class ModalFgenPage {
         this.chart.drawWaveform(0, waveform);
     }
     
+    //Draws ramp up 
     drawRampUp() {
         let waveform = {
             y: [],
@@ -123,6 +130,7 @@ export class ModalFgenPage {
         this.chart.drawWaveform(0, waveform);
     }
     
+    //Draws dc 
     drawDc() {
         let waveform = {
             y: [],
@@ -136,6 +144,7 @@ export class ModalFgenPage {
         this.chart.drawWaveform(0, waveform);
     }
     
+    //Draws triangle wave
     drawTriangle() {
         let waveform = {
             y: [],
@@ -164,6 +173,7 @@ export class ModalFgenPage {
         this.chart.drawWaveform(0, waveform);
     }
     
+    //Draws ramp down
     drawRampDown() {
         let waveform = {
             y: [],
@@ -183,18 +193,22 @@ export class ModalFgenPage {
         this.chart.drawWaveform(0, waveform);
     }
     
+    //Not yet implemented
     drawNoise() {
         let waveform: number[] = [];
     }
     
+    //Not yet implemented
     drawTrap() {
         let waveform: number[] = [];
     }
     
+    //Not yet implemented
     drawSinPow() {
         let waveform: number[] = [];
     }
     
+    //Draw square wave
     drawSquare() {
         let waveform = {
             y: [],

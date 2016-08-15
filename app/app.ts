@@ -6,7 +6,6 @@ import {HTTP_PROVIDERS} from '@angular/http';
 
 //Pages
 import {HomePage} from './pages/home/home';
-import {SideControlsPage} from './pages/sidecontrols/sidecontrols';
 import {TestChartPage} from './pages/test-chart/test-chart';
 import {TestChartCtrlsPage} from './pages/test-chart-ctrls/test-chart-ctrls';
 import {TestPage} from './pages/test-page/test-page';
@@ -42,7 +41,6 @@ class MyApp {
     // set our app's pages
     this.pages = [
       { title: 'Home', component: HomePage },
-      //{ title: 'SideControls', component: SideControlsPage },
       //{ title: 'Test Chart', component: TestChartPage },
       { title: 'Test Chart Controls', component: TestChartCtrlsPage },
       //{ title: 'Test Page', component: TestPage },

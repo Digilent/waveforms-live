@@ -19,6 +19,7 @@ export class GenPopover{
           this.dataArray = this.params.get('dataArray');  
     }
 
+    //Close popover and send option string as a NavParam
     close(option: string) {
         this.viewCtrl.dismiss({
             option: option

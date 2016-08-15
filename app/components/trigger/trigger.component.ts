@@ -61,26 +61,36 @@ export class TriggerComponent {
             }
         });
     }
+
+    //Remove storage event listener to avoid memory leaks
+    ngOnDestroy() {
+        this.storageEventListener.unsubscribe();
+    }
     
+    //Toggle dropdown menu
     toggleTriggerMenu(newType: string) {
         this.showTriggerMenu = !this.showTriggerMenu;
         this.triggerType = newType;
     }
     
+    //Toggle flag type from dropdown
     toggleFlagType(newType: string) {
         this.showFlagMenu = !this.showFlagMenu;
         this.flagType = newType;
     }
     
+    //Change digital channel from dropdown
     toggleDigitalChannel(selectedChannel: string) {
         this.showChannels = !this.showChannels;
         this.selectedChannel = selectedChannel;
     }
     
+    //Force trigger function skeleton
     forceTrigger() {
         console.log('trigger event');
     }
 
+    //Show alert toggle
     showAlert() {
         this.showOptions = !this.showOptions;
     }

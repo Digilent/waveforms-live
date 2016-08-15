@@ -32,6 +32,7 @@ export class DigitalIoComponent {
         
     }
     
+    //Determines if channel is an input
     isInput(channel: number) {
         if (this.outputArray[channel] === false) {
             return true;
@@ -39,6 +40,7 @@ export class DigitalIoComponent {
         return false;
     }
     
+    //Determines if channel value is high or low
     isHigh(channel: number) {
         if (channel % 2 == 0) {
             return true;
@@ -46,10 +48,12 @@ export class DigitalIoComponent {
         return false;
     }
     
+    //Togges menu
     toggleMenu() {
         this.showMenu = !this.showMenu;
     }
     
+    //Open checkbox alert
     doCheckbox() {
         let okFlag: boolean = false;   
         let alert = this.alertCtrl.create();

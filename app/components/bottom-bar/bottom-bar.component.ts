@@ -22,7 +22,7 @@ export class BottomBarComponent {
         this.deviceManagerService = _deviceManagerService;
     }
 
-    holy() {
+    childHeaderClicked() {
         this.contentHidden = !this.contentHidden;
         this.headerClicked.emit(null);  
     }

@@ -13,32 +13,39 @@ export class StorageService {
         console.log('storage constructor');
     }
 
+    //Get data from SqlStorage
     getData(name: string) {
         return this.storage.get(name);
     }
 
+    //Save data to SqlStorage
     saveData(name: string, jsonString: string) {
         this.storage.set(name, jsonString);
     }
 
+    //Remove data by keyname
     removeDataByKey(key: string) {
         this.storage.remove(key);
     }
 
+    //Clear all data from storage
     clearAll() {
         this.storage.clear();
     }
 
+    //For advanced users. SqlStorage wrapper function for general query
     advancedQuery(query: string, params: Array<any>) {
         return this.storage.query(query, params);
     }
 
+    //Emit save event to all listeners
     saveSettings() {
         console.log('in storage service about to emit');
         this.saveLoadEventEmitter.next('save');
         console.log('emitted from storage service with .next');
     }
 
+    //Emit load event to all listeners
     loadSettings() {
         console.log('in storage service about to emit');
         this.saveLoadEventEmitter.next('load');

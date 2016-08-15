@@ -59,6 +59,7 @@ export class DcSupplyComponent {
         });
     }
 
+    //If active device exists, populate values
     ngOnInit() {
         if (this.activeDevice !== undefined) {
             let channelNumArray = [];
@@ -72,11 +73,12 @@ export class DcSupplyComponent {
         }
     }
 
+    //To avoid memory leaks, called to unsubscribe from storage events
     ngOnDestroy() {
-        console.log('ngondestroy');
         this.storageEventListener.unsubscribe();
     }
 
+    //Set dc voltages on OpenScope
     setVoltages(chans: Array<number>, voltages: Array<number>) {
         this.activeDevice.instruments.dc.setVoltages(chans, voltages).subscribe(
             (data) => {
@@ -94,6 +96,7 @@ export class DcSupplyComponent {
         );
     }
 
+    //Receive desired voltages from OpenScope
     getVoltages(chans: Array<number>) {
         this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
             (voltages) => {
@@ -108,6 +111,7 @@ export class DcSupplyComponent {
         )
     }
     
+    //Toggle voltages on/off
     togglePower() {
         for (let i = 0; i < this.voltageSupplies.length; i++) {
             if (this.correctCurrents[i] === false || this.correctVoltages[i] === false) {
@@ -123,22 +127,22 @@ export class DcSupplyComponent {
         }
     }
 
+    //Validate voltage supplies 
     validateSupply(supplyNum: number) {
         if ((parseFloat(this.voltages[supplyNum]) < 0 || parseFloat(this.voltages[supplyNum]) > this.maxVoltages[supplyNum]) && this.maxVoltages[supplyNum] > 0) {
-            //bad shit
-            console.log(supplyNum + ' is messed up dude');
+            //Incorrect
             this.correctVoltages[supplyNum] = false;
             return;
         }
         if (this.maxVoltages[supplyNum] < 0 && (parseFloat(this.voltages[supplyNum]) > 0 || parseFloat(this.voltages[supplyNum]) < this.maxVoltages[supplyNum])) {
-            //negative supply
-            console.log(supplyNum + ' is negative and messed yo');
+            //Supply is negative
             this.correctVoltages[supplyNum] = false;
             return;
         }
         this.correctVoltages[supplyNum] = true;
     }
 
+    //Validate current supplies
     validateCurrent(supplyNum: number) {
         if (parseFloat(this.currents[supplyNum]) < 0 || parseFloat(this.currents[supplyNum]) > this.maxCurrents[supplyNum]) {
             console.log(supplyNum + ' is wrong mosuckra');

@@ -20,15 +20,4 @@ export abstract class InstrumentComponent {
         this.transport = _transport;
         this.endpoint = _endpoint;
     }
-
-    //Check to make sure status code exists and determine if process can continue
-    //abstract checkStatus(statusCode: number) : Observable<any>;
-
-    //Enumerate instrument info.
-    /*enumerate(): Observable<number> {
-        let command = {
-            command: 'enumerate'
-        }
-        return this.transport.writeRead(this.endpoint, command);
-    }*/
 }

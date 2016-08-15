@@ -3,7 +3,6 @@ import {ViewChild, ElementRef, Component} from '@angular/core';
 
 //Components
 import {SilverNeedleChart} from '../../components/chart/chart.component';
-import {OscilloscopeComponent} from '../../components/oscilloscope/oscilloscope.component';
 import {BottomBarComponent} from '../../components/bottom-bar/bottom-bar.component';
 import {SideBarComponent} from '../../components/side-bar/side-bar.component';
 import {XAxisComponent} from '../../components/xaxis-controls/xaxis-controls.component';
@@ -19,7 +18,7 @@ import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
-    directives: [SilverNeedleChart, OscilloscopeComponent, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent, TimelineComponent]
+    directives: [SilverNeedleChart, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent, TimelineComponent]
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
@@ -44,6 +43,7 @@ export class TestChartCtrlsPage {
         this.storage = _storage;
     }
 
+    //Alert user with toast if no active device is set
     ngOnInit() {
         if (this.deviceManagerService.activeDeviceIndex === undefined) {
             console.log('in if');
@@ -60,31 +60,28 @@ export class TestChartCtrlsPage {
         }
     }
 
+    //Toggle sidecontrols
     toggleControls() {
         this.controlsVisible = !this.controlsVisible;
         setTimeout(() => {
             this.chart1.redrawChart();
         }, 550);
     }
-    
+
+    //Toggle bot controls 
     toggleBotControls() {
         this.botVisible = !this.botVisible;
         setTimeout(() => {
             this.chart1.redrawChart();
         }, 550);
     }
-
-    toggleSideControls() {
-        this.sideVisible = !this.sideVisible;
-        setTimeout(() => {
-            this.chart1.redrawChart();
-        }, 550);
-    }
     
+    //Toggle series visibility
     toggleSeries(event) {
         this.chart1.chart.series[event.channel].setVisible(event.value, true);
     }
 
+    //Run osc single
     singleClick() {
         let multipliers = [];
         for (let i = 0; i < this.oscopeChans.length; i++) {
@@ -111,6 +108,7 @@ export class TestChartCtrlsPage {
         );   
     }
 
+    //Stream osc buffers
     runClick() {
         console.log('run');
         let multipliers = [];
@@ -134,16 +132,19 @@ export class TestChartCtrlsPage {
         );
     }
 
+    //Stop dc stream
     stopClick() {
         console.log('stop');
         this.running = false;
-        this.activeDevice.instruments.dc.stopStream();
+        this.activeDevice.instruments.osc.stopStream();
     }
 
+    //Export series as csv with file name 'myData'
     exportChart() {
-        this.chart1.exportCsv('SamData');
+        this.chart1.exportCsv('myData');
     }
 
+    //Enable cursors and timeline view
     initSettings() {
         this.chart1.enableCursors();
         this.chart1.enableTimelineView();

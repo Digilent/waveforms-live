@@ -292,7 +292,7 @@ export class SilverNeedleChart {
     }
 
 
-    //Called once on component load
+    //Called once on chart load
     onLoad(chartInstance) {
         //Save a reference to the chart object so we can call methods on it later
         this.chart = chartInstance;
@@ -302,6 +302,7 @@ export class SilverNeedleChart {
         this.chartLoad.emit(this.chart);
     }
 
+    //Called on timeline chart load
     onTimelineLoad(chartInstance) {
         this.timelineChart = chartInstance;
         this.timelineChart.reflow();
@@ -319,11 +320,13 @@ export class SilverNeedleChart {
         this.updatePlotLines([0, 1], [left, right]);
     }
 
+    //Called when a point is selected. Sets active series and updates y axis labels
     onPointSelect (event) {
         this.activeSeries = event.context.series.index + 1;
         this.updateYAxisLabels();
     }
 
+    //Displays the y axis label for the active series and hide the others
     updateYAxisLabels() {
         for (let i = 0; i < this.chart.yAxis.length; i++) {
             if (i === this.activeSeries - 1) {
@@ -349,6 +352,7 @@ export class SilverNeedleChart {
         }
     }
     
+    //Reflows chart to fit container and updates cursor labels if they exist
     redrawChart() {
         if (this.chart != undefined && this.timelineChart != undefined) {
             this.chart.reflow();
@@ -362,21 +366,7 @@ export class SilverNeedleChart {
         }
     }
 
-    setXView(position, secsPerDiv) {
-        position = parseFloat(position);
-        secsPerDiv = parseFloat(secsPerDiv);
-
-        let delta = 5 * secsPerDiv;
-        let min = position - delta;
-        let max = position + delta;
-
-        this.chart.xAxis[0].setExtremes(min, max);
-    }
-
-    getNumAxes() {
-        return this.chart.yAxis.length;
-    }
-
+    //Draws a waveform. If axis does not exist for series number, add new axis and then set data
     drawWaveform(seriesNum: number, waveform: any) {
         if (seriesNum < this.chart.yAxis.length) {
             this.chart.series[seriesNum].setData(waveform.y, true, false, false);
@@ -426,6 +416,7 @@ export class SilverNeedleChart {
         }
     }
 
+    //Remove extra series and axes from the chart
     clearExtraSeries(usedSeries: number[]) {
         this.numSeries = usedSeries;
         if (this.chart.series.length <= usedSeries.length) {
@@ -444,6 +435,7 @@ export class SilverNeedleChart {
         }
     }
 
+    //Remove cursors from the chart including their labels
     removeCursors() {
         this.chart.xAxis[0].removePlotLine('cursor0');
         this.chart.xAxis[0].removePlotLine('cursor1');
@@ -469,6 +461,7 @@ export class SilverNeedleChart {
         this.yCursorPositions = [0, 0];
     }
 
+    //Add x cursor to the chart and set css properties and event listeners
     addXCursor() {
         let extremes = this.chart.xAxis[0].getExtremes();
         let initialValue: number;
@@ -552,6 +545,7 @@ export class SilverNeedleChart {
         this.numXCursors++;
     }
 
+    //Add y cursor to the chart and set css properties and event listeners
     addYCursor() {
         let initialValue: number;
         let extremes = this.chart.yAxis[0].getExtremes();
@@ -633,7 +627,7 @@ export class SilverNeedleChart {
         this.numYCursors++;
     }
     
-
+    //Called on x cursor mousedown. Add correct mousemove listener and mouseup listener
     xCursorStartDrag(cursorId, xStartPos) {
         if (this.cursorType === 'track') {
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.trackCursorDragListener);
@@ -644,11 +638,13 @@ export class SilverNeedleChart {
         this.oscopeChartInner.nativeElement.addEventListener('mouseup', this.xCursorStopDrag.bind(this));
     }
 
+    //Called on y cursor mousedown. Add mousemove and mouseup listeners
     yCursorStartDrag(cursorId, xStartPos) {
         this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.yCursorDragListener);
         this.oscopeChartInner.nativeElement.addEventListener('mouseup', this.yCursorStopDrag.bind(this));
     }
 
+    //Called on x cursor mouseup. Remove correct mousemove event listener
     xCursorStopDrag() {
         if (this.cursorType === 'track') {
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.trackCursorDragListener);
@@ -658,10 +654,12 @@ export class SilverNeedleChart {
         }
     }
 
+    //Called on y cursor mouseup. Remove mousemove event listener
     yCursorStopDrag() {
         this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.yCursorDragListener);
     }
 
+    //Callback function for mousemove event on a track cursor style
     trackCursorDragListener = function (event) {
         let offset = 110;  
         let yCor = event.layerY;
@@ -715,6 +713,7 @@ export class SilverNeedleChart {
         });
     }.bind(this);
 
+    //Callback function for mousemove event on a voltage cursor style
     yCursorDragListener = function (event) {
         //SOME WEIRD Y PIXEL OFFSET SO NEED TO CORRECT BY CALCULATING YDELTA AND ADDING THAT TO YVAL CALCULATION
         let yDelta = event.layerY - (this.chart.yAxis[0].toPixels(parseFloat(this.chart.yAxis[0].toValue(event.chartY - this.chart.plotTop))));
@@ -767,6 +766,7 @@ export class SilverNeedleChart {
         });
     }.bind(this);
 
+    //Callback function for mousemove event on a time cursor style
     cursorDragListener = function (event) {
         let offset = 110;  
         let yCor = event.layerY;
@@ -825,6 +825,7 @@ export class SilverNeedleChart {
         });
     }
 
+    //Get cursor position differences and return an array of data
     getCursorDeltas() {
         //[xdeltas, series 0 ydeltas on x cursors, series 1 ydeltas on x cursors, ydeltas on y cursors]
         let xDelta = Math.abs(this.xCursorPositions[3] - this.xCursorPositions[0]);
@@ -834,6 +835,7 @@ export class SilverNeedleChart {
         return [xDelta, xDeltaSer0Y, xDeltaSer1Y, yDelta];
     }
 
+    //Exports series data from chart to a csv on client side
     exportCsv(fileName: string) {
         fileName = fileName + '.csv';
         let csvContent = 'data:text/csv;charset=utf-8,';
@@ -864,6 +866,7 @@ export class SilverNeedleChart {
         link.click();
     }
 
+    //Opens cursor modal menu and sets data on modal dismiss
     openCursorModal() {
         let modal = this.modalCtrl.create(ModalCursorPage, {
             cursorType: this.cursorType,
@@ -881,6 +884,7 @@ export class SilverNeedleChart {
         modal.present();
     }
 
+    //Adds correct cursors from selection
     handleCursors() {
         this.removeCursors();
         if (this.cursorType === 'time') {
@@ -905,6 +909,7 @@ export class SilverNeedleChart {
         }
     }
 
+    //Enable cursors on the chart component. Called after chart initialization
     enableCursors() {
         this.cursorsEnabled = true;
         //Wait for ngClass to apply css class and reflow chart to fill correctly. 
@@ -914,6 +919,7 @@ export class SilverNeedleChart {
         }, 100);
     }
 
+    //Called on chart mousedown. Sets either vertical or horizontal pan listener
     onChartClick(event) {
         //check cursors enabled to see if the chart is 'interactive'. Added to remove pan from fgen config modal
         if (event.srcElement.localName === 'rect' && this.oscopeChartInner !== undefined && event.srcElement.id === '' && this.cursorsEnabled) {
@@ -929,6 +935,7 @@ export class SilverNeedleChart {
         }
     }
 
+    //Called on chart mouseup. Removes pan listeners
     clearMouse() {
         this.canPan = false;
         if (this.oscopeChartInner !== undefined) {
@@ -940,6 +947,7 @@ export class SilverNeedleChart {
         }
     }
 
+    //Callback function for panning
     panListener = function(event) {
         let newVal = this.chart.xAxis[0].toValue(event.chartX);
         let oldValinNewWindow = this.chart.xAxis[0].toValue(this.xPositionPixels);
@@ -949,6 +957,7 @@ export class SilverNeedleChart {
         this.xPositionPixels = event.chartX;
     }.bind(this);
 
+    //Callback function for vertical panning of a series
     verticalOffsetListener = function(event) {
         let newVal = parseFloat(this.chart.yAxis[this.activeSeries - 1].toValue(event.chartY));
         let oldValinNewWindow = parseFloat(this.chart.yAxis[this.activeSeries - 1].toValue(this.yPositionPixels));
@@ -963,6 +972,7 @@ export class SilverNeedleChart {
         this.yPositionPixels = event.chartY;
     }.bind(this);
 
+    //Sets x extremes based on position change from previos position
     setXExtremes(positionChange: number) {
         let newPos = this.base - positionChange;
         let min = newPos - this.timeDivision * 5;
@@ -978,6 +988,7 @@ export class SilverNeedleChart {
         }
     }
 
+    //Sets y extremes based on an object containing a voltBase, voltsPerDivision, and a series number
     setYExtremes(seriesSettings: any) {
         let offset = parseFloat(seriesSettings.voltBase);
         let min = offset - (parseFloat(seriesSettings.voltsPerDiv) * 5);
@@ -986,6 +997,7 @@ export class SilverNeedleChart {
         this.updateCursorLabels();
     }
 
+    //Called when chart changes extremes or position. Moves cursor labels to new cursor position
     updateCursorLabels() {        
         if (this.cursorType === 'disabled') {
             return;
@@ -1026,6 +1038,7 @@ export class SilverNeedleChart {
         
     }
 
+    //Set time settings (base and time/div) from an object containing the base and timeDivision
     setTimeSettings(timeObj: any) {
         this.timeDivision = parseFloat(timeObj.timePerDiv);
         this.base = parseFloat(timeObj.base);
@@ -1042,18 +1055,21 @@ export class SilverNeedleChart {
         this.updateCursorLabels();
     }
 
+    //Set series settings based on an object containing the series number, volts per division, and base
     setSeriesSettings(seriesSettings: any) {
         this.voltDivision[seriesSettings.seriesNum] = seriesSettings.voltsPerDiv;
         this.voltBase[seriesSettings.seriesNum] = seriesSettings.voltBase;
         this.setYExtremes(seriesSettings);
     }
 
+    //Set active series and update labels
     setActiveSeries(seriesNum: number) {
         this.activeSeries = seriesNum;
         this.updateYAxisLabels();
         this.updateCursorLabels();
     }
 
+    //Add y axis to chart and initialize with correct settings
     addYAxis(axisNum: number) {
         if (this.chart.yAxis.length !== axisNum) {
             return;
@@ -1083,6 +1099,7 @@ export class SilverNeedleChart {
         this.chart.addAxis(options, false, false, false);
     }
 
+    //Autoscale all axes on chart
     autoscaleAllAxes() {
         this.autoscaleAxis('x', 0);
         for (let i = 0; i < this.chart.yAxis.length; i++) {
@@ -1090,10 +1107,12 @@ export class SilverNeedleChart {
         }
     }
 
+    //Called to toggle autoscaling all axes on or off
     toggleAutoscale() {
         this.autoscaleAll = !this.autoscaleAll;
     }
 
+    //Autoscales single axis
     autoscaleAxis(axis: string, axisIndex: number) {
         if (axis === 'x') {
             this.chart.xAxis[axisIndex].setExtremes(this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax);
@@ -1119,6 +1138,7 @@ export class SilverNeedleChart {
         this.updateCursorLabels();
     }
 
+    //Enables timeline view. Called when chart is initialized
     enableTimelineView() {
         this.timelineView = true;
         setTimeout(() => {
@@ -1127,6 +1147,7 @@ export class SilverNeedleChart {
         }, 200);
     }
 
+    //Determines if cursors and timeline view is enabled on chart component
     isCursorTimeline() {
         if (this.cursorsEnabled && this.timelineView) {
             return true;
@@ -1134,6 +1155,7 @@ export class SilverNeedleChart {
         return false;
     }
 
+    //Determines if only cursors are enabled on chart component
     isCursorOnly() {
         if (this.cursorsEnabled && !this.timelineView) {
             return true;
@@ -1141,6 +1163,7 @@ export class SilverNeedleChart {
         return false;
     }
 
+    //Determines if only timeline view is enabled on chart component
     isTimelineOnly() {
         if (!this.cursorsEnabled && this.timelineView) {
             return true;
@@ -1148,6 +1171,7 @@ export class SilverNeedleChart {
         return false;
     }
 
+    //Determines if timeline view and cursors are disabled on chart component
     isVanilla() {
         if (!this.cursorsEnabled && !this.timelineView) {
             return true;
@@ -1155,6 +1179,7 @@ export class SilverNeedleChart {
         return false;
     }
 
+    //Called on mousedown event on timeline chart containing div. Sets mousemove listener
     timelineChartClick(event) {
         let chartExtremes = this.chart.xAxis[0].getExtremes();
         let value = this.timelineChart.xAxis[0].toValue(event.chartX)
@@ -1164,6 +1189,7 @@ export class SilverNeedleChart {
         }
     }
 
+    //Attach events to timeline chart plot lines
     attachPlotLineEvents() {
         for (let i = 0; i < 2; i++) {
             if (this.timelineChart.xAxis[0].plotLinesAndBands[i].svgElem !== undefined) {
@@ -1186,17 +1212,20 @@ export class SilverNeedleChart {
 
     }
 
+    //Called on plot line mousedown and sets mousemove event listener
     startTimelineDrag(lineNum: number) {
         this.timelineChartInner.nativeElement.addEventListener('mousemove', this.timelineDragListener);
         this.activeTimeLine = lineNum;
         this.chartBoundsX = this.chart.xAxis[0].getExtremes();
     }
 
+    //Called on plot line mouseup and removes mousemove event listener
     clearDragListener(lineNum: number) {
         this.timelineChartInner.nativeElement.removeEventListener('mousemove', this.timelineDragListener);
         this.activeTimeLine = -1;
     }
 
+    //Callback function for timeline plot line mousemove events
     timelineDragListener = function(event) {
         let newVal = this.timelineChart.xAxis[0].toValue(event.chartX);
         let xCor: number;
@@ -1228,6 +1257,7 @@ export class SilverNeedleChart {
         this.updateCursorLabels();
     }.bind(this);
 
+    //Callback for timeline plot mousemove events to pan user view of chart
     timelineWhiteDragListener = function(event) {
         let newVal = this.timelineChart.xAxis[0].toValue(event.chartX);
         let oldValinNewWindow = this.timelineChart.xAxis[0].toValue(this.xPositionPixels);
@@ -1237,6 +1267,7 @@ export class SilverNeedleChart {
         this.xPositionPixels = event.chartX;
     }.bind(this);
 
+    //Set correct values for plot bands
     updatePlotBands(indices: number[], values: Array<number[]>) {
         for (let i = 0; i < indices.length; i++) {
             this.timelineChart.xAxis[0].plotLinesAndBands[indices[i]].options.from = values[i][0];
@@ -1245,6 +1276,7 @@ export class SilverNeedleChart {
         }
     }
 
+    //Set correct values for plot lines
     updatePlotLines(indices: number[], values: number[]) {
         for (let i = 0; i < indices.length; i++) {
             this.timelineChart.xAxis[0].plotLinesAndBands[indices[i]].options.value = values[i];
@@ -1252,6 +1284,7 @@ export class SilverNeedleChart {
         }
     }
 
+    //Changes voltage multiplier for series and updates data to new units
     changeMultiplier(seriesNum: number, multiplier: string, previousSetting: string) {
         if (multiplier === previousSetting) {
             return;

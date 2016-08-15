@@ -17,6 +17,7 @@ export class SideBarComponent {
     
     }
     
+    //Emit event to toggle series on/off
     seriesToggle(event) {
         this.toggleSeries.emit(event);
     }

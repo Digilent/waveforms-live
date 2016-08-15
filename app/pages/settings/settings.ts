@@ -69,11 +69,9 @@ export class SettingsPage {
 
     sqlSave() {
         this.storageService.saveSettings();
-        console.log('savingSettings');
     }
 
     sqlLoad() {
         this.storageService.loadSettings();
-        console.log('loadingSettings');
     }
 }

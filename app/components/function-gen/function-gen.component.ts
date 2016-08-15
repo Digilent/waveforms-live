@@ -55,7 +55,6 @@ export class FgenComponent {
 
         this.storageService = _storageService;
         this.storageEventListener = this.storageService.saveLoadEventEmitter.subscribe((data) => {
-            console.log(data);
             if (data === 'save') {
                 this.storageService.saveData('awg', JSON.stringify({
                     waveType: this.waveType,
@@ -79,15 +78,18 @@ export class FgenComponent {
         });
     }
 
+    //Remove storage event listener to avoid memory leaks
     ngOnDestroy() {
         this.storageEventListener.unsubscribe();
     }
     
+    //Toggle dropdown
     toggleWave(waveType: string) {
         this.showWaves = !this.showWaves;
         this.waveType = waveType;
     }
     
+    //Toggle power to awg
     togglePower() {
         this.powerOn = !this.powerOn;
         let chans = [];
@@ -108,6 +110,7 @@ export class FgenComponent {
         }
     }
 
+    //Get settings from awg
     getSettings(chans: number[]) {
         this.activeDevice.instruments.awg.getSettings(chans).subscribe(
             (data) => {
@@ -121,6 +124,7 @@ export class FgenComponent {
             });
     }
 
+    //Set awg settings
     setSettings(chans: number[], settings: Array<Object>) {
         this.activeDevice.instruments.awg.setSettings(chans, settings).subscribe(
             (data) => {
@@ -134,8 +138,8 @@ export class FgenComponent {
             });
     }
 
+    //Open function generator / awg modal
     openFgen(num) {
-        console.log('in open fgen');
         let modal = this.modalCtrl.create(ModalFgenPage, {
             value: num, 
             waveType: this.waveType,
@@ -152,9 +156,9 @@ export class FgenComponent {
            this.dutyCycle = data.dutyCycle; 
         });
         modal.present();
-        console.log('modal present');
     }
     
+    //Determines if active wave type is a square wave
     isSquare() {
         if (this.waveType === 'square') {
             return true;
