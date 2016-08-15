@@ -88,12 +88,13 @@
 .tcwrapper .left .innerCtrls
 {
     display: block;
-    height: 100%;
-    position: relative;
-    flex: 0 1 auto;
-    -webkit-flex: 0 1 auto;
-    //background-color: orange;  
-    text-align: right;
+    float: right;
+}
+
+.tcwrapper .left .move-left
+{
+    float: left;
+    display: block;
 }
 
 .tcwrapper .left .chartWrapper

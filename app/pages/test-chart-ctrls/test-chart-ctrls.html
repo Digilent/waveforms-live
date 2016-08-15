@@ -1,34 +1,41 @@
-<ion-header>
+<!--<ion-header>
     <ion-navbar>
         <button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>Oscope</ion-title>
     </ion-navbar>
-</ion-header>
+</ion-header>-->
 
 <ion-content #mycontent>
     <div class="vertwrapper">
         <div class="tcwrapper" [ngClass]="{showControls: controlsVisible}">
             <div class="left">
-                <div class="innerCtrls">
-                    <timeline *ngIf="chartReady" [chart]="chart1"></timeline>
-                    <button (click)="exportChart()">
-                        Export
-                        <ion-icon name="download"></ion-icon>
-                    </button>
-                    <button end (click)="singleClick()">
-                        Single
-                        <ion-icon name="play"></ion-icon>
-                    </button>
-                    <button (click)="runClick()" *ngIf="!running">
-                        Run
-                        <ion-icon name="repeat"></ion-icon>
-                    </button>
-                    <button (click)="stopClick()" *ngIf="running">
-                        Stop
-                        <ion-icon name="hand"></ion-icon>
-                    </button>
+                <div class="toolbarContainer">
+                    <div class="move-left">
+                        <button menuToggle light>
+                            <ion-icon name="menu"></ion-icon>
+                        </button>
+                    </div>
+                    <div class="innerCtrls">
+                        <timeline *ngIf="chartReady" [chart]="chart1"></timeline>
+                        <button (click)="exportChart()">
+                            Export
+                            <ion-icon name="download"></ion-icon>
+                        </button>
+                        <button end (click)="singleClick()">
+                            Single
+                            <ion-icon name="play"></ion-icon>
+                        </button>
+                        <button (click)="runClick()" *ngIf="!running">
+                            Run
+                            <ion-icon name="repeat"></ion-icon>
+                        </button>
+                        <button (click)="stopClick()" *ngIf="running">
+                            Stop
+                            <ion-icon name="hand"></ion-icon>
+                        </button>
+                    </div>
                 </div>
                 <div class="chartWrapper">
                     <silverNeedleChart #chart1 (chartLoad)="initSettings()"></silverNeedleChart>
