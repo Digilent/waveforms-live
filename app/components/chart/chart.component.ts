@@ -3,6 +3,9 @@ import {CHART_DIRECTIVES} from 'angular2-highcharts';
 import {ModalController} from 'ionic-angular';
 import {NgClass} from '@angular/common';
 
+//Components
+import {TimelineChartComponent} from '../timeline-chart/timeline-chart.component';
+
 //Pages
 import {ModalCursorPage} from '../../pages/cursor-modal/cursor-modal';
 
@@ -14,9 +17,10 @@ import {ModalCursorPage} from '../../pages/cursor-modal/cursor-modal';
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     @ViewChild('oscopeChartInner') oscopeChartInner: ElementRef;
-    @ViewChild('timelineChartInner') timelineChartInner: ElementRef;
+    private timelineChartInner: ElementRef;
     public chart: Object;
-    public timelineChart: Object;
+    private timelineChartComponent: TimelineChartComponent;
+    public timelineChart: Object = null;
     private timelineOptions: Object;
     private options: Object;
     private xPosition: number;
@@ -60,6 +64,12 @@ export class SilverNeedleChart {
     public voltageMultipliers: string[] = ['V', 'V'];
     public multipliers: string[] = ['mV', 'V'];
     private modalCtrl: ModalController;
+
+    private chartReady: boolean = false;
+    private timelineChartReady: boolean = false;
+    private timelineChartInitialized: boolean = false;
+
+    private timelineChartEventListener: EventEmitter<any>
 
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
@@ -291,7 +301,9 @@ export class SilverNeedleChart {
         };
     }
 
-
+    ngOnDestroy() {
+        this.timelineChartEventListener.unsubscribe();
+    }  
     //Called once on chart load
     onLoad(chartInstance) {
         //Save a reference to the chart object so we can call methods on it later
@@ -300,11 +312,33 @@ export class SilverNeedleChart {
         //Redraw chart to scale chart to container size
         this.redrawChart();
         this.chartLoad.emit(this.chart);
+        this.chartReady = true;
+        if (this.timelineChartReady === true && this.timelineChartInitialized === false) {
+            this.timelineChartInit();
+        }
     }
 
     //Called on timeline chart load
     onTimelineLoad(chartInstance) {
-        this.timelineChart = chartInstance;
+        this.timelineChart = chartInstance.chart;
+        this.timelineChartComponent = chartInstance;
+        this.timelineChartInner = chartInstance.timelineChartInner;
+        this.timelineChartReady = true;
+        if (this.chartReady === true && this.timelineChartInitialized === false) {
+            this.timelineChartInit();
+        }
+        this.timelineChartEventListener = this.timelineChartComponent.timelineChartEvent.subscribe((data) => {
+            if (data.type === 'mousedown') {
+                this.timelineChartClick(data.ev);
+            }
+            else if (data.type === 'mouseup') {
+                this.clearMouse();
+            }
+        });
+    }
+
+    timelineChartInit() {
+        this.timelineChartInitialized = true;
         this.timelineChart.reflow();
         this.attachPlotLineEvents();
         this.autoscaleAxis('x', 0);
@@ -943,6 +977,8 @@ export class SilverNeedleChart {
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.verticalOffsetListener);
             if (this.timelineView && this.timelineChartInner !== undefined) {
                 this.timelineChartInner.nativeElement.removeEventListener('mousemove', this.timelineWhiteDragListener);
+                this.timelineChartInner.nativeElement.removeEventListener('mousemove', this.timelineDragListener);
+                this.inTimelineDrag = false;
             }
         }
     }

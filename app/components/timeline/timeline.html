@@ -1,8 +1,7 @@
 <span>
-    <button (click)="playBuffers()">Play</button>
-    <button (click)="decrementBuffer()">Previous</button>
+    <button (click)="decrementBuffer()"><ion-icon name="arrow-back"></ion-icon></button>
     Buffer: 
     <ion-input class="timelineComponentInput" [(ngModel)]="activeDevice.instruments.osc.activeBuffer" (ngModelChange)="activeBufferChange()"></ion-input>
     of {{activeDevice.instruments.osc.dataBufferFillSize}}
-    <button (click)="incrementBuffer()">Next</button>
+    <button (click)="incrementBuffer()"><ion-icon name="arrow-forward"></ion-icon></button>
 </span>

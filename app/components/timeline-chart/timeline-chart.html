@@ -1,0 +1,3 @@
+<div #timelineChartInner class="timeline-wrapper">
+    <chart [options]="timelineOptions" (load)="onTimelineLoad($event.context)" (mousedown)="timelineChartEventExporter($event, 'mousedown')" (mouseup)="timelineChartEventExporter($event, 'mouseup')"></chart>
+</div>

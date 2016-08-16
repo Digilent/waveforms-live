@@ -30,14 +30,14 @@
 {
     display: block;
     position: relative;
-    height: calc(100% - 2 * 45px);
+    height: calc(100% - 55px);
 }
 
 .chart-component-wrapper .chart-component-container-div-cursor-timeline
 {
     display: block;
     position: relative;
-    height: calc(100% - 2 * 45px - 100px);
+    height: calc(100% - 55px - 100px);
 }
 
 .chart-component-wrapper .chart-component-container-div-timeline-only
@@ -59,14 +59,16 @@
     cursor: e-resize;
 }
 
-.timeline-wrapper {
+.timeline-wrapper 
+{
     display: block;
     position: relative;
     height: 100px;
     width: 100%;
 }
 
-.timeline-wrapper chart {
+.timeline-wrapper chart 
+{
     display: block;
     position: relative;
     height: 100%;

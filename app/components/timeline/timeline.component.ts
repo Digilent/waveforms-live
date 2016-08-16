@@ -21,15 +21,6 @@ export class TimelineComponent {
         this.activeDevice = this.deviceManagerService.getActiveDevice();
     }
 
-    playBuffers() {
-        console.log(this.activeDevice.instruments);
-        for (let i = 1; i <= this.activeDevice.instruments.osc.dataBufferFillSize; i++) {
-            this.activeDevice.instruments.osc.activeBuffer = i.toString();
-            console.log('Active Buffer = ' + this.activeDevice.instruments.osc.activeBuffer);
-            this.loadBuffer();
-        }
-    }
-
     incrementBuffer() {
         if (parseInt(this.activeDevice.instruments.osc.activeBuffer) == this.activeDevice.instruments.osc.dataBufferFillSize) {
             return;

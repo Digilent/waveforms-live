@@ -14,19 +14,24 @@ SilverNeedle (Web WaveForms PoC)
     ```
     npm install -g ionic@beta
     ```
-2. Clone this repository
-3. Change into project directory
-4. Use npm to install dependencies
+2. Install typings globally
+
+    ```
+    npm install -g typings
+    ```
+3. Clone this repository
+4. Change into project directory
+5. Use npm to install dependencies
 
     ```
     npm install
     ```
-5. Test in local browser 
+6. Test in local browser 
 
     ```
     ionic serve
     ```
-6. Run via Electron
+7. Run via Electron
 
     ```
     ./node_modules/.bin/electron .

@@ -4,6 +4,7 @@ import {NavParams, ViewController, PopoverController} from 'ionic-angular';
 //Components
 import {SilverNeedleChart} from '../chart/chart.component';
 import {GenPopover} from '../gen-popover/gen-popover.component';
+import {SeriesPopover} from '../series-popover/series-popover.component';
 
 //Services
 import {StorageService} from '../../services/storage/storage.service';
@@ -52,6 +53,20 @@ export class YAxisComponent {
     //Remove storage event listener to prevent memory leaks
     ngOnDestroy() {
         this.storageEventListener.unsubscribe();
+    }
+
+    //Open series popover
+    openSeriesPopover() {
+        let popover = this.popoverCtrl.create(SeriesPopover, {
+            hey: 'hey'
+        });
+
+        popover.present({
+            ev: event
+        });
+        popover.onDidDismiss(data => {
+            console.log('hey');
+        });
     }
 
     //Toggle chart autoscaling for all axes

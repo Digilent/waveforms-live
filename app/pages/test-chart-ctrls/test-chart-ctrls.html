@@ -12,30 +12,44 @@
         <div class="tcwrapper" [ngClass]="{showControls: controlsVisible}">
             <div class="left">
                 <div class="toolbarContainer">
-                    <div class="move-left">
-                        <button menuToggle light>
-                            <ion-icon name="menu"></ion-icon>
-                        </button>
-                    </div>
-                    <div class="innerCtrls">
-                        <timeline *ngIf="chartReady" [chart]="chart1"></timeline>
-                        <button (click)="exportChart()">
-                            Export
-                            <ion-icon name="download"></ion-icon>
-                        </button>
-                        <button end (click)="singleClick()">
-                            Single
-                            <ion-icon name="play"></ion-icon>
-                        </button>
-                        <button (click)="runClick()" *ngIf="!running">
-                            Run
-                            <ion-icon name="repeat"></ion-icon>
-                        </button>
-                        <button (click)="stopClick()" *ngIf="running">
-                            Stop
-                            <ion-icon name="hand"></ion-icon>
-                        </button>
-                    </div>
+                    <ion-row>
+                        <ion-col width-10>
+                            <div class="move-left">
+                                <button menuToggle light>
+                                    <ion-icon name="menu"></ion-icon>
+                                </button>
+                            </div>
+                        </ion-col>
+                        <ion-col width-30>
+                            <div class="timelineChartWrapper">
+                                <timeline-chart (timelineChartLoad)="saveTimelineChart($event)"></timeline-chart>
+                            </div>
+                        </ion-col>
+                        <ion-col>
+                            <div class="innerCtrls">
+                                <timeline *ngIf="chartReady" [chart]="chart1"></timeline>
+                                <button (click)="exportChart()">
+                                    Export
+                                    <ion-icon name="download"></ion-icon>
+                                </button>
+                                <button end (click)="singleClick()">
+                                    Single
+                                    <ion-icon name="play"></ion-icon>
+                                </button>
+                                <button (click)="runClick()" *ngIf="!running">
+                                    Run
+                                    <ion-icon name="repeat"></ion-icon>
+                                </button>
+                                <button (click)="stopClick()" *ngIf="running">
+                                    Stop
+                                    <ion-icon name="hand"></ion-icon>
+                                </button>
+                            </div>
+                        </ion-col>
+                    </ion-row>
+
+
+
                 </div>
                 <div class="chartWrapper">
                     <silverNeedleChart #chart1 (chartLoad)="initSettings()"></silverNeedleChart>

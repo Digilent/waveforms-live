@@ -1,7 +1,4 @@
 
-    <div #timelineChartInner class="timeline-wrapper" *ngIf="timelineView">
-        <chart [options]="timelineOptions" (load)="onTimelineLoad($event.context)" (mousedown)="timelineChartClick($event)" (mouseup)="clearMouse()"></chart>
-    </div>
     <div #oscopeChartInner class="chart-component-wrapper">
         <div class="chart-component-container-div" [ngClass]="{pan: canPan, 
             'chart-component-container-div-cursor-timeline': isCursorTimeline(),

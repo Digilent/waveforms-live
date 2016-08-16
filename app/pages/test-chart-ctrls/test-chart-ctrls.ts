@@ -1,5 +1,5 @@
 import {ToastController} from 'ionic-angular';
-import {ViewChild, ElementRef, Component} from '@angular/core';
+import {ViewChild, ElementRef, Component, Input} from '@angular/core';
 
 //Components
 import {SilverNeedleChart} from '../../components/chart/chart.component';
@@ -8,7 +8,7 @@ import {SideBarComponent} from '../../components/side-bar/side-bar.component';
 import {XAxisComponent} from '../../components/xaxis-controls/xaxis-controls.component';
 import {YAxisComponent} from '../../components/yaxis-controls/yaxis-controls.component';
 import {TimelineComponent} from '../../components/timeline/timeline.component';
-
+import {TimelineChartComponent} from '../../components/timeline-chart/timeline-chart.component';
 import {DeviceComponent} from '../../components/device/device.component';
 
 //Services
@@ -18,7 +18,7 @@ import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
-    directives: [SilverNeedleChart, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent, TimelineComponent]
+    directives: [SilverNeedleChart, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent, TimelineComponent, TimelineChartComponent]
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
@@ -58,6 +58,10 @@ export class TestChartCtrlsPage {
             this.oscopeChans = [0, 1];
             this.chartReady = true;
         }
+    }
+
+    saveTimelineChart(event) {
+        this.chart1.onTimelineLoad(event);
     }
 
     //Toggle sidecontrols
