@@ -1,17 +1,20 @@
 <ion-list>
     <ion-item>
-        <ion-input></ion-input>
+        <ion-label stacked>Name</ion-label>
+        <ion-input [(ngModel)]="yControls.names[seriesNum]"></ion-input>
     </ion-item>
     <ion-item>
-        <ion-input></ion-input>
+        <ion-label stacked>V/D</ion-label>
+        <ion-input type="number" [(ngModel)]="chart.voltDivision[seriesNum]" (ngModelChange)="yControls.seriesChanged(seriesNum)"></ion-input>
     </ion-item>
     <ion-item>
-        <ion-input></ion-input>
+        <ion-label stacked>Offset</ion-label>
+        <ion-input type="number" [(ngModel)]="chart.voltBase[seriesNum]" (ngModelChange)="yControls.seriesChanged(seriesNum)"></ion-input>
     </ion-item>
     <ion-item>
-        <button>AC</button><button>DC</button>
+        <button [disabled]="true">AC</button><button [disabled]="true">DC</button>
     </ion-item>
     <ion-item>
-        <input type="color">
+        <input [disabled]="true" type="color">
     </ion-item>
 </ion-list>

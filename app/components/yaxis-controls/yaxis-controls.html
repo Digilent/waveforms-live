@@ -16,29 +16,31 @@
 </ion-list>-->
 
 <div *ngFor="let series of chart.numSeries; let i = index" (click)="setActiveSeries(i)">
-    <div class="align-center" style="background-color:#CCCCCC;border-bottom: solid black 1px;border-top: solid black 1px;">
-            <img class="vertical-align" src="img/tpot.jpg">
-            Series {{i}} Settings
-            <img (click)="openSeriesPopover()" class="vertical-align" src="img/tpot.jpg">
+    <div>
+        <div (dblclick)="toggleSeriesSettings(i)" class="align-center-container" style="background-color:#CCCCCC;border-bottom: solid black 1px;border-top: solid black 1px;padding-top: 5px; padding-bottom: 5px;">
+                <button class="align-left"></button>
+                <div class="vertical-align">{{names[i]}}</div>
+                <button (click)="openSeriesPopover(i)" class="align-right"><ion-icon name="settings" class="font-size-button"></ion-icon></button>
+        </div>
+        <ion-row *ngIf="showSeriesSettings[i]">
+            <ion-col>
+                <center>
+                    <div class="yaxis-control-wrapper">
+                        <div class="align-center"><button outline class="icon-only-button"><ion-icon name="arrow-up"></ion-icon></button></div>
+                        <div class="align-center">{{chart.voltDivision[i]}} V/div</div>
+                        <div class="align-center"><button outline class="icon-only-button"><ion-icon name="arrow-down"></ion-icon></button></div>
+                    </div>
+                </center>
+            </ion-col>
+            <ion-col>
+                <center>
+                    <div class="yaxis-control-wrapper">
+                        <div class="align-center"><button outline class="icon-only-button"><ion-icon name="arrow-up"></ion-icon></button></div>
+                        <div class="align-center">Offset</div>
+                        <div class="align-center"><button outline class="icon-only-button"><ion-icon name="arrow-down"></ion-icon></button></div>
+                    </div>
+                </center>
+            </ion-col>
+        </ion-row>
     </div>
-    <ion-row>
-        <ion-col>
-            <center>
-                <div class="yaxis-control-wrapper">
-                    <div class="align-center"><img src="img/tpot.jpg"></div>
-                    <div class="align-center">{{chart.voltDivision[i]}} V/div</div>
-                    <div class="align-center"><img src="img/tpot.jpg"></div>
-                </div>
-            </center>
-        </ion-col>
-        <ion-col>
-            <center>
-                <div class="yaxis-control-wrapper">
-                    <div class="align-center"><img src="img/tpot.jpg"></div>
-                    <div class="align-center">Offset</div>
-                    <div class="align-center"><img src="img/tpot.jpg"></div>
-                </div>
-            </center>
-        </ion-col>
-    </ion-row>
 </div>

@@ -46,6 +46,9 @@ export class SilverNeedleChart {
     private activeChannels = [0, 0];
     private autoscaleAll: boolean = true;
 
+    private voltsPerDivOpts: string[] = [];
+    private activeVPDIndex: number = null;
+
     private timelineView: boolean = false;
     private timelineBounds: number[] = [0, 0, 0, 0];
 
@@ -316,6 +319,10 @@ export class SilverNeedleChart {
         if (this.timelineChartReady === true && this.timelineChartInitialized === false) {
             this.timelineChartInit();
         }
+        
+        //Generate v/div options
+        this.voltsPerDivOpts = ['1 mV', '10 mV', '20 mV' , '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
+        this.activeVPDIndex = 7;
     }
 
     //Called on timeline chart load

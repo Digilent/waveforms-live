@@ -21,6 +21,8 @@ export class YAxisComponent {
     private viewCtrl: ViewController;
     private params: NavParams;
     private popoverCtrl: PopoverController;
+    private names: string[] = [];
+    private showSeriesSettings: boolean[] = [];
     
     constructor(_storageService: StorageService, _viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController) {
         this.popoverCtrl = _popoverCtrl;
@@ -28,7 +30,6 @@ export class YAxisComponent {
         this.params = _params;
         this.storageService = _storageService;
         this.storageEventListener = this.storageService.saveLoadEventEmitter.subscribe((data) => {
-            console.log(data);
             if (data === 'save') {
                 this.storageService.saveData('yaxis', JSON.stringify({
                     voltBase: this.chart.voltBase,
@@ -55,17 +56,30 @@ export class YAxisComponent {
         this.storageEventListener.unsubscribe();
     }
 
+    ngOnInit() {
+        for (let i = 0; i < this.chart.numSeries.length; i++) {
+            this.names.push('Series ' + i);
+            this.showSeriesSettings.push(true);
+        }
+    }
+
+    //Toggle Series visibility
+    toggleSeriesSettings(seriesNum: number) {
+        this.showSeriesSettings[seriesNum] = !this.showSeriesSettings[seriesNum];
+    }
+
     //Open series popover
-    openSeriesPopover() {
+    openSeriesPopover(seriesNum) {
         let popover = this.popoverCtrl.create(SeriesPopover, {
-            hey: 'hey'
+            chart: this.chart,
+            yComponent: this,
+            seriesNum: seriesNum
         });
 
         popover.present({
             ev: event
         });
         popover.onDidDismiss(data => {
-            console.log('hey');
         });
     }
 

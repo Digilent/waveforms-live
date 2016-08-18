@@ -16,7 +16,9 @@ export class GenPopover{
         private viewCtrl: ViewController, 
         private params: NavParams
     ) {
+        console.log('genpopover constructor');
           this.dataArray = this.params.get('dataArray');  
+          console.log(this.dataArray);
     }
 
     //Close popover and send option string as a NavParam

@@ -1,51 +1,31 @@
 import {Component, EventEmitter} from '@angular/core';
-import {NgClass} from '@angular/common';
+import {PopoverController} from 'ionic-angular';
+
+//Components 
+import {TriggerPopover} from '../trigger-popover/trigger-popover.component';
 
 //Services
 import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
   templateUrl: 'build/components/trigger/trigger.html',
-  selector: 'trigger',
-  directives: [NgClass]
+  selector: 'trigger'
 })
 export class TriggerComponent {
-    private showTriggerMenu: boolean;
-    private showFlagMenu: boolean;
-    public triggerType: string;
-    public flagType: string;
-    public selectedChannel: string;
-    public showChannels: boolean;
-    private delay: string;
-    private level: string;
-
-    private showOptions: boolean;
-    
-    public channels: string[];
-
+    private delay: string = '0';
+    private lowerThresh: string = '0';
+    private upperThresh: string = '0';
+    private popoverCtrl: PopoverController;
     private storageService: StorageService;
     private storageEventListener: EventEmitter<any>;
     
-    constructor(_storageService: StorageService) {
-        this.showTriggerMenu = false;
-        this.showFlagMenu = false;
-        this.showChannels = false;
-        this.triggerType = 'rising';
-        this.flagType = 'edge';
-        this.selectedChannel = 'O1';
-        this.channels = ['O1','D1','D2'];
-        this.delay = '1';
-        this.level = '0';
-        this.showOptions = false;
-
+    constructor(_storageService: StorageService, _popoverCtrl: PopoverController) {
+        this.popoverCtrl = _popoverCtrl;
         this.storageService = _storageService;
         this.storageEventListener = this.storageService.saveLoadEventEmitter.subscribe((data) => {
             console.log(data);
             if (data === 'save') {
                 this.storageService.saveData('trigger', JSON.stringify({
-                    triggerType: this.triggerType,
-                    flagType: this.flagType,
-                    selectedChannel: this.selectedChannel,
                     delay: this.delay
                 }));
             }
@@ -53,9 +33,6 @@ export class TriggerComponent {
                 this.storageService.getData('trigger').then((data) => {
                     let dataObject = JSON.parse(data);
                     console.log(dataObject);
-                    this.triggerType = dataObject.triggerType,
-                    this.flagType = dataObject.flagType,
-                    this.selectedChannel = dataObject.selectedChannel,
                     this.delay = dataObject.delay
                 });
             }
@@ -67,32 +44,17 @@ export class TriggerComponent {
         this.storageEventListener.unsubscribe();
     }
     
-    //Toggle dropdown menu
-    toggleTriggerMenu(newType: string) {
-        this.showTriggerMenu = !this.showTriggerMenu;
-        this.triggerType = newType;
-    }
-    
-    //Toggle flag type from dropdown
-    toggleFlagType(newType: string) {
-        this.showFlagMenu = !this.showFlagMenu;
-        this.flagType = newType;
-    }
-    
-    //Change digital channel from dropdown
-    toggleDigitalChannel(selectedChannel: string) {
-        this.showChannels = !this.showChannels;
-        this.selectedChannel = selectedChannel;
-    }
-    
-    //Force trigger function skeleton
-    forceTrigger() {
-        console.log('trigger event');
-    }
-
-    //Show alert toggle
-    showAlert() {
-        this.showOptions = !this.showOptions;
+    //Open series popover
+    openSeriesPopover() {
+        let popover = this.popoverCtrl.create(TriggerPopover, {
+            triggerComponent: this,
+        });
+        console.log(popover);
+        popover.present({
+            ev: event
+        });
+        popover.onDidDismiss(data => {
+        });
     }
    
 }

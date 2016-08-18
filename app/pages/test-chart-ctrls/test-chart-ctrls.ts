@@ -10,6 +10,9 @@ import {YAxisComponent} from '../../components/yaxis-controls/yaxis-controls.com
 import {TimelineComponent} from '../../components/timeline/timeline.component';
 import {TimelineChartComponent} from '../../components/timeline-chart/timeline-chart.component';
 import {DeviceComponent} from '../../components/device/device.component';
+import {AutoscaleComponent} from '../../components/autoscale/autoscale.component';
+import {TriggerComponent} from '../../components/trigger/trigger.component';
+
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
@@ -18,7 +21,7 @@ import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
-    directives: [SilverNeedleChart, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent, TimelineComponent, TimelineChartComponent]
+    directives: [SilverNeedleChart, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent, TimelineComponent, TimelineChartComponent, AutoscaleComponent, TriggerComponent]
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
