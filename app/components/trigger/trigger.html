@@ -1,10 +1,10 @@
 <div style="background-color: white;">
-    <div class="trigger header-bar-side">
+    <div (dblclick)="toggleTriggerShow()" class="trigger header-bar-side">
         <div style="width:25px;height:25px;"></div>
         <div>Trigger</div>
         <button class="icon-only-button-side" (click)="openSeriesPopover()"><ion-icon name="settings"></ion-icon></button>
     </div>
-    <div>
+    <div *ngIf="showTriggerSettings">
         <ion-grid>
             <ion-row>
                 <ion-col>

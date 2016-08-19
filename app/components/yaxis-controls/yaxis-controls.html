@@ -1,7 +1,7 @@
 <div *ngFor="let series of chart.numSeries; let i = index" (click)="setActiveSeries(i)">
     <div>
         <div (dblclick)="toggleSeriesSettings(i)" class="align-center-container header-bar-side">
-                <button class="align-left"></button>
+                <button (click)="toggleVisibility(i)" class="align-left" [style.background-color]="red"></button>
                 <div class="vertical-align">{{names[i]}}</div>
                 <button (click)="openSeriesPopover(i)" class="align-right"><ion-icon name="settings" class="font-size-button"></ion-icon></button>
         </div>

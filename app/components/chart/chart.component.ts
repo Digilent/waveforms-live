@@ -1425,4 +1425,8 @@ export class SilverNeedleChart {
         }); 
     }
 
+    toggleVisibility(seriesNum: number) {
+        this.chart.series[seriesNum].setVisible(!this.chart.series[seriesNum].visible);
+    }
+
 }

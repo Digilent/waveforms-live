@@ -68,6 +68,10 @@ export class YAxisComponent {
         this.showSeriesSettings[seriesNum] = !this.showSeriesSettings[seriesNum];
     }
 
+    toggleVisibility(seriesNum: number) {
+        this.chart.toggleVisibility(seriesNum);
+    }
+
     //Open series popover
     openSeriesPopover(seriesNum) {
         let popover = this.popoverCtrl.create(SeriesPopover, {
