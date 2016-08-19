@@ -2,7 +2,6 @@ import 'es6-shim';
 import {App, Platform, MenuController, Nav, ionicBootstrap} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
 import {ViewChild, Component} from '@angular/core';
-import {HTTP_PROVIDERS} from '@angular/http';
 
 //Pages
 import {HomePage} from './pages/home/home';
@@ -10,6 +9,7 @@ import {TestChartPage} from './pages/test-chart/test-chart';
 import {TestChartCtrlsPage} from './pages/test-chart-ctrls/test-chart-ctrls';
 import {TestPage} from './pages/test-page/test-page';
 import {SettingsPage} from './pages/settings/settings';
+import {ProtocolTestPanel} from './pages/protocol-test-panel/protocol-test-panel';
 
 //Services
 import {DeviceManagerService} from './services/device/device-manager.service';
@@ -44,7 +44,8 @@ class MyApp {
       //{ title: 'Test Chart', component: TestChartPage },
       { title: 'Test Chart Controls', component: TestChartCtrlsPage },
       //{ title: 'Test Page', component: TestPage },
-      { title: 'Settings', component: SettingsPage }
+      { title: 'Settings', component: SettingsPage },
+      { title: 'Protocol Test Panel', component: ProtocolTestPanel }
     ];
   }
 
@@ -72,4 +73,4 @@ class MyApp {
 
 }
 
-ionicBootstrap(MyApp, [HTTP_PROVIDERS, DeviceManagerService, StorageService], {});
+ionicBootstrap(MyApp, [DeviceManagerService, StorageService], {});

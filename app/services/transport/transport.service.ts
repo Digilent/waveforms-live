@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Http, HTTP_PROVIDERS} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -9,14 +8,12 @@ import {HttpTransportComponent} from '../../components/transport/http-transport.
 
 @Injectable()
 export class TransportService {
-
-    private http: Http;
+       
     private transport: TransportComponent;
 
-    constructor(_http: Http, _uri: string) {
+    constructor(_uri: string) {
         console.log('Transport Service Parent Constructor');
-        this.http = _http;
-        this.transport = new HttpTransportComponent(this.http, _uri);
+        this.transport = new HttpTransportComponent(_uri);
     }
 
     //Set transport uri
