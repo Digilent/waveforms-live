@@ -1,14 +1,27 @@
-<ion-list>
-    <ion-item-group>
-        <ion-item-divider light>Time Settings</ion-item-divider>
-        <ion-item><button (click)="autoscaleX()">Autoscale X-Axis</button></ion-item>
-        <ion-item>
-            <ion-label>time/div (s):</ion-label>
-            <ion-input type="number" [(ngModel)]="chart.timeDivision" (ngModelChange)="timeChanged()"></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-label>base (s):</ion-label>
-            <ion-input type="number" [(ngModel)]="chart.base" (ngModelChange)="timeChanged()"></ion-input>
-        </ion-item>
-    </ion-item-group>
-</ion-list>
+<div>
+    <div (dblclick)="toggleSeriesSettings()" class="align-center-container header-bar-side">
+        <button class="align-left"></button>
+        <div class="vertical-align">Time Settings</div>
+        <button class="align-right"><ion-icon name="settings" class="font-size-button"></ion-icon></button>
+    </div>
+    <ion-row *ngIf="showTimeSettings">
+        <ion-col>
+            <center>
+                <div class="yaxis-control-wrapper">
+                    <div class="align-center"><button (click)="chart.incrementTPD()" class="icon-only-button-side"><ion-icon name="arrow-up"></ion-icon></button></div>
+                    <div class="align-center">{{chart.secsPerDivOpts[chart.activeTPDIndex]}}/div</div>
+                    <div class="align-center"><button (click)="chart.decrementTPD()" class="icon-only-button-side"><ion-icon name="arrow-down"></ion-icon></button></div>
+                </div>
+            </center>
+        </ion-col>
+        <ion-col>
+            <center>
+                <div class="yaxis-control-wrapper">
+                    <div class="align-center"><button (click)="chart.incrementBase()" class="icon-only-button-side"><ion-icon name="arrow-up"></ion-icon></button></div>
+                    <div class="align-center">Base</div>
+                    <div class="align-center"><button (click)="chart.decrementBase()" class="icon-only-button-side"><ion-icon name="arrow-down"></ion-icon></button></div>
+                </div>
+            </center>
+        </ion-col>
+    </ion-row>
+</div>

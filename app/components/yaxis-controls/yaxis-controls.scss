@@ -11,11 +11,12 @@
 
 .align-center-container .align-left
 {
-    margin-top: 0.4rem;
-    margin-right: 0.2rem;
-    margin-bottom: 0.4rem;
-    margin-left: 0.2rem;
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
     height: 25px;
+    font-size: 8px;
     width: 25px;
     background-color: black;
     border-radius: 2px;
@@ -23,6 +24,10 @@
 
 .align-center-container .align-right
 {
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
     height: 25px;
     font-size: 8px;
 }
@@ -34,14 +39,39 @@
 
 .align-center-container .vertical-align
 {
-    margin-top: 0.4rem;
-    margin-right: 0.2rem;
-    margin-bottom: 0.4rem;
-    margin-left: 0.2rem;
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
 }
 
-.icon-only-button
+.icon-only-button-side
 {
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
     font-size: 8px;
     height: 25px;
+}
+
+.text-button-side
+{
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
+    font-size: 8px;
+    height: 25px;
+    font-weight: 400;
+    min-width: 75px;
+}
+
+.header-bar-side
+{
+    background-color:#CCCCCC;
+    border-bottom: solid black 1px;
+    border-top: solid black 1px;
+    padding-top: 5px; 
+    padding-bottom: 5px;
 }

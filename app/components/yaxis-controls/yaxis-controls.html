@@ -1,23 +1,6 @@
-<!--<ion-item><button (click)="turnOnAutoscale()">Autoscale All</button></ion-item>
-<ion-list>
-    <ion-item-group *ngFor="let series of chart.numSeries; let i = index" (click)="setActiveSeries(i)">
-        <ion-item-divider light><img src="img/tpot.jpg">Series {{i}} Settings</ion-item-divider>
-        <ion-item><button (click)="autoscaleY(i)">Autoscale Series {{i}}</button></ion-item>
-        <ion-item><button (click)="changeMultiplier(i, $event)">{{chart.voltageMultipliers[i]}}</button></ion-item>
-        <ion-item>
-            <ion-label>{{chart.voltageMultipliers[i]}}/div:</ion-label>
-            <ion-input type="number" [(ngModel)]="chart.voltDivision[i]" (ngModelChange)="seriesChanged(i)"></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-label>Offset ({{chart.voltageMultipliers[i]}}):</ion-label>
-            <ion-input type="number" [(ngModel)]="chart.voltBase[i]" (ngModelChange)="seriesChanged(i)"></ion-input>
-        </ion-item>
-    </ion-item-group>
-</ion-list>-->
-
 <div *ngFor="let series of chart.numSeries; let i = index" (click)="setActiveSeries(i)">
     <div>
-        <div (dblclick)="toggleSeriesSettings(i)" class="align-center-container" style="background-color:#CCCCCC;border-bottom: solid black 1px;border-top: solid black 1px;padding-top: 5px; padding-bottom: 5px;">
+        <div (dblclick)="toggleSeriesSettings(i)" class="align-center-container header-bar-side">
                 <button class="align-left"></button>
                 <div class="vertical-align">{{names[i]}}</div>
                 <button (click)="openSeriesPopover(i)" class="align-right"><ion-icon name="settings" class="font-size-button"></ion-icon></button>
@@ -26,18 +9,18 @@
             <ion-col>
                 <center>
                     <div class="yaxis-control-wrapper">
-                        <div class="align-center"><button outline class="icon-only-button"><ion-icon name="arrow-up"></ion-icon></button></div>
-                        <div class="align-center">{{chart.voltDivision[i]}} V/div</div>
-                        <div class="align-center"><button outline class="icon-only-button"><ion-icon name="arrow-down"></ion-icon></button></div>
+                        <div class="align-center"><button (click)="chart.incrementVPD(i)" class="icon-only-button-side"><ion-icon name="arrow-up"></ion-icon></button></div>
+                        <div class="align-center">{{chart.voltsPerDivOpts[chart.activeVPDIndex[i]]}}/div</div>
+                        <div class="align-center"><button (click)="chart.decrementVPD(i)" class="icon-only-button-side"><ion-icon name="arrow-down"></ion-icon></button></div>
                     </div>
                 </center>
             </ion-col>
             <ion-col>
                 <center>
                     <div class="yaxis-control-wrapper">
-                        <div class="align-center"><button outline class="icon-only-button"><ion-icon name="arrow-up"></ion-icon></button></div>
+                        <div class="align-center"><button (click)="chart.incrementOffset(i)" class="icon-only-button-side"><ion-icon name="arrow-up"></ion-icon></button></div>
                         <div class="align-center">Offset</div>
-                        <div class="align-center"><button outline class="icon-only-button"><ion-icon name="arrow-down"></ion-icon></button></div>
+                        <div class="align-center"><button (click)="chart.decrementOffset(i)" class="icon-only-button-side"><ion-icon name="arrow-down"></ion-icon></button></div>
                     </div>
                 </center>
             </ion-col>

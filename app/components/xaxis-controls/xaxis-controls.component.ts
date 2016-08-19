@@ -16,6 +16,7 @@ export class XAxisComponent {
     private base: string;
     private storageService: StorageService;
     private storageEventListener: EventEmitter<any>;
+    private showTimeSettings: boolean = true;
     
     constructor(_storageService: StorageService) {
         this.storageService = _storageService;
@@ -56,5 +57,10 @@ export class XAxisComponent {
     //Call chart autoscale on the x axis
     autoscaleX() {
         this.chart.autoscaleAxis('x', 0);
+    }
+
+    //Toggle Series visibility
+    toggleSeriesSettings(seriesNum: number) {
+        this.showTimeSettings = !this.showTimeSettings;
     }
 }

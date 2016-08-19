@@ -44,10 +44,15 @@ export class SilverNeedleChart {
     private chartBoundsY: Object = null;
     private inTimelineDrag: boolean = false;
     private activeChannels = [0, 0];
-    private autoscaleAll: boolean = true;
+    private autoscaleAll: boolean = false;
 
     private voltsPerDivOpts: string[] = [];
-    private activeVPDIndex: number = null;
+    private activeVPDIndex: number[] = [];
+    private voltsPerDivVals: number[] = [];
+
+    private secsPerDivOpts: string[] = [];
+    private activeTPDIndex: number = null;
+    private secsPerDivVals: number[] = [];
 
     private timelineView: boolean = false;
     private timelineBounds: number[] = [0, 0, 0, 0];
@@ -72,7 +77,10 @@ export class SilverNeedleChart {
     private timelineChartReady: boolean = false;
     private timelineChartInitialized: boolean = false;
 
-    private timelineChartEventListener: EventEmitter<any>
+    private timelineChartEventListener: EventEmitter<any>;
+
+    public autoscaleYaxes: boolean[] = [];
+    private autoscaleXaxis: boolean = false;
 
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
@@ -94,103 +102,14 @@ export class SilverNeedleChart {
         this.yPosition = 0;
         this.numXCursors = 0;
         this.numYCursors = 0;
-        this.timelineOptions = {
-            chart: {
-                type: 'line',
-                zoomType: '',
-                title: '',
-                animation: false
-            },
-            title: {
-                text: null
-            },
-            tooltip: {
-                enabled: false
-            },
-            series: [{
-                data: [29.9, 36, 47, 57, 67, 71.5, 82, 92, 102, 106.4, 110, 120, 129.2],
-            }, {
-                data: [50, 60, 70, 80],
-                yAxis: 0
-            }],
-            legend: {
-                enabled: false
-            },
-            yAxis: [{
-                offset: 0,
-                title: {
-                    text: null
-                },
-                labels: {
-                    enabled: false
-                }
-            }, {
-                offset: 0,
-                title: {
-                    text: null
-                },
-                labels: {
-                    enabled: false
-                }
-            }],
-            credits: {
-                enabled: false
-            },
-            xAxis: {
-                labels: {
-                    enabled: false
-                },
-                plotBands: [{
-                    color: 'rgba(182,191,190,0.5)',
-                    from: 0,
-                    to: 0,
-                    id: 'plot-band-1'
-                },{
-                    color: 'rgba(182,191,190,0.5)',
-                    from: 0,
-                    to: 0,
-                    id: 'plot-band-2'
-                }],
-                plotLines: [{
-                    value: 0,
-                    color: 'rgba(182,191,190,0.5)',
-                    width: 10,
-                    id: 'left',
-                    zIndex: 100
-                }, {
-                    value: 0,
-                    color: 'rgba(182,191,190,0.5)',
-                    width: 10,
-                    id: 'right',
-                    zIndex: 100
-                }]
-            },
-            plotOptions: {
-                series: {
-                    pointInterval: 2,
-                    pointStart: 0,
-                    stickyTracking: false,
-                    states: {
-                        hover: {
-                            enabled: false
-                        }
-                    }
-                },
-                line: {
-                    marker: {
-                        enabled: false
-                    }
-                }
-            }
-        };
         this.options = {
             chart: {
                 type: 'line',
                 zoomType: '',
-                title: '',
-                animation: false,
-                //panning: true,
-                //panKey: 'shift'
+                animation: false
+            },
+            title: {
+                text: ''
             },
             tooltip: {
                 enabled: true
@@ -320,9 +239,17 @@ export class SilverNeedleChart {
             this.timelineChartInit();
         }
         
-        //Generate v/div options
-        this.voltsPerDivOpts = ['1 mV', '10 mV', '20 mV' , '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
-        this.activeVPDIndex = 7;
+        //Generate v/div options. Eventually move to device manager?
+        this.voltsPerDivOpts = ['1 mV', '10 mV', '20 mV', '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
+        this.activeVPDIndex = [7, 7];
+        this.voltsPerDivVals = [0.001, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5];
+        this.secsPerDivOpts = ['1 ns', '2 ns', '5 ns', '10 ns', '20 ns', '50 ns', '100 ns', '200 ns', '500 ns', '1 us',
+            '2 us', '5 us', '10 us', '20 us', '50 us', '100 us', '200 us', '500 us', '1 ms', '2 ms', '5 ms', '10 ms', '20 ms', 
+            '50 ms', '100 ms', '200 ms', '500 ms', '1 s', '2 s', '5 s', '10 s'];
+        this.secsPerDivVals = [0.000000001, 0.000000002, 0.000000005, 0.00000001, 0.00000002, 0.00000005, 0.0000001, 0.0000002,
+            0.0000005, 0.000001, 0.000002, 0.000005, 0.00001, 0.00002, 0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01,
+            0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10];
+        this.activeTPDIndex = 27;
     }
 
     //Called on timeline chart load
@@ -454,6 +381,15 @@ export class SilverNeedleChart {
         }
         if (this.autoscaleAll) {
             this.autoscaleAllAxes();
+        }
+        else {
+            if (this.autoscaleXaxis) {
+                this.autoscaleAxis('x', 0);
+            }
+            let i = -1;
+            while((i = this.autoscaleYaxes.indexOf(true, i + 1)) >= 0) {
+                this.autoscaleAxis('y', i)
+            }
         }
     }
 
@@ -1011,7 +947,7 @@ export class SilverNeedleChart {
             voltBase: parseFloat(this.voltBase[this.activeSeries - 1]) - difference
         };
         this.setYExtremes(seriesSettings);
-        this.voltBase[this.activeSeries - 1] = (parseFloat(this.voltBase[this.activeSeries - 1]) - difference).toFixed(3);
+        this.voltBase[this.activeSeries - 1] = parseFloat((parseFloat(this.voltBase[this.activeSeries - 1]) - difference).toFixed(3));
         this.yPositionPixels = event.chartY;
     }.bind(this);
 
@@ -1171,9 +1107,22 @@ export class SilverNeedleChart {
             }
         }
         else if (axis === 'y') {
-            this.chart.yAxis[axisIndex].setExtremes(this.chart.yAxis[axisIndex].dataMin, this.chart.yAxis[axisIndex].dataMax);
+            if (this.chart.yAxis[axisIndex].dataMin === null && this.chart.yAxis[axisIndex].dataMax === null) {
+                return;
+            }
+            let voltsPerDiv = (this.chart.yAxis[axisIndex].dataMax - this.chart.yAxis[axisIndex].dataMin) / 10;
+            let i = 0;
+            while (voltsPerDiv > this.voltsPerDivVals[i] && i < this.voltsPerDivVals.length - 1) {
+                i++;
+            }
+            this.activeVPDIndex[axisIndex] = i;
             this.voltBase[axisIndex] = parseFloat(((this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2).toFixed(3));
-            this.voltDivision[axisIndex] = parseFloat(((this.chart.yAxis[axisIndex].dataMax - this.chart.yAxis[axisIndex].dataMin) / 10).toFixed(3));
+            this.voltDivision[axisIndex] = this.voltsPerDivVals[i];
+            this.setSeriesSettings({
+                seriesNum: axisIndex,
+                voltsPerDiv: this.voltDivision[axisIndex],
+                voltBase: this.voltBase[axisIndex]
+            });
         }
         else {
             console.log('invalid axis');
@@ -1348,6 +1297,86 @@ export class SilverNeedleChart {
             this.chart.series[seriesNum].setData(newValArray, true, false, false);
             this.chart.redraw(false);
         }
+    }
+
+    decrementVPD(seriesNum) {
+        if (this.activeVPDIndex[seriesNum] < 1) {
+            return;
+        }
+        this.activeVPDIndex[seriesNum]--;
+        this.setSeriesSettings({
+            voltsPerDiv: this.voltsPerDivVals[this.activeVPDIndex[seriesNum]],
+            voltBase: this.voltBase[seriesNum],
+            seriesNum: seriesNum
+        });
+    }
+
+    incrementVPD(seriesNum) {
+        if (this.activeVPDIndex[seriesNum] > this.voltsPerDivOpts.length - 2) {
+            return;
+        }
+        this.activeVPDIndex[seriesNum]++;
+        this.setSeriesSettings({
+            voltsPerDiv: this.voltsPerDivVals[this.activeVPDIndex[seriesNum]],
+            voltBase: this.voltBase[seriesNum],
+            seriesNum: seriesNum
+        });
+    }
+
+    incrementOffset(seriesNum) {
+        this.voltBase[seriesNum] = this.voltBase[seriesNum] + this.voltDivision[seriesNum];
+        this.setSeriesSettings({
+            voltsPerDiv: this.voltDivision[seriesNum],
+            voltBase: this.voltBase[seriesNum],
+            seriesNum: seriesNum
+        });
+    }
+
+    decrementOffset(seriesNum) {
+        this.voltBase[seriesNum] = this.voltBase[seriesNum] - this.voltDivision[seriesNum];
+        this.setSeriesSettings({
+            voltsPerDiv: this.voltDivision[seriesNum],
+            voltBase: this.voltBase[seriesNum],
+            seriesNum: seriesNum
+        }); 
+    }
+
+    decrementTPD(seriesNum) {
+        if (this.activeTPDIndex < 1) {
+            return;
+        }
+        this.activeTPDIndex--;
+        this.setTimeSettings({
+            timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
+            base: this.base
+        });
+    }
+
+    incrementTPD(seriesNum) {
+        if (this.activeTPDIndex > this.secsPerDivOpts.length - 2) {
+            return;
+        }
+        this.activeTPDIndex++;
+        this.setTimeSettings({
+            timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
+            base: this.base
+        });
+    }
+
+    incrementBase(seriesNum) {
+        this.base = this.base + this.timeDivision;
+        this.setSeriesSettings({
+            voltsPerDiv: this.timeDivision,
+            voltBase: this.base
+        });
+    }
+
+    decrementBase(seriesNum) {
+        this.voltBase[seriesNum] = this.base - this.timeDivision;
+        this.setSeriesSettings({
+            voltsPerDiv: this.timeDivision,
+            voltBase: this.base
+        }); 
     }
 
 }

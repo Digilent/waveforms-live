@@ -416,7 +416,7 @@ let osc = {
         let typedArray = new Int16Array(y);
         wf = {
             't0': clockTimeOffset,
-            'dt': dt,
+            'dt': 0.001,
             'y': typedArray
         };
         //length is 2x the array length because 2 bytes per entry

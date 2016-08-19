@@ -61,6 +61,7 @@ export class TimelineChartComponent {
                 labels: {
                     enabled: false
                 },
+                tickWidth: 0,
                 plotBands: [{
                     color: 'rgba(182,191,190,0.5)',
                     from: 0,

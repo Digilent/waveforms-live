@@ -1,21 +1,29 @@
-<div class="auto-main" style="background-color:#CCCCCC;border-bottom: solid black 1px;border-top: solid black 1px;padding-top: 5px; padding-bottom: 5px;">
+<div (dblclick)="toggleVisibility()" class="auto-main header-bar-side">
     <div class="align-center">Autoscale</div>
 </div>
-<div class="options">
+<div class="options" *ngIf="show">
     <ion-row>
         <ion-col>
-            <center><button class="icon-only-button">hi</button></center>
+            <center><button (click)="autoscaleAxis('x', 0)" class="text-button-side">x-axis</button></center>
         </ion-col>
-        <ion-col class="vertical-align">
-            <center><ion-checkbox></ion-checkbox></center>
+        <ion-col>
+            <center class="vertical-align"><ion-checkbox [(ngModel)]="chart.autoscaleXaxis"></ion-checkbox></center>
+        </ion-col>
+    </ion-row>
+    <ion-row *ngFor="let channel of chart.numSeries; let i = index">
+        <ion-col>
+            <center><button (click)="autoscaleAxis('y', i)" class="text-button-side">y-axis {{i + 1}}</button></center>
+        </ion-col>
+        <ion-col>
+            <center class="vertical-align"><ion-checkbox [(ngModel)]="chart.autoscaleYaxes[i]"></ion-checkbox></center>
         </ion-col>
     </ion-row>
     <ion-row>
         <ion-col>
-            <center><button class="icon-only-button">All</button></center>
+            <center><button (click)="autoscaleAll()" class="text-button-side">All</button></center>
         </ion-col>
         <ion-col>
-            <center><ion-checkbox></ion-checkbox></center>
+            <center><ion-checkbox [(ngModel)]="chart.autoscaleAll"></ion-checkbox></center>
         </ion-col>
     </ion-row>
 </div>
