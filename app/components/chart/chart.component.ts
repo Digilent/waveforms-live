@@ -957,7 +957,7 @@ export class SilverNeedleChart {
         let min = newPos - this.timeDivision * 5;
         let max = newPos + this.timeDivision * 5;
         this.chart.xAxis[0].setExtremes(min, max, true, false);
-        this.base = parseFloat(newPos.toFixed(3));
+        this.base = newPos;
         if (this.timelineView) {
             this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
             let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
@@ -1094,16 +1094,24 @@ export class SilverNeedleChart {
     //Autoscales single axis
     autoscaleAxis(axis: string, axisIndex: number) {
         if (axis === 'x') {
-            this.chart.xAxis[axisIndex].setExtremes(this.chart.xAxis[0].dataMin, this.chart.xAxis[0].dataMax);
-            this.timeDivision = parseFloat(((this.chart.xAxis[0].dataMax - this.chart.xAxis[0].dataMin) / 10).toFixed(3));
+            let secsPerDiv = (this.chart.xAxis[0].dataMax - this.chart.xAxis[0].dataMin) / 10;
+            let i = 0;
+            while (secsPerDiv > this.secsPerDivVals[i] && i < this.secsPerDivVals.length - 1) {
+                i++;
+            }
+            this.activeTPDIndex = i;
+            this.timeDivision = this.secsPerDivVals[i];
             this.base = parseFloat(((this.chart.xAxis[0].dataMax + this.chart.xAxis[0].dataMin) / 2).toFixed(3));
+            this.setTimeSettings({
+                timePerDiv: this.timeDivision,
+                base: this.base
+            });
             if (this.timelineView) {
                 let extremes = this.chart.xAxis[0].getExtremes();
                 this.updatePlotBands([2, 3], [[this.timelineBounds[0], extremes.dataMin], [extremes.dataMax, this.timelineBounds[1]]]);
                 let left = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(extremes.dataMin) - 5);
                 let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(extremes.dataMax) + 5);
                 this.updatePlotLines([0, 1], [left, right]);
-
             }
         }
         else if (axis === 'y') {
@@ -1218,26 +1226,64 @@ export class SilverNeedleChart {
     }
 
     //Callback function for timeline plot line mousemove events
-    timelineDragListener = function(event) {
-        let newVal = this.timelineChart.xAxis[0].toValue(event.chartX);
+    timelineDragListener = function (event) {
+        //let newVal = this.timelineChart.xAxis[0].toValue(event.chartX);
+        let newVal: number;
         let xCor: number;
+
         if (this.activeTimeLine === 0) {
-            xCor = event.chartX - 5;
+            let secsPerDiv: number = (this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from - this.timelineChart.xAxis[0].toValue(event.chartX)) / 10;
+            if (secsPerDiv < 0) {
+                return;
+            }
+            let i = 1;
+            let delta = Math.abs(secsPerDiv - this.secsPerDivVals[0]);
+            while (Math.abs(secsPerDiv - this.secsPerDivVals[i]) < delta) {
+                delta = Math.abs(secsPerDiv - this.secsPerDivVals[i]);
+                i++;
+            }
+            --i;
+            if (this.timeDivision === this.secsPerDivVals[i]) {
+                return;
+            }
+            //Seconds per division have changed
+            this.timeDivision = this.secsPerDivVals[i];
+            this.activeTPDIndex = i;
+            xCor = this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from - this.secsPerDivVals[i] * 10) - 5;
             if (event.chartX > this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from)){
                 xCor = this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from) - 5;
                 newVal = this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from;
             }
+            newVal = this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from - this.secsPerDivVals[i] * 10;
             this.updatePlotBands([2], [[this.timelineBounds[0], newVal]]);
             this.timelineChart.xAxis[0].plotLinesAndBands[0].options.value = this.timelineChart.xAxis[0].toValue(xCor);
             this.timelineChart.xAxis[0].plotLinesAndBands[0].render();
             this.chart.xAxis[0].setExtremes(this.timelineChart.xAxis[0].toValue(xCor + 5), this.chartBoundsX.max);
         }
         else if (this.activeTimeLine === 1) {
-            xCor = event.chartX + 5;
+            let secsPerDiv: number = (this.timelineChart.xAxis[0].toValue(event.chartX) - this.timelineChart.xAxis[0].plotLinesAndBands[2].options.to) / 10;
+            if (secsPerDiv < 0) {
+                return;
+            }
+            let i = 1;
+            let delta = Math.abs(secsPerDiv - this.secsPerDivVals[0]);
+            while (Math.abs(secsPerDiv - this.secsPerDivVals[i]) < delta) {
+                delta = Math.abs(secsPerDiv - this.secsPerDivVals[i]);
+                i++;
+            }
+            --i;
+            if (this.timeDivision === this.secsPerDivVals[i]) {
+                return;
+            }
+            //Seconds per division have changed
+            this.timeDivision = this.secsPerDivVals[i];
+            this.activeTPDIndex = i;
+            xCor = this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[2].options.to + this.secsPerDivVals[i] * 10) + 5;
             if (event.chartX < this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[2].options.to)){
                 xCor = this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[2].options.to) + 5;
                 newVal = this.timelineChart.xAxis[0].plotLinesAndBands[2].options.to;
             }
+            newVal = this.timelineChart.xAxis[0].plotLinesAndBands[2].options.to + this.secsPerDivVals[i] * 10;
             this.updatePlotBands([3], [[newVal, this.timelineBounds[1]]]);
             this.timelineChart.xAxis[0].plotLinesAndBands[1].options.value = this.timelineChart.xAxis[0].toValue(xCor);
             this.timelineChart.xAxis[0].plotLinesAndBands[1].render();
@@ -1245,7 +1291,7 @@ export class SilverNeedleChart {
         }
         let newExtremes = this.chart.xAxis[0].getExtremes();
         this.base = ((newExtremes.min + newExtremes.max) / 2).toFixed(3);
-        this.timeDivision = ((newExtremes.max - newExtremes.min) / 10).toFixed(3);
+        //this.timeDivision = ((newExtremes.max - newExtremes.min) / 10).toFixed(3);
         this.updateCursorLabels();
     }.bind(this);
 
