@@ -36,9 +36,9 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
 
         //Populate channels        
-        _oscInstrumentDescriptor.chans.forEach(dcChanDescriptor => {
-            this.chans.push(new OscChannelComponent(dcChanDescriptor));
-        })
+        for (let channel in _oscInstrumentDescriptor) {
+            this.chans.push(new OscChannelComponent(_oscInstrumentDescriptor[channel]));
+        }
     }
 
     //Tell OpenScope to run once and return a buffer
@@ -66,7 +66,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     let megaString = String.fromCharCode.apply(null, new Int8Array(data.slice(0)));
                     let binaryIndexStringLength = megaString.indexOf('\r\n');
                     let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
-                    let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex));
+                    let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex - 2));
                     for (let channel in command.osc) {
                         let binaryData = new Int16Array(data.slice(binaryIndex + command.osc[channel][0].offset, binaryIndex + command.osc[channel][0].offset + command.osc[channel][0].length));
                         let untypedArray = Array.prototype.slice.call(binaryData);

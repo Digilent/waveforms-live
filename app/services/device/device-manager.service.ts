@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Http, HTTP_PROVIDERS} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -13,15 +12,14 @@ import {TransportService} from '../transport/transport.service';
 export class DeviceManagerService {
 
     private transport: TransportService;
-    private http: Http;
 
     public devices: Array<DeviceComponent> = [];
     public activeDeviceIndex: number;
 
-    constructor(_http: Http) {
+    constructor() {
         console.log('Device Manager Service Constructor');
-        this.http = _http;
-        this.transport = new TransportService(_http, null);
+
+        this.transport = new TransportService(null);
     }
 
     //Connect to device and send enumerate command
@@ -40,7 +38,7 @@ export class DeviceManagerService {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (deviceDescriptor) => {
                     let response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(deviceDescriptor.slice(0))));
-                    let dev = new DeviceComponent(this.http, uri, response.device[0]);
+                    let dev = new DeviceComponent(uri, response.device[0]);
                     this.activeDeviceIndex = this.devices.push(dev)-1;
                     observer.next(this.activeDeviceIndex);
                     observer.complete();

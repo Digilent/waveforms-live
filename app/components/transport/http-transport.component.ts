@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {Http, Headers, RequestOptions, HTTP_PROVIDERS} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -7,12 +6,8 @@ import 'rxjs/Rx';
 import {TransportComponent} from './transport.component';
 
 @Component({
-    viewProviders: [HTTP_PROVIDERS],
-    providers: [Http, HTTP_PROVIDERS]
 })
 export class HttpTransportComponent extends TransportComponent {
-
-    private http: Http;
 
     private streamState: {
         mode: string,
@@ -22,11 +17,9 @@ export class HttpTransportComponent extends TransportComponent {
     private dataSource;
     private dataSourceSubscription;
 
-    constructor(_http: Http, _rootUri: string) {
+    constructor(_rootUri: string) {
         console.log('Transport HTTP Contructor');
         super();
-
-        this.http = _http;
         this.rootUri = _rootUri;
         this.streamState = {
             mode: 'off',
@@ -36,10 +29,10 @@ export class HttpTransportComponent extends TransportComponent {
 
     //Data transmission wrapper to avoid duplicate code. 
     writeRead(endpoint: string, sendData: any, dataType: string): Observable<any> {
-        return this.writeReadHelper(this.http, this.rootUri, endpoint, sendData, dataType);
+        return this.writeReadHelper(this.rootUri, endpoint, sendData, dataType);
     }
 
-    writeReadHelper(http: Http, rootUri: string, endpoint: string, sendData: any, dataType: string): Observable<any> {
+    writeReadHelper(rootUri: string, endpoint: string, sendData: any, dataType: string): Observable<any> {
 
         let uri = rootUri + endpoint;
         let body = sendData;
@@ -77,8 +70,8 @@ export class HttpTransportComponent extends TransportComponent {
         return Observable.create((observer) => {
             let i = 0;
 
-            let getData = function (writeReadHelper, streamState: any, http: Http, rootUri: string, endpoint: string, sendData: Object, delay: number) {
-                writeReadHelper(http, rootUri, endpoint, sendData).subscribe(
+            let getData = function (writeReadHelper, streamState: any, rootUri: string, endpoint: string, sendData: Object, delay: number) {
+                writeReadHelper(rootUri, endpoint, sendData).subscribe(
                     (data: any) => {
                         //console.log('Inner Read ', i, ' >> ', data);
                         observer.next(data)
@@ -91,14 +84,14 @@ export class HttpTransportComponent extends TransportComponent {
                         if (streamState.mode == 'continuous') {
                             //Wrap getData in anaonymous function to allow passing parameters to setTimeout handler
                             setTimeout(() => {
-                                getData(writeReadHelper, streamState, http, rootUri, endpoint, sendData, delay)
+                                getData(writeReadHelper, streamState, rootUri, endpoint, sendData, delay)
                             }, delay);
                         } else {
                             observer.complete();
                         }
                     });
             };
-            getData(this.writeReadHelper, this.streamState, this.http, this.rootUri, endpoint, sendData, delay);
+            getData(this.writeReadHelper, this.streamState, this.rootUri, endpoint, sendData, delay);
         });
     }
 

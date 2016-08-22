@@ -1,11 +1,13 @@
 import {Component, Input} from '@angular/core';
+import {NgClass} from '@angular/common';
 
 //Components 
 import {SilverNeedleChart} from '../chart/chart.component';
 
 @Component({
     templateUrl: 'build/components/autoscale/autoscale.html',
-    selector: 'autoscale'
+    selector: 'autoscale',
+    directives: [NgClass]
 })
 export class AutoscaleComponent {
     @Input() chart: SilverNeedleChart;

@@ -5,6 +5,7 @@ import {NgClass} from '@angular/common';
 
 //Components
 import {TimelineChartComponent} from '../timeline-chart/timeline-chart.component';
+import {DeviceComponent} from '../device/device.component';
 
 //Pages
 import {ModalCursorPage} from '../../pages/cursor-modal/cursor-modal';
@@ -46,13 +47,19 @@ export class SilverNeedleChart {
     private activeChannels = [0, 0];
     private autoscaleAll: boolean = false;
 
-    private voltsPerDivOpts: string[] = [];
-    private activeVPDIndex: number[] = [];
-    private voltsPerDivVals: number[] = [];
+    private voltsPerDivOpts: string[] = null;
+    private voltsPerDivVals: number[] = null;
+    private generalVoltsPerDivOpts: string[] = ['1 mV', '2 mV', '5 mv', '10 mV', '20 mV', '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
+    private activeVPDIndex: number[] = [9, 9];
+    private generalVoltsPerDivVals: number[] = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5];
 
-    private secsPerDivOpts: string[] = [];
-    private activeTPDIndex: number = null;
-    private secsPerDivVals: number[] = [];
+    private secsPerDivOpts: string[] = ['1 ns', '2 ns', '5 ns', '10 ns', '20 ns', '50 ns', '100 ns', '200 ns', '500 ns', '1 us',
+            '2 us', '5 us', '10 us', '20 us', '50 us', '100 us', '200 us', '500 us', '1 ms', '2 ms', '5 ms', '10 ms', '20 ms', 
+            '50 ms', '100 ms', '200 ms', '500 ms', '1 s', '2 s', '5 s', '10 s'];
+    private activeTPDIndex: number = 27;
+    private secsPerDivVals: number[] = [0.000000001, 0.000000002, 0.000000005, 0.00000001, 0.00000002, 0.00000005, 0.0000001, 0.0000002,
+            0.0000005, 0.000001, 0.000002, 0.000005, 0.00001, 0.00002, 0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01,
+            0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10];
 
     private timelineView: boolean = false;
     private timelineBounds: number[] = [0, 0, 0, 0];
@@ -80,7 +87,7 @@ export class SilverNeedleChart {
     private timelineChartEventListener: EventEmitter<any>;
 
     public autoscaleYaxes: boolean[] = [];
-    private autoscaleXaxis: boolean = false;
+    public autoscaleXaxis: boolean = false;
 
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
@@ -145,7 +152,7 @@ export class SilverNeedleChart {
                     return ticks;
                 },
                 title: {
-                    text: 'Series 0'
+                    text: 'Series 1'
                 }
             }, {
                 gridLineWidth: 1,
@@ -180,6 +187,7 @@ export class SilverNeedleChart {
                 enabled: false
             },
             xAxis: {
+                minRange: 0.000000001,
                 labels: {
                     events: {
                         click: function() {
@@ -223,6 +231,18 @@ export class SilverNeedleChart {
         };
     }
 
+    loadDeviceSpecificValues(deviceComponent: DeviceComponent) {
+        console.log(deviceComponent);
+        let resolution = (deviceComponent.instruments.osc.chans[0].adcRange / 1000) / Math.pow(2, deviceComponent.instruments.osc.chans[0].effectiveBits);
+        console.log(resolution);
+        let i = 0;
+        while (resolution > this.generalVoltsPerDivVals[i] && i < this.generalVoltsPerDivVals.length - 1) {
+            i++;
+        }
+        this.voltsPerDivVals = this.generalVoltsPerDivVals.slice(i);
+        this.voltsPerDivOpts = this.generalVoltsPerDivOpts.slice(i);
+    }
+
     ngOnDestroy() {
         this.timelineChartEventListener.unsubscribe();
     }  
@@ -238,18 +258,7 @@ export class SilverNeedleChart {
         if (this.timelineChartReady === true && this.timelineChartInitialized === false) {
             this.timelineChartInit();
         }
-        
-        //Generate v/div options. Eventually move to device manager?
-        this.voltsPerDivOpts = ['1 mV', '10 mV', '20 mV', '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
-        this.activeVPDIndex = [7, 7];
-        this.voltsPerDivVals = [0.001, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5];
-        this.secsPerDivOpts = ['1 ns', '2 ns', '5 ns', '10 ns', '20 ns', '50 ns', '100 ns', '200 ns', '500 ns', '1 us',
-            '2 us', '5 us', '10 us', '20 us', '50 us', '100 us', '200 us', '500 us', '1 ms', '2 ms', '5 ms', '10 ms', '20 ms', 
-            '50 ms', '100 ms', '200 ms', '500 ms', '1 s', '2 s', '5 s', '10 s'];
-        this.secsPerDivVals = [0.000000001, 0.000000002, 0.000000005, 0.00000001, 0.00000002, 0.00000005, 0.0000001, 0.0000002,
-            0.0000005, 0.000001, 0.000002, 0.000005, 0.00001, 0.00002, 0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01,
-            0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10];
-        this.activeTPDIndex = 27;
+
     }
 
     //Called on timeline chart load
@@ -303,7 +312,7 @@ export class SilverNeedleChart {
                             enabled: true
                         },
                         title: {
-                            text: 'Series ' + i
+                            text: 'Series ' + (i + 1)
                         }
                     });
             }
@@ -1427,6 +1436,24 @@ export class SilverNeedleChart {
 
     toggleVisibility(seriesNum: number) {
         this.chart.series[seriesNum].setVisible(!this.chart.series[seriesNum].visible);
+    }
+
+    getSeriesVisibility(seriesNum: number) {
+        return this.chart.series[seriesNum].visible;
+    }
+
+    getSeriesColor(seriesNum: number) {
+        return this.chart.series[seriesNum].color;
+    }
+
+    toggleAxisAutoscale(axis: string, seriesNum: number) {
+        if (axis === 'x') {
+            this.autoscaleXaxis  = !this.autoscaleXaxis;
+        }
+        else if (axis === 'y') {
+            this.autoscaleYaxes[seriesNum] = !this.autoscaleYaxes[seriesNum];
+        }
+        
     }
 
 }

@@ -60,6 +60,7 @@ export class TestChartCtrlsPage {
         else {
             this.oscopeChans = [0, 1];
             this.chartReady = true;
+            this.chart1.loadDeviceSpecificValues(this.activeDevice);
         }
     }
 

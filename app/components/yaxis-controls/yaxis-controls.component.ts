@@ -1,4 +1,5 @@
 import {Component, Output, EventEmitter, Input} from '@angular/core';
+import {NgClass} from '@angular/common';
 import {NavParams, ViewController, PopoverController} from 'ionic-angular';
 
 //Components
@@ -10,8 +11,9 @@ import {SeriesPopover} from '../series-popover/series-popover.component';
 import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
-  templateUrl: 'build/components/yaxis-controls/yaxis-controls.html',
-  selector: 'yaxis-controls',
+    templateUrl: 'build/components/yaxis-controls/yaxis-controls.html',
+    selector: 'yaxis-controls',
+    directives: [NgClass]
 })
 export class YAxisComponent {
     @Input() chart: SilverNeedleChart;
@@ -58,7 +60,7 @@ export class YAxisComponent {
 
     ngOnInit() {
         for (let i = 0; i < this.chart.numSeries.length; i++) {
-            this.names.push('Series ' + i);
+            this.names.push('Series ' + (i + 1));
             this.showSeriesSettings.push(true);
         }
     }

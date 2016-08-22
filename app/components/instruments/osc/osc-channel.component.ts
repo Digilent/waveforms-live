@@ -4,27 +4,26 @@ import {Component} from '@angular/core';
 })
 export class OscChannelComponent {
 
-    public name: string;
-
-    public resolutionMax: number = 0;
-    public bufferSizeMax: number = 0;
-
-    public freqMin: number = 0;
-    public freqMax: number = 0;
-
-    public voltageMin: number = 0;
-    public voltageMax: number = 0;
+    public effectiveBits: number;
+    public bufferSizeMax: number;
+    public bufferDataType: string;
+    public sampleClock: number;
+    public sampleClockDividers: number[];
+    public adcRange: number;
+    public inputSwingOffset: number;
+    public inputSwingRange: number;
+    public gains: number[];
 
     constructor(oscChannelDescriptor: any) {       
-        this.name = oscChannelDescriptor.name;
 
-        this.resolutionMax = oscChannelDescriptor.resolutionMax;
+        this.effectiveBits = oscChannelDescriptor.effectiveBits;
         this.bufferSizeMax = oscChannelDescriptor.bufferSizeMax;
-        
-        this.freqMin = oscChannelDescriptor.freqMin;
-        this.freqMax = oscChannelDescriptor.freqMax;
-        
-        this.voltageMin = oscChannelDescriptor.voltageMin;
-        this.voltageMax = oscChannelDescriptor.voltageMax;
+        this.bufferDataType = oscChannelDescriptor.bufferDataType;
+        this.sampleClock = oscChannelDescriptor.sampleClock;
+        this.sampleClockDividers = oscChannelDescriptor.sampleClockDividers;
+        this.adcRange = oscChannelDescriptor.adcRange;
+        this.inputSwingOffset = oscChannelDescriptor.inputSwingOffset;
+        this.inputSwingRange = oscChannelDescriptor.inputSwingRange;
+        this.gains = oscChannelDescriptor.gains;
     }
 }

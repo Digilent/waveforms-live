@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {Http, HTTP_PROVIDERS} from '@angular/http';
 
 //Components
 import {AwgInstrumentComponent} from '../instruments/awg/awg-instrument.component';
@@ -32,20 +31,20 @@ export class DeviceComponent {
         osc: null
     };
 
-    constructor(_http: Http, _rootUri: string, deviceDescriptor: any) {
+    constructor(_rootUri: string, deviceDescriptor: any) {
         console.log('Device Contructor');
-        //TODO If deviceDescriptor is empty attempt to enumerate the deviceDescriptor
+        //TODO If deviceDescriptor is empty, attempt to enumerate the deviceDescriptor [?]
 
         this.rootUri = _rootUri;
-        this.transport = new TransportService(_http, this.rootUri);
+        this.transport = new TransportService(this.rootUri);
         this.deviceMake = deviceDescriptor.deviceMake;
         this.deviceModel = deviceDescriptor.deviceModel;
         this.firmwareVersion = deviceDescriptor.firmwareVersion;
-
-        this.instruments.awg = new AwgInstrumentComponent(this.transport, deviceDescriptor.instruments.awg);
-        this.instruments.dc = new DcInstrumentComponent(this.transport, deviceDescriptor.instruments.dc);
-        this.instruments.la = new LaInstrumentComponent(this.transport, deviceDescriptor.instruments.la);
-        this.instruments.osc = new OscInstrumentComponent(this.transport, deviceDescriptor.instruments.osc);
+        console.log(this, deviceDescriptor);
+        this.instruments.awg = new AwgInstrumentComponent(this.transport, deviceDescriptor.awg);
+        this.instruments.dc = new DcInstrumentComponent(this.transport, deviceDescriptor.dc);
+        this.instruments.la = new LaInstrumentComponent(this.transport, deviceDescriptor.la);
+        this.instruments.osc = new OscInstrumentComponent(this.transport, deviceDescriptor.osc);
     }
 
 

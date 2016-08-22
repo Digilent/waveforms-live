@@ -26,12 +26,12 @@ let processBinaryDataAndSend = function(commandObject, res) {
     }
     let stringCommand = JSON.stringify(commandObject);
     let binaryIndex = stringCommand.length;
-    binaryIndex = (binaryIndex + binaryIndex.toString().length + 2).toString() + '\r\n';
+    binaryIndex = (binaryIndex + binaryIndex.toString().length + 4).toString() + '\r\n';
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/octet-stream');
     console.log('Reply: sent');
     res.write(binaryIndex);
-    res.write(stringCommand);
+    res.write(stringCommand + '\r\n');
     for (let bufferNum in binaryDataContainer) {
         res.write(Buffer.from(binaryDataContainer[bufferNum].buffer));
     }

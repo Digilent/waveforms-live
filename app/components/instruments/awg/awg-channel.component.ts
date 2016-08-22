@@ -4,8 +4,6 @@ import {Component} from '@angular/core';
 })
 export class AwgChannelComponent {
 
-    public name: string;
-
     public resolutionMax: number = 0;
     public bufferSizeMax: number = 0;
 
@@ -15,8 +13,7 @@ export class AwgChannelComponent {
     public voltageMin: number = 0;
     public voltageMax: number = 0;
 
-    constructor(awgChannelDescriptor: any) {       
-        this.name = awgChannelDescriptor.name;
+    constructor(awgChannelDescriptor: any) {
 
         this.resolutionMax = awgChannelDescriptor.resolutionMax;
         this.bufferSizeMax = awgChannelDescriptor.bufferSizeMax;

@@ -26,9 +26,9 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         this.numChans = _awgInstrumentDescriptor.numChans;
 
         //Populate channels  
-        _awgInstrumentDescriptor.chans.forEach(awgChanDescriptor => {
-            this.chans.push(new AwgChannelComponent(awgChanDescriptor));
-        })
+        for (let channel in _awgInstrumentDescriptor) {
+            this.chans.push(new AwgChannelComponent(_awgInstrumentDescriptor[channel]));
+        }
     }
 
     //Enumerate instrument info
