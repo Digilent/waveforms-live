@@ -14,13 +14,13 @@ import {TransportService} from '../../../services/transport/transport.service';
 })
 export class TriggerInstrumentComponent extends InstrumentComponent {
 
-    /*public numChans: number;
+    public numChans: number;
     public numDataBuffers = 8;
     public chans: TriggerChannelComponent[] = [];
     public dataBuffer: Array<Array<WaveformComponent>> = [];
     public dataBufferWriteIndex: number = 0;
     public dataBufferFillSize: number = 0;
-    public activeBuffer: string = '0';*/
+    public activeBuffer: string = '0';
 
 
     constructor(_transport: TransportService, _triggerInstrumentDescriptor: any) {
@@ -31,9 +31,9 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
         //this.numChans = _triggerInstrumentDescriptor.numChans;
 
         //Initialize Data Buffers
-        /*for (let i = 0; i < this.numDataBuffers; i++) {
+        for (let i = 0; i < this.numDataBuffers; i++) {
             this.dataBuffer.push(Array(this.numChans));
-        }*/
+        }
 
         //Populate channels        
         /*for (let channel in _triggerInstrumentDescriptor) {
@@ -66,7 +66,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    console.log(data);
+                    //console.log(data);
                     observer.next(data);
                     //Handle device errors and warnings
                     observer.complete();
@@ -105,7 +105,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    console.log(data);
+                    //console.log(data);
                     observer.next(data);
                     //Handle device errors and warnings
                     observer.complete();
@@ -144,18 +144,53 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (data) => {
+                    console.log(data);
                     //Handle device errors and warnings
+                    let bufferCount = 0;
                     let megaString = String.fromCharCode.apply(null, new Int8Array(data.slice(0)));
                     let binaryIndexStringLength = megaString.indexOf('\r\n');
                     let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
-                    let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex - 2));
+                    console.log(binaryIndex, binaryIndexStringLength);
+                    console.log(megaString.substring(binaryIndexStringLength + 2, binaryIndex + 4));
+                    let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex + 4));
+                    console.log(command);
                     for (let channel in command.trigger) {
-                        let binaryData = new Int16Array(data.slice(binaryIndex + command.osc[channel][0].offset, binaryIndex + command.osc[channel][0].offset + command.osc[channel][0].length));
-                        let untypedArray = Array.prototype.slice.call(binaryData);
-                        let scaledArray = untypedArray.map((voltage) => {
-                            return voltage / 1000;
-                        });
+                        if (command.trigger[channel][0].osc !== undefined) {
+                            for (let instrumentChannel in command.trigger[channel][0].osc) {
+                                let binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex + command.trigger[channel][0].osc[instrumentChannel].binaryOffset, binaryIndexStringLength + 2 + binaryIndex + command.trigger[channel][0].osc[instrumentChannel].binaryOffset + command.trigger[channel][0].osc[instrumentChannel].binaryLength));
+                                let untypedArray = Array.prototype.slice.call(binaryData);
+                                let scaledArray = untypedArray.map((voltage) => {
+                                    return voltage / 1000;
+                                });
+                                console.log(binaryData);
+                                this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
+                                    dt: command.trigger[channel][0].osc[instrumentChannel].dt / 1000000000000,
+                                    t0: 0,
+                                    y: scaledArray
+                                });
+                                bufferCount++;
+                            }
+
+                        }
+                        if (command.trigger[channel][0].la !== undefined) {
+                            for (let instrumentChannel in command.trigger[channel][0].la) {
+                                let binaryData = new Int16Array(data.slice(binaryIndex + command.trigger[channel][0].la[instrumentChannel].binaryOffset, binaryIndex + command.trigger[channel][0].la[instrumentChannel].binaryOffset + command.trigger[channel][0].la[instrumentChannel].binaryLength));
+                                let untypedArray = Array.prototype.slice.call(binaryData);
+                                let scaledArray = untypedArray.map((voltage) => {
+                                    return voltage / 1000;
+                                });
+                            }
+                        }
+                        this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
+                        if (this.dataBufferFillSize < this.numDataBuffers) {
+                            this.dataBufferFillSize++;
+                            this.activeBuffer = this.dataBufferFillSize.toString();
+                        }
+                        else {
+                            this.activeBuffer = (this.numDataBuffers).toString();
+                        }
                     }
+
                     observer.next(command);
                     //Handle device errors and warnings
                     observer.complete();

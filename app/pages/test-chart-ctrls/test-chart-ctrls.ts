@@ -91,7 +91,7 @@ export class TestChartCtrlsPage {
 
     //Run osc single
     singleClick() {
-        let multipliers = [];
+        /*let multipliers = [];
         for (let i = 0; i < this.oscopeChans.length; i++) {
             if (this.chart1.voltageMultipliers[i] === 'mV') {
                 multipliers[i] = 1;
@@ -113,7 +113,71 @@ export class TestChartCtrlsPage {
             () => {
                 //console.log('binary finished in test chart ctrls');
             }
-        );   
+        ); */ 
+
+        this.activeDevice.instruments.osc.setParameters([1], [0], [1]).subscribe(
+            (data) => {
+                //console.log(data);
+            },
+            (err) => {
+                //console.log(err);
+            },
+            () => {
+                //console.log('binary finished in test chart ctrls');
+            }
+        );
+
+        this.activeDevice.instruments.trigger.setParameters(
+            [1],
+            [{
+                instrument: 'osc',
+                channel: 1,
+                type: 'risingEdge',
+                lowerThreshold: 3300,
+                upperThreshold: 4000
+            }],
+            [{
+                osc: [1, 2]
+            }]
+        ).subscribe(
+            (data) => {
+                //console.log(data);
+            },
+            (err) => {
+                //console.log(err);
+            },
+            () => {
+                //console.log('binary finished in test chart ctrls');
+            }
+        );
+
+        this.activeDevice.instruments.trigger.run([1]).subscribe(
+            (data) => {
+                //console.log(data);
+            },
+            (err) => {
+                //console.log(err);
+            },
+            () => {
+                //console.log('binary finished in test chart ctrls');
+            }
+        );
+
+        this.activeDevice.instruments.trigger.read([1]).subscribe(
+            (data) => {
+                //console.log(data);
+                this.chart1.clearExtraSeries([0]);
+                console.log(this.activeDevice.instruments.trigger.dataBuffer);
+                this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][0]);
+                //this.chart1.drawWaveform(1, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][1]);
+            },
+            (err) => {
+                //console.log(err);
+            },
+            () => {
+                //console.log('binary finished in test chart ctrls');
+            }
+        );
     }
 
     //Stream osc buffers

@@ -11,19 +11,32 @@ fs.readFile('./devices/openscope-mz.json', 'utf8', function (err, data) {
     }
 });
 
+let keithTest = fs.readFileSync('./SampleOSJB.osjb');
+console.log(Buffer.from(keithTest));
+
 //Statuses    
 let statusOk = 0;
 
 //Process binary data to create correct response
 let processBinaryDataAndSend = function(commandObject, res) {
-    let binaryDataContainer = {};
+    /*let binaryDataContainer = {};
     let binaryOffset = 0;
-    for (let channel in commandObject.osc) {
-        binaryDataContainer[channel] = commandObject.osc[channel][0].waveform.y;
-        commandObject.osc[channel][0].offset = binaryOffset;
-        binaryOffset += commandObject.osc[channel][0].length; 
-        delete commandObject.osc[channel][0].waveform.y;
+    console.log(commandObject);
+    for (let triggerChannel in commandObject.trigger) {
+
+        for (let instrument in trigger.targets) {
+
+            for (let channel in commandObject.trigger[triggerChannel][0][instrument]) {
+                binaryDataContainer[channel] = commandObject.trigger[triggerChannel][0][instrument][channel].y;
+                commandObject.trigger[triggerChannel][0][instrument][channel].binaryOffset = binaryOffset;
+                binaryOffset += commandObject.trigger[triggerChannel][0][instrument][channel].binaryLength;
+                delete commandObject.trigger[triggerChannel][0][instrument][channel].y;
+            }
+
+        }
+
     }
+
     let stringCommand = JSON.stringify(commandObject);
     let binaryIndex = stringCommand.length;
     binaryIndex = (binaryIndex + binaryIndex.toString().length + 4).toString() + '\r\n';
@@ -35,6 +48,10 @@ let processBinaryDataAndSend = function(commandObject, res) {
     for (let bufferNum in binaryDataContainer) {
         res.write(Buffer.from(binaryDataContainer[bufferNum].buffer));
     }
+    res.end();*/
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.write(keithTest);
     res.end();
 }
 
@@ -98,6 +115,14 @@ let processCommands = function (instrument, commandObject, params) {
         case 'dcgetVoltage':
             return dc.getVoltage(params[0]);
 
+        //-------- TRIGGER --------
+        case 'triggersetParameters':
+            return trigger.setParameters(params[0], commandObject.source, commandObject.targets);
+        case 'triggerrun':
+            return trigger.run();
+        case 'triggerread':
+            return trigger.read(params[0]);
+
         //---------- OSC ----------            
         case 'oscCalibrate':
             //callback(null, osc.calibrate());
@@ -108,7 +133,7 @@ let processCommands = function (instrument, commandObject, params) {
         case 'oscrunSingle':
             return osc.runSingle(params[0]);
         case 'oscsetParameters':
-            return osc.setParameters(params[0]);
+            return osc.setParameters(params[0], commandObject.offset, commandObject.gain);
         default:
         //callback(null, 'Unknown Command');
     }
@@ -128,7 +153,7 @@ exports.handler = (event, context, postResponse) => {
     for (let instrument in event) {
         //create property on response object
         responseObject[instrument] = {};
-        if (event[instrument][0].command !== undefined) {
+        if (event[instrument][0] !== undefined && event[instrument][0].command !== undefined) {
             if (instrument === 'device') {
                 responseObject[instrument] = [];
                 let activeIndex = responseObject[instrument].push(processCommands(instrument, event[instrument][0], [])) - 1;
@@ -157,9 +182,9 @@ exports.handler = (event, context, postResponse) => {
             }
 
         }
-        if (instrument === 'osc') {
+        /*if (instrument === 'osc') {
             binaryDataFlag = 1;
-        }
+        }*/
     }
     responseObject.statusCode = sumStatusCode
     if (binaryDataFlag) {
@@ -381,9 +406,9 @@ let trigger = {
 
     targets: {},
 
-    setParameters: function(chan, settings) {
-        this.sources[chan] = settings.source;
-        this.targets[chan] = settings.targets;
+    setParameters: function(chan, source, targets) {
+        this.sources[chan] = source;
+        this.targets = targets;
         return {
             "command": "setParameters",
             "statusCode": 0,
@@ -407,22 +432,15 @@ let trigger = {
             "wait": 0,
             "acqCount": 27,
         };
-
+        console.log(this.targets);
         for (let instrument in this.targets) {
-
+            returnInfo[instrument] = {};
             this.targets[instrument].forEach((element, index, array) => {
-                returnInfo[instrument][index] = {
-                    "binaryOffset": 0,
-                    "binaryLength": 1024,
-                    "dt": 1,
-                    "pointOfInterest": 512,
-                    "triggerDelta": -512,
-                    "verticalOffset": 0
-                };
+                returnInfo[instrument][index] = {};
+                returnInfo[instrument][index] = osc.runSingle(index);
             });
 
         }
-
 
         return returnInfo;
     },
@@ -465,10 +483,11 @@ let osc = {
         return response;
     },
 
-    setParameters: function(chan, settings) {
-        this.offsets[chan] = settings[0];
-        this.gains[chan] = settings[1];
+    setParameters: function(chan, offset, gain) {
+        this.offsets[chan] = offset;
+        this.gains[chan] = gain;
         return {
+            "command": "setParameters",
             "actualOffset": 3100,
             "statusCode": 0,
             "wait": 0
@@ -509,9 +528,11 @@ let osc = {
         };
         //length is 2x the array length because 2 bytes per entry
         return {
-            waveform: wf,
-            length: 2 * typedArray.length,
-            offset: null,
+            verticalOffset: 0,
+            dt: 160000,
+            y: typedArray,
+            binaryLength: 2 * typedArray.length,
+            binaryOffset: null,
             statusCode: statusOk
         };
     }

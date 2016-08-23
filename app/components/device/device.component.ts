@@ -5,6 +5,7 @@ import {AwgInstrumentComponent} from '../instruments/awg/awg-instrument.componen
 import {DcInstrumentComponent} from '../instruments/dc/dc-instrument.component';
 import {LaInstrumentComponent} from '../instruments/la/la-instrument.component';
 import {OscInstrumentComponent} from '../instruments/osc/osc-instrument.component';
+import {TriggerInstrumentComponent} from '../instruments/trigger/trigger-instrument.component';
 
 //Services
 import {TransportService} from '../../services/transport/transport.service';
@@ -24,11 +25,13 @@ export class DeviceComponent {
         dc: DcInstrumentComponent,
         la: LaInstrumentComponent,
         osc: OscInstrumentComponent,
+        trigger: TriggerInstrumentComponent
     } = {
         awg: null,
         dc: null,
         la: null,
-        osc: null
+        osc: null,
+        trigger: null
     };
 
     constructor(_rootUri: string, deviceDescriptor: any) {
@@ -45,6 +48,7 @@ export class DeviceComponent {
         this.instruments.dc = new DcInstrumentComponent(this.transport, deviceDescriptor.dc);
         this.instruments.la = new LaInstrumentComponent(this.transport, deviceDescriptor.la);
         this.instruments.osc = new OscInstrumentComponent(this.transport, deviceDescriptor.osc);
+        this.instruments.trigger = new TriggerInstrumentComponent(this.transport, 'deviceDescriptor.trigger');
     }
 
 
