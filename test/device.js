@@ -107,6 +107,8 @@ let processCommands = function (instrument, commandObject, params) {
             break;
         case 'oscrunSingle':
             return osc.runSingle(params[0]);
+        case 'oscsetParameters':
+            return osc.setParameters(params[0]);
         default:
         //callback(null, 'Unknown Command');
     }
@@ -146,6 +148,10 @@ exports.handler = (event, context, postResponse) => {
                 event[instrument][channel].forEach((element, index, array) => {
                     let activeIndex = responseObject[instrument][channel].push(processCommands(instrument, event[instrument][channel][index], [channel])) - 1;
                     sumStatusCode += responseObject[instrument][channel][activeIndex].statusCode;
+                    console.log(element.command);
+                    if (element.command === 'read') {
+                        binaryDataFlag = 1;
+                    }
                 });
                 
             }
@@ -361,6 +367,74 @@ let dc = {
     }
 }
 
+//---------------------------- TRIGGER ----------------------------
+
+let trigger = {
+
+    sources: [{
+        "instrument": null,
+        "channel": null,
+        "type": null,
+        "lowerThreshold": null,
+        "upperThreshold": null
+    }],
+
+    targets: {},
+
+    setParameters: function(chan, settings) {
+        this.sources[chan] = settings.source;
+        this.targets[chan] = settings.targets;
+        return {
+            "command": "setParameters",
+            "statusCode": 0,
+            "wait": 0
+        };
+    },
+
+    run: function() {
+        return {
+            "command": "run",
+            "statusCode": 0,
+            "wait": -1,
+            "acqCount": 27
+        };
+    },
+
+    read: function (chan) {
+        let returnInfo = {
+            "command": "read",
+            "statusCode": 0,
+            "wait": 0,
+            "acqCount": 27,
+        };
+
+        for (let instrument in this.targets) {
+
+            this.targets[instrument].forEach((element, index, array) => {
+                returnInfo[instrument][index] = {
+                    "binaryOffset": 0,
+                    "binaryLength": 1024,
+                    "dt": 1,
+                    "pointOfInterest": 512,
+                    "triggerDelta": -512,
+                    "verticalOffset": 0
+                };
+            });
+
+        }
+
+
+        return returnInfo;
+    },
+
+    forceTrigger: function() {
+        return {
+            "statusCode": 0
+        };
+    }
+
+}
+
 //------------------------------ OSC ------------------------------
 let osc = {
     buffers: [
@@ -371,6 +445,10 @@ let osc = {
         [],
         []
     ],
+
+    offsets: [0, 0, 0],
+
+    gains: [1, 1, 1],
 
     //Calibrate
     calibrate: function () {
@@ -385,6 +463,16 @@ let osc = {
         response.statusCode = statusOk;
         console.log(response);
         return response;
+    },
+
+    setParameters: function(chan, settings) {
+        this.offsets[chan] = settings[0];
+        this.gains[chan] = settings[1];
+        return {
+            "actualOffset": 3100,
+            "statusCode": 0,
+            "wait": 0
+        };
     },
 
     //Run Single

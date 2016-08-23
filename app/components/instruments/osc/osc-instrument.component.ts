@@ -42,6 +42,46 @@ export class OscInstrumentComponent extends InstrumentComponent {
     }
 
     //Tell OpenScope to run once and return a buffer
+    setParameters(chans: number[], offsets: number[], gains: number[]): Observable<any> {
+        if (chans.length == 0) {
+            return Observable.create((observer) => {
+                observer.complete();
+            });
+        }
+
+        let command = {
+            "osc": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.osc[chans[index]] =
+                [
+                    {
+                        "command": "setParameters",
+                        "offset": offsets[index],
+                        "gain": gains[index]
+                    }
+                ]
+        });
+        return Observable.create((observer) => {
+            this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    console.log(data);
+                    observer.next(data);
+                    //Handle device errors and warnings
+                    observer.complete();
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            )
+        });
+    }
+
+    //Tell OpenScope to run once and return a buffer
     runSingle(chans: number[], voltageMultipliers: number[]): Observable<Array<WaveformComponent>> {
         if (chans.length == 0) {
             return Observable.create((observer) => {
