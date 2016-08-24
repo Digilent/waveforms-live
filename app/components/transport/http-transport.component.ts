@@ -40,8 +40,6 @@ export class HttpTransportComponent extends TransportComponent {
         let uri = rootUri + endpoint;
         let body = sendData;
 
-
-
         return Observable.create((observer) => {
             let XHR = new XMLHttpRequest();
 

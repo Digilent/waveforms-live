@@ -1,0 +1,126 @@
+
+.contentContainer
+{
+    background-color: #535353;
+}
+
+//---------- Send Section ----------
+.sendContainer 
+{
+    width: 75%;
+    padding: 10px;
+    border: 1px solid #DDD;
+    background-color: #535353;
+    color: white;
+    font-family: monospace;
+}
+
+.httpMethod
+{
+    display: inline-block;
+    vertical-align: middle;
+    min-width: 90px;
+}
+
+.urlInput
+{
+    display: inline-block;
+    min-width: 60%;
+    width: 83%;
+    border: 1px solid #E9E9E9;
+    background-color: #686868;
+    vertical-align: middle;
+}
+
+.sendButton
+{
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.headers {
+  
+}
+
+.headerKey
+{
+    display: inline-block;
+    vertical-align: middle;
+    width: 30%;
+    border: 1px solid #E9E9E9;
+    background-color: #686868;
+}
+
+.headerValue
+{
+    display: inline-block;
+    vertical-align: middle;
+    width: 60%;
+    margin: 2px;
+    border: 1px solid #E9E9E9;
+    background-color: #686868;
+
+}
+
+.addHeaderButton{
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.removeHeaderButton{
+    display: inline-block;
+    vertical-align: middle;
+    min-width: 25px;
+    min-height: 25px;
+}
+
+.sendBodyHeader
+{
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0px;    
+}
+
+.sendCommand
+{
+    display: inline-block;
+    vertical-align: middle;
+    min-width: 130px;  
+}
+
+.sendBody {
+    width: 91%;
+    min-height: 89px;
+    background-color: #686868;
+}
+
+//---------- Response Section ----------
+.responseContainer 
+{
+    width: 75%;
+    padding: 10px;
+    border: 1px solid #DDD;
+    background-color: #535353;
+    color: white;
+    font-family: monospace;
+}
+
+.responseBodyHeader
+{
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0px;    
+}
+
+.responseBodyFormat
+{
+    display: inline-block;
+    vertical-align: middle;
+    min-width: 90px;
+}
+
+.responseBody {
+    width: 91%;
+    min-height: 178px;
+    background-color: #686868;
+}
