@@ -89,6 +89,9 @@ export class SilverNeedleChart {
     public autoscaleYaxes: boolean[] = [];
     public autoscaleXaxis: boolean = false;
 
+    private yAxesMultipliers: number[] = [1, 1];
+    private xAxisMultiplier: number = 1;
+
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
         this.activeTimeLine = -1;
@@ -138,7 +141,30 @@ export class SilverNeedleChart {
                 gridLineWidth: 1,
                 offset: 0,
                 labels: {
-                    format: '{value:.3f}'
+                    formatter: function() {
+                        let initialValue = parseFloat(this.value);
+                        let i = 0;
+                        let unit = '';
+                        while (Math.abs(initialValue) < 1) {
+                            i++;
+                            initialValue = this.value * Math.pow(1000, i);
+                            console.log(initialValue);
+                        }
+                        this.value = (initialValue).toString();
+                        if (i == 0) {
+                            unit = 'V';
+                        }
+                        else if (i == 1) {
+                            unit = 'mV';
+                        }
+                        else if (i == 2) {
+                            unit = 'uV';
+                        }
+                        else if (i == 3) {
+                            unit = 'nV';
+                        }
+                        return this.value + unit;
+                    }
                 },
                 tickPositioner: function () {
                     let numTicks = 11;
@@ -159,7 +185,29 @@ export class SilverNeedleChart {
                 offset: 0,
                 labels: {
                     enabled: false,
-                    format: '{value:.3f}'
+                    formatter: function () {
+                        this.initialValue = parseFloat(this.value);
+                        let i = 0;
+                        let unit = '';
+                        while (this.initialValue < 1) {
+                            i++;
+                            this.initialValue = this.value * Math.pow(1000, i);
+                        }
+                        this.value = (this.initialValue).toString();
+                        if (i = 0) {
+                            unit = 'V';
+                        }
+                        else if (i == 1) {
+                            unit = 'mV';
+                        }
+                        else if (i == 2) {
+                            unit = 'uV';
+                        }
+                        else if (i == 3) {
+                            unit = 'nV';
+                        }
+                        return this.value + unit;
+                    }
                 },
                 tickPositioner: function () {
                     let numTicks = 11;
@@ -189,10 +237,37 @@ export class SilverNeedleChart {
             xAxis: {
                 minRange: 0.000000001,
                 labels: {
-                    events: {
-                        click: function() {
-                            console.log('hi');
+                    formatter: function() {
+                        console.log(this);
+                        if (parseFloat(this.value) == 0) {
+                            return this.value + 's';
                         }
+                        let pointInterval = this.chart.series[0].options.pointInterval;
+                        console.log('value: ' + pointInterval)
+                        let i = 0;
+                        let unit = '';
+                        while (pointInterval < 1) {
+                            i++;
+                            pointInterval = this.chart.series[0].options.pointInterval * Math.pow(1000, i);
+                            console.log(pointInterval);
+                        }
+                        this.value = (parseFloat(this.value) * Math.pow(1000, i)).toString();
+                        if (i == 0) {
+                            unit = 's';
+                        }
+                        else if (i == 1) {
+                            unit = 'ms';
+                        }
+                        else if (i == 2) {
+                            unit = 'us';
+                        }
+                        else if (i == 3) {
+                            unit = 'ns';
+                        }
+                        else if (i == 4) {
+                            unit = 'ps';
+                        }
+                        return this.value + unit;
                     }
                 },
                 startOnTick: true,
@@ -258,6 +333,8 @@ export class SilverNeedleChart {
         if (this.timelineChartReady === true && this.timelineChartInitialized === false) {
             this.timelineChartInit();
         }
+
+        this.chart.testTest = 'hi';
 
     }
 

@@ -19,7 +19,7 @@ let statusOk = 0;
 
 //Process binary data to create correct response
 let processBinaryDataAndSend = function(commandObject, res) {
-    let binaryDataContainer = {};
+    /*let binaryDataContainer = {};
     let binaryOffset = 0;
     console.log(commandObject);
     for (let triggerChannel in commandObject.trigger) {
@@ -48,13 +48,13 @@ let processBinaryDataAndSend = function(commandObject, res) {
     for (let bufferNum in binaryDataContainer) {
         res.write(Buffer.from(binaryDataContainer[bufferNum].buffer));
     }
-    res.end();
+    res.end();*/
 
     //Return Keith Data
-    /*res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/octet-stream');
     res.write(keithTest);
-    res.end();*/
+    res.end();
 }
 
 //Command Process 
