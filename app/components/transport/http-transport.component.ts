@@ -5,9 +5,7 @@ import 'rxjs/Rx';
 //Components
 import {TransportComponent} from './transport.component';
 
-@Component({
-  
-})
+@Component({})
 export class HttpTransportComponent extends TransportComponent {
 
     private streamState: {

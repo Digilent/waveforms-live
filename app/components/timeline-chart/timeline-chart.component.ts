@@ -20,7 +20,11 @@ export class TimelineChartComponent {
                 type: 'line',
                 zoomType: '',
                 title: '',
-                animation: false
+                animation: false,
+                spacingBottom: 0,
+                spacingTop: 0,
+                spacingLeft: 0,
+                spacingRight: 0
             },
             title: {
                 text: null

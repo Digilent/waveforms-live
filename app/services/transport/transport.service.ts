@@ -8,7 +8,6 @@ import {HttpTransportComponent} from '../../components/transport/http-transport.
 
 @Injectable()
 export class TransportService {
-       
     private transport: TransportComponent;
 
     constructor(_uri: string) {

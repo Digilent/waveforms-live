@@ -73,7 +73,7 @@
 
 .tcwrapper .left
 {  
-    background-color: #CCCCCC;
+    background-color: #535353;
     //padding: 10px;
     overflow: hidden;
     display: flex;
@@ -83,6 +83,7 @@
     flex-direction: column;
     -webkit-flex-direction: column;
     flex: 1.5 1;
+    border-right: solid black 1px;
 }
 
 .tcwrapper .left .innerCtrls
@@ -120,4 +121,5 @@
     height: 100%;
     position: relative;
     width: 15%;
+    background-color: #535353;
 }

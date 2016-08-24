@@ -1,29 +1,32 @@
 <div (dblclick)="toggleVisibility()" class="auto-main header-bar-side">
     <div class="align-center">Autoscale</div>
 </div>
-<div class="options" *ngIf="show">
+<div class="options" *ngIf="show" class="controls-container">
     <ion-row>
         <ion-col>
-            <center><button (click)="autoscaleAxis('x', 0)" class="text-button-side">x-axis</button></center>
+            <center><button (click)="autoscaleAxis('x', 0)" class="text-button-side disable-hover">x-axis</button></center>
         </ion-col>
         <ion-col>
-            <center class="vertical-align"><ion-checkbox [(ngModel)]="chart.autoscaleXaxis"></ion-checkbox></center>
+            <center><button (click)="chart.toggleAxisAutoscale('x', 0)" [ngClass]="{autoscaleActive: chart.autoscaleXaxis}" class="active-toggle disable-hover"><center><ion-icon style="vertical-align:middle;font-size: 25px;" name="square"></ion-icon></center></button></center>
         </ion-col>
     </ion-row>
     <ion-row *ngFor="let channel of chart.numSeries; let i = index">
         <ion-col>
-            <center><button (click)="autoscaleAxis('y', i)" class="text-button-side">y-axis {{i + 1}}</button></center>
+            <center><button (click)="autoscaleAxis('y', i)" class="text-button-side disable-hover">y-axis {{i + 1}}</button></center>
         </ion-col>
         <ion-col>
-            <center class="vertical-align"><ion-checkbox [(ngModel)]="chart.autoscaleYaxes[i]"></ion-checkbox></center>
+            <center><button (click)="chart.toggleAxisAutoscale('y', i)" [ngClass]="{autoscaleActive: chart.autoscaleYaxes[i]}" class="active-toggle disable-hover"></button></center>
         </ion-col>
     </ion-row>
     <ion-row>
         <ion-col>
-            <center><button (click)="autoscaleAll()" class="text-button-side">All</button></center>
+            <center><button (click)="autoscaleAll()" class="text-button-side disable-hover">All</button></center>
         </ion-col>
         <ion-col>
-            <center><ion-checkbox [(ngModel)]="chart.autoscaleAll"></ion-checkbox></center>
+            <center><button (click)="chart.toggleAutoscale()" [ngClass]="{autoscaleActive: chart.autoscaleAll}" class="active-toggle disable-hover"></button></center>
         </ion-col>
     </ion-row>
 </div>
+
+    <!--public autoscaleYaxes: boolean[] = [];
+    public autoscaleXaxis: boolean = false;-->

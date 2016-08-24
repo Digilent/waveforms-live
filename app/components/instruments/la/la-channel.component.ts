@@ -4,10 +4,10 @@ import {Component} from '@angular/core';
 })
 export class LaChannelComponent {
 
-    public name: string;
+
 
     constructor(_oscChannelDescriptor: any) {       
-        this.name = _oscChannelDescriptor.name;
+        
 
     }
 }

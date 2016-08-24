@@ -28,19 +28,19 @@
                         <ion-col>
                             <div class="innerCtrls">
                                 <timeline *ngIf="chartReady" [chart]="chart1"></timeline>
-                                <button class="text-button-side" (click)="exportChart()">
+                                <button class="text-button-side disable-hover" (click)="exportChart()">
                                     Export
                                     <ion-icon name="download"></ion-icon>
                                 </button>
-                                <button class="text-button-side" (click)="singleClick()">
+                                <button class="text-button-side disable-hover" (click)="singleClick()">
                                     Single
                                     <ion-icon name="play"></ion-icon>
                                 </button>
-                                <button class="text-button-side" (click)="runClick()" *ngIf="!running">
+                                <button class="text-button-side disable-hover" (click)="runClick()" *ngIf="!running">
                                     Run
                                     <ion-icon name="repeat"></ion-icon>
                                 </button>
-                                <button class="text-button-side" (click)="stopClick()" *ngIf="running">
+                                <button class="text-button-side disable-hover" (click)="stopClick()" *ngIf="running">
                                     Stop
                                     <ion-icon name="hand"></ion-icon>
                                 </button>

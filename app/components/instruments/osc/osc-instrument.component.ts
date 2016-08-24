@@ -36,9 +36,49 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
 
         //Populate channels        
-        _oscInstrumentDescriptor.chans.forEach(dcChanDescriptor => {
-            this.chans.push(new OscChannelComponent(dcChanDescriptor));
-        })
+        for (let channel in _oscInstrumentDescriptor) {
+            this.chans.push(new OscChannelComponent(_oscInstrumentDescriptor[channel]));
+        }
+    }
+
+    //Tell OpenScope to run once and return a buffer
+    setParameters(chans: number[], offsets: number[], gains: number[]): Observable<any> {
+        if (chans.length == 0) {
+            return Observable.create((observer) => {
+                observer.complete();
+            });
+        }
+
+        let command = {
+            "osc": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.osc[chans[index]] =
+                [
+                    {
+                        "command": "setParameters",
+                        "offset": offsets[index],
+                        "gain": gains[index]
+                    }
+                ]
+        });
+        return Observable.create((observer) => {
+            this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    //console.log(data);
+                    observer.next(data);
+                    //Handle device errors and warnings
+                    observer.complete();
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            )
+        });
     }
 
     //Tell OpenScope to run once and return a buffer
@@ -67,9 +107,9 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     console.log(megaString);
                     let binaryIndexStringLength = megaString.indexOf('\r\n');
                     let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
-                    let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex));
+                    let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex - 2));
                     for (let channel in command.osc) {
-                        let binaryData = new Int16Array(data.slice(binaryIndex + command.osc[channel][0].offset, binaryIndex + command.osc[channel][0].offset + command.osc[channel][0].length));
+                        let binaryData = new Int16Array(data.slice(binaryIndex + command.osc[channel][0].binaryOffset, binaryIndex + command.osc[channel][0].binaryOffset + command.osc[channel][0].binaryLength));
                         let untypedArray = Array.prototype.slice.call(binaryData);
                         let scaledArray = untypedArray.map((voltage) => {
                             return voltage * voltageMultipliers[0];

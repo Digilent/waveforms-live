@@ -23,9 +23,9 @@ export class DcInstrumentComponent extends InstrumentComponent {
         this.numChans = _dcInstrumentDescriptor.numChans;
 
         //Populate channels        
-        _dcInstrumentDescriptor.chans.forEach(dcChanDescriptor => {
-            this.chans.push(new DcChannelComponent(dcChanDescriptor));
-        })
+        for (let channel in _dcInstrumentDescriptor) {
+            this.chans.push(new DcChannelComponent(_dcInstrumentDescriptor[channel]));
+        }
     }
 
     //TODO - Calibrate the DC power supply.

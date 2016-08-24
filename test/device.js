@@ -11,30 +11,47 @@ fs.readFile('./devices/openscope-mz.json', 'utf8', function (err, data) {
     }
 });
 
+let keithTest = fs.readFileSync('./SampleOSJB.osjb');
+console.log(Buffer.from(keithTest));
+
 //Statuses    
 let statusOk = 0;
 
 //Process binary data to create correct response
 let processBinaryDataAndSend = function(commandObject, res) {
-    let binaryDataContainer = {};
+    /*let binaryDataContainer = {};
     let binaryOffset = 0;
-    for (let channel in commandObject.osc) {
-        binaryDataContainer[channel] = commandObject.osc[channel][0].waveform.y;
-        commandObject.osc[channel][0].offset = binaryOffset;
-        binaryOffset += commandObject.osc[channel][0].length; 
-        delete commandObject.osc[channel][0].waveform.y;
+    console.log(commandObject);
+    for (let triggerChannel in commandObject.trigger) {
+
+        for (let instrument in trigger.targets) {
+
+            for (let channel in commandObject.trigger[triggerChannel][0][instrument]) {
+                binaryDataContainer[channel] = commandObject.trigger[triggerChannel][0][instrument][channel].y;
+                commandObject.trigger[triggerChannel][0][instrument][channel].binaryOffset = binaryOffset;
+                binaryOffset += commandObject.trigger[triggerChannel][0][instrument][channel].binaryLength;
+                delete commandObject.trigger[triggerChannel][0][instrument][channel].y;
+            }
+
+        }
+
     }
+
     let stringCommand = JSON.stringify(commandObject);
     let binaryIndex = stringCommand.length;
-    binaryIndex = (binaryIndex + binaryIndex.toString().length + 2).toString() + '\r\n';
+    binaryIndex = (binaryIndex + binaryIndex.toString().length + 4).toString() + '\r\n';
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/octet-stream');
     console.log('Reply: sent');
     res.write(binaryIndex);
-    res.write(stringCommand);
+    res.write(stringCommand + '\r\n');
     for (let bufferNum in binaryDataContainer) {
         res.write(Buffer.from(binaryDataContainer[bufferNum].buffer));
     }
+    res.end();*/
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.write(keithTest);
     res.end();
 }
 
@@ -98,6 +115,14 @@ let processCommands = function (instrument, commandObject, params) {
         case 'dcgetVoltage':
             return dc.getVoltage(params[0]);
 
+        //-------- TRIGGER --------
+        case 'triggersetParameters':
+            return trigger.setParameters(params[0], commandObject.source, commandObject.targets);
+        case 'triggerrun':
+            return trigger.run();
+        case 'triggerread':
+            return trigger.read(params[0]);
+
         //---------- OSC ----------            
         case 'oscCalibrate':
             //callback(null, osc.calibrate());
@@ -107,6 +132,8 @@ let processCommands = function (instrument, commandObject, params) {
             break;
         case 'oscrunSingle':
             return osc.runSingle(params[0]);
+        case 'oscsetParameters':
+            return osc.setParameters(params[0], commandObject.offset, commandObject.gain);
         default:
         //callback(null, 'Unknown Command');
     }
@@ -126,7 +153,7 @@ exports.handler = (event, context, postResponse) => {
     for (let instrument in event) {
         //create property on response object
         responseObject[instrument] = {};
-        if (event[instrument][0].command !== undefined) {
+        if (event[instrument][0] !== undefined && event[instrument][0].command !== undefined) {
             if (instrument === 'device') {
                 responseObject[instrument] = [];
                 let activeIndex = responseObject[instrument].push(processCommands(instrument, event[instrument][0], [])) - 1;
@@ -146,14 +173,18 @@ exports.handler = (event, context, postResponse) => {
                 event[instrument][channel].forEach((element, index, array) => {
                     let activeIndex = responseObject[instrument][channel].push(processCommands(instrument, event[instrument][channel][index], [channel])) - 1;
                     sumStatusCode += responseObject[instrument][channel][activeIndex].statusCode;
+                    console.log(element.command);
+                    if (element.command === 'read') {
+                        binaryDataFlag = 1;
+                    }
                 });
                 
             }
 
         }
-        if (instrument === 'osc') {
+        /*if (instrument === 'osc') {
             binaryDataFlag = 1;
-        }
+        }*/
     }
     responseObject.statusCode = sumStatusCode
     if (binaryDataFlag) {
@@ -361,6 +392,67 @@ let dc = {
     }
 }
 
+//---------------------------- TRIGGER ----------------------------
+
+let trigger = {
+
+    sources: [{
+        "instrument": null,
+        "channel": null,
+        "type": null,
+        "lowerThreshold": null,
+        "upperThreshold": null
+    }],
+
+    targets: {},
+
+    setParameters: function(chan, source, targets) {
+        this.sources[chan] = source;
+        this.targets = targets;
+        return {
+            "command": "setParameters",
+            "statusCode": 0,
+            "wait": 0
+        };
+    },
+
+    run: function() {
+        return {
+            "command": "run",
+            "statusCode": 0,
+            "wait": -1,
+            "acqCount": 27
+        };
+    },
+
+    read: function (chan) {
+        let returnInfo = {
+            "command": "read",
+            "statusCode": 0,
+            "wait": 0,
+            "acqCount": 27,
+        };
+        console.log(this.targets);
+        for (let instrument in this.targets) {
+            returnInfo[instrument] = {};
+            this.targets[instrument].forEach((element, index, array) => {
+                returnInfo[instrument][index] = {};
+                returnInfo[instrument][index] = osc.runSingle(index);
+            });
+
+        }
+
+        return returnInfo;
+    },
+
+    forceTrigger: function() {
+        return {
+            "statusCode": 0
+        };
+    }
+
+}
+
 //------------------------------ OSC ------------------------------
 let osc = {
     buffers: [
@@ -371,6 +463,10 @@ let osc = {
         [],
         []
     ],
+
+    offsets: [0, 0, 0],
+
+    gains: [1, 1, 1],
 
     //Calibrate
     calibrate: function () {
@@ -385,6 +481,17 @@ let osc = {
         response.statusCode = statusOk;
         console.log(response);
         return response;
+    },
+
+    setParameters: function(chan, offset, gain) {
+        this.offsets[chan] = offset;
+        this.gains[chan] = gain;
+        return {
+            "command": "setParameters",
+            "actualOffset": 3100,
+            "statusCode": 0,
+            "wait": 0
+        };
     },
 
     //Run Single
@@ -421,9 +528,11 @@ let osc = {
         };
         //length is 2x the array length because 2 bytes per entry
         return {
-            waveform: wf,
-            length: 2 * typedArray.length,
-            offset: null,
+            verticalOffset: 0,
+            dt: 160000,
+            y: typedArray,
+            binaryLength: 2 * typedArray.length,
+            binaryOffset: null,
             statusCode: statusOk
         };
     }

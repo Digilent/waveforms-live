@@ -1,17 +1,17 @@
 <div style="background-color: white;">
-    <div class="trigger header-bar-side">
+    <div (dblclick)="toggleTriggerShow()" class="align-center-container header-bar-side">
         <div style="width:25px;height:25px;"></div>
         <div>Trigger</div>
-        <button class="icon-only-button-side" (click)="openSeriesPopover()"><ion-icon name="settings"></ion-icon></button>
+        <button class="align-right disable-hover" (click)="openSeriesPopover()"><ion-icon name="settings"></ion-icon></button>
     </div>
-    <div>
-        <ion-grid>
+    <div *ngIf="showTriggerSettings" class="controls-container">
+        <ion-grid class="ion-grid-no-padding">
             <ion-row>
                 <ion-col>
                     <center><img src="img/tpot.jpg"></center>
                 </ion-col>
                 <ion-col>
-                    <center><button class="text-button-side">Force</button></center>
+                    <center><button class="text-button-side disable-hover">Force</button></center>
                 </ion-col>
             </ion-row>
         </ion-grid>

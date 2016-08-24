@@ -18,6 +18,7 @@ export class TriggerComponent {
     private popoverCtrl: PopoverController;
     private storageService: StorageService;
     private storageEventListener: EventEmitter<any>;
+    private showTriggerSettings: boolean = true;
     
     constructor(_storageService: StorageService, _popoverCtrl: PopoverController) {
         this.popoverCtrl = _popoverCtrl;
@@ -42,6 +43,10 @@ export class TriggerComponent {
     //Remove storage event listener to avoid memory leaks
     ngOnDestroy() {
         this.storageEventListener.unsubscribe();
+    }
+
+    toggleTriggerShow() {
+        this.showTriggerSettings = !this.showTriggerSettings;
     }
     
     //Open series popover

@@ -14,7 +14,7 @@
     margin-top: 0.1rem;
     margin-right: 0.1rem;
     margin-bottom: 0.1rem;
-    margin-left: 0.1rem;
+    margin-left: 0.5rem;
     height: 25px;
     font-size: 8px;
     width: 25px;
@@ -25,11 +25,13 @@
 .align-center-container .align-right
 {
     margin-top: 0.1rem;
-    margin-right: 0.1rem;
+    margin-right: 0.5rem;
     margin-bottom: 0.1rem;
     margin-left: 0.1rem;
     height: 25px;
     font-size: 8px;
+    background-color: #535353;
+    border: solid black 1px;
 }
 
 .font-size-button
@@ -53,6 +55,8 @@
     margin-left: 0.1rem;
     font-size: 8px;
     height: 25px;
+    background-color: #535353;
+    border: solid black 1px;
 }
 
 .text-button-side
@@ -65,13 +69,28 @@
     height: 25px;
     font-weight: 400;
     min-width: 75px;
+    background-color: #535353;
+    border: solid black 1px;
 }
 
 .header-bar-side
 {
-    background-color:#CCCCCC;
+    background-color:#535353;
+    border-top: solid #686868 1px;
+    padding-top: 1px; 
+    padding-bottom: 1px;
+    color: white;
+}
+
+.controls-container
+{
+    color: white;
+    font-weight: 300;
+    background-color: #535353;
     border-bottom: solid black 1px;
-    border-top: solid black 1px;
-    padding-top: 5px; 
-    padding-bottom: 5px;
+}
+
+.seriesHidden
+{
+    opacity: 0.4;
 }

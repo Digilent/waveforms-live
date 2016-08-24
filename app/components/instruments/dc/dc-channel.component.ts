@@ -4,8 +4,6 @@ import {Component} from '@angular/core';
 })
 export class DcChannelComponent {
 
-    public name: string;
-
     public voltageMin: number = 0;
     public voltageMax: number = 0;
     public voltageIncrement: number = 0;
@@ -15,7 +13,6 @@ export class DcChannelComponent {
     public currentIncrement: number = 0;
 
     constructor(dcChannelDescriptor: any) {
-        this.name = dcChannelDescriptor.name;
 
         this.voltageMin = dcChannelDescriptor.voltageMin;
         this.voltageMax = dcChannelDescriptor.voltageMax;
