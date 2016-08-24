@@ -662,13 +662,15 @@ export class SilverNeedleChart {
         if (yCor < this.chart.yAxis[0].toPixels(this.chartBoundsY.max)) {
             yCor = this.chart.yAxis[0].toPixels(this.chartBoundsY.max);
         }
-        let xVal = this.chart.xAxis[0].translate(xCor - this.chart.plotLeft, true).toFixed(3); 
-        let pointNum = Math.round((xVal - this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].xData[0]) / this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].pointInterval);
+        console.log(xCor);
+        let xVal = this.chart.xAxis[0].translate(xCor - this.chart.plotLeft, true); 
+        let pointNum = Math.round((xVal - this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].xData[0]) / this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].options.pointInterval);
         let pointNum1 = pointNum;
         let pointNum2 = pointNum;
-        if (pointNum > this.chart.series[1].xData.length - 1) {
+        console.log(pointNum);
+        /*if (pointNum > this.chart.series[1].xData.length - 1) {
             pointNum2 = this.chart.series[1].xData.length - 1;
-        }
+        }*/
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].x;
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].y;
         if (this.timelineView) {
@@ -677,12 +679,11 @@ export class SilverNeedleChart {
         }
         this.xCursorPositions[3 * this.activeCursor - 3] = parseFloat(this.chart.series[0].data[pointNum1].x);
         this.xCursorPositions[3 * this.activeCursor - 2] = this.chart.series[0].data[pointNum1].y;
-        this.xCursorPositions[3 * this.activeCursor - 1] = this.chart.series[1].data[pointNum2].y;
+        this.xCursorPositions[3 * this.activeCursor - 1] = 0;
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
         this.cursorLabel[this.activeCursor - 1].attr({
-            text: 'Series 1: ' + this.chart.series[0].data[pointNum1].y.toFixed(3) + 'V' + 
-            '<br>Series 2: ' + this.chart.series[1].data[pointNum2].y.toFixed(3) + 'V', 
+            text: 'Series 1: ' + this.chart.series[0].data[pointNum1].y.toFixed(3) + 'V', 
             x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + offset,
             y: yCor,
             zIndex: 99 + this.activeCursor
