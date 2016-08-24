@@ -1,4 +1,5 @@
 import {Component, Output, EventEmitter, Input} from '@angular/core';
+import {NgClass} from '@angular/common';
 
 //Components
 import {SilverNeedleChart} from '../chart/chart.component';
@@ -9,6 +10,7 @@ import {StorageService} from '../../services/storage/storage.service';
 @Component({
   templateUrl: 'build/components/xaxis-controls/xaxis-controls.html',
   selector: 'xaxis-controls',
+  directives: [NgClass]
 })
 export class XAxisComponent {
     @Input() chart: SilverNeedleChart;

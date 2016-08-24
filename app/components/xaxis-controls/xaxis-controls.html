@@ -1,5 +1,5 @@
 <div>
-    <div (dblclick)="toggleSeriesSettings()" class="header-bar-side">
+    <div (dblclick)="toggleSeriesSettings()" [ngClass]="{'header-bar-side-closed': !showTimeSettings}" class="header-bar-side">
         <div class="align-center">Time Settings</div>
     </div>
     <ion-row *ngIf="showTimeSettings" class="controls-container">

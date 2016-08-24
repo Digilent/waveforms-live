@@ -1,6 +1,6 @@
 <div *ngFor="let series of chart.numSeries; let i = index" (click)="setActiveSeries(i)">
     <div>
-        <div (dblclick)="toggleSeriesSettings(i)" class="align-center-container header-bar-side">
+        <div (dblclick)="toggleSeriesSettings(i)" [ngClass]="{'header-bar-side-closed': !showSeriesSettings[i]}" class="align-center-container header-bar-side">
                 <button [ngClass]="{seriesHidden: !chart.getSeriesVisibility(i)}" (click)="toggleVisibility(i)" class="align-left disable-hover" [style.background-color]="chart.getSeriesColor(i)"></button>
                 <div class="vertical-align">{{names[i]}}</div>
                 <button (click)="openSeriesPopover(i)" class="align-right disable-hover"><ion-icon name="settings" class="font-size-button"></ion-icon></button>

@@ -364,12 +364,10 @@ export class SilverNeedleChart {
                 this.timelineChart.addSeries(timelineOptions, false, false);
             }
         }
-        console.log(waveform.dt);
         this.chart.series[seriesNum].update({
             pointStart: waveform.t0,
             pointInterval: waveform.dt
         });
-        console.log(this.chart.series[seriesNum]);
         //Update point interval in timeline as well to show where user view is in timeline
         this.chart.redraw(false);
         this.updateCursorLabels();
@@ -1420,19 +1418,19 @@ export class SilverNeedleChart {
         });
     }
 
-    incrementBase(seriesNum) {
+    incrementBase() {
         this.base = this.base + this.timeDivision;
-        this.setSeriesSettings({
-            voltsPerDiv: this.timeDivision,
-            voltBase: this.base
+        this.setTimeSettings({
+            timePerDiv: this.timeDivision,
+            base: this.base
         });
     }
 
-    decrementBase(seriesNum) {
-        this.voltBase[seriesNum] = this.base - this.timeDivision;
-        this.setSeriesSettings({
-            voltsPerDiv: this.timeDivision,
-            voltBase: this.base
+    decrementBase() {
+        this.base = this.base - this.timeDivision;
+        this.setTimeSettings({
+            timePerDiv: this.timeDivision,
+            base: this.base
         }); 
     }
 

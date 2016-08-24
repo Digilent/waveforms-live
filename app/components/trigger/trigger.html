@@ -1,5 +1,5 @@
 <div style="background-color: white;">
-    <div (dblclick)="toggleTriggerShow()" class="align-center-container header-bar-side">
+    <div (dblclick)="toggleTriggerShow()" [ngClass]="{'header-bar-side-closed': !showTriggerSettings}" class="align-center-container header-bar-side">
         <div style="width:25px;height:25px;"></div>
         <div>Trigger</div>
         <button class="align-right disable-hover" (click)="openSeriesPopover()"><ion-icon name="settings"></ion-icon></button>

@@ -144,16 +144,12 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (data) => {
-                    console.log(data);
                     //Handle device errors and warnings
                     let bufferCount = 0;
                     let megaString = String.fromCharCode.apply(null, new Int8Array(data.slice(0)));
                     let binaryIndexStringLength = megaString.indexOf('\r\n');
                     let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
-                    console.log(binaryIndex, binaryIndexStringLength);
-                    console.log(megaString.substring(binaryIndexStringLength + 2, binaryIndex + 4));
                     let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex + 4));
-                    console.log(command);
                     for (let channel in command.trigger) {
                         if (command.trigger[channel][0].osc !== undefined) {
                             for (let instrumentChannel in command.trigger[channel][0].osc) {
@@ -162,7 +158,6 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                                 let scaledArray = untypedArray.map((voltage) => {
                                     return voltage / 1000;
                                 });
-                                console.log(binaryData);
                                 this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
                                     dt: command.trigger[channel][0].osc[instrumentChannel].dt / 1000000000000,
                                     t0: 0,
