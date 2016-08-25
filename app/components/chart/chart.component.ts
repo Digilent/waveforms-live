@@ -1233,7 +1233,6 @@ export class SilverNeedleChart {
             }
             this.activeTPDIndex = i;
             this.timeDivision = this.secsPerDivVals[i];
-            console.log();
             this.base = ((this.chart.xAxis[0].dataMax + this.chart.xAxis[0].dataMin) / 2);
             this.setTimeSettings({
                 timePerDiv: this.timeDivision,
@@ -1257,7 +1256,10 @@ export class SilverNeedleChart {
                 i++;
             }
             this.activeVPDIndex[axisIndex] = i;
-            this.voltBase[axisIndex] = parseFloat(((this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2).toFixed(3));
+            this.voltBase[axisIndex] = (this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2;
+            this.voltBase[axisIndex] = this.voltBase[axisIndex] - ((this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2) % this.voltsPerDivVals[this.activeVPDIndex[axisIndex]];
+            console.log(this.voltBase[axisIndex] % this.voltsPerDivVals[this.activeVPDIndex[axisIndex]]);
+            console.log(20.25 % .5, 20.25 / .5);
             this.voltDivision[axisIndex] = this.voltsPerDivVals[i];
             this.setSeriesSettings({
                 seriesNum: axisIndex,
@@ -1379,7 +1381,7 @@ export class SilverNeedleChart {
             if (this.timeDivision === this.secsPerDivVals[i]) {
                 return;
             }
-            //Seconds per division have changed
+            //Seconds per division has changed
             this.timeDivision = this.secsPerDivVals[i];
             this.activeTPDIndex = i;
             xCor = this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from - this.secsPerDivVals[i] * 10) - 5;
@@ -1423,7 +1425,7 @@ export class SilverNeedleChart {
             this.chart.xAxis[0].setExtremes(this.chartBoundsX.min, this.timelineChart.xAxis[0].toValue(xCor - 5));
         }
         let newExtremes = this.chart.xAxis[0].getExtremes();
-        this.base = ((newExtremes.min + newExtremes.max) / 2).toFixed(3);
+        this.base = ((newExtremes.min + newExtremes.max) / 2);
         //this.timeDivision = ((newExtremes.max - newExtremes.min) / 10).toFixed(3);
         this.updateCursorLabels();
     }.bind(this);
