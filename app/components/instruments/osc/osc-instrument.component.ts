@@ -104,6 +104,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (data) => {
                     let megaString = String.fromCharCode.apply(null, new Int8Array(data.slice(0)));
+                    console.log(megaString);
                     let binaryIndexStringLength = megaString.indexOf('\r\n');
                     let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
                     let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex - 2));

@@ -5,8 +5,7 @@ import 'rxjs/Rx';
 //Components
 import {TransportComponent} from './transport.component';
 
-@Component({
-})
+@Component({})
 export class HttpTransportComponent extends TransportComponent {
 
     private streamState: {
@@ -20,6 +19,7 @@ export class HttpTransportComponent extends TransportComponent {
     constructor(_rootUri: string) {
         console.log('Transport HTTP Contructor');
         super();
+
         this.rootUri = _rootUri;
         this.streamState = {
             mode: 'off',
@@ -34,6 +34,7 @@ export class HttpTransportComponent extends TransportComponent {
 
     writeReadHelper(rootUri: string, endpoint: string, sendData: any, dataType: string): Observable<any> {
 
+        console.log(endpoint);
         let uri = rootUri + endpoint;
         let body = sendData;
 

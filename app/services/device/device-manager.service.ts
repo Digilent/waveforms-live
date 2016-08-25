@@ -18,7 +18,6 @@ export class DeviceManagerService {
 
     constructor() {
         console.log('Device Manager Service Constructor');
-
         this.transport = new TransportService(null);
     }
 

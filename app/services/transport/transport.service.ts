@@ -12,7 +12,6 @@ export class TransportService {
 
     constructor(_uri: string) {
         console.log('Transport Service Parent Constructor');
-
         this.transport = new HttpTransportComponent(_uri);
     }
 

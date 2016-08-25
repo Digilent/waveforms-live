@@ -13,12 +13,15 @@
 @import "../pages/test-chart-ctrls/test-chart-ctrls";
 @import "../pages/fgen-modal/fgen-modal";
 @import "../pages/cursor-modal/cursor-modal";
+@import "../pages/protocol-test-panel/protocol-test-panel";
+
 
 //Components
 @import "../components/chart/chart";
 @import "../components/bottom-bar/bottom-bar";
 @import "../components/digital-io/digital-io";
 @import "../components/dc-supply/dc-supply";
+@import "../libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu";
 @import "../components/trigger/trigger";
 @import "../components/oscope-controls/oscope-controls";
 @import "../components/function-gen/function-gen";
