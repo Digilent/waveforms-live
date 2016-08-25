@@ -43,7 +43,6 @@ export class DeviceComponent {
         this.deviceMake = deviceDescriptor.deviceMake;
         this.deviceModel = deviceDescriptor.deviceModel;
         this.firmwareVersion = deviceDescriptor.firmwareVersion;
-        console.log(this, deviceDescriptor);
         this.instruments.awg = new AwgInstrumentComponent(this.transport, deviceDescriptor.awg);
         this.instruments.dc = new DcInstrumentComponent(this.transport, deviceDescriptor.dc);
         this.instruments.la = new LaInstrumentComponent(this.transport, deviceDescriptor.la);

@@ -4,7 +4,6 @@ import {ViewChild, ElementRef, Component, Input} from '@angular/core';
 //Components
 import {SilverNeedleChart} from '../../components/chart/chart.component';
 import {BottomBarComponent} from '../../components/bottom-bar/bottom-bar.component';
-import {SideBarComponent} from '../../components/side-bar/side-bar.component';
 import {XAxisComponent} from '../../components/xaxis-controls/xaxis-controls.component';
 import {YAxisComponent} from '../../components/yaxis-controls/yaxis-controls.component';
 import {TimelineComponent} from '../../components/timeline/timeline.component';
@@ -12,6 +11,7 @@ import {TimelineChartComponent} from '../../components/timeline-chart/timeline-c
 import {DeviceComponent} from '../../components/device/device.component';
 import {AutoscaleComponent} from '../../components/autoscale/autoscale.component';
 import {TriggerComponent} from '../../components/trigger/trigger.component';
+import {FgenComponent} from '../../components/function-gen/function-gen.component';
 
 
 //Services
@@ -21,7 +21,8 @@ import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
-    directives: [SilverNeedleChart, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent, TimelineComponent, TimelineChartComponent, AutoscaleComponent, TriggerComponent]
+    directives: [SilverNeedleChart, BottomBarComponent, XAxisComponent, YAxisComponent, 
+    TimelineComponent, TimelineChartComponent, AutoscaleComponent, TriggerComponent, FgenComponent]
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;

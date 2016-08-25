@@ -1,32 +1,45 @@
-
-    <div #oscopeChartInner class="chart-component-wrapper">
-        <div class="chart-component-container-div" [ngClass]="{pan: canPan, 
+<div #oscopeChartInner class="chart-component-wrapper">
+    <div class="chart-component-container-div" [ngClass]="{pan: canPan, 
             'chart-component-container-div-cursor-timeline': isCursorTimeline(),
             'chart-component-container-div-cursor-only': isCursorOnly(),
             'chart-component-container-div-timeline-only': isTimelineOnly(),
             'chart-component-container-div-vanilla': isVanilla()}">
-            <chart [options]="options" (load)="onLoad($event.context)" (mousedown)="onChartClick($event)" (mouseup)="clearMouse()">
-                <series>
-                    <point (click)="onPointSelect($event)"></point>
-                </series>
-            </chart>
-        </div>
-        <div class="cursor-container" *ngIf="cursorsEnabled">
-            <button (click)="openCursorModal()">Cursors</button>
-            <div class="info-container" *ngIf="cursorType === 'time'">
-                Cur1: {{xCursorPositions[0]}} s ({{xCursorPositions[1]}} V) &Delta; X: {{getCursorDeltas()[0]}} s
-                <br>
-                Cur2: {{xCursorPositions[3]}} s ({{xCursorPositions[4]}} V) 1/&Delta; X: {{(1/getCursorDeltas()[0])}} Hz
-            </div>
-            <div class="info-container" *ngIf="cursorType === 'track'">
-                Cur1: {{xCursorPositions[0]}} s ({{xCursorPositions[1]}} V) &Delta; X: {{getCursorDeltas()[0]}} s &Delta;Y: {{(xCursorPositions[1] - xCursorPositions[4])}} V
-                <br>
-                Cur2: {{xCursorPositions[3]}} s ({{xCursorPositions[4]}} V) 1/&Delta; X: {{(1/getCursorDeltas()[0])}} Hz
-            </div>
-            <div class="info-container" *ngIf="cursorType === 'voltage'">
-                Cur1: {{yCursorPositions[0]}} V &Delta;Y: {{getCursorDeltas()[3]}} V
-                <br>
-                Cur2: {{yCursorPositions[1]}} V 
-            </div>
-        </div>
+        <chart [options]="options" (load)="onLoad($event.context)" (mousedown)="onChartClick($event)" (mouseup)="clearMouse()">
+            <series>
+                <point (click)="onPointSelect($event)"></point>
+            </series>
+        </chart>
     </div>
+    <ion-row>
+        <ion-col>
+            <button (click)="openMathModal()">Math</button>
+        </ion-col>
+        <ion-col>
+            <ion-row class="cursor-container" *ngIf="cursorsEnabled">
+                <button (click)="openCursorModal()">Cursors</button>
+                <ion-col *ngIf="cursorType === 'time'">
+                    Cur1: {{xCursorPositions[0]}} s ({{xCursorPositions[1]}} V) <br> Cur2: {{xCursorPositions[3]}} s ({{xCursorPositions[4]}}
+                    V)
+                </ion-col>
+                <ion-col *ngIf="cursorType === 'time'">
+                    &Delta; X: {{getCursorDeltas()[0]}} s <br> 1/&Delta; X: {{(1/getCursorDeltas()[0])}} Hz
+                </ion-col>
+                <ion-col *ngIf="cursorType === 'track'">
+                    Cur1: {{xCursorPositions[0]}} s ({{xCursorPositions[1]}} V)
+                    <br> Cur2: {{xCursorPositions[3]}} s ({{xCursorPositions[4]}} V) Hz
+                </ion-col>
+                <ion-col *ngIf="cursorType === 'track'">
+                    &Delta; X: {{getCursorDeltas()[0]}} s &Delta;Y: {{(xCursorPositions[1] - xCursorPositions[4])}} V <br>
+                    1/&Delta; X: {{(1/getCursorDeltas()[0])}}
+                </ion-col>
+                <ion-col *ngIf="cursorType === 'voltage'">
+                    Cur1: {{yCursorPositions[0]}} V
+                    <br> Cur2: {{yCursorPositions[1]}} V
+                </ion-col>
+                <ion-col *ngIf="cursorType === 'voltage'">
+                    &Delta;Y: {{getCursorDeltas()[3]}} V
+                </ion-col>
+            </ion-row>
+        </ion-col>
+    </ion-row>
+</div>

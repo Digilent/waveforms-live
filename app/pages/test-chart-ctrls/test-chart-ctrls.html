@@ -13,13 +13,13 @@
             <div class="left">
                 <div class="toolbarContainer">
                     <ion-row>
-                        <ion-col width-10>
+                        
                             <div class="move-left">
                                 <button menuToggle light>
                                     <ion-icon name="menu"></ion-icon>
                                 </button>
                             </div>
-                        </ion-col>
+                        
                         <ion-col width-30>
                             <div class="timelineChartWrapper">
                                 <timeline-chart (timelineChartLoad)="saveTimelineChart($event)"></timeline-chart>
@@ -65,7 +65,7 @@
                 <button (click)="toggleControls()">
                     <ion-icon name="menu"></ion-icon>
                 </button>
-                <side-bar [hidden]="!controlsVisible" (toggleSeries)="toggleSeries($event)"></side-bar>
+                <fgen [hidden]="!controlsVisible"></fgen>
             </div>   
         </div>
         <div class="botwrapper" [ngClass]="{showbot: botVisible}">

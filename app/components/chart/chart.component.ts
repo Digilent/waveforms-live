@@ -9,6 +9,7 @@ import {DeviceComponent} from '../device/device.component';
 
 //Pages
 import {ModalCursorPage} from '../../pages/cursor-modal/cursor-modal';
+import {MathModalPage} from '../../pages/math-modal/math-modal';
 
 @Component({
     selector: 'silverNeedleChart',
@@ -116,7 +117,8 @@ export class SilverNeedleChart {
             chart: {
                 type: 'line',
                 zoomType: '',
-                animation: false
+                animation: false,
+                spacingTop: 20
             },
             title: {
                 text: ''
@@ -993,6 +995,16 @@ export class SilverNeedleChart {
         modal.present();
     }
 
+    openMathModal() {
+        let modal = this.modalCtrl.create(MathModalPage, {
+            name: 'hey'
+        });
+        modal.onDidDismiss(data => {
+            console.log('rip math modal');
+        });
+        modal.present();
+    }
+
     //Adds correct cursors from selection
     handleCursors() {
         this.removeCursors();
@@ -1258,8 +1270,6 @@ export class SilverNeedleChart {
             this.activeVPDIndex[axisIndex] = i;
             this.voltBase[axisIndex] = (this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2;
             this.voltBase[axisIndex] = this.voltBase[axisIndex] - ((this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2) % this.voltsPerDivVals[this.activeVPDIndex[axisIndex]];
-            console.log(this.voltBase[axisIndex] % this.voltsPerDivVals[this.activeVPDIndex[axisIndex]]);
-            console.log(20.25 % .5, 20.25 / .5);
             this.voltDivision[axisIndex] = this.voltsPerDivVals[i];
             this.setSeriesSettings({
                 seriesNum: axisIndex,
@@ -1319,6 +1329,14 @@ export class SilverNeedleChart {
         let chartExtremes = this.chart.xAxis[0].getExtremes();
         let value = this.timelineChart.xAxis[0].toValue(event.chartX)
         if (value > chartExtremes.min && value < chartExtremes.max && !this.inTimelineDrag) {
+            this.xPositionPixels = event.chartX;
+            this.timelineChartInner.nativeElement.addEventListener('mousemove', this.timelineWhiteDragListener);
+        }
+        else if (!this.inTimelineDrag) {
+            let oldValinNewWindow = this.base;
+            let difference = oldValinNewWindow - value;
+            this.setXExtremes(difference);
+            this.updateCursorLabels();
             this.xPositionPixels = event.chartX;
             this.timelineChartInner.nativeElement.addEventListener('mousemove', this.timelineWhiteDragListener);
         }

@@ -1,0 +1,60 @@
+<div style="background-color: white">
+    <ion-row>
+        <div>
+                <ion-item>
+                    <h3>Cursor Type</h3>
+                    <button clear (click)="showPopover($event, 'cursorType')"> {{cursorType}} <ion-icon name="arrow-dropdown"></ion-icon></button>
+                </ion-item>
+                <ion-item>
+                    <h3>Cursor 1 Channel</h3>
+                    <button clear (click)="showPopover($event, 'cursor1Chan')"> {{cursor1Chan}} <ion-icon name="arrow-dropdown"></ion-icon></button>
+                </ion-item>
+                <ion-item>
+                    <h3>Cursor 2 Channel</h3>
+                    <button clear (click)="showPopover($event, 'cursor2Chan')"> {{cursor2Chan}} <ion-icon name="arrow-dropdown"></ion-icon></button>
+                </ion-item>
+        </div>
+        <ion-col>
+            <ion-row>
+                <ion-col>
+                    <button>freq</button>
+                </ion-col>
+                <ion-col>
+                    <button>PW</button>
+                </ion-col>
+                <ion-col>
+                    <button>duty</button>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <button>period</button>
+                </ion-col>
+                <ion-col>
+                    <button>negPW</button>
+                </ion-col>
+                <ion-col>
+                    <button>negduty</button>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <button>rise rate</button>
+                </ion-col>
+                <ion-col>
+                    <button>rise time</button>
+                </ion-col>
+            </ion-row>
+
+
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col>
+            <button (click)="closeModal()">OK</button>
+        </ion-col>
+        <ion-col>
+            <button (click)="closeModal()">Cancel</button>
+        </ion-col>
+    </ion-row>
+</div>
