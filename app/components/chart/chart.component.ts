@@ -89,6 +89,9 @@ export class SilverNeedleChart {
     public autoscaleYaxes: boolean[] = [];
     public autoscaleXaxis: boolean = false;
 
+    private yAxesMultipliers: number[] = [1, 1];
+    private xAxisMultiplier: number = 1;
+
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
         this.activeTimeLine = -1;
@@ -119,7 +122,58 @@ export class SilverNeedleChart {
                 text: ''
             },
             tooltip: {
-                enabled: true
+                enabled: true,
+                formatter: function () {
+                    let timePerDiv = Math.abs(this.series.xAxis.max - this.series.xAxis.min) / 10;
+                    if (parseFloat(this.value) == 0) {
+                        return this.value + 's';
+                    }
+                    let i = 0;
+                    let unit = '';
+                    while (timePerDiv < 1) {
+                        i++;
+                        timePerDiv = timePerDiv * 1000;
+                    }
+                    this.x = (parseFloat(this.x) * Math.pow(1000, i)).toFixed(0);
+                    if (i == 0) {
+                        unit = ' s';
+                    }
+                    else if (i == 1) {
+                        unit = ' ms';
+                    }
+                    else if (i == 2) {
+                        unit = ' us';
+                    }
+                    else if (i == 3) {
+                        unit = ' ns';
+                    }
+                    else if (i == 4) {
+                        unit = ' ps';
+                    }
+                    this.x =  this.x + unit;
+                    let vPerDiv = Math.abs(this.series.yAxis.max - this.series.yAxis.min) / 10;
+                    i = 0;
+                    while (vPerDiv < 1) {
+                        i++;
+                        vPerDiv = vPerDiv * 1000;
+                    }
+                    this.y = (parseFloat(this.y) * Math.pow(1000, i)).toFixed(0);
+                    if (i == 0) {
+                        unit = ' V';
+                    }
+                    else if (i == 1) {
+                        unit = ' mV';
+                    }
+                    else if (i == 2) {
+                        unit = ' uV';
+                    }
+                    else if (i == 3) {
+                        unit = ' nV';
+                    }
+                    this.y = this.y + unit;
+                    return '<b>' + this.x + '</b> <b> ('
+                        + this.y + ')</b>';
+                }
             },
             series: [{
                 data: [29.9, 36, 47, 57, 67, 71.5, 82, 92, 102, 106.4, 110, 120, 129.2],
@@ -138,7 +192,29 @@ export class SilverNeedleChart {
                 gridLineWidth: 1,
                 offset: 0,
                 labels: {
-                    format: '{value:.3f}'
+                    formatter: function() {
+                        let vPerDiv = Math.abs(this.chart.yAxis[0].max - this.chart.yAxis[0].min) / 10;
+                        let i = 0;
+                        let unit = '';
+                        while (vPerDiv < 1) {
+                            i++;
+                            vPerDiv = vPerDiv * 1000;
+                        }
+                        this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
+                        if (i == 0) {
+                            unit = ' V';
+                        }
+                        else if (i == 1) {
+                            unit = ' mV';
+                        }
+                        else if (i == 2) {
+                            unit = ' uV';
+                        }
+                        else if (i == 3) {
+                            unit = ' nV';
+                        }
+                        return this.value + unit;
+                    }
                 },
                 tickPositioner: function () {
                     let numTicks = 11;
@@ -159,7 +235,29 @@ export class SilverNeedleChart {
                 offset: 0,
                 labels: {
                     enabled: false,
-                    format: '{value:.3f}'
+                    formatter: function () {
+                        let vPerDiv = Math.abs(this.chart.yAxis[1].max - this.chart.yAxis[1].min) / 10;
+                        let i = 0;
+                        let unit = '';
+                        while (vPerDiv < 1) {
+                            i++;
+                            vPerDiv = vPerDiv * 1000;
+                        }
+                        this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
+                        if (i == 0) {
+                            unit = ' V';
+                        }
+                        else if (i == 1) {
+                            unit = ' mV';
+                        }
+                        else if (i == 2) {
+                            unit = ' uV';
+                        }
+                        else if (i == 3) {
+                            unit = ' nV';
+                        }
+                        return this.value + unit;
+                    }
                 },
                 tickPositioner: function () {
                     let numTicks = 11;
@@ -189,10 +287,34 @@ export class SilverNeedleChart {
             xAxis: {
                 minRange: 0.000000001,
                 labels: {
-                    events: {
-                        click: function() {
-                            console.log('hi');
+                    formatter: function() {
+                        let timePerDiv = Math.abs(this.chart.xAxis[0].max - this.chart.xAxis[0].min) / 10;
+                        if (parseFloat(this.value) == 0) {
+                            return this.value + 's';
                         }
+                        let i = 0;
+                        let unit = '';
+                        while (timePerDiv < 1) {
+                            i++;
+                            timePerDiv = timePerDiv * 1000;
+                        }
+                        this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
+                        if (i == 0) {
+                            unit = ' s';
+                        }
+                        else if (i == 1) {
+                            unit = ' ms';
+                        }
+                        else if (i == 2) {
+                            unit = ' us';
+                        }
+                        else if (i == 3) {
+                            unit = ' ns';
+                        }
+                        else if (i == 4) {
+                            unit = ' ps';
+                        }
+                        return this.value + unit;
                     }
                 },
                 startOnTick: true,
@@ -232,9 +354,7 @@ export class SilverNeedleChart {
     }
 
     loadDeviceSpecificValues(deviceComponent: DeviceComponent) {
-        console.log(deviceComponent);
         let resolution = (deviceComponent.instruments.osc.chans[0].adcRange / 1000) / Math.pow(2, deviceComponent.instruments.osc.chans[0].effectiveBits);
-        console.log(resolution);
         let i = 0;
         while (resolution > this.generalVoltsPerDivVals[i] && i < this.generalVoltsPerDivVals.length - 1) {
             i++;
@@ -258,6 +378,8 @@ export class SilverNeedleChart {
         if (this.timelineChartReady === true && this.timelineChartInitialized === false) {
             this.timelineChartInit();
         }
+
+        this.chart.testTest = 'hi';
 
     }
 
@@ -364,12 +486,10 @@ export class SilverNeedleChart {
                 this.timelineChart.addSeries(timelineOptions, false, false);
             }
         }
-        console.log(waveform.dt);
         this.chart.series[seriesNum].update({
             pointStart: waveform.t0,
             pointInterval: waveform.dt
         });
-        console.log(this.chart.series[seriesNum]);
         //Update point interval in timeline as well to show where user view is in timeline
         this.chart.redraw(false);
         this.updateCursorLabels();
@@ -664,13 +784,15 @@ export class SilverNeedleChart {
         if (yCor < this.chart.yAxis[0].toPixels(this.chartBoundsY.max)) {
             yCor = this.chart.yAxis[0].toPixels(this.chartBoundsY.max);
         }
-        let xVal = this.chart.xAxis[0].translate(xCor - this.chart.plotLeft, true).toFixed(3); 
-        let pointNum = Math.round((xVal - this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].xData[0]) / this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].pointInterval);
+        console.log(xCor);
+        let xVal = this.chart.xAxis[0].translate(xCor - this.chart.plotLeft, true); 
+        let pointNum = Math.round((xVal - this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].xData[0]) / this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].options.pointInterval);
         let pointNum1 = pointNum;
         let pointNum2 = pointNum;
-        if (pointNum > this.chart.series[1].xData.length - 1) {
+        console.log(pointNum);
+        /*if (pointNum > this.chart.series[1].xData.length - 1) {
             pointNum2 = this.chart.series[1].xData.length - 1;
-        }
+        }*/
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].x;
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].y;
         if (this.timelineView) {
@@ -679,12 +801,11 @@ export class SilverNeedleChart {
         }
         this.xCursorPositions[3 * this.activeCursor - 3] = parseFloat(this.chart.series[0].data[pointNum1].x);
         this.xCursorPositions[3 * this.activeCursor - 2] = this.chart.series[0].data[pointNum1].y;
-        this.xCursorPositions[3 * this.activeCursor - 1] = this.chart.series[1].data[pointNum2].y;
+        this.xCursorPositions[3 * this.activeCursor - 1] = 0;
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
         this.cursorLabel[this.activeCursor - 1].attr({
-            text: 'Series 1: ' + this.chart.series[0].data[pointNum1].y.toFixed(3) + 'V' + 
-            '<br>Series 2: ' + this.chart.series[1].data[pointNum2].y.toFixed(3) + 'V', 
+            text: 'Series 1: ' + this.chart.series[0].data[pointNum1].y.toFixed(3) + 'V', 
             x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + offset,
             y: yCor,
             zIndex: 99 + this.activeCursor
@@ -784,7 +905,7 @@ export class SilverNeedleChart {
             this.timelineChart.xAxis[0].plotLinesAndBands[this.activeCursor + 3].options.value = xVal;
             this.timelineChart.xAxis[0].plotLinesAndBands[this.activeCursor + 3].render();
         }
-        console.log(pointNum1);
+        console.log(this.chart);
         this.xCursorPositions[3 * this.activeCursor - 3] = parseFloat(xVal);
         this.xCursorPositions[3 * this.activeCursor - 2] = this.chart.series[0].data[pointNum1].y;
         this.xCursorPositions[3 * this.activeCursor - 1] = 0;
@@ -1135,7 +1256,10 @@ export class SilverNeedleChart {
                 i++;
             }
             this.activeVPDIndex[axisIndex] = i;
-            this.voltBase[axisIndex] = parseFloat(((this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2).toFixed(3));
+            this.voltBase[axisIndex] = (this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2;
+            this.voltBase[axisIndex] = this.voltBase[axisIndex] - ((this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2) % this.voltsPerDivVals[this.activeVPDIndex[axisIndex]];
+            console.log(this.voltBase[axisIndex] % this.voltsPerDivVals[this.activeVPDIndex[axisIndex]]);
+            console.log(20.25 % .5, 20.25 / .5);
             this.voltDivision[axisIndex] = this.voltsPerDivVals[i];
             this.setSeriesSettings({
                 seriesNum: axisIndex,
@@ -1257,7 +1381,7 @@ export class SilverNeedleChart {
             if (this.timeDivision === this.secsPerDivVals[i]) {
                 return;
             }
-            //Seconds per division have changed
+            //Seconds per division has changed
             this.timeDivision = this.secsPerDivVals[i];
             this.activeTPDIndex = i;
             xCor = this.timelineChart.xAxis[0].toPixels(this.timelineChart.xAxis[0].plotLinesAndBands[3].options.from - this.secsPerDivVals[i] * 10) - 5;
@@ -1301,7 +1425,7 @@ export class SilverNeedleChart {
             this.chart.xAxis[0].setExtremes(this.chartBoundsX.min, this.timelineChart.xAxis[0].toValue(xCor - 5));
         }
         let newExtremes = this.chart.xAxis[0].getExtremes();
-        this.base = ((newExtremes.min + newExtremes.max) / 2).toFixed(3);
+        this.base = ((newExtremes.min + newExtremes.max) / 2);
         //this.timeDivision = ((newExtremes.max - newExtremes.min) / 10).toFixed(3);
         this.updateCursorLabels();
     }.bind(this);
@@ -1420,19 +1544,19 @@ export class SilverNeedleChart {
         });
     }
 
-    incrementBase(seriesNum) {
+    incrementBase() {
         this.base = this.base + this.timeDivision;
-        this.setSeriesSettings({
-            voltsPerDiv: this.timeDivision,
-            voltBase: this.base
+        this.setTimeSettings({
+            timePerDiv: this.timeDivision,
+            base: this.base
         });
     }
 
-    decrementBase(seriesNum) {
-        this.voltBase[seriesNum] = this.base - this.timeDivision;
-        this.setSeriesSettings({
-            voltsPerDiv: this.timeDivision,
-            voltBase: this.base
+    decrementBase() {
+        this.base = this.base - this.timeDivision;
+        this.setTimeSettings({
+            timePerDiv: this.timeDivision,
+            base: this.base
         }); 
     }
 

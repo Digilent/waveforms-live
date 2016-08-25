@@ -38,8 +38,8 @@ let processBinaryDataAndSend = function(commandObject, res) {
     }
 
     let stringCommand = JSON.stringify(commandObject);
-    let binaryIndex = stringCommand.length;
-    binaryIndex = (binaryIndex + binaryIndex.toString().length + 4).toString() + '\r\n';
+    let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
+    //binaryIndex = (binaryIndex.toString().length + 2).toString() + '\r\n';
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/octet-stream');
     console.log('Reply: sent');
@@ -49,6 +49,8 @@ let processBinaryDataAndSend = function(commandObject, res) {
         res.write(Buffer.from(binaryDataContainer[bufferNum].buffer));
     }
     res.end();*/
+
+    //Return Keith Data
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/octet-stream');
     res.write(keithTest);

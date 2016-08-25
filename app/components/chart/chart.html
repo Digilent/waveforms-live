@@ -14,19 +14,19 @@
         <div class="cursor-container" *ngIf="cursorsEnabled">
             <button (click)="openCursorModal()">Cursors</button>
             <div class="info-container" *ngIf="cursorType === 'time'">
-                Cur1: {{xCursorPositions[0]}}s ({{xCursorPositions[1]}}V) &Delta;X: {{getCursorDeltas()[0]}} s
+                Cur1: {{xCursorPositions[0]}} s ({{xCursorPositions[1]}} V) &Delta; X: {{getCursorDeltas()[0]}} s
                 <br>
-                Cur2: {{xCursorPositions[3]}}s ({{xCursorPositions[4]}}V) 1/&Delta;X: {{(1/getCursorDeltas()[0])}} Hz
+                Cur2: {{xCursorPositions[3]}} s ({{xCursorPositions[4]}} V) 1/&Delta; X: {{(1/getCursorDeltas()[0])}} Hz
             </div>
             <div class="info-container" *ngIf="cursorType === 'track'">
-                Cur1: {{xCursorPositions[0]}}s ({{xCursorPositions[1]}}V) &Delta;X: {{getCursorDeltas()[0]}} s &Delta;Y: {{(xCursorPositions[1] - xCursorPositions[4])}} V
+                Cur1: {{xCursorPositions[0]}} s ({{xCursorPositions[1]}} V) &Delta; X: {{getCursorDeltas()[0]}} s &Delta;Y: {{(xCursorPositions[1] - xCursorPositions[4])}} V
                 <br>
-                Cur2: {{xCursorPositions[3]}}s ({{xCursorPositions[4]}}V) 1/&Delta;X: {{(1/getCursorDeltas()[0])}} Hz
+                Cur2: {{xCursorPositions[3]}} s ({{xCursorPositions[4]}} V) 1/&Delta; X: {{(1/getCursorDeltas()[0])}} Hz
             </div>
             <div class="info-container" *ngIf="cursorType === 'voltage'">
-                Cur1: {{yCursorPositions[0]}}V &Delta;Y: {{getCursorDeltas()[3]}} V
+                Cur1: {{yCursorPositions[0]}} V &Delta;Y: {{getCursorDeltas()[3]}} V
                 <br>
-                Cur2: {{yCursorPositions[1]}}V 
+                Cur2: {{yCursorPositions[1]}} V 
             </div>
         </div>
     </div>

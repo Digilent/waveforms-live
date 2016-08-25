@@ -167,7 +167,6 @@ export class TestChartCtrlsPage {
             (data) => {
                 //console.log(data);
                 this.chart1.clearExtraSeries([0]);
-                console.log(this.activeDevice.instruments.trigger.dataBuffer);
                 this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][0]);
                 //this.chart1.drawWaveform(1, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][1]);
             },

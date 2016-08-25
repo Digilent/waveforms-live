@@ -1,4 +1,5 @@
 import {Component, EventEmitter} from '@angular/core';
+import {NgClass} from '@angular/common';
 import {PopoverController} from 'ionic-angular';
 
 //Components 
@@ -9,7 +10,8 @@ import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
   templateUrl: 'build/components/trigger/trigger.html',
-  selector: 'trigger'
+  selector: 'trigger',
+  directives: [NgClass]
 })
 export class TriggerComponent {
     private delay: string = '0';
