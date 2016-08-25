@@ -122,7 +122,58 @@ export class SilverNeedleChart {
                 text: ''
             },
             tooltip: {
-                enabled: true
+                enabled: true,
+                formatter: function () {
+                    let timePerDiv = Math.abs(this.series.xAxis.max - this.series.xAxis.min) / 10;
+                    if (parseFloat(this.value) == 0) {
+                        return this.value + 's';
+                    }
+                    let i = 0;
+                    let unit = '';
+                    while (timePerDiv < 1) {
+                        i++;
+                        timePerDiv = timePerDiv * 1000;
+                    }
+                    this.x = (parseFloat(this.x) * Math.pow(1000, i)).toFixed(0);
+                    if (i == 0) {
+                        unit = ' s';
+                    }
+                    else if (i == 1) {
+                        unit = ' ms';
+                    }
+                    else if (i == 2) {
+                        unit = ' us';
+                    }
+                    else if (i == 3) {
+                        unit = ' ns';
+                    }
+                    else if (i == 4) {
+                        unit = ' ps';
+                    }
+                    this.x =  this.x + unit;
+                    let vPerDiv = Math.abs(this.series.yAxis.max - this.series.yAxis.min) / 10;
+                    i = 0;
+                    while (vPerDiv < 1) {
+                        i++;
+                        vPerDiv = vPerDiv * 1000;
+                    }
+                    this.y = (parseFloat(this.y) * Math.pow(1000, i)).toFixed(0);
+                    if (i == 0) {
+                        unit = ' V';
+                    }
+                    else if (i == 1) {
+                        unit = ' mV';
+                    }
+                    else if (i == 2) {
+                        unit = ' uV';
+                    }
+                    else if (i == 3) {
+                        unit = ' nV';
+                    }
+                    this.y = this.y + unit;
+                    return '<b>' + this.x + '</b> <b> ('
+                        + this.y + ')</b>';
+                }
             },
             series: [{
                 data: [29.9, 36, 47, 57, 67, 71.5, 82, 92, 102, 106.4, 110, 120, 129.2],
@@ -151,16 +202,16 @@ export class SilverNeedleChart {
                         }
                         this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
                         if (i == 0) {
-                            unit = 'V';
+                            unit = ' V';
                         }
                         else if (i == 1) {
-                            unit = 'mV';
+                            unit = ' mV';
                         }
                         else if (i == 2) {
-                            unit = 'uV';
+                            unit = ' uV';
                         }
                         else if (i == 3) {
-                            unit = 'nV';
+                            unit = ' nV';
                         }
                         return this.value + unit;
                     }
@@ -194,16 +245,16 @@ export class SilverNeedleChart {
                         }
                         this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
                         if (i == 0) {
-                            unit = 'V';
+                            unit = ' V';
                         }
                         else if (i == 1) {
-                            unit = 'mV';
+                            unit = ' mV';
                         }
                         else if (i == 2) {
-                            unit = 'uV';
+                            unit = ' uV';
                         }
                         else if (i == 3) {
-                            unit = 'nV';
+                            unit = ' nV';
                         }
                         return this.value + unit;
                     }
@@ -249,19 +300,19 @@ export class SilverNeedleChart {
                         }
                         this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
                         if (i == 0) {
-                            unit = 's';
+                            unit = ' s';
                         }
                         else if (i == 1) {
-                            unit = 'ms';
+                            unit = ' ms';
                         }
                         else if (i == 2) {
-                            unit = 'us';
+                            unit = ' us';
                         }
                         else if (i == 3) {
-                            unit = 'ns';
+                            unit = ' ns';
                         }
                         else if (i == 4) {
-                            unit = 'ps';
+                            unit = ' ps';
                         }
                         return this.value + unit;
                     }
@@ -856,7 +907,7 @@ export class SilverNeedleChart {
             this.timelineChart.xAxis[0].plotLinesAndBands[this.activeCursor + 3].options.value = xVal;
             this.timelineChart.xAxis[0].plotLinesAndBands[this.activeCursor + 3].render();
         }
-        console.log(pointNum1);
+        console.log(this.chart);
         this.xCursorPositions[3 * this.activeCursor - 3] = parseFloat(xVal);
         this.xCursorPositions[3 * this.activeCursor - 2] = this.chart.series[0].data[pointNum1].y;
         this.xCursorPositions[3 * this.activeCursor - 1] = 0;
