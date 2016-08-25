@@ -142,15 +142,14 @@ export class SilverNeedleChart {
                 offset: 0,
                 labels: {
                     formatter: function() {
-                        let initialValue = parseFloat(this.value);
+                        let vPerDiv = Math.abs(this.chart.yAxis[0].max - this.chart.yAxis[0].min) / 10;
                         let i = 0;
                         let unit = '';
-                        while (Math.abs(initialValue) < 1) {
+                        while (vPerDiv < 1) {
                             i++;
-                            initialValue = this.value * Math.pow(1000, i);
-                            console.log(initialValue);
+                            vPerDiv = vPerDiv * 1000;
                         }
-                        this.value = (initialValue).toString();
+                        this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
                         if (i == 0) {
                             unit = 'V';
                         }
@@ -186,15 +185,15 @@ export class SilverNeedleChart {
                 labels: {
                     enabled: false,
                     formatter: function () {
-                        this.initialValue = parseFloat(this.value);
+                        let vPerDiv = Math.abs(this.chart.yAxis[1].max - this.chart.yAxis[1].min) / 10;
                         let i = 0;
                         let unit = '';
-                        while (this.initialValue < 1) {
+                        while (vPerDiv < 1) {
                             i++;
-                            this.initialValue = this.value * Math.pow(1000, i);
+                            vPerDiv = vPerDiv * 1000;
                         }
-                        this.value = (this.initialValue).toString();
-                        if (i = 0) {
+                        this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
+                        if (i == 0) {
                             unit = 'V';
                         }
                         else if (i == 1) {
@@ -238,20 +237,17 @@ export class SilverNeedleChart {
                 minRange: 0.000000001,
                 labels: {
                     formatter: function() {
-                        console.log(this);
+                        let timePerDiv = Math.abs(this.chart.xAxis[0].max - this.chart.xAxis[0].min) / 10;
                         if (parseFloat(this.value) == 0) {
                             return this.value + 's';
                         }
-                        let pointInterval = this.chart.series[0].options.pointInterval;
-                        console.log('value: ' + pointInterval)
                         let i = 0;
                         let unit = '';
-                        while (pointInterval < 1) {
+                        while (timePerDiv < 1) {
                             i++;
-                            pointInterval = this.chart.series[0].options.pointInterval * Math.pow(1000, i);
-                            console.log(pointInterval);
+                            timePerDiv = timePerDiv * 1000;
                         }
-                        this.value = (parseFloat(this.value) * Math.pow(1000, i)).toString();
+                        this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
                         if (i == 0) {
                             unit = 's';
                         }

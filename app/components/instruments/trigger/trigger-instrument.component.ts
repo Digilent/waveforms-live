@@ -149,8 +149,6 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                     let megaString = String.fromCharCode.apply(null, new Int8Array(data.slice(0)));
                     let binaryIndexStringLength = megaString.indexOf('\r\n');
                     let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
-                    console.log(binaryIndex);
-                    console.log(megaString.substring(binaryIndexStringLength + 2, binaryIndex + 4));
                     let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndex + 4));
                     for (let channel in command.trigger) {
                         if (command.trigger[channel][0].osc !== undefined) {
