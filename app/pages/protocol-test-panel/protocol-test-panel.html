@@ -16,10 +16,10 @@
         </center>
         <div>
             <div class="httpMethod">
-                <drop-down-menu [itemNames]="httpMethodNames" (valueChange)="onValueChange($event)"></drop-down-menu>
+                <drop-down-menu [itemNames]="httpMethodNames" (valueChange)="onHttpMethodValueChange($event)"></drop-down-menu>
             </div>
             <div class="urlInput">
-                <ion-input type="text" placeholder="Enter Target Url" value="" [(ngModel)]="uri"></ion-input>
+                <ion-input type="text" placeholder="Enter Target Url" value="" [(ngModel)]="uri" (ngModelChange)="onUrlInputChange($event)"></ion-input>
             </div>
             <div class="sendButton">
                 <button (click)="send()">Send</button>
@@ -43,10 +43,10 @@
 
         </div>
 
-         <div>
-             <br />
+        <div>
+            <br />
             <h4>Body</h4>
-            <h4 class="sendBodyHeader">Templates:</h4> 
+            <h4 class="sendBodyHeader">Templates:</h4>
             <drop-down-menu class="sendCommand" [itemNames]="deviceCommands" (valueChange)="onDeviceCommandChange($event)"></drop-down-menu>
             <drop-down-menu class="sendCommand" [itemNames]="dcCommands" (valueChange)="onDcCommandChange($event)"></drop-down-menu>
             <drop-down-menu class="sendCommand" [itemNames]="oscCommands" (valueChange)="onOscCommandChange($event)"></drop-down-menu>
@@ -75,11 +75,22 @@
             </div>
         </div>
 
+
         <div>
-            <h4 class="responseBodyHeader">Body</h4>
-            <drop-down-menu class="responseBodyFormat" [itemNames]="responseBodyFormats" (valueChange)="onResponseBodyFormatChange($event)"></drop-down-menu>
+            <div class="respBodyContianer">
+                <h4 class="responseBodyHeader">Body</h4>
+                <drop-down-menu class="responseBodyFormat" [itemNames]="responseBodyFormats" (valueChange)="onResponseBodyFormatChange($event)"></drop-down-menu>                
+                <textarea class="responseBody" [(ngModel)]="formattedResponseBody"></textarea>
+            </div>
         </div>
-        <textarea class="responseBody" [(ngModel)]="formattedResponseBody"></textarea>
+        <div>
+            <div class="respBinaryContainer" *ngIf="isBinaryResponse()">
+                <h4 class="responseBodyHeader">Binary</h4>
+                <drop-down-menu class="responseBinaryFormat" [itemNames]="responseBinaryFormats" (valueChange)="onResponseBinaryFormatChange($event)"></drop-down-menu>
+                <textarea class="responseBinary" [(ngModel)]="formattedResponseBinaryString"></textarea>
+            </div>
+        </div>
+        <div style="clear: both"></div>
     </div>
     <!-- End Response Section -->
 

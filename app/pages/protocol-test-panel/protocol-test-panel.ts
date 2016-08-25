@@ -5,6 +5,9 @@ import {TransportComponent} from '../../components/transport/transport.component
 import {HttpTransportComponent} from '../../components/transport/http-transport.component';
 import {DropDownMenu} from '../../libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu.component';
 
+//Services
+import {StorageService} from '../../services/storage/storage.service';
+
 @Component({
     templateUrl: 'build/pages/protocol-test-panel/protocol-test-panel.html',
     directives: [DropDownMenu]
@@ -13,6 +16,9 @@ import {DropDownMenu} from '../../libs/digilent-ionic2-utilities/drop-down-menu/
 export class ProtocolTestPanel {
 
     private transport: TransportComponent;
+    private storage: StorageService;
+
+
     private httpMethodNames = ['POST', 'GET'];
     private selectedHttpMethod: string;
 
@@ -29,28 +35,95 @@ export class ProtocolTestPanel {
 
     private responseHeaders: Array<string> = [];
 
+    private rawResponse: ArrayBuffer;
     private responseBody: string = '';
     private formattedResponseBody: string = '';
+    private responseBinaryString: string = '';
+    private formattedResponseBinaryString: string = '';
 
     private responseBodyFormats: Array<string> = ["raw", "json", "osjb"];
     private selectedRepsonseBodyFormat: string;
 
-    constructor() {
+    private responseRawBinary: ArrayBuffer;
+    private responseBinaryFormats: Array<string> = ['u8', 'i8', 'u16', 'i16'];
+    private selectedRepsonseBinaryFormat: string;
+
+    constructor(_storage: StorageService) {
         console.log('ProtocolTestPanel Constructor');
+        this.storage = _storage;
         //this.transport = new HttpTransportComponent('');
         this.selectedHttpMethod = this.httpMethodNames[0];
         this.selectedRepsonseBodyFormat = this.responseBodyFormats[0];
+        this.selectedRepsonseBinaryFormat = this.responseBinaryFormats[0];
+
+        //Load Saved Values
+        this.storage.getData('uri').then((value) => {
+            this.uri = value;
+        });
     }
 
-    onValueChange(data) {
+    //Returns true if the selected response type contains binary
+    isBinaryResponse() {
+        if (this.selectedRepsonseBodyFormat == 'osjb') {
+            return true;
+        }
+        return false;
+    }
+
+    //Called when http method value changes
+    onHttpMethodValueChange(data) {
         this.selectedHttpMethod = data.value;
     }
 
+    //Called when user selects new response body format
     onResponseBodyFormatChange(data) {
+        this.selectedRepsonseBodyFormat = data.value;
         this.formatResponse(data.value);
     }
 
+    //Called when user selects new response binary format (control only visible when body type contains binary)
+    onResponseBinaryFormatChange(data) {
+        this.selectedRepsonseBinaryFormat = data.value;
+        this.formatBinary(data.value);
+    }
+
+    //Format raw binary data into string with specified fromatting for display 
+    formatBinary(format: string) {
+        console.log(format, this.responseBinaryString);
+        let dataArray;
+        switch (format) {
+            case "u8":
+                //this.formattedResponseBinaryString = new Uint8Array(this.responseRawBinary).toString();
+                dataArray = new Uint8Array(this.responseRawBinary);
+                break;
+            case "i8":
+                dataArray = new Int8Array(this.responseRawBinary);
+                break;
+            case "u16":
+                dataArray = new Uint16Array(this.responseRawBinary);
+                break;
+            case "i16":
+                dataArray = new Int16Array(this.responseRawBinary);
+                break;
+            default:
+                break;
+        }
+
+        let dataString = '';
+        let binNum = 8;
+        for (let i = 0; i < dataArray.length; i++) {
+            dataString += dataArray[i].toString() + ",\t";
+            if ((i + 1) % binNum == 0) {
+                dataString += "\r\n";
+            }
+        }
+
+        this.formattedResponseBinaryString = dataString;
+    }
+
+    //Format the response body into a string with the specified format for display
     formatResponse(format: string) {
+        //Try will catch invalid JSON errors and prevent execution from stopping
         try {
             switch (format) {
                 case "json":
@@ -58,11 +131,14 @@ export class ProtocolTestPanel {
                     this.formattedResponseBody = JSON.stringify(tempJson, undefined, 4);
                     break;
                 case "osjb":
-                this.responseBody                    
-                    let binaryIndexStringLength = this.responseBody.indexOf('\r\n');
-                    let binaryIndex = parseFloat(this.responseBody.substring(0, binaryIndexStringLength));
-                    let command = JSON.parse(this.responseBody.substring(binaryIndexStringLength + 2, binaryIndex));
-                    this.formattedResponseBody = command;
+                    let leadingAsciiLength = this.responseBody.indexOf('\r\n') + 2;
+                    let jsonLength = parseFloat(this.responseBody.substring(0, leadingAsciiLength - 2));
+                    let command = JSON.parse(this.responseBody.substring(leadingAsciiLength, leadingAsciiLength + jsonLength));
+
+                    this.responseRawBinary = this.rawResponse.slice(leadingAsciiLength + jsonLength);
+                    this.formattedResponseBody = JSON.stringify(command, undefined, 4);
+                    this.responseBinaryString = this.responseBody.substring(leadingAsciiLength + jsonLength);
+                    this.formatBinary(this.selectedRepsonseBinaryFormat);
                     break;
                 case "raw":
                     this.formattedResponseBody = this.responseBody;
@@ -72,12 +148,14 @@ export class ProtocolTestPanel {
             }
         }
         catch (err) {
+            console.log(err);
             if (format == "json") {
                 this.formattedResponseBody = "Response Is Not Invalid JSON";
             }
         }
     }
 
+    //Add a new request header row
     addHeader() {
         this.sendHeaders.push({
             "key": "",
@@ -86,11 +164,13 @@ export class ProtocolTestPanel {
         this.numSendHeaders++;
     }
 
+    //Remove a request header row
     removeHeader(index: number) {
         this.sendHeaders.splice(index, 1);
         this.numSendHeaders--;
     }
 
+    //Callback called when a device command template is selected
     onDeviceCommandChange(data) {
         switch (data.value) {
             case "enumerate":
@@ -102,6 +182,7 @@ export class ProtocolTestPanel {
         }
     }
 
+    //Callback called when a DC command template is selected
     onDcCommandChange(data) {
         switch (data.value) {
             case "getVoltage":
@@ -116,6 +197,7 @@ export class ProtocolTestPanel {
         }
     }
 
+    //Callback called when a OSC command template is selected
     onOscCommandChange(data) {
         switch (data.value) {
             case "read":
@@ -130,6 +212,7 @@ export class ProtocolTestPanel {
         }
     }
 
+    //Callback called when a Trigger command template is selected
     onTriggerCommandChange(data) {
         switch (data.value) {
             case "forceTrigger":
@@ -156,8 +239,8 @@ export class ProtocolTestPanel {
         }
     }
 
+    //Send the specified header/body to the specified URL
     send() {
-
         //Clear Previous Response
         this.responseBody = '';
         this.formatResponse('raw');
@@ -177,10 +260,10 @@ export class ProtocolTestPanel {
                     }
                 }
             });
-            console.log('Response Headers ', responseHeaders);
 
-            //Parse Response
-            this.responseBody = String.fromCharCode.apply(null, new Int8Array(event.currentTarget.response));
+            //Parse Response            
+            this.rawResponse = event.currentTarget.response;
+            this.responseBody = String.fromCharCode.apply(null, new Int8Array(this.rawResponse));
             this.formatResponse(this.selectedRepsonseBodyFormat);
         }.bind(this));
 
@@ -190,23 +273,28 @@ export class ProtocolTestPanel {
             this.formatResponse(this.selectedRepsonseBodyFormat);
         }.bind(this));
 
-        XHR.open("POST", this.uri);
+        XHR.open(this.selectedHttpMethod, this.uri);
+
         //Set resposne type as arraybuffer to receive response as bytes
         XHR.responseType = 'arraybuffer';
 
         //Add Headers To Send
         this.sendHeaders.forEach((element: any) => {
             if (element.key != '' && element.key != undefined) {
-                XHR.setRequestHeader(element.key, element.value);
-                console.log('adding header: ', element, ' ', element.key, '::', element.value);
+                XHR.setRequestHeader(element.key, element.value);                
             }
         })
 
         XHR.send(this.sendBody);
     }
 
+    //Callback called when uri input changes
+    onUrlInputChange(data) {
+        //Store value in local storage to load on next init
+        this.storage.saveData('uri', data);
+    }
 
-
+    //---------- OpenScope Command Templates ----------
     private commands =
     {
         "device": {
@@ -221,7 +309,7 @@ export class ProtocolTestPanel {
         "dc": {
             "getVoltage": {
                 "dc": {
-                    "0": [
+                    "1": [
                         {
                             "command": "getVoltage"
                         }
@@ -230,7 +318,7 @@ export class ProtocolTestPanel {
             },
             "setVoltage": {
                 "dc": {
-                    "0": [
+                    "1": [
                         {
                             "command": "setVoltage",
                             "voltage": 3300

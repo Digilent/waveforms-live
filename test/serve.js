@@ -29,7 +29,7 @@ dispatcher.setStatic('resources');
 
 //Device Root GET
 dispatcher.onGet("/", (req, res) => {
-
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.end('Silver Needle Device Simulator');
 });
 
