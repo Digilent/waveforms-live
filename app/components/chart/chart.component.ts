@@ -354,9 +354,7 @@ export class SilverNeedleChart {
     }
 
     loadDeviceSpecificValues(deviceComponent: DeviceComponent) {
-        console.log(deviceComponent);
         let resolution = (deviceComponent.instruments.osc.chans[0].adcRange / 1000) / Math.pow(2, deviceComponent.instruments.osc.chans[0].effectiveBits);
-        console.log(resolution);
         let i = 0;
         while (resolution > this.generalVoltsPerDivVals[i] && i < this.generalVoltsPerDivVals.length - 1) {
             i++;
@@ -1235,6 +1233,7 @@ export class SilverNeedleChart {
             }
             this.activeTPDIndex = i;
             this.timeDivision = this.secsPerDivVals[i];
+            console.log();
             this.base = ((this.chart.xAxis[0].dataMax + this.chart.xAxis[0].dataMin) / 2);
             this.setTimeSettings({
                 timePerDiv: this.timeDivision,

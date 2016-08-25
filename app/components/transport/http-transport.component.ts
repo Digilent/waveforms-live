@@ -33,8 +33,6 @@ export class HttpTransportComponent extends TransportComponent {
     }
 
     writeReadHelper(rootUri: string, endpoint: string, sendData: any, dataType: string): Observable<any> {
-
-        console.log(endpoint);
         let uri = rootUri + endpoint;
         let body = sendData;
 

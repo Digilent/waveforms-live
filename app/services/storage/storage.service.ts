@@ -1,4 +1,4 @@
-import {Storage, SqlStorage} from 'ionic-angular';
+import {Storage, LocalStorage} from 'ionic-angular';
 import {Injectable, EventEmitter} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
@@ -9,7 +9,7 @@ export class StorageService {
     public saveLoadEventEmitter: EventEmitter<any> = new EventEmitter();
 
     constructor() {
-        this.storage = new Storage(SqlStorage, {name:'settings'});
+        this.storage = new Storage(LocalStorage);
         console.log('storage constructor');
     }
 
@@ -31,11 +31,6 @@ export class StorageService {
     //Clear all data from storage
     clearAll() {
         this.storage.clear();
-    }
-
-    //For advanced users. SqlStorage wrapper function for general query
-    advancedQuery(query: string, params: Array<any>) {
-        return this.storage.query(query, params);
     }
 
     //Emit save event to all listeners
