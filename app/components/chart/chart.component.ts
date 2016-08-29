@@ -74,6 +74,10 @@ export class SilverNeedleChart {
 
     //[x1, series 0 y1, series 1 y1, x2, series 0 y2, series 1 y2]
     private xCursorPositions: number[];
+
+    //New cursor position tracker
+    private cursorPositions: Array<Object> = [{x: null, y: null}, {x: null, y: null}];
+
     //[y1, y2]
     private yCursorPositions: number[];
 
@@ -568,6 +572,7 @@ export class SilverNeedleChart {
         this.numYCursors = 0;
         this.xCursorPositions = [0, 0, 0, 0, 0, 0];
         this.yCursorPositions = [0, 0];
+        this.cursorPositions = [{x: null, y: null}, {x: null, y: null}];
     }
 
     //Add x cursor to the chart and set css properties and event listeners
@@ -580,6 +585,11 @@ export class SilverNeedleChart {
         if (this.numXCursors == 0) {
             initialValue = extremes.min;
             this.activeChannels[0] = parseInt(this.cursor1Chan.slice(-1));
+            this.cursorPositions[0] = {
+                x: extremes.min,
+                y: this.chart.series[this.activeChannels[0] - 1].data[0].y
+            };
+            console.log(this.cursorPositions);
             this.xCursorPositions[3 * this.numXCursors] = extremes.min;
             this.xCursorPositions[3 * this.numXCursors + 1] = this.chart.series[0].data[0].y;
             this.xCursorPositions[3 * this.numXCursors + 2] = 0;
@@ -589,6 +599,11 @@ export class SilverNeedleChart {
         else {
             initialValue = extremes.max;
             this.activeChannels[1] = parseInt(this.cursor2Chan.slice(-1));
+            this.cursorPositions[1] = {
+                x: extremes.max,
+                y: this.chart.series[this.activeChannels[1] - 1].data[this.chart.series[this.activeChannels[1] - 1].data.length - 1].y
+            };
+            console.log(this.cursorPositions);
             this.xCursorPositions[3 * this.numXCursors] = extremes.max;
             this.xCursorPositions[3 * this.numXCursors + 1] = this.chart.series[0].data[this.chart.series[0].data.length - 1].y;
             this.xCursorPositions[3 * this.numXCursors + 2] = 0;
@@ -681,7 +696,7 @@ export class SilverNeedleChart {
             zIndex: 102 + this.numYCursors,
             id: 'cursor' + (this.numYCursors + 2)
         });
-        this.yCursorPositions[this.numYCursors] = initialValue;
+        this.cursorPositions[this.numYCursors].y = initialValue;
         if (this.cursorType !== 'track') {
             if (this.timelineView) {
                 this.timelineChart.yAxis[0].addPlotLine({
@@ -801,6 +816,12 @@ export class SilverNeedleChart {
             this.timelineChart.xAxis[0].plotLinesAndBands[this.activeCursor + 3].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].x;
             this.timelineChart.xAxis[0].plotLinesAndBands[this.activeCursor + 3].render();
         }
+        
+        this.cursorPositions[this.activeCursor - 1] = {
+            x: parseFloat(this.chart.series[this.activeCursor - 1].data[pointNum].x),
+            y: this.chart.series[this.activeCursor - 1].data[pointNum].y
+        };
+        console.log(this.cursorPositions);
         this.xCursorPositions[3 * this.activeCursor - 3] = parseFloat(this.chart.series[0].data[pointNum1].x);
         this.xCursorPositions[3 * this.activeCursor - 2] = this.chart.series[0].data[pointNum1].y;
         this.xCursorPositions[3 * this.activeCursor - 1] = 0;
@@ -838,14 +859,14 @@ export class SilverNeedleChart {
             yVal = this.chart.yAxis[0].dataMax;
             yCor = this.chart.yAxis[0].toPixels(yVal);
         }
-        if (yVal < this.chart.yAxis[0].dataMin) {
+        else if (yVal < this.chart.yAxis[0].dataMin) {
             yVal = this.chart.yAxis[0].dataMin;
             yCor = this.chart.yAxis[0].toPixels(yVal);
         }
         if (xCor > this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMax)) {
             xCor = this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMax) - 50;
         }
-        if (xCor < this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMin)) {
+        else if (xCor < this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMin)) {
             xCor = this.chart.xAxis[0].toPixels(this.chart.xAxis[0].dataMin);
         }
         if (yCor > this.chart.yAxis[0].toPixels(this.chart.yAxis[0].min)) {
@@ -857,6 +878,10 @@ export class SilverNeedleChart {
             this.timelineChart.yAxis[0].plotLinesAndBands[this.activeCursor - 3].options.value = yVal;
             this.timelineChart.yAxis[0].plotLinesAndBands[this.activeCursor - 3].render();
         }
+        this.cursorPositions[this.activeCursor - 3] = {
+            y: parseFloat(yVal)
+        }
+        console.log(this.cursorPositions);
         this.yCursorPositions[this.activeCursor - 3] = parseFloat(yVal);
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 3].render();
         this.cursorLabel[this.activeCursor - 1].attr({
@@ -907,7 +932,11 @@ export class SilverNeedleChart {
             this.timelineChart.xAxis[0].plotLinesAndBands[this.activeCursor + 3].options.value = xVal;
             this.timelineChart.xAxis[0].plotLinesAndBands[this.activeCursor + 3].render();
         }
-        console.log(this.chart);
+        this.cursorPositions[this.activeCursor - 1] = {
+            x: parseFloat(xVal),
+            y: this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].y
+        }
+        //console.log(this.activeCursor);
         this.xCursorPositions[3 * this.activeCursor - 3] = parseFloat(xVal);
         this.xCursorPositions[3 * this.activeCursor - 2] = this.chart.series[0].data[pointNum1].y;
         this.xCursorPositions[3 * this.activeCursor - 1] = 0;
@@ -937,13 +966,78 @@ export class SilverNeedleChart {
     }
 
     //Get cursor position differences and return an array of data
-    getCursorDeltas() {
-        //[xdeltas, series 0 ydeltas on x cursors, series 1 ydeltas on x cursors, ydeltas on y cursors]
-        let xDelta = Math.abs(this.xCursorPositions[3] - this.xCursorPositions[0]);
+    getCursorInfo(cursorInfo: string) {
+        if (cursorInfo === 'xDelta' || cursorInfo === 'xFreq') {
+
+            if (cursorInfo === 'xDelta') {
+                let timePerDiv = Math.abs(this.chart.xAxis[0].max - this.chart.xAxis[0].min) / 10;
+                let i = 0;
+                let unit = '';
+                while (timePerDiv < 1) {
+                    i++;
+                    timePerDiv = timePerDiv * 1000;
+                }
+                if (i == 0) {
+                    unit = ' s';
+                }
+                else if (i == 1) {
+                    unit = ' ms';
+                }
+                else if (i == 2) {
+                    unit = ' us';
+                }
+                else if (i == 3) {
+                    unit = ' ns';
+                }
+                else if (i == 4) {
+                    unit = ' ps';
+                }
+
+                let xDelta = (Math.abs(this.cursorPositions[1].x - this.cursorPositions[0].x) * Math.pow(1000, i)).toFixed(0) + unit;
+                return xDelta;
+            }
+            else if (cursorInfo === 'xFreq') {
+                if (this.cursorPositions[1].x === this.cursorPositions[0].x) {return 'Inf'};
+                let freqRange = 1 / Math.abs(this.cursorPositions[1].x - this.cursorPositions[0].x);
+                let i = 0;
+                let unit = '';
+                while (freqRange > 1) {
+                    i++;
+                    freqRange = freqRange / 1000;
+                }
+                i--;
+                if (i == 0) {
+                    unit = ' Hz';
+                }
+                else if (i == 1) {
+                    unit = ' kHz';
+                }
+                else if (i == 2) {
+                    unit = ' Mhz';
+                }
+                else if (i == 3) {
+                    unit = ' GHz';
+                }
+
+                let xDelta = ((1 / Math.abs(this.cursorPositions[1].x - this.cursorPositions[0].x)) / Math.pow(1000, i)).toFixed(0) + unit;
+                console.log(xDelta);
+                return xDelta;
+            }
+
+        }
+
+
+        
+        let yDelta = Math.abs(this.cursorPositions[1].y - this.cursorPositions[0].y);
+        //console.log(xDelta, yDelta);
+
+        
+        /*let xDelta = Math.abs(this.xCursorPositions[3] - this.xCursorPositions[0]);
         let xDeltaSer0Y = Math.abs(this.xCursorPositions[4] - this.xCursorPositions[1]);
         let xDeltaSer1Y = Math.abs(this.xCursorPositions[5] - this.xCursorPositions[2]);
-        let yDelta = Math.abs(this.yCursorPositions[1] - this.yCursorPositions[0]);
-        return [xDelta, xDeltaSer0Y, xDeltaSer1Y, yDelta];
+        let yDelta = Math.abs(this.yCursorPositions[1] - this.yCursorPositions[0]);*/
+
+        
     }
 
     //Exports series data from chart to a csv on client side
