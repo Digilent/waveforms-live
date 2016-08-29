@@ -18,26 +18,23 @@
             <ion-row class="cursor-container" *ngIf="cursorsEnabled">
                 <button (click)="openCursorModal()">Cursors</button>
                 <ion-col *ngIf="cursorType === 'time'">
-                    Cur1: {{cursorPositions[0].x}} s ({{cursorPositions[0].y}} V) <br> Cur2: {{cursorPositions[1].x}} s ({{cursorPositions[1].y}}
-                    V)
+                    Cur1: {{getCursorInfo('cursorPosition0')}} <br> Cur2: {{getCursorInfo('cursorPosition1')}}
                 </ion-col>
                 <ion-col *ngIf="cursorType === 'time'">
-                    &Delta; X: {{getCursorInfo('xDelta')}} <br> 1/&Delta; X: {{getCursorInfo('xFreq')}}
+                    &Delta; X: {{getCursorInfo('xDelta')}} <br> 1/&Delta;X: {{getCursorInfo('xFreq')}}
                 </ion-col>
                 <ion-col *ngIf="cursorType === 'track'">
-                    Cur1: {{xCursorPositions[0]}} s ({{xCursorPositions[1]}} V)
-                    <br> Cur2: {{xCursorPositions[3]}} s ({{xCursorPositions[4]}} V) Hz
+                    Cur1: {{getCursorInfo('cursorPosition0')}} <br> Cur2: {{getCursorInfo('cursorPosition1')}}
                 </ion-col>
                 <ion-col *ngIf="cursorType === 'track'">
-                    &Delta; X: {{getCursorInfo()[0]}} s &Delta;Y: {{(xCursorPositions[1] - xCursorPositions[4])}} V <br>
-                    1/&Delta; X: {{(1/getCursorInfo()[0])}}
+                    &Delta;X: {{getCursorInfo('xDelta')}} &Delta;Y: {{getCursorInfo('yDelta')}} <br>
+                    1/&Delta;X: {{getCursorInfo('xFreq')}}
                 </ion-col>
                 <ion-col *ngIf="cursorType === 'voltage'">
-                    Cur1: {{yCursorPositions[0]}} V
-                    <br> Cur2: {{yCursorPositions[1]}} V
+                    Cur1: {{getCursorInfo('cursorPosition0')}} <br> Cur2: {{getCursorInfo('cursorPosition1')}}
                 </ion-col>
                 <ion-col *ngIf="cursorType === 'voltage'">
-                    &Delta;Y: {{getCursorInfo()[3]}} V
+                    &Delta;Y: {{getCursorInfo('yDelta')}}
                 </ion-col>
             </ion-row>
         </ion-col>
