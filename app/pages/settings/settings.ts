@@ -29,6 +29,9 @@ export class SettingsPage {
         this.deviceManangerService = _deviceManagerService;
         this.storageService = _storageService;
         console.log('settings constructor');
+        this.storageService.getData('uri').then((uri) => {
+            this.localSimDevUri = uri;
+        });
     }
 
     connect(targetUri: string) {
@@ -73,5 +76,10 @@ export class SettingsPage {
 
     sqlLoad() {
         this.storageService.loadSettings();
+    }
+
+    onUrlInputChange(data) {
+        //Store value in local storage to load on next init
+        this.storageService.saveData('uri', data);
     }
 }

@@ -35,7 +35,7 @@ export class HttpTransportComponent extends TransportComponent {
     writeReadHelper(rootUri: string, endpoint: string, sendData: any, dataType: string): Observable<any> {
         let uri = rootUri + endpoint;
         let body = sendData;
-
+        console.log(body);
         return Observable.create((observer) => {
             let XHR = new XMLHttpRequest();
 

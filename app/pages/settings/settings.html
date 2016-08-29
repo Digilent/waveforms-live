@@ -17,7 +17,7 @@
         <ion-row>
             <ion-col width-25>
                 <h4>Local Simulated Device</h4>
-                <ion-input type="url" [(ngModel)]="localSimDevUri"></ion-input>
+                <ion-input type="url" [(ngModel)]="localSimDevUri" (ngModelChange)="onUrlInputChange($event)"></ion-input>
                 <button (click)=connect(localSimDevUri);>Connect</button>
             </ion-col>
             <ion-col width-25>

@@ -30,7 +30,7 @@ export class SilverNeedleChart {
     private yPositionPixels: number;
     private yPosition: number;
     private numXCursors: number;
-    private cursorLabel: any[];
+    //private cursorLabel: any[];
     private cursorAnchors: any[] = [0, 0, 0, 0];
     private xCursorDragStartPos: any;
     private activeCursor: number;
@@ -75,9 +75,6 @@ export class SilverNeedleChart {
     //New cursor position tracker
     private cursorPositions: Array<Object> = [{x: null, y: null}, {x: null, y: null}];
 
-    //[y1, y2]
-    private yCursorPositions: number[];
-
     public voltageMultipliers: string[] = ['V', 'V'];
     public multipliers: string[] = ['mV', 'V'];
     private modalCtrl: ModalController;
@@ -105,9 +102,8 @@ export class SilverNeedleChart {
         this.cursorType = 'disabled';
         this.cursor1Chan = 'O1';
         this.cursor2Chan = 'O1';
-        this.yCursorPositions = [0, 0];
         this.activeSeries = 1;
-        this.cursorLabel = ['hey','yo','sup','son'];
+        //this.cursorLabel = ['hey','yo','sup','son'];
         this.activeCursor = -1;
         this.xPosition = 0;
         this.yPosition = 0;
@@ -556,24 +552,22 @@ export class SilverNeedleChart {
             this.timelineChart.yAxis[0].removePlotLine('timelineCursor2');
             this.timelineChart.yAxis[0].removePlotLine('timelineCursor3');
         }
-        for (let i = 0; i < this.cursorLabel.length; i++) {
-            if (typeof(this.cursorLabel[i]) === 'object') {
-                this.cursorLabel[i].destroy();
+        for (let i = 0; i < this.cursorAnchors.length; i++) {
+            if (typeof(this.cursorAnchors[i]) === 'object') {
+                //this.cursorLabel[i].destroy();
                 this.cursorAnchors[i].destroy();
                 this.cursorAnchors[i] = 'empty';
-                this.cursorLabel[i] = 'empty';
+                //this.cursorLabel[i] = 'empty';
             }
         }
         this.numXCursors = 0;
         this.numYCursors = 0;
-        this.yCursorPositions = [0, 0];
         this.cursorPositions = [{x: null, y: null}, {x: null, y: null}];
     }
 
     //Add x cursor to the chart and set css properties and event listeners
     addXCursor() {
         let extremes = this.chart.xAxis[0].getExtremes();
-        console.log(extremes);
         let initialValue: number;
         let style: string = null;
         let color: string = null;
@@ -615,7 +609,7 @@ export class SilverNeedleChart {
                 id: 'timelineCursor' + this.numXCursors
             });
         }
-        this.cursorLabel[this.numXCursors] = this.chart.renderer.text('Cursor ' + this.numXCursors, 100, 100).add();
+        //this.cursorLabel[this.numXCursors] = this.chart.renderer.text('Cursor ' + this.numXCursors, 100, 100).add();
         this.chart.xAxis[0].plotLinesAndBands[this.numXCursors].svgElem.element.id = 'cursor' + this.numXCursors;
         this.chart.xAxis[0].plotLinesAndBands[this.numXCursors].svgElem.css({
             'cursor': 'pointer'
@@ -695,7 +689,7 @@ export class SilverNeedleChart {
                     id: 'timelineCursor' + (this.numYCursors + 2)
                 });
             }
-            this.cursorLabel[this.numYCursors + 2] = this.chart.renderer.text('Cursor ' + (this.numYCursors + 2), 100, 500).add();
+            //this.cursorLabel[this.numYCursors + 2] = this.chart.renderer.text('Cursor ' + (this.numYCursors + 2), 100, 500).add();
             this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.rect(this.chart.plotLeft - 12, this.chart.yAxis[0].toPixels(initialValue) - 6, 10, 10, 1)
             .attr({
                 'stroke-width': 2,
@@ -719,9 +713,6 @@ export class SilverNeedleChart {
             });
         }
         this.chart.yAxis[0].plotLinesAndBands[this.numYCursors].svgElem.element.id = 'cursor' + (this.numYCursors + 2);
-        this.chart.options.chart.events.click = function (event) {
-            console.log('chart click');
-        };
         this.chart.yAxis[0].plotLinesAndBands[this.numYCursors].svgElem.css({
             'cursor': 'pointer'
         })
@@ -805,12 +796,12 @@ export class SilverNeedleChart {
         };
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
-        this.cursorLabel[this.activeCursor - 1].attr({
+        /*this.cursorLabel[this.activeCursor - 1].attr({
             text: 'Series 1: ' + this.chart.series[0].data[pointNum1].y.toFixed(3) + 'V', 
             x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + offset,
             y: yCor,
             zIndex: 99 + this.activeCursor
-        });
+        });*/
         this.cursorAnchors[this.activeCursor - 1].attr({
             x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + this.chart.plotLeft - 6,
             y: this.chart.plotTop - 12,
@@ -859,14 +850,13 @@ export class SilverNeedleChart {
         this.cursorPositions[this.activeCursor - 3] = {
             y: parseFloat(yVal)
         }
-        this.yCursorPositions[this.activeCursor - 3] = parseFloat(yVal);
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 3].render();
-        this.cursorLabel[this.activeCursor - 1].attr({
+        /*this.cursorLabel[this.activeCursor - 1].attr({
             text: yVal + 'V', 
             x: xCor,
             y: yCor - 10,
             zIndex: 99 + this.activeCursor
-        });
+        });*/
         this.cursorAnchors[this.activeCursor - 1].attr({
             x: this.chart.plotLeft - 12,
             y: yCor - 6,
@@ -914,12 +904,12 @@ export class SilverNeedleChart {
             y: this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].y
         }
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
-        this.cursorLabel[this.activeCursor - 1].attr({
+        /*this.cursorLabel[this.activeCursor - 1].attr({
             text: 'Series 1: ' + this.chart.series[0].data[pointNum1].y + 'V',
             x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + offset,
             y: yCor,
             zIndex: 99 + this.activeCursor
-        });
+        });*/
         this.cursorAnchors[this.activeCursor - 1].attr({
             x: xCor - 6,
             y: this.chart.plotTop - 12,
@@ -1283,29 +1273,29 @@ export class SilverNeedleChart {
         else if (this.cursorType === 'time' || this.cursorType === 'track') {
             for (let i = 0; i < 2; i++) {
                 //let pointNum = Math.round((this.chart.xAxis[0].plotLinesAndBands[i].options.value - this.chart.xAxis[0].plotLinesAndBands[i].axis.dataMin) / this.chart.series[0].pointInterval);
-                if (typeof(this.cursorLabel[i]) === 'object') {
-                    this.cursorLabel[i].attr({
+                //if (typeof(this.cursorLabel[i]) === 'object') {
+                    /*this.cursorLabel[i].attr({
                         x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i].options.value),
-                    });
+                    });*/
                     this.cursorAnchors[i].attr({
                         x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i].options.value) - 6
                     });
-                }
+                //}
             }
         }
 
         else if (this.cursorType === 'voltage') {
             for (let i = 2; i < 4; i++) {
                 //let pointNum = Math.round((this.chart.xAxis[0].plotLinesAndBands[i].options.value - this.chart.xAxis[0].plotLinesAndBands[i].axis.dataMin) / this.chart.series[0].pointInterval);
-                if (typeof(this.cursorLabel[i]) === 'object') {
-                    this.cursorLabel[i].attr({
+                //if (typeof(this.cursorLabel[i]) === 'object') {
+                    /*this.cursorLabel[i].attr({
                         y: this.chart.yAxis[0].toPixels(this.chart.yAxis[0].plotLinesAndBands[i - 2].options.value),
-                    });
+                    });*/
                     this.cursorAnchors[i].attr({
                         y: this.chart.yAxis[0].toPixels(this.chart.yAxis[0].plotLinesAndBands[i - 2].options.value) - 6,
                         x: this.chart.plotLeft - 12
                     });
-                }
+                //}
             }
         }
 

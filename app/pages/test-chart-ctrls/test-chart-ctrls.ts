@@ -134,11 +134,11 @@ export class TestChartCtrlsPage {
                 instrument: 'osc',
                 channel: 1,
                 type: 'risingEdge',
-                lowerThreshold: 3300,
-                upperThreshold: 4000
+                lowerThreshold: -5,
+                upperThreshold: 0
             }],
             [{
-                osc: [1, 2]
+                osc: [1]
             }]
         ).subscribe(
             (data) => {
