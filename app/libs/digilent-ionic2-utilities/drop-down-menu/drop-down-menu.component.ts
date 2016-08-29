@@ -21,23 +21,24 @@ export class DropDownMenu {
 
     private boundCloseListener = this.closeListener.bind(this);
 
-
     @Input() itemNames: Array<string> = [];
     @Output() valueChange = new EventEmitter();
 
     constructor() {
         //console.log('DropDownMenu Constructor');
-        this.selectedValue = this.itemNames[0];
+        this.selectedValue = this.itemNames[0];        
     }
 
+    //Toggle drop down items visible
     toggleShow() {
         this.showEnabled = !this.showEnabled;
-
+        
         //If menu is now open, listen for mouse click
-        if (this.showEnabled) {           
+        if (this.showEnabled) {     
+            //Add listener to document body to close drop down if user clicks outside the drop down
             document.body.addEventListener('click', this.boundCloseListener, true);
         } else {
-            this.removeCloseListener();
+            this.removeCloseListener();        
         }
     }
 
@@ -46,11 +47,12 @@ export class DropDownMenu {
         document.body.removeEventListener('click', this.boundCloseListener, true);
     }
 
+    //Callback called when user clicks outside of open drop down
     closeListener() {
-        console.log('click');
-        this.showEnabled = false;
+        this.toggleShow();
     }   
 
+    //Callback called when user selects an item from the drop down
     onItemSelected(itemIndex: number) {
         this.selectedIndex = itemIndex;
         this.selectedValue = this.itemNames[itemIndex];
