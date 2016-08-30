@@ -431,18 +431,8 @@ export class ProtocolTestPanel {
         }
     };
 
-    exportCsv() {
-        /*let fileName = 'OpenScopeData.csv';
-        let csvContent = 'data:text/csv;charset=utf-8,';
-        let dataArray = new Int16Array(this.responseRawBinary);
-        csvContent = csvContent + (dataArray.join('\n'));
-        let encodedUri = encodeURI(csvContent);
-        let link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();*/
-        let dataArray = new Int16Array(this.responseRawBinary);
+    chartData() {
+        let dataArray = new Int16Array(this.responseRawBinary, 0, 8000);
         let untypedArray = Array.prototype.slice.call(dataArray);
         let modal = this.modalCtrl.create(ChartModal, {
             dataToDisplay: untypedArray

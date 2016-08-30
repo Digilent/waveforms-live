@@ -87,7 +87,7 @@
             <div class="respBinaryContainer" *ngIf="isBinaryResponse()">
                 <h4 class="responseBodyHeader">Binary</h4>
                 <drop-down-menu class="responseBinaryFormat" [itemNames]="responseBinaryFormats" (valueChange)="onResponseBinaryFormatChange($event)"></drop-down-menu>
-                <button (click)="exportCsv()" class="responseBinaryFormat">Chart Data</button>
+                <button (click)="chartData()" class="responseBinaryFormat">Chart Data</button>
                 <textarea class="responseBinary" [(ngModel)]="formattedResponseBinaryString"></textarea>
             </div>
         </div>
