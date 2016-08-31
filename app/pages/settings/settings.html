@@ -4,19 +4,19 @@
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>Settings</ion-title>
-        <button class="text-button-main" (click)="sqlSave()">Save</button>
-        <button class="text-button-main" (click)="sqlLoad()">Load</button>
+        <button class="text-button-main disable-hover" (click)="sqlSave()">Save</button>
+        <button class="text-button-main disable-hover" (click)="sqlLoad()">Load</button>
     </ion-navbar>
 </ion-header>
 
 <ion-content class="settings-body" padding>
-
+    <img src="img/OpenScope-logo-color-500.png">
     <h1>Connect to a device:</h1>
 
     <div class="device-connect-container">
         <h4>Device on Network</h4>
         <ion-input type="url" [(ngModel)]="localSimDevUri" (ngModelChange)="onUrlInputChange($event)"></ion-input>
-        <button class="text-button-main" (click)=connect(localSimDevUri);>Connect</button>
+        <button class="text-button-main disable-hover" (click)=connect(localSimDevUri);>Connect</button>
     </div>
 
     <h1> Connected Devices </h1>
@@ -96,4 +96,5 @@
             </ul>
         </li>
     </ul>
+
 </ion-content>

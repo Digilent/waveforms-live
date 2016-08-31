@@ -1,14 +1,17 @@
 .digi-container
 {
-    //background-color:orange; 
+    background-color: #535353; 
 }
 
 .digi-container .title
 {
-    border: solid black 1px;
+    padding: 1px 0px 1px 0px;
+    border-top: solid black 1px;
+    border-bottom: solid black 1px;
     text-align: center;
-    background-color: #003366;
+    background-color: #444444;
     font-size: 100%;
+    color: white;
 }
 
 .digi-container .input

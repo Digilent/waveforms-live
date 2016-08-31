@@ -34,8 +34,9 @@
 {
     width: 100%;
     //height: auto;
+    min-height: 21px;
     overflow: hidden;
-    flex: 0.23 0;
+    flex: 0 0;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -45,18 +46,20 @@
 .showbot
 {
     //height: 264px;
-    flex: 4.5 0;
+    flex: 5 0;
     overflow: hidden;
     max-height: 264px;
+    min-height: 264px;
 }
 
 .tcwrapper .right
 {
-    background-color: #003366;
+    background-color: #444444;
     display: block;
     //width: 0%;
     min-height:100%; 
     flex: 0 0; 
+    border-left: solid black 1px;
     
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
@@ -65,10 +68,11 @@
 }
 .tcwrapper.showControls .right 
 {
-    flex: 1 0;
+    width: 250px;
     height: 100%;
     overflow: auto;
-    min-width: 545px;
+    min-width: 250px;
+    padding: 5px;
 }
 
 .tcwrapper .left
@@ -80,7 +84,7 @@
     display: -webkit-flex;
     position: relative;
     height: 100%;
-    flex-direction: column;
+    //flex-direction: column;
     -webkit-flex-direction: column;
     flex: 1.5 1;
     border-right: solid black 1px;
@@ -89,12 +93,12 @@
 .tcwrapper .left .innerCtrls
 {
     display: block;
-    float: right;
+    //float: right;
 }
 
 .tcwrapper .left .move-left
 {
-    float: left;
+    //float: left;
     display: block;
     height: 100%;
 }
@@ -111,6 +115,7 @@
     position: relative;
     flex: 1 1 auto;
     -webkit-flex: 1 1 auto;
+    padding-bottom: 4px;
     //background-color: yellow; 
    
 }

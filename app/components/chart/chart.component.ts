@@ -338,7 +338,9 @@ export class SilverNeedleChart {
     }
 
     ngOnDestroy() {
-        this.timelineChartEventListener.unsubscribe();
+        if (this.timelineView) {
+            this.timelineChartEventListener.unsubscribe();
+        }
     }  
     //Called once on chart load
     onLoad(chartInstance) {
@@ -349,6 +351,9 @@ export class SilverNeedleChart {
         this.chartReady = true;
         if (this.timelineChartReady === true && this.timelineChartInitialized === false) {
             this.timelineChartInit();
+            this.chartLoad.emit(this.chart);
+        }
+        else if (this.timelineView === false) {
             this.chartLoad.emit(this.chart);
         }
 
@@ -1064,27 +1069,29 @@ export class SilverNeedleChart {
 
     //Exports series data from chart to a csv on client side
     exportCsv(fileName: string) {
+        if (this.chart.series.length == 0) {return;}
         fileName = fileName + '.csv';
         let csvContent = 'data:text/csv;charset=utf-8,';
-        let series1Points = [];
-        let series2Points = [];
-        let seriesPointsArray = [series1Points, series2Points];
-        let timePoints = [];
+        let pointsArray = [];
         let maxLength = 0;
         for (let i = 0; i < this.chart.series.length; i++) {
-            if (this.chart.series[i].data.length > maxLength) {
-                for (let j = 0; j < this.chart.series[i].data.length; j++) {
-                    (seriesPointsArray[i])[j] = this.chart.series[i].data[j].y;
-                    timePoints[j] = j * this.chart.options.plotOptions.series.pointInterval;
-                }
-            }
-            else {
-                for (let j = 0; j < this.chart.series[i].data.length; j++) {
-                    (seriesPointsArray[i])[j] = this.chart.series[i].data[j].y;
-                }
+            if (this.chart.series[i].yData.length > maxLength) {
+                maxLength = this.chart.series[i].yData.length;
             }
         }
-        csvContent = csvContent + (timePoints.join()) + '\n' + (series2Points.join()) + '\n' + (series1Points.join());
+        for (let i = 0; i < maxLength; i++) {
+            let rowData = [];
+            rowData.push(i * this.chart.series[0].options.pointInterval);
+            for (let j = 0; j < this.chart.series.length; j++) {
+                if (this.chart.series[j].yData[i] !== undefined) {
+                    rowData.push(this.chart.series[j].yData[i]);
+                }
+                else {
+                    rowData.push('');
+                }
+            }
+            csvContent += rowData.join(',') + '\n';
+        }
         let encodedUri = encodeURI(csvContent);
         let link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -1113,7 +1120,7 @@ export class SilverNeedleChart {
 
     openMathModal() {
         let modal = this.modalCtrl.create(MathModalPage, {
-            name: 'hey'
+            chart: this.chart
         });
         modal.onDidDismiss(data => {
             console.log('rip math modal');

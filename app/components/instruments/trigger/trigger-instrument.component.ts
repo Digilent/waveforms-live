@@ -144,14 +144,25 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                 (data) => {
                     //Handle device errors and warnings
                     let bufferCount = 0;
-                    let megaString = String.fromCharCode.apply(null, new Int8Array(data.slice(0)));
-                    let binaryIndexStringLength = megaString.indexOf('\r\n');
-                    let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
-                    let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndexStringLength + binaryIndex + 2));
+                    let count = 0;
+                    let i = 0;
+                    let stringBuffer = '';
+                    while (count < 2) {
+                        let char = '';
+                        char += String.fromCharCode.apply(null, new Int8Array(data.slice(i, i + 1)));
+                        if (char === '\n') {
+                            count++;
+                        }
+                        stringBuffer += char;
+                        i++;
+                    }
+                    let binaryIndexStringLength = stringBuffer.indexOf('\r\n');
+                    let binaryIndex = parseFloat(stringBuffer.substring(0, binaryIndexStringLength));
+                    let command = JSON.parse(stringBuffer.substring(binaryIndexStringLength + 2, binaryIndexStringLength + binaryIndex + 2));
                     for (let channel in command.trigger) {
                         if (command.trigger[channel][0].osc !== undefined) {
                             for (let instrumentChannel in command.trigger[channel][0].osc) {
-                                let binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex + command.trigger[channel][0].osc[instrumentChannel].binaryOffset, binaryIndexStringLength + 2 + binaryIndex + command.trigger[channel][0].osc[instrumentChannel].binaryOffset + command.trigger[channel][0].osc[instrumentChannel].binaryLength));
+                                let binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex + command.trigger[channel][0].osc[instrumentChannel].binaryOffset, binaryIndexStringLength + 2 + binaryIndex + command.trigger[channel][0].osc[instrumentChannel].binaryOffset +           command.trigger[channel][0].osc[instrumentChannel].binaryLength));
                                 let untypedArray = Array.prototype.slice.call(binaryData);
                                 let scaledArray = untypedArray.map((voltage) => {
                                     return voltage / 1000;

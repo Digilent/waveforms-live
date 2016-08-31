@@ -178,7 +178,7 @@ export class TestChartCtrlsPage {
     //Stream osc buffers
     runClick() {
         console.log('run');
-        let multipliers = [];
+        /*let multipliers = [];
         for (let i = 0; i < this.oscopeChans.length; i++) {
             if (this.chart1.voltageMultipliers[i] === 'mV') {
                 multipliers[i] = 1;
@@ -190,13 +190,13 @@ export class TestChartCtrlsPage {
         this.running = true;
         this.activeDevice.instruments.osc.streamRunSingle(this.oscopeChans, multipliers).subscribe(
             (buffer) => {
-                this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
-                this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
+                this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][0]);
+                this.chart1.drawWaveform(1, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][1]);
             },
             (err) => {
                 console.log('OSC Run Single Failed.');
             }
-        );
+        );*/
     }
 
     //Stop dc stream

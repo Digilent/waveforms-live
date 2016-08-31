@@ -6,21 +6,19 @@
 
 .bottom-component
 {
-    border-style: solid; 
-    border-color: grey;
-    border-width: 1px;
     //background-color: orange;
 }
 
-.bottom-wrapper .left
+.bottom-wrapper .bottom-left
 {
     margin-right: 3px;
     flex: 1 0;
     //border-left: solid black 1px;
     border-right: solid black 1px;
+    background-color: #535353;
 }
 
-.right
+.bottom-right
 {
     flex: 3 0;
     border-left: solid black 1px;

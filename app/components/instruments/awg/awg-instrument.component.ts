@@ -63,7 +63,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
                         observer.complete();
                     }
                     else {
-                        observer.err(data.statusCode);
+                        observer.error(data.statusCode);
                     }
                 },
                 (err) => {
@@ -100,7 +100,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
                         observer.complete();
                     }
                     else {
-                        observer.err(data.statusCode);
+                        observer.error(data.statusCode);
                     }
                 },
                 (err) => {

@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content padding class="contentContainer">
-
+    <img src="img/OpenScope-logo-color-500.png">
     <!-- Begin Send Section -->
     <div class="sendContainer">
         <center>
@@ -79,7 +79,7 @@
         <div>
             <div class="respBodyContianer">
                 <h4 class="responseBodyHeader">Body</h4>
-                <drop-down-menu class="responseBodyFormat" [itemNames]="responseBodyFormats" (valueChange)="onResponseBodyFormatChange($event)"></drop-down-menu>                
+                <drop-down-menu class="responseBodyFormat" [itemNames]="responseBodyFormats" (valueChange)="onResponseBodyFormatChange($event)"></drop-down-menu>
                 <textarea class="responseBody" [(ngModel)]="formattedResponseBody"></textarea>
             </div>
         </div>

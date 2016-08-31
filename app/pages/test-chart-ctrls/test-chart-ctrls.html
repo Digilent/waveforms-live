@@ -56,15 +56,17 @@
                 </div>
             </div> 
             <div class="controls-wrapper">
+                <div style="text-align:right;border-bottom: solid black 1px;">
+                    <button class="text-button-main disable-hover" (click)="toggleControls()">
+                        <ion-icon name="pulse"></ion-icon>
+                    </button>
+                </div>
                 <autoscale [chart]="chart1"></autoscale>
                 <trigger></trigger>
                 <xaxis-controls [chart]="chart1"></xaxis-controls>
                 <yaxis-controls [chart]="chart1"></yaxis-controls>
             </div>
             <div class="right">
-                <button (click)="toggleControls()">
-                    <ion-icon name="menu"></ion-icon>
-                </button>
                 <fgen [hidden]="!controlsVisible"></fgen>
             </div>   
         </div>

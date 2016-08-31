@@ -3,14 +3,15 @@
         <div class="channel-div">
             <ion-row *ngFor="let chan of mathChannels">
                 <ion-col>
-                    <button class="button-effects">{{chan}}</button>
+                    <button (click)="setActiveSeries(chan)" class="button-effects disable-hover">{{chan}}</button>
                 </ion-col>
             </ion-row>
         </div>
-        <ion-col>
+        <ion-col class="data-container">
             <ion-row *ngFor="let row of buttonNames">
                 <ion-col *ngFor="let button of row">
-                    <button class="button-effects">{{button}}</button>
+                    <center><button class="button-effects disable-hover">{{button}}</button></center>
+                    <div class="center">{{getMax()}}</div>
                 </ion-col>
             </ion-row>
         </ion-col>
@@ -18,8 +19,8 @@
     <ion-row class="exit-buttons">
         <ion-col>
             <div class="align-buttons">
-                <button class="button-effects" (click)="closeModal()">OK</button>
-                <button class="button-effects" (click)="closeModal()">Cancel</button>
+                <button class="button-effects disable-hover" (click)="closeModal()">OK</button>
+                <button class="button-effects disable-hover" (click)="closeModal()">Cancel</button>
             </div>
         </ion-col>
     </ion-row>

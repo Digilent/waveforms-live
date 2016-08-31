@@ -1,11 +1,10 @@
 <div class=fgen-container>
-    <p>Function Gen</p>
     <button (click)="togglePower()" class="powerOff" [ngClass]="{powerOn: powerOn}">
         <ion-icon name="power"></ion-icon>
     </button>
     <div class="clear-fgen"></div>
     <div class="dropdown">
-        <button [disabled]="powerOn" (click)="toggleWave(waveType)">Wave Type: {{waveType}}</button>
+        <button class="text-button-main disable-hover" [disabled]="powerOn" (click)="toggleWave(waveType)">Wave Type: {{waveType}}</button>
         <div class="dropdown-content" [ngClass]="{show: showWaves}">
             <a (click)="toggleWave('sine')">Sine</a>
             <a (click)="toggleWave('ramp-up')">Ramp-Up</a>
@@ -15,7 +14,7 @@
             <a (click)="toggleWave('triangle')">Triangle</a>
         </div>
     </div>
-    <ion-list>
+    <ion-list class="list-controls">
         <ion-item>
             <ion-label>Frequency (Hz):</ion-label>
             <ion-input type="number" [disabled]="powerOn" [(ngModel)]="frequency"></ion-input>
@@ -34,5 +33,5 @@
         </ion-item>
     </ion-list>
     <div class="clear-fgen"></div>
-    <button [disabled]="powerOn" (click)="openFgen(5)">Configure Function Gen</button>
+    <button class="text-button-main disable-hover" [disabled]="powerOn" (click)="openFgen(5)">Configure Function Gen</button>
 </div> 
