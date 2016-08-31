@@ -559,8 +559,8 @@ export class ChartModal {
         console.log(chart);
         this.chart = chart;
         this.chart.reflow();
-        this.chart.series[0].setData(this.data, true, false, false);
-        this.chart.redraw();
+        this.chart.series[0].setData(this.data, false, false, false);
+        this.chart.redraw(false);
     }
 
     close() {

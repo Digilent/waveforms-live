@@ -43,7 +43,6 @@ export class DeviceManagerService {
                     observer.complete();
                 },
                 (err) => {
-                    console.log(err);
                     observer.error(err);
                 },
                 () => {

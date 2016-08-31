@@ -24,10 +24,11 @@ export class AwgInstrumentComponent extends InstrumentComponent {
 
         //Populate AWG supply parameters
         this.numChans = _awgInstrumentDescriptor.numChans;
-
         //Populate channels  
         for (let channel in _awgInstrumentDescriptor) {
-            this.chans.push(new AwgChannelComponent(_awgInstrumentDescriptor[channel]));
+            if (channel !== 'numChans') {
+                this.chans.push(new AwgChannelComponent(_awgInstrumentDescriptor[channel]));
+            }   
         }
     }
 

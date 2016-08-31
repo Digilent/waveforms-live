@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {NavController} from 'ionic-angular';
+import {NavController, ToastController} from 'ionic-angular';
 
 //Pages
 import {AwgTestPage} from '../../pages/instrument-test-pages/awg-test/awg-test';
@@ -17,6 +17,7 @@ import {StorageService} from '../../services/storage/storage.service';
 export class SettingsPage {
 
     private nav: NavController;
+    private toastCtrl: ToastController;
 
     private deviceManangerService: DeviceManagerService;   
     private localSimDevUri = 'http://localhost:8888';
@@ -24,8 +25,9 @@ export class SettingsPage {
     private storageService: StorageService;
     private showExtraInfo: boolean = false;
 
-    constructor(_nav: NavController, _deviceManagerService: DeviceManagerService, _storageService: StorageService) {
+    constructor(_toastCtrl: ToastController, _nav: NavController, _deviceManagerService: DeviceManagerService, _storageService: StorageService) {
         this.nav = _nav;
+        this.toastCtrl = _toastCtrl;
         this.deviceManangerService = _deviceManagerService;
         this.storageService = _storageService;
         console.log('settings constructor');
@@ -35,12 +37,28 @@ export class SettingsPage {
     }
 
     connect(targetUri: string) {
-        this.deviceManangerService.connect(targetUri).subscribe();
+        this.deviceManangerService.connect(targetUri).subscribe(
+            (data) => {
+                console.log(this.deviceManangerService.devices[0]);
+
+            },
+            (err) => {
+                let toast = this.toastCtrl.create({
+                    message: 'No response from URL',
+                    duration: 3000,
+                    position: 'bottom'
+                });
+                toast.present();
+            },
+            () => {
+
+            }
+        );
     }
 
     //Test Code
     enumDc() {
-        this.deviceManangerService.devices[0].instruments.dc.enumerate().subscribe(
+        /*this.deviceManangerService.devices[0].instruments.dc.enumerate().subscribe(
             (data) => {
                 console.log(data);
             },
@@ -48,7 +66,7 @@ export class SettingsPage {
                 console.log(err);
             },
             () => { }
-        )
+        )*/
     }
 
     showInfo() {

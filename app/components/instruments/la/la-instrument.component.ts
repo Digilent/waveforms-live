@@ -27,7 +27,9 @@ export class LaInstrumentComponent {
 
         //Populate channels  
         for (let channel in _laInstrumentDescriptor) {
-            this.chans.push(new LaChannelComponent(_laInstrumentDescriptor[channel]));
+            if (channel !== 'numChans') {
+                this.chans.push(new LaChannelComponent(_laInstrumentDescriptor[channel]));
+            }
         }
     }
 }

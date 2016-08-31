@@ -66,7 +66,6 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    console.log(data);
                     observer.next(data);
                     //Handle device errors and warnings
                     observer.complete();
@@ -105,7 +104,6 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    console.log(data);
                     observer.next(data);
                     //Handle device errors and warnings
                     observer.complete();
@@ -147,7 +145,6 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                     //Handle device errors and warnings
                     let bufferCount = 0;
                     let megaString = String.fromCharCode.apply(null, new Int8Array(data.slice(0)));
-                    //console.log(megaString);
                     let binaryIndexStringLength = megaString.indexOf('\r\n');
                     let binaryIndex = parseFloat(megaString.substring(0, binaryIndexStringLength));
                     let command = JSON.parse(megaString.substring(binaryIndexStringLength + 2, binaryIndexStringLength + binaryIndex + 2));

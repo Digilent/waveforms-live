@@ -24,7 +24,9 @@ export class DcInstrumentComponent extends InstrumentComponent {
 
         //Populate channels        
         for (let channel in _dcInstrumentDescriptor) {
-            this.chans.push(new DcChannelComponent(_dcInstrumentDescriptor[channel]));
+            if (channel !== 'numChans') {
+                this.chans.push(new DcChannelComponent(_dcInstrumentDescriptor[channel]));
+            }
         }
     }
 

@@ -11,12 +11,12 @@
         </chart>
     </div>
     <ion-row>
-        <ion-col>
-            <button (click)="openMathModal()">Math</button>
+        <ion-col *ngIf="mathEnabled">
+            <button class="text-button-main" (click)="openMathModal()">Math</button>
         </ion-col>
-        <ion-col>
-            <ion-row class="cursor-container" *ngIf="cursorsEnabled">
-                <button (click)="openCursorModal()">Cursors</button>
+        <ion-col *ngIf="cursorsEnabled">
+            <ion-row class="cursor-container">
+                <button class="text-button-main" (click)="openCursorModal()">Cursors</button>
                 <ion-col *ngIf="cursorType === 'time'">
                     Cur1: {{getCursorInfo('cursorPosition0')}} <br> Cur2: {{getCursorInfo('cursorPosition1')}}
                 </ion-col>

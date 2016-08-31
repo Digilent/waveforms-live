@@ -84,11 +84,6 @@ export class TestChartCtrlsPage {
             this.chart1.redrawChart();
         }, 550);
     }
-    
-    //Toggle series visibility
-    toggleSeries(event) {
-        this.chart1.chart.series[event.channel].setVisible(event.value, true);
-    }
 
     //Run osc single
     singleClick() {
@@ -114,7 +109,7 @@ export class TestChartCtrlsPage {
             () => {
                 //console.log('binary finished in test chart ctrls');
             }
-        ); */ 
+        ); */
 
         this.activeDevice.instruments.osc.setParameters([1], [0], [1]).subscribe(
             (data) => {
@@ -220,5 +215,7 @@ export class TestChartCtrlsPage {
     initSettings() {
         this.chart1.enableCursors();
         this.chart1.enableTimelineView();
+        this.chart1.enableMath();
+        this.chart1.redrawChart();
     }
 }

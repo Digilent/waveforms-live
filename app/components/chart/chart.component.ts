@@ -23,31 +23,30 @@ export class SilverNeedleChart {
     public chart: Object;
     private timelineChartComponent: TimelineChartComponent;
     public timelineChart: Object = null;
-    private timelineOptions: Object;
     private options: Object;
-    private xPosition: number;
-    private xPositionPixels: number;
-    private yPositionPixels: number;
-    private yPosition: number;
-    private numXCursors: number;
+    private xPosition: number = 0;
+    private xPositionPixels: number = 0;
+    private yPositionPixels: number = 0;
+    private yPosition: number = 0;
+    private numXCursors: number = 0;
     //private cursorLabel: any[];
     private cursorAnchors: any[] = [0, 0, 0, 0];
     private xCursorDragStartPos: any;
-    private activeCursor: number;
-    private activeSeries: number;
-    private numYCursors: number;
-    private cursorType: string;
-    private cursor1Chan: string;
-    private cursor2Chan: string;
-    private cursorsEnabled: boolean;
-    private canPan: boolean;
-    private activeTimeLine: number;
+    private activeCursor: number = -1;
+    private activeSeries: number = 1;
+    private numYCursors: number = 0;
+    private cursorType: string = 'disabled';
+    private cursor1Chan: string = 'O1';
+    private cursor2Chan: string = 'O1';
+    private cursorsEnabled: boolean = false;
+    private canPan: boolean = false;
+    private activeTimeLine: number = -1;
     private chartBoundsX: Object = null;
     private chartBoundsY: Object = null;
     private inTimelineDrag: boolean = false;
     private activeChannels = [0, 0];
     private autoscaleAll: boolean = false;
-
+    private mathEnabled: boolean = false;
     private voltsPerDivOpts: string[] = null;
     private voltsPerDivVals: number[] = null;
     private generalVoltsPerDivOpts: string[] = ['1 mV', '2 mV', '5 mv', '10 mV', '20 mV', '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
@@ -72,11 +71,7 @@ export class SilverNeedleChart {
     public voltDivision: number[] = [1, 1];
     public voltBase: number[] = [0, 0];
 
-    //New cursor position tracker
     private cursorPositions: Array<Object> = [{x: null, y: null}, {x: null, y: null}];
-
-    public voltageMultipliers: string[] = ['V', 'V'];
-    public multipliers: string[] = ['mV', 'V'];
     private modalCtrl: ModalController;
 
     private chartReady: boolean = false;
@@ -88,27 +83,8 @@ export class SilverNeedleChart {
     public autoscaleYaxes: boolean[] = [];
     public autoscaleXaxis: boolean = false;
 
-    private yAxesMultipliers: number[] = [1, 1];
-    private xAxisMultiplier: number = 1;
-
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
-        this.activeTimeLine = -1;
-        this.timeDivision = 3;
-        this.base = 12;
-        this.canPan = false;
-        this.cursorsEnabled = false;
-        this.timelineView = false;
-        this.cursorType = 'disabled';
-        this.cursor1Chan = 'O1';
-        this.cursor2Chan = 'O1';
-        this.activeSeries = 1;
-        //this.cursorLabel = ['hey','yo','sup','son'];
-        this.activeCursor = -1;
-        this.xPosition = 0;
-        this.yPosition = 0;
-        this.numXCursors = 0;
-        this.numYCursors = 0;
         this.options = {
             chart: {
                 type: 'line',
@@ -370,14 +346,11 @@ export class SilverNeedleChart {
         this.chart = chartInstance;
         
         //Redraw chart to scale chart to container size
-        this.redrawChart();
-        this.chartLoad.emit(this.chart);
         this.chartReady = true;
         if (this.timelineChartReady === true && this.timelineChartInitialized === false) {
             this.timelineChartInit();
+            this.chartLoad.emit(this.chart);
         }
-
-        this.chart.testTest = 'hi';
 
     }
 
@@ -389,6 +362,7 @@ export class SilverNeedleChart {
         this.timelineChartReady = true;
         if (this.chartReady === true && this.timelineChartInitialized === false) {
             this.timelineChartInit();
+            this.chartLoad.emit(this.chart);
         }
         this.timelineChartEventListener = this.timelineChartComponent.timelineChartEvent.subscribe((data) => {
             if (data.type === 'mousedown') {
@@ -402,7 +376,6 @@ export class SilverNeedleChart {
 
     timelineChartInit() {
         this.timelineChartInitialized = true;
-        this.timelineChart.reflow();
         this.attachPlotLineEvents();
         this.autoscaleAxis('x', 0);
         this.autoscaleAxis('y', 0);
@@ -455,18 +428,16 @@ export class SilverNeedleChart {
             this.chart.reflow();
             this.timelineChart.reflow();
             console.log('redrawChart()');
-            this.updateCursorLabels();
         }
         else if (this.chart != undefined) {
             this.chart.reflow();
-            this.updateCursorLabels();
         }
     }
 
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
     drawWaveform(seriesNum: number, waveform: any) {
         if (seriesNum < this.chart.yAxis.length) {
-            this.chart.series[seriesNum].setData(waveform.y, true, false, false);
+            this.chart.series[seriesNum].setData(waveform.y, false, false, false);
         }
         else {
             this.numSeries.push(seriesNum);
@@ -492,20 +463,21 @@ export class SilverNeedleChart {
         this.chart.redraw(false);
         this.updateCursorLabels();
         if (this.timelineView) {
-            this.timelineChart.series[seriesNum].setData(waveform.y, true, false, false);
+            this.timelineChart.series[seriesNum].setData(waveform.y, false, false, false);
             this.timelineChart.series[seriesNum].update({
                 pointStart: waveform.t0,
                 pointInterval: waveform.dt
             });
-            this.timelineChart.redraw();
+            this.timelineChart.redraw(false);
             let extremesX = this.timelineChart.xAxis[0].getExtremes();
             let extremesY = this.timelineChart.yAxis[0].getExtremes();
             this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
-            this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+            //Not sure if needed? The plot lines and bands should be in the same position.
+            /*this.chartBoundsX = this.chart.xAxis[0].getExtremes();
             let left = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(this.chartBoundsX.min) - 5);
             let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(this.chartBoundsX.max) + 5);
             this.updatePlotBands([2, 3], [[extremesX.min, this.chartBoundsX.min], [this.chartBoundsX.max, extremesX.max]]);
-            this.updatePlotLines([0, 1], [left, right]);
+            this.updatePlotLines([0, 1], [left, right]);*/
         }
         if (this.autoscaleAll) {
             this.autoscaleAllAxes();
@@ -1251,7 +1223,6 @@ export class SilverNeedleChart {
             let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
             let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
             this.updatePlotLines([0, 1], [val1, val2]);
-            this.attachPlotLineEvents();
         }
     }
 
@@ -1317,7 +1288,6 @@ export class SilverNeedleChart {
             let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
             let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
             this.updatePlotLines([0, 1], [val1, val2]);
-            this.attachPlotLineEvents();
         }
         this.updateCursorLabels();
     }
@@ -1434,6 +1404,10 @@ export class SilverNeedleChart {
             this.chart.reflow();
             this.timelineChart.reflow();
         }, 200);
+    }
+
+    enableMath() {
+        this.mathEnabled = true;
     }
 
     //Determines if cursors and timeline view is enabled on chart component
@@ -1616,29 +1590,6 @@ export class SilverNeedleChart {
         for (let i = 0; i < indices.length; i++) {
             this.timelineChart.xAxis[0].plotLinesAndBands[indices[i]].options.value = values[i];
             this.timelineChart.xAxis[0].plotLinesAndBands[indices[i]].render()
-        }
-    }
-
-    //Changes voltage multiplier for series and updates data to new units
-    changeMultiplier(seriesNum: number, multiplier: string, previousSetting: string) {
-        if (multiplier === previousSetting) {
-            return;
-        }
-        if (multiplier === 'mV') {
-            let newValArray = [];
-            this.chart.series[seriesNum].yData.forEach((element, index, array) => {
-                newValArray[index] = parseFloat(element) * 1000;
-            });
-            this.chart.series[seriesNum].setData(newValArray, true, false, false);
-            this.chart.redraw(false);
-        }
-        else if (multiplier === 'V') {
-            let newValArray = [];
-            this.chart.series[seriesNum].yData.forEach((element, index, array) => {
-                newValArray[index] = parseFloat(element) / 1000;
-            });
-            this.chart.series[seriesNum].setData(newValArray, true, false, false);
-            this.chart.redraw(false);
         }
     }
 
