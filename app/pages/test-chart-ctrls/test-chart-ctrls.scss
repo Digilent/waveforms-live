@@ -1,4 +1,4 @@
-.vertwrapper
+/*.vertwrapper
 {
     //background-color: silver; 
     width: 100%;
@@ -84,7 +84,7 @@
     display: -webkit-flex;
     position: relative;
     height: 100%;
-    //flex-direction: column;
+    flex-direction: column;
     -webkit-flex-direction: column;
     flex: 1.5 1;
     border-right: solid black 1px;
@@ -93,12 +93,12 @@
 .tcwrapper .left .innerCtrls
 {
     display: block;
-    //float: right;
+    float: right;
 }
 
 .tcwrapper .left .move-left
 {
-    //float: left;
+    float: left;
     display: block;
     height: 100%;
 }
@@ -129,4 +129,69 @@
     min-width: 150px;
     max-width: 220px;
     background-color: #535353;
+}*/
+
+
+//NEW
+.chart-page-container
+{
+    //background-color: #535353;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
+
+//Top
+
+.chart-page-container .top-bar-container
+{
+    flex: 0 0 auto;
+    background-color: #535353;
+}
+
+//Center
+
+.chart-page-container .center-container
+{
+    flex: 1 1 auto;
+    height: 100%;
+    background-color: #535353;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.chart-page-container .center-container .chart-wrapper
+{
+    display: block;
+    height: 100%;
+    flex: 1 1 auto;
+}
+
+.chart-page-container .center-container .controls-wrapper
+{
+    flex: 1 1 auto;
+    max-width: 200px;
+}
+
+.chart-page-container .center-container .show-fgen
+{
+    min-width: 200px;
+    flex: 1 0 auto;
+}
+
+.chart-page-container .center-container .fgen-wrapper
+{
+    flex: 1 1 auto;
+    width: 0px;
+}
+
+
+//Bottom
+.chart-page-container .bottom-bar-container
+{
+    z-index: 5;
+    flex: 0 0 auto;
+    min-height: 21px;
+}
+

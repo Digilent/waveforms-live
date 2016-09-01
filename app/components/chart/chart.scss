@@ -37,7 +37,7 @@
 {
     display: block;
     position: relative;
-    height: calc(100% - 55px - 60px);
+    height: 95%;
 }
 
 .chart-component-wrapper .chart-component-container-div-timeline-only
@@ -74,3 +74,7 @@
     height: 100%;
 }
 
+.chart-info
+{
+    background-color: #535353;
+}
