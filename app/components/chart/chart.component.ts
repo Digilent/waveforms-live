@@ -599,7 +599,17 @@ export class SilverNeedleChart {
                 this.xCursorDragStartPos = event.clientX;
                 this.xCursorStartDrag(this.numXCursors, event.clientX);
             })
+            .on('touchend', (event) => {
+                this.activeCursor = parseInt(event.srcElement.id.slice(-1)) + 1;
+                this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+                this.chartBoundsY = this.chart.yAxis[0].getExtremes();
+                this.xCursorDragStartPos = event.clientX;
+                this.xCursorStartDrag(this.numXCursors, event.clientX);
+            })
             .on('mouseup', (event) => {
+                this.activeCursor = -1;
+            })
+            .on('touchend', (event) => {
                 this.activeCursor = -1;
             });
         this.cursorAnchors[this.numXCursors] = this.chart.renderer.rect(this.chart.xAxis[0].toPixels(initialValue) - 5, this.chart.plotTop - 12, 10, 10, 1)
@@ -621,7 +631,17 @@ export class SilverNeedleChart {
                 this.xCursorDragStartPos = event.clientX;
                 this.xCursorStartDrag(this.numXCursors, event.clientX);
             })
+            .on('touchstart', (event) => {
+                this.activeCursor = parseInt(event.srcElement.id.slice(-1)) + 1;
+                this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+                this.chartBoundsY = this.chart.yAxis[0].getExtremes();
+                this.xCursorDragStartPos = event.clientX;
+                this.xCursorStartDrag(this.numXCursors, event.clientX);
+            })
             .on('mouseup', (event) => {
+                this.activeCursor = -1;
+            })
+            .on('touchend', (event) => {
                 this.activeCursor = -1;
             });
 
@@ -685,7 +705,16 @@ export class SilverNeedleChart {
                 this.chartBoundsY = this.chart.yAxis[0].getExtremes();
                 this.yCursorStartDrag(this.numYCursors, event.clientY);
             })
+            .on('touchstart', (event) => {
+                this.activeCursor = parseInt(event.srcElement.id.slice(-1)) + 1;
+                this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+                this.chartBoundsY = this.chart.yAxis[0].getExtremes();
+                this.yCursorStartDrag(this.numYCursors, event.clientY);
+            })
             .on('mouseup', (event) => {
+                this.activeCursor = -1;
+            })
+            .on('touchend', (event) => {
                 this.activeCursor = -1;
             });
         }
@@ -700,7 +729,16 @@ export class SilverNeedleChart {
                     this.yCursorStartDrag(this.numYCursors + 2, event.clientX);
                 }
             })
+            .on('touchstart', (event) => {
+                if (this.cursorType !== 'track') {
+                    this.activeCursor = parseInt(event.srcElement.id.slice(-1)) + 1;
+                    this.yCursorStartDrag(this.numYCursors + 2, event.clientX);
+                }
+            })
             .on('mouseup', (event) => {
+                this.activeCursor = -1;
+            })
+            .on('touchend', (event) => {
                 this.activeCursor = -1;
             });
 
@@ -711,32 +749,40 @@ export class SilverNeedleChart {
     xCursorStartDrag(cursorId, xStartPos) {
         if (this.cursorType === 'track') {
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.trackCursorDragListener);
+            this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.trackCursorDragListener);
         }
         else {
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.cursorDragListener);
+            this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.cursorDragListener);
         }
         this.oscopeChartInner.nativeElement.addEventListener('mouseup', this.xCursorStopDrag.bind(this));
+        this.oscopeChartInner.nativeElement.addEventListener('touchend', this.xCursorStopDrag.bind(this));
     }
 
     //Called on y cursor mousedown. Add mousemove and mouseup listeners
     yCursorStartDrag(cursorId, xStartPos) {
         this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.yCursorDragListener);
         this.oscopeChartInner.nativeElement.addEventListener('mouseup', this.yCursorStopDrag.bind(this));
+        this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.yCursorDragListener);
+        this.oscopeChartInner.nativeElement.addEventListener('touchend', this.yCursorStopDrag.bind(this));
     }
 
     //Called on x cursor mouseup. Remove correct mousemove event listener
     xCursorStopDrag() {
         if (this.cursorType === 'track') {
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.trackCursorDragListener);
+            this.oscopeChartInner.nativeElement.removeEventListener('touchmove', this.trackCursorDragListener);
         }
         else {
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.cursorDragListener);
+            this.oscopeChartInner.nativeElement.removeEventListener('touchmove', this.cursorDragListener);
         }
     }
 
     //Called on y cursor mouseup. Remove mousemove event listener
     yCursorStopDrag() {
         this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.yCursorDragListener);
+        this.oscopeChartInner.nativeElement.removeEventListener('touchmove', this.yCursorDragListener);
     }
 
     //Callback function for mousemove event on a track cursor style
@@ -1168,6 +1214,7 @@ export class SilverNeedleChart {
 
     //Called on chart mousedown. Sets either vertical or horizontal pan listener
     onChartClick(event) {
+        this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.panListener);
         //check cursors enabled to see if the chart is 'interactive'. Added to remove pan from fgen config modal
         if (event.srcElement.localName === 'rect' && this.oscopeChartInner !== undefined && event.srcElement.id === '' && this.cursorsEnabled) {
             this.canPan = true;
@@ -1175,9 +1222,11 @@ export class SilverNeedleChart {
             this.yPositionPixels = event.chartY;
             if (event.shiftKey) {
                 this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.verticalOffsetListener);
+                this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.verticalOffsetListener);
             }
             else {
                 this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.panListener);
+                this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.panListener);
             }
         }
     }
@@ -1188,9 +1237,14 @@ export class SilverNeedleChart {
         if (this.oscopeChartInner !== undefined) {
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.panListener);
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.verticalOffsetListener);
+            this.oscopeChartInner.nativeElement.removeEventListener('touchmove', this.panListener);
+            this.oscopeChartInner.nativeElement.removeEventListener('touchmove', this.verticalOffsetListener);
+
             if (this.timelineView && this.timelineChartInner !== undefined) {
                 this.timelineChartInner.nativeElement.removeEventListener('mousemove', this.timelineWhiteDragListener);
                 this.timelineChartInner.nativeElement.removeEventListener('mousemove', this.timelineDragListener);
+                this.timelineChartInner.nativeElement.removeEventListener('touchmove', this.timelineWhiteDragListener);
+                this.timelineChartInner.nativeElement.removeEventListener('touchmove', this.timelineDragListener);
                 this.inTimelineDrag = false;
             }
         }
@@ -1198,12 +1252,13 @@ export class SilverNeedleChart {
 
     //Callback function for panning
     panListener = function(event) {
-        let newVal = this.chart.xAxis[0].toValue(event.chartX);
+        alert(event.targetTouches[0].pageX - this.chart.plotLeft);
+        let newVal = this.chart.xAxis[0].toValue(event.chartX) || this.chart.xAxis[0].toValue(event.targetTouches[0].pageX - this.chart.plotLeft);
         let oldValinNewWindow = this.chart.xAxis[0].toValue(this.xPositionPixels);
         let difference = newVal - oldValinNewWindow;
         this.setXExtremes(difference);
         this.updateCursorLabels();
-        this.xPositionPixels = event.chartX;
+        this.xPositionPixels = event.chartX || (event.targetTouches[0].pageX - this.chart.plotLeft);
     }.bind(this);
 
     //Callback function for vertical panning of a series
@@ -1459,6 +1514,7 @@ export class SilverNeedleChart {
         if (value > chartExtremes.min && value < chartExtremes.max && !this.inTimelineDrag) {
             this.xPositionPixels = event.chartX;
             this.timelineChartInner.nativeElement.addEventListener('mousemove', this.timelineWhiteDragListener);
+            this.timelineChartInner.nativeElement.addEventListener('touchmove', this.timelineWhiteDragListener);
         }
         else if (!this.inTimelineDrag) {
             let oldValinNewWindow = this.base;
@@ -1467,6 +1523,7 @@ export class SilverNeedleChart {
             this.updateCursorLabels();
             this.xPositionPixels = event.chartX;
             this.timelineChartInner.nativeElement.addEventListener('mousemove', this.timelineWhiteDragListener);
+            this.timelineChartInner.nativeElement.addEventListener('touchmove', this.timelineWhiteDragListener);
         }
     }
 
@@ -1482,7 +1539,17 @@ export class SilverNeedleChart {
                         //console.log('mousedown' + i);
                         this.startTimelineDrag(i);
                     })
+                    .on('touchstart', (event) => {
+                        this.inTimelineDrag = true;
+                        //console.log('mousedown' + i);
+                        this.startTimelineDrag(i);
+                    })
                     .on('mouseup', (event) => {
+                        this.inTimelineDrag = false;
+                        //console.log('mouseup' + i);
+                        this.clearDragListener(i);
+                    })
+                    .on('touchend', (event) => {
                         this.inTimelineDrag = false;
                         //console.log('mouseup' + i);
                         this.clearDragListener(i);
@@ -1496,6 +1563,7 @@ export class SilverNeedleChart {
     //Called on plot line mousedown and sets mousemove event listener
     startTimelineDrag(lineNum: number) {
         this.timelineChartInner.nativeElement.addEventListener('mousemove', this.timelineDragListener);
+        this.timelineChartInner.nativeElement.addEventListener('touchmove', this.timelineDragListener);
         this.activeTimeLine = lineNum;
         this.chartBoundsX = this.chart.xAxis[0].getExtremes();
     }
@@ -1503,6 +1571,7 @@ export class SilverNeedleChart {
     //Called on plot line mouseup and removes mousemove event listener
     clearDragListener(lineNum: number) {
         this.timelineChartInner.nativeElement.removeEventListener('mousemove', this.timelineDragListener);
+        this.timelineChartInner.nativeElement.removeEventListener('touchmove', this.timelineDragListener);
         this.activeTimeLine = -1;
     }
 

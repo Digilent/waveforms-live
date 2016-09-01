@@ -5,7 +5,7 @@
                 'chart-component-container-div-cursor-only': isCursorOnly(),
                 'chart-component-container-div-timeline-only': isTimelineOnly(),
                 'chart-component-container-div-vanilla': isVanilla()}">
-            <chart [options]="options" (load)="onLoad($event.context)" (mousedown)="onChartClick($event)" (mouseup)="clearMouse()">
+            <chart [options]="options" (load)="onLoad($event.context)" (touchstart)="onChartClick($event)" (touchend)="clearMouse()" (mousedown)="onChartClick($event)" (mouseup)="clearMouse()">
                 <series>
                     <point (click)="onPointSelect($event)"></point>
                 </series>

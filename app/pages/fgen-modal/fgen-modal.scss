@@ -1,14 +1,21 @@
 .fgen-chart-container
 {
-    height: 90%;
-    background-color: darkgrey;
-    padding: 10px;
+    height: 100%;
+    background-color: #535353;
+    color: white;
 }
 .fgen-chart-container .container-test 
 {
     height: 100%;
     padding: 10px;
     //background-color: green;
+}
+
+.settings-underline
+{
+    margin-bottom: 0px;
+    padding-bottom: 1rem;
+    border-bottom: solid black 1px;
 }
 
 @media only screen and (min-height: 768px) and (min-width: 768px)
@@ -24,3 +31,15 @@
 {
     width: 100%;
 }
+
+.fgen-chart-container .fgen-settings-container
+{
+    background-color: #535353;
+    color: white;
+}
+
+.fgen-chart-container .fgen-settings-container .fgen-segment-button
+{
+    color: white;
+}
+

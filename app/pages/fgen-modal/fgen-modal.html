@@ -1,4 +1,3 @@
-modal page
 <ion-row class="fgen-chart-container">
     <ion-col width-50>
         <div class="container-test">
@@ -6,50 +5,47 @@ modal page
         </div>
     </ion-col>
     <ion-col width-50>
-        <h3>Settings</h3>
+        <h3 class="settings-underline">Settings</h3>
         <ion-list>
-            <ion-item>
-                <ion-label>Frequency (Hz):</ion-label>
+            <ion-item class="fgen-settings-container">
+                <ion-label stacked>Frequency (Hz):</ion-label>
                 <ion-input type="number" [disabled]="isDc()" [(ngModel)]="frequency" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
-            <ion-item>
-                <ion-label>Amplitude:</ion-label>
+            <ion-item class="fgen-settings-container">
+                <ion-label stacked>Amplitude:</ion-label>
                 <ion-input type="number" [disabled]="isDc()" [(ngModel)]="amplitude" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
-            <ion-item>
-                <ion-label>DC Offset (V):</ion-label>
+            <ion-item class="fgen-settings-container">
+                <ion-label stacked>DC Offset (V):</ion-label>
                 <ion-input type="number" [(ngModel)]="offset" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
-            <ion-item>
-                <ion-label>Duty Cycle (%):</ion-label>
+            <ion-item class="fgen-settings-container">
+                <ion-label stacked>Duty Cycle (%):</ion-label>
                 <ion-input [disabled]="!isSquare()" type="number" [(ngModel)]="dutyCycle" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
-            <ion-toolbar>
-                <ion-segment [(ngModel)]="waveType" (ionChange)="onSegmentChanged($event)">
-                    <ion-segment-button value="sine">
+                <ion-segment class="fgen-settings-container" [(ngModel)]="waveType" (ionChange)="onSegmentChanged($event)">
+                    <ion-segment-button value="sine" class="fgen-segment-button">
                         Sine
                     </ion-segment-button>
-                    <ion-segment-button value="ramp-up">
+                    <ion-segment-button value="ramp-up" class="fgen-segment-button">
                         Ramp-Up
                     </ion-segment-button>
-                    <ion-segment-button value="ramp-down">
+                    <ion-segment-button value="ramp-down" class="fgen-segment-button">
                         Ramp-Down
                     </ion-segment-button>
-                    <ion-segment-button value="square">
+                    <ion-segment-button value="square" class="fgen-segment-button">
                         Square
                     </ion-segment-button>
-                    <ion-segment-button value="dc">
+                    <ion-segment-button value="dc" class="fgen-segment-button">
                         DC
                     </ion-segment-button>
-                    <ion-segment-button value="triangle">
+                    <ion-segment-button value="triangle" class="fgen-segment-button">
                         Triangle
                     </ion-segment-button>
                 </ion-segment>
-            </ion-toolbar>   
+            <button class="text-button-main disable-hover" (click)="closeModal();">Close Function Gen Configuration</button>  
         </ion-list>
     </ion-col>
 </ion-row>
-<ion-toolbar position="bottom">
-    <button (click)="closeModal();">Close Function Gen Configuration</button>
-</ion-toolbar>
+
  

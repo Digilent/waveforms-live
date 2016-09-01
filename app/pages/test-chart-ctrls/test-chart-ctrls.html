@@ -59,7 +59,7 @@
             </div>
             <div class="fgen-wrapper" [ngClass]="{'show-fgen': controlsVisible}">
                 <!-- fgen here -->
-                <fgen *ngIf="controlsVisible"></fgen>
+                <fgen [hidden]="!controlsVisible"></fgen>
             </div>
         </div>
 
