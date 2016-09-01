@@ -1,83 +1,3 @@
-<!--<ion-header>
-    <ion-navbar>
-        <button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-        </button>
-        <ion-title>Oscope</ion-title>
-    </ion-navbar>
-</ion-header>-->
-
-<!--<ion-content #mycontent>
-    <div class="vertwrapper">
-        <div class="tcwrapper" [ngClass]="{showControls: controlsVisible}">
-            <div class="left">
-                <div class="toolbarContainer">
-                    <ion-row>
-                        
-                            <div class="move-left">
-                                <button menuToggle light>
-                                    <ion-icon name="menu"></ion-icon>
-                                </button>
-                            </div>
-                        
-                        <ion-col width-30>
-                            <div class="timelineChartWrapper">
-                                <timeline-chart (timelineChartLoad)="saveTimelineChart($event)"></timeline-chart>
-                            </div>
-                        </ion-col>
-                        <ion-col>
-                            <div class="innerCtrls">
-                                <timeline *ngIf="chartReady" [chart]="chart1"></timeline>
-                                <button class="text-button-side disable-hover" (click)="exportChart()">
-                                    Export
-                                    <ion-icon name="download"></ion-icon>
-                                </button>
-                                <button class="text-button-side disable-hover" (click)="singleClick()">
-                                    Single
-                                    <ion-icon name="play"></ion-icon>
-                                </button>
-                                <button class="text-button-side disable-hover" (click)="runClick()" *ngIf="!running">
-                                    Run
-                                    <ion-icon name="repeat"></ion-icon>
-                                </button>
-                                <button class="text-button-side disable-hover" (click)="stopClick()" *ngIf="running">
-                                    Stop
-                                    <ion-icon name="hand"></ion-icon>
-                                </button>
-                            </div>
-                        </ion-col>
-                    </ion-row>
-
-
-
-                </div>
-                <div class="chartWrapper">
-                    <silverNeedleChart #chart1 (chartLoad)="initSettings()"></silverNeedleChart>
-                </div>
-            </div> 
-            <div class="controls-wrapper">
-                <div style="text-align:right;border-bottom: solid black 1px;">
-                    <button class="text-button-main disable-hover" (click)="toggleControls()">
-                        <ion-icon name="pulse"></ion-icon>
-                    </button>
-                </div>
-                <autoscale [chart]="chart1"></autoscale>
-                <trigger></trigger>
-                <xaxis-controls [chart]="chart1"></xaxis-controls>
-                <yaxis-controls [chart]="chart1"></yaxis-controls>
-            </div>
-            <div class="right">
-                <fgen [hidden]="!controlsVisible"></fgen>
-            </div>   
-        </div>
-        <div class="botwrapper" [ngClass]="{showbot: botVisible}">
-            <bottom-bar (headerClicked)="toggleBotControls();"></bottom-bar>
-        </div>
-    </div>
-
-
-</ion-content>-->
-
 <ion-content #mycontent>
     <div class="chart-page-container">
         <!-------------------------------- TOP BAR --------------------------------->
@@ -90,32 +10,29 @@
                 </div>
 
                 <ion-col width-30>
-                    <div class="timelineChartWrapper">
+                    <div class="timeline-chart-wrapper">
                         <timeline-chart (timelineChartLoad)="saveTimelineChart($event)"></timeline-chart>
                     </div>
                 </ion-col>
-
-                <ion-col>
-                    <div class="innerCtrls">
+                    <div class="inner-ctrls">
                         <timeline *ngIf="chartReady" [chart]="chart1"></timeline>
                         <button class="text-button-side disable-hover" (click)="exportChart()">
-                                        Export
-                                        <ion-icon name="download"></ion-icon>
-                                    </button>
+                            Export
+                            <ion-icon name="download"></ion-icon>
+                        </button>
                         <button class="text-button-side disable-hover" (click)="singleClick()">
-                                        Single
-                                        <ion-icon name="play"></ion-icon>
-                                    </button>
+                            Single
+                            <ion-icon name="play"></ion-icon>
+                        </button>
                         <button class="text-button-side disable-hover" (click)="runClick()" *ngIf="!running">
-                                        Run
-                                        <ion-icon name="repeat"></ion-icon>
-                                    </button>
+                            Run
+                            <ion-icon name="repeat"></ion-icon>
+                        </button>
                         <button class="text-button-side disable-hover" (click)="stopClick()" *ngIf="running">
-                                        Stop
+                            Stop
                             <ion-icon name="hand"></ion-icon>
                         </button>
                     </div>
-                </ion-col>
             </ion-row>
         </div>
 
@@ -130,8 +47,8 @@
             </div>
             <div class="controls-wrapper">
                 <!-- controls here -->
-                <div>
-                    <button class="text-button-main disable-hover" (click)="toggleControls()">
+                <div class="fgen-button-container">
+                    <button class="icon-only-button-side disable-hover fgen-button" (click)="toggleControls()">
                         <ion-icon name="pulse"></ion-icon>
                     </button>
                 </div>

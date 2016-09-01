@@ -62,5 +62,37 @@
 
 .fgen-container .list-controls
 {
-    margin-bottom: 0px;
+    margin-bottom: 2px;
+    background-color: #535353;
+    border-top: solid black 1px;
+}
+
+.fgen-container .list-item
+{
+    background-color: #535353;
+    color: white;
+}
+
+.item-input.ng-valid.input-has-value:not(.input-has-focus) .item-inner {
+    border-bottom-color: #686868;
+    box-shadow: inset 0 -1px 0 0 black;
+}
+
+.item-input.input-has-focus .item-inner {
+    border-bottom-color: #686868;
+    box-shadow: inset 0 -1px 0 0 black;
+}
+
+ion-list .item:first-child {
+    border-top: solid #686868 1px;
+}
+
+ion-list .item-input.ng-valid.input-has-value:not(.input-has-focus):last-child {
+    border-bottom-color: #535353;
+    box-shadow: inset 0 -1px 0 0 black;
+}
+
+ion-list .item-input.input-has-focus:last-child {
+    border-bottom-color: #535353;
+    box-shadow: inset 0 -1px 0 0 black;
 }

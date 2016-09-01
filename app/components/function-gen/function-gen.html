@@ -4,7 +4,7 @@
     </button>
     <div class="clear-fgen"></div>
     <div class="dropdown">
-        <button class="text-button-main disable-hover" [disabled]="powerOn" (click)="toggleWave(waveType)">Wave Type: {{waveType}}</button>
+        <button class="text-button-side disable-hover" [disabled]="powerOn" (click)="toggleWave(waveType)">Wave Type: {{waveType}}</button>
         <div class="dropdown-content" [ngClass]="{show: showWaves}">
             <a (click)="toggleWave('sine')">Sine</a>
             <a (click)="toggleWave('ramp-up')">Ramp-Up</a>
@@ -15,23 +15,23 @@
         </div>
     </div>
     <ion-list class="list-controls">
-        <ion-item>
-            <ion-label>Frequency (Hz):</ion-label>
+        <ion-item class="list-item">
+            <ion-label stacked>Frequency (Hz):</ion-label>
             <ion-input type="number" [disabled]="powerOn" [(ngModel)]="frequency"></ion-input>
         </ion-item>
-        <ion-item>
-            <ion-label>Amplitude:</ion-label>
+        <ion-item class="list-item">
+            <ion-label stacked>Amplitude:</ion-label>
             <ion-input type="number" [disabled]="powerOn" [(ngModel)]="amplitude"></ion-input>
         </ion-item>
-        <ion-item>
-            <ion-label>DC Offset (V):</ion-label>
+        <ion-item class="list-item">
+            <ion-label stacked>DC Offset (V):</ion-label>
             <ion-input type="number" [disabled]="powerOn" [(ngModel)]="offset"></ion-input>
         </ion-item>
-        <ion-item>
-            <ion-label>Duty Cycle (%):</ion-label>
+        <ion-item class="list-item">
+            <ion-label stacked>Duty Cycle (%):</ion-label>
             <ion-input [disabled]="!isSquare() || powerOn" type="number" [(ngModel)]="dutyCycle"></ion-input>
         </ion-item>
     </ion-list>
     <div class="clear-fgen"></div>
-    <button class="text-button-main disable-hover" [disabled]="powerOn" (click)="openFgen(5)">Configure Function Gen</button>
+    <button class="text-button-side disable-hover" [disabled]="powerOn" (click)="openFgen(5)">Configure Function Gen</button>
 </div> 

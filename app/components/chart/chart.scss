@@ -21,13 +21,6 @@
     flex: 1 1 80%;
 }
 
-.chart-component-wrapper .cursor-container .info-container
-{
-    display: inline-block; 
-    //background-color: white;
-    vertical-align: middle;
-}
-
 .chart-component-wrapper .chart-component-container-div-cursor-only
 {
     display: block;
@@ -85,4 +78,15 @@
     background-color: #535353;
 
     flex: 0 0 21px;
+}
+
+.chart-info .info-col
+{
+    padding: 1px;
+    display: inline-block;
+}
+
+.chart-info .info-col .cursor-info-col
+{
+    padding: 1px;
 }

@@ -1114,6 +1114,9 @@ export class SilverNeedleChart {
                 this.cursor2Chan = data.cursor2Chan;
                 this.handleCursors();
             }
+            setTimeout(() => {
+                this.chart.reflow();
+            }, 50);
         });
         modal.present();
     }

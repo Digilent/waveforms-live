@@ -1,137 +1,3 @@
-/*.vertwrapper
-{
-    //background-color: silver; 
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    flex-direction: column;
-    display: flex;
-  
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;    
-}
-
-.tcwrapper
-{
-    //background-color: purple; 
-    //padding: 10px;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex: 10 1;
-    flex-direction: row;
-  
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;    
-}
-
-.botwrapper
-{
-    width: 100%;
-    //height: auto;
-    min-height: 21px;
-    overflow: hidden;
-    flex: 0 0;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;  
-}
-
-.showbot
-{
-    //height: 264px;
-    flex: 5 0;
-    overflow: hidden;
-    max-height: 264px;
-    min-height: 264px;
-}
-
-.tcwrapper .right
-{
-    background-color: #444444;
-    display: block;
-    //width: 0%;
-    min-height:100%; 
-    flex: 0 0; 
-    border-left: solid black 1px;
-    
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;    
-}
-.tcwrapper.showControls .right 
-{
-    width: 250px;
-    height: 100%;
-    overflow: auto;
-    min-width: 250px;
-    padding: 5px;
-}
-
-.tcwrapper .left
-{  
-    background-color: #535353;
-    //padding: 10px;
-    overflow: hidden;
-    display: flex;
-    display: -webkit-flex;
-    position: relative;
-    height: 100%;
-    flex-direction: column;
-    -webkit-flex-direction: column;
-    flex: 1.5 1;
-    border-right: solid black 1px;
-}
-
-.tcwrapper .left .innerCtrls
-{
-    display: block;
-    float: right;
-}
-
-.tcwrapper .left .move-left
-{
-    float: left;
-    display: block;
-    height: 100%;
-}
-
-.tcwrapper .left .timelineChartWrapper
-{
-    height: 100%;
-}
-
-.tcwrapper .left .chartWrapper
-{
-    display: block;
-    height: 100%;
-    position: relative;
-    flex: 1 1 auto;
-    -webkit-flex: 1 1 auto;
-    padding-bottom: 4px;
-    //background-color: yellow; 
-   
-}
-
-.tcwrapper .controls-wrapper 
-{
-    display: block;
-    height: 100%;
-    position: relative;
-    width: 15%;
-    min-width: 150px;
-    max-width: 220px;
-    background-color: #535353;
-}*/
-
-
 //NEW
 .chart-page-container
 {
@@ -147,6 +13,21 @@
 {
     flex: 0 0 auto;
     background-color: #535353;
+
+    border-bottom: solid black 1px;
+}
+
+.chart-page-container .timeline-chart-wrapper
+{
+    height: 6vh;
+    max-height: 70px;
+    min-height: 36px;
+}
+
+.chart-page-container .top-bar-container .inner-ctrls
+{
+    text-align: right;
+    padding-right: 2px;
 }
 
 //Center
@@ -173,19 +54,47 @@
 {
     width: 20%;
     max-width: 200px;
+    min-width: 120px;
     flex: 0 1 20%;
+    overflow: auto;
+    
+    background-color: #535353;
+    z-index: 5;
+    border-left: solid black 1px;
+    border-right: solid black 1px;
 }
 
 .chart-page-container .center-container .show-fgen
 {
-    min-width: 250px;
+    min-width: 200px;
     flex: 1 0 200px;
+    overflow: auto;
+
+    background-color: #535353;
+    z-index: 5;
+    border-top: solid #686868 1px;
+}
+
+.chart-page-container .center-container .fgen-button-container
+{
+    border-bottom: solid black 1px;
+    border-top: solid #686868 1px;
+    text-align: right;
+    padding: 1px 0px 1px 0px;
 }
 
 .chart-page-container .center-container .fgen-wrapper
 {
     flex: 0 1 0px;
     width: 0px;
+}
+
+.chart-page-container .center-container .fgen-button-container .fgen-button
+{
+    margin-top: 0.1rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
 }
 
 
