@@ -130,7 +130,7 @@
             </div>
             <div class="controls-wrapper">
                 <!-- controls here -->
-                <div style="text-align:right;border-bottom: solid black 1px;">
+                <div>
                     <button class="text-button-main disable-hover" (click)="toggleControls()">
                         <ion-icon name="pulse"></ion-icon>
                     </button>
@@ -142,7 +142,7 @@
             </div>
             <div class="fgen-wrapper" [ngClass]="{'show-fgen': controlsVisible}">
                 <!-- fgen here -->
-                <fgen [hidden]="!controlsVisible"></fgen>
+                <fgen *ngIf="controlsVisible"></fgen>
             </div>
         </div>
 

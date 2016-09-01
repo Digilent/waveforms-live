@@ -8,15 +8,17 @@
 
 .chart-component-wrapper
 {
-    display: block;
-    position: relative;
+    display: flex;
+    flex-direction: column;
     height: 100%;
 }
 
-.chart-component-wrapper .cursor-container
+.chart-component-wrapper .chart-container-container
 {
-    //display: block;
-    //background-color: green;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    flex: 1 1 80%;
 }
 
 .chart-component-wrapper .cursor-container .info-container
@@ -29,28 +31,32 @@
 .chart-component-wrapper .chart-component-container-div-cursor-only
 {
     display: block;
-    position: relative;
+    position: absolute;
+    width: 100%;
     height: calc(100% - 55px);
 }
 
 .chart-component-wrapper .chart-component-container-div-cursor-timeline
 {
     display: block;
-    position: relative;
-    height: 95%;
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 .chart-component-wrapper .chart-component-container-div-timeline-only
 {
     display: block;
-    position: relative;
+    position: absolute;
+    width: 100%;
     height: calc(100% - 60px);
 }
 
 .chart-component-wrapper .chart-component-container-div-vanilla
 {
     display: block;
-    position: relative;
+    position: absolute;
+    width: 100%;
     height: 100%;
 }
 
@@ -77,4 +83,6 @@
 .chart-info
 {
     background-color: #535353;
+
+    flex: 0 0 21px;
 }
