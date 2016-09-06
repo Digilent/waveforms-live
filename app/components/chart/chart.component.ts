@@ -1252,7 +1252,6 @@ export class SilverNeedleChart {
 
     //Callback function for panning
     panListener = function(event) {
-        alert(event.targetTouches[0].pageX - this.chart.plotLeft);
         let newVal = this.chart.xAxis[0].toValue(event.chartX) || this.chart.xAxis[0].toValue(event.targetTouches[0].pageX - this.chart.plotLeft);
         let oldValinNewWindow = this.chart.xAxis[0].toValue(this.xPositionPixels);
         let difference = newVal - oldValinNewWindow;

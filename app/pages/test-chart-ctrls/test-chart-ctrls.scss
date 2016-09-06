@@ -75,6 +75,7 @@
     background-color: #535353;
     z-index: 5;
     border-top: solid #686868 1px;
+    padding-left: 0.5rem;
 }
 
 .chart-page-container .center-container .fgen-button-container
@@ -108,3 +109,7 @@
     min-height: 21px;
 }
 
+//Disables scroll for all pages
+scroll-content {
+    overflow-y: auto;
+}
