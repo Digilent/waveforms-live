@@ -112,19 +112,4 @@ export class YAxisComponent {
     autoscaleY(i) {
         this.chart.autoscaleAxis('y', i);
     }
-
-    //Change multiplier for specific series
-    changeMultiplier(i, event) {
-        let popover = this.popoverCtrl.create(GenPopover, {
-            dataArray: this.chart.multipliers
-        });
-
-        popover.present({
-            ev: event
-        });
-        popover.onDidDismiss(data => {
-            this.chart.changeMultiplier(i, data.option, this.chart.voltageMultipliers[i]);
-            this.chart.voltageMultipliers[i] = data.option;
-        });
-    }
 }

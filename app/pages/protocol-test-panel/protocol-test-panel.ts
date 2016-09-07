@@ -10,6 +10,9 @@ import {DropDownMenu} from '../../libs/digilent-ionic2-utilities/drop-down-menu/
 //Services
 import {StorageService} from '../../services/storage/storage.service';
 
+//Interfaces
+import {Chart} from '../../components/chart/chart.interface';
+
 @Component({
     templateUrl: 'build/pages/protocol-test-panel/protocol-test-panel.html',
     directives: [DropDownMenu]
@@ -458,7 +461,7 @@ export class ChartModal {
     private params: NavParams;
     
     private data: number[];
-    public chart: Object;
+    public chart: Chart;
     private options: Object;
 
     constructor(

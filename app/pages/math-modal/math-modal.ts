@@ -7,9 +7,14 @@ import {DeviceComponent} from '../../components/device/device.component';
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
 
+//Interfaces
+import {Chart} from '../../components/chart/chart.interface';
+import {SelectedData} from './math-modal.interface';
+
 @Component({
     templateUrl: "build/pages/math-modal/math-modal.html"
 })
+
 export class MathModalPage {
     private platform: Platform;
     private viewCtrl: ViewController;
@@ -19,10 +24,10 @@ export class MathModalPage {
     private mathChannels: string[];
     private buttonNames: Array<string[]> = [['Frequency', 'Pos Pulse Width', 'Pos Duty Cycle'], ['Period', 'Neg Pulse Width', 'Neg Duty Cycle'], 
         ['Rise Rate', 'Rise Time'], ['Amplitude', 'High', 'Low'], ['Peak to Peak', 'Maximum', 'Minimum'], ['Mean', 'RMS', 'Overshoot'], ['Cycle Mean', 'Cycle RMS', 'Undershoot']];
-    private chart: Object;
-    private selectedData: Object = {
+    private chart: Chart;
+    private selectedData: SelectedData = {
         instrument: 'osc',
-        channel: '1'
+        channel: 1
     };
     private chartMin: number = 0;
     private chartMax: number = 0;
@@ -79,7 +84,7 @@ export class MathModalPage {
         channel = channel.toLowerCase();
         this.selectedData = {
             instrument: channel.substring(0, channel.length - 2),
-            channel: channel.slice(-1)
+            channel: parseInt(channel.slice(-1))
         }
     }
 

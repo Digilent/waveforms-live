@@ -11,18 +11,22 @@ import {DeviceComponent} from '../device/device.component';
 import {ModalCursorPage} from '../../pages/cursor-modal/cursor-modal';
 import {MathModalPage} from '../../pages/math-modal/math-modal';
 
+//Interfaces
+import {Chart, ChartBounds, CursorPositions} from './chart.interface';
+
 @Component({
     selector: 'silverNeedleChart',
     directives: [CHART_DIRECTIVES, NgClass],
     templateUrl: 'build/components/chart/chart.html',
 })
+
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     @ViewChild('oscopeChartInner') oscopeChartInner: ElementRef;
     private timelineChartInner: ElementRef;
-    public chart: Object;
+    public chart: Chart;
     private timelineChartComponent: TimelineChartComponent;
-    public timelineChart: Object = null;
+    public timelineChart: Chart = null;
     private options: Object;
     private xPosition: number = 0;
     private xPositionPixels: number = 0;
@@ -41,8 +45,8 @@ export class SilverNeedleChart {
     private cursorsEnabled: boolean = false;
     private canPan: boolean = false;
     private activeTimeLine: number = -1;
-    private chartBoundsX: Object = null;
-    private chartBoundsY: Object = null;
+    private chartBoundsX: ChartBounds = null;
+    private chartBoundsY: ChartBounds = null;
     private inTimelineDrag: boolean = false;
     private activeChannels = [0, 0];
     private autoscaleAll: boolean = false;
@@ -71,7 +75,7 @@ export class SilverNeedleChart {
     public voltDivision: number[] = [1, 1];
     public voltBase: number[] = [0, 0];
 
-    private cursorPositions: Array<Object> = [{x: null, y: null}, {x: null, y: null}];
+    private cursorPositions: Array<CursorPositions> = [{x: null, y: null}, {x: null, y: null}];
     private modalCtrl: ModalController;
 
     private chartReady: boolean = false;

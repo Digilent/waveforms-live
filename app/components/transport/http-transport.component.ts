@@ -5,6 +5,9 @@ import 'rxjs/Rx';
 //Components
 import {TransportComponent} from './transport.component';
 
+//Interfaces
+import {MyEventResponse} from './http-transport.interface';
+
 @Component({})
 export class HttpTransportComponent extends TransportComponent {
 
@@ -40,7 +43,7 @@ export class HttpTransportComponent extends TransportComponent {
 
 
             // We define what will happen if the data are successfully sent
-            XHR.addEventListener("load", function (event) {
+            XHR.addEventListener("load", function (event: MyEventResponse) {
                 observer.next(event.currentTarget.response);
                 observer.complete();
             });
