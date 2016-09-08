@@ -19,7 +19,7 @@ export class SettingsPage {
     private nav: NavController;
 
     private deviceManangerService: DeviceManagerService;   
-    private localSimDevUri = 'http://localhost:8888';
+    private localSimDevUri = 'http://192.168.1.8:80';
     private remotesimDevUri = 'https://35oopc6de8.execute-api.us-west-2.amazonaws.com/dev';
     private storageService: StorageService;
     private showExtraInfo: boolean = false;

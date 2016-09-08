@@ -48,6 +48,8 @@ export class ProtocolTestPanel {
     private responseBinaryFormats: Array<string> = ['u8', 'i8', 'u16', 'i16'];
     private selectedRepsonseBinaryFormat: string;
 
+    private XHR: XMLHttpRequest;
+
     constructor(_storage: StorageService) {
         console.log('ProtocolTestPanel Constructor');
         this.storage = _storage;
@@ -56,11 +58,10 @@ export class ProtocolTestPanel {
         this.selectedRepsonseBodyFormat = this.responseBodyFormats[0];
         this.selectedRepsonseBinaryFormat = this.responseBinaryFormats[0];
 
-        //Load Saved Values
-        this.storage.getData('uri').then((value) => {
-            this.uri = value;
-        });
+        this.loadState();
+
     }
+
 
     //Returns true if the selected response type contains binary
     isBinaryResponse() {
@@ -245,12 +246,12 @@ export class ProtocolTestPanel {
         this.responseBody = '';
         this.formatResponse('raw');
 
-        let XHR = new XMLHttpRequest();
+        this.XHR = new XMLHttpRequest();
 
         //Callback on successful response
-        XHR.addEventListener("load", function (event) {
+        this.XHR.addEventListener("load", function (event) {
             //Populate response headers
-            let responseHeaders = XHR.getAllResponseHeaders().split("\n");
+            let responseHeaders = this.XHR.getAllResponseHeaders().split("\n");
             responseHeaders.forEach((element: string, index) => {
                 if (element != '' && element != undefined) {
                     let tokens = element.split(':');
@@ -268,30 +269,88 @@ export class ProtocolTestPanel {
         }.bind(this));
 
         //Callback on error
-        XHR.addEventListener("error", function (event) {
+        this.XHR.addEventListener("error", function (event) {
             this.responseBody = "Device did not respond.  Check the console for more information";
             this.formatResponse(this.selectedRepsonseBodyFormat);
         }.bind(this));
 
-        XHR.open(this.selectedHttpMethod, this.uri);
+        this.XHR.open(this.selectedHttpMethod, this.uri);
 
         //Set resposne type as arraybuffer to receive response as bytes
-        XHR.responseType = 'arraybuffer';
+        this.XHR.responseType = 'arraybuffer';
 
         //Add Headers To Send
         this.sendHeaders.forEach((element: any) => {
             if (element.key != '' && element.key != undefined) {
-                XHR.setRequestHeader(element.key, element.value);                
+                this.XHR.setRequestHeader(element.key, element.value);
             }
         })
 
-        XHR.send(this.sendBody);
+        this.XHR.send(this.sendBody);
+    }
+
+    abort() {
+        this.XHR.abort();
+        console.log('XHR Abort');
     }
 
     //Callback called when uri input changes
     onUrlInputChange(data) {
         //Store value in local storage to load on next init
         this.storage.saveData('uri', data);
+    }
+
+    //Save text box states
+    saveState() {
+        this.storage.saveData('uri', this.uri);
+        this.storage.saveData('sendHeaders', JSON.stringify(this.sendHeaders));
+        this.storage.saveData('sendBody', this.sendBody);
+        this.storage.saveData('responseHeaders', JSON.stringify(this.responseHeaders));
+        this.storage.saveData('responseRawBinary', btoa(String.fromCharCode.apply(null, new Uint8Array(this.responseRawBinary))));
+        this.storage.saveData('responseBody', this.responseBody);
+    }
+
+    //Load Saved statesl
+    loadState() {
+
+        this.storage.getData('uri').then((value) => {
+            this.uri = value;
+        });
+        this.storage.getData('sendHeaders').then((value) => {
+            if (value != null && value != 'null') {
+                this.sendHeaders = JSON.parse(value);
+            } else {
+                this.sendHeaders = [{}];
+            }
+
+        });
+        this.storage.getData('sendBody').then((value) => {
+            this.sendBody = value;
+        });
+        this.storage.getData('responseHeaders').then((value) => {
+            if (value != null && value != 'null') {
+                this.responseHeaders = JSON.parse(value);
+            } else {
+                this.responseHeaders = [];
+            }
+        });
+
+
+        /*
+
+        //Converting binary to base64 below does not work correctly 
+
+        this.storage.getData('responseBody').then((value) => {
+            this.responseBody = value;
+            this.formatResponse(this.selectedRepsonseBodyFormat);
+        });
+        this.storage.getData('responseRawBinary').then((value) => {
+            this.responseRawBinary = new Uint8Array(atob(value).split("").map(function (c) {
+                return c.charCodeAt(0);
+            }));;
+            this.formatBinary(this.selectedRepsonseBinaryFormat);
+        });
+        */
     }
 
     //---------- OpenScope Command Templates ----------
@@ -304,6 +363,46 @@ export class ProtocolTestPanel {
                         "command": "enumerate"
                     }
                 ]
+            }
+        },
+        "awg": {
+            "setParameters Reg": {
+                "awg": {
+                    "1": {
+                        "command": "setParameters",
+                        "signalType": "sine",
+                        "signalPeriod": 1000000000,
+                        "vpp": 3000,
+                        "vOffset": 1500
+                    }
+                }
+            },
+            "setParameters Arb": {
+                "awg": {
+                    "1": {
+                        "command": "setParameters",
+                        "signalType": "arbitrary",
+                        "gain": 1,
+                        "binaryOffset": 0,
+                        "binaryLength": 20000,
+                        "binaryType": "I16",
+                        "clockDivider": 1,
+                    }
+                }
+            },
+            "run": {
+                "awg": {
+                    "1": {
+                        "command": "run",
+                    }
+                }
+            },
+            "stop": {
+                "awg": {
+                    "1": {
+                        "command": "stop",
+                    }
+                }
             }
         },
         "dc": {
@@ -333,13 +432,13 @@ export class ProtocolTestPanel {
                     "1": [
                         {
                             "command": "read",
-                            "acqCount": 27
+                            "acqCount": 2
                         }
                     ],
                     "2": [
                         {
                             "command": "read",
-                            "acqCount": 27
+                            "acqCount": 2
                         }
                     ]
                 }
@@ -350,7 +449,7 @@ export class ProtocolTestPanel {
                         {
                             "command": "setParameters",
                             "offset": 3000,
-                            "gain": 0.75
+                            "gain": 1
                         }
                     ]
                 }

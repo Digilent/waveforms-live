@@ -25,8 +25,8 @@
 .urlInput
 {
     display: inline-block;
-    min-width: 60%;
-    width: 83%;
+    min-width: 50%;
+    width: 75%;
     border: 1px solid #E9E9E9;
     background-color: #686868;
     vertical-align: middle;
@@ -35,10 +35,11 @@
 .sendButton
 {
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: top;
 }
 
 .headers {
+    width: 91%;
   
 }
 
@@ -89,7 +90,7 @@
 }
 
 .sendBody {
-    width: 91%;
+    width:83%;
     min-height: 89px;
     background-color: #686868;
 }
