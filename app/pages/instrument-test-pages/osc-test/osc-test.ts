@@ -22,30 +22,30 @@ export class OscTestPage {
     }
 
     enumerate() {
-        this.activeDevice.instruments.osc.enumerate().subscribe(
+        /*this.activeDevice.instruments.osc.enumerate().subscribe(
             (descriptor) => {
                 console.log('OSC Descriptor: ', descriptor);
             },
             (err) => {
                 console.log('OSC enumeration failed.');
-            });
+            });*/
     }
 
     runSingle(chans: Array<number>) {
         //console.log('name: ', this.activeDevice.instruments.osc.chans[i].name) ;
-        this.activeDevice.instruments.osc.runSingle(chans).subscribe(
+        /*this.activeDevice.instruments.osc.runSingle(chans).subscribe(
             (buffer) => {
                 console.log(this.activeDevice.instruments.osc.dataBuffer);
             },
             (err) => {
                 console.log('OSC Run Single Failed.');
             }
-        );
+        );*/
     }
 
 
     runSingleNChans() {
-        console.log(this.chanEnabled);
+        /*console.log(this.chanEnabled);
 
         let chans = [];
         this.chanEnabled.forEach((element, index) => {
@@ -53,20 +53,20 @@ export class OscTestPage {
                 chans.push(index);
             }
         });
-        this.runSingle(chans);
+        this.runSingle(chans);*/
     }
 
 
 
     streamNChans(chans: Array<number>) {
-        this.activeDevice.instruments.osc.streamRunSingle(chans).subscribe(
+        /*this.activeDevice.instruments.osc.streamRunSingle(chans).subscribe(
             (buffer) => {
                 console.log(this.activeDevice.instruments.osc.dataBuffer);
             },
             (err) => {
                 console.log('OSC Run Single Failed.');
             }
-        );
+        );*/
     }
 
     streamSingleNChans() {

@@ -33,7 +33,7 @@ export class DcTestPage {
 
         if (typeof _voltages[0] == 'string') {
             _voltages.forEach((element, index, array) => {
-                array[index] = parseFloat(element);
+                array[index] = parseFloat(element.toString());
             });
         }
 

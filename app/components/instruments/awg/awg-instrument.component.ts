@@ -24,10 +24,11 @@ export class AwgInstrumentComponent extends InstrumentComponent {
 
         //Populate AWG supply parameters
         this.numChans = _awgInstrumentDescriptor.numChans;
-
         //Populate channels  
         for (let channel in _awgInstrumentDescriptor) {
-            this.chans.push(new AwgChannelComponent(_awgInstrumentDescriptor[channel]));
+            if (channel !== 'numChans') {
+                this.chans.push(new AwgChannelComponent(_awgInstrumentDescriptor[channel]));
+            }   
         }
     }
 
@@ -62,7 +63,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
                         observer.complete();
                     }
                     else {
-                        observer.err(data.statusCode);
+                        observer.error(data.statusCode);
                     }
                 },
                 (err) => {
@@ -99,7 +100,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
                         observer.complete();
                     }
                     else {
-                        observer.err(data.statusCode);
+                        observer.error(data.statusCode);
                     }
                 },
                 (err) => {

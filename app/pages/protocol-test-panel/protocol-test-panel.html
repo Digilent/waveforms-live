@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content padding class="contentContainer">
-
+    <img src="img/OpenScope-logo-color-500.png">
     <!-- Begin Send Section -->
     <div class="sendContainer">
         <center>
@@ -91,6 +91,7 @@
             <div class="respBinaryContainer" *ngIf="isBinaryResponse()">
                 <h4 class="responseBodyHeader">Binary</h4>
                 <drop-down-menu class="responseBinaryFormat" [itemNames]="responseBinaryFormats" (valueChange)="onResponseBinaryFormatChange($event)"></drop-down-menu>
+                <button (click)="chartData()" class="responseBinaryFormat">Chart Data</button>
                 <textarea class="responseBinary" [(ngModel)]="formattedResponseBinaryString"></textarea>
             </div>
         </div>

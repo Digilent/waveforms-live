@@ -2,23 +2,23 @@
     <div class="title" (click)="headerClicked.emit(null)">
         DC POWER SUPPLY
     </div>
-    <ion-row [hidden]="contentHidden">
+    <ion-row class="set-background-color" [hidden]="contentHidden">
         <ion-col *ngFor="let supply of voltageSupplies; let i = index">
             DC Power Supply {{i}}
-            <ion-item>
+            <ion-item class="set-background-color">
                 <ion-label stacked>Volts</ion-label>
                 <ion-input type="number" [disabled]="dcPower" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)" [ngClass]="{powerOn: dcPower, wrongPower: !correctVoltages[i]}" class="power-controls"></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item class="set-background-color">
                 <ion-label stacked>Amps</ion-label>
                 <ion-input type="number" [disabled]="dcPower" [(ngModel)]="currents[i]" (ngModelChange)="validateCurrent(i)" [ngClass]="{powerOn: dcPower, wrongCurrent: !correctCurrents[i]}" class="power-controls"></ion-input>
             </ion-item> 
-            <ion-item>
+            <ion-item class="set-background-color">
                 <div class="center">{{maxVoltages[i]}}V</div>
             </ion-item>          
         </ion-col>
     </ion-row>
-    <div [hidden]="contentHidden" class="center">
+    <div [hidden]="contentHidden" class="center set-background-color">
         <button (click)="togglePower()" [ngClass]="{powerButtonOn: dcPower}" class="powerButtonOff">
             <ion-icon name="power"></ion-icon>
         </button>

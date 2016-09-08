@@ -1,125 +1,115 @@
-.vertwrapper
+//NEW
+.chart-page-container
 {
-    //background-color: silver; 
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    //background-color: #535353;
+    display: flex;
     flex-direction: column;
-    display: flex;
-  
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;    
-}
-
-.tcwrapper
-{
-    //background-color: purple; 
-    //padding: 10px;
-    width: 100%;
     height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex: 10 1;
-    flex-direction: row;
-  
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;    
 }
 
-.botwrapper
-{
-    width: 100%;
-    //height: auto;
-    overflow: hidden;
-    flex: 0.23 0;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;  
-}
+//Top
 
-.showbot
+.chart-page-container .top-bar-container
 {
-    //height: 264px;
-    flex: 4.5 0;
-    overflow: hidden;
-    max-height: 264px;
-}
-
-.tcwrapper .right
-{
-    background-color: #003366;
-    display: block;
-    //width: 0%;
-    min-height:100%; 
-    flex: 0 0; 
-    
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;    
-}
-.tcwrapper.showControls .right 
-{
-    flex: 1 0;
-    height: 100%;
-    overflow: auto;
-    min-width: 545px;
-}
-
-.tcwrapper .left
-{  
+    flex: 0 0 auto;
     background-color: #535353;
-    //padding: 10px;
-    overflow: hidden;
-    display: flex;
-    display: -webkit-flex;
-    position: relative;
+
+    border-bottom: solid black 1px;
+}
+
+.chart-page-container .timeline-chart-wrapper
+{
+    height: 6vh;
+    max-height: 70px;
+    min-height: 36px;
+}
+
+.chart-page-container .top-bar-container .inner-ctrls
+{
+    text-align: right;
+    padding-right: 2px;
+    background-color: #535353;
+    z-index: 5;
+}
+
+//Center
+
+.chart-page-container .center-container
+{
+    flex: 1 1 auto;
     height: 100%;
-    flex-direction: column;
-    -webkit-flex-direction: column;
-    flex: 1.5 1;
+    background-color: #535353;
+
+    display: flex;
+    flex-direction: row;
+    overflow: none;
+}
+
+.chart-page-container .center-container .chart-wrapper
+{
+    //display: block;
+    height: 100%;
+    flex: 1 10 50%;
+}
+
+.chart-page-container .center-container .controls-wrapper
+{
+    width: 20%;
+    max-width: 200px;
+    min-width: 120px;
+    flex: 0 1 20%;
+    overflow: auto;
+    
+    background-color: #535353;
+    z-index: 5;
+    border-left: solid black 1px;
     border-right: solid black 1px;
 }
 
-.tcwrapper .left .innerCtrls
+.chart-page-container .center-container .show-fgen
 {
-    display: block;
-    float: right;
+    min-width: 200px;
+    flex: 1 0 200px;
+    overflow: auto;
+
+    background-color: #444444;
+    z-index: 5;
+    border-top: solid #686868 1px;
+    padding-left: 0.5rem;
 }
 
-.tcwrapper .left .move-left
+.chart-page-container .center-container .fgen-button-container
 {
-    float: left;
-    display: block;
-    height: 100%;
+    border-bottom: solid black 1px;
+    border-top: solid #686868 1px;
+    text-align: right;
+    padding: 1px 0px 1px 0px;
 }
 
-.tcwrapper .left .timelineChartWrapper
+.chart-page-container .center-container .fgen-wrapper
 {
-    height: 100%;
+    flex: 0 1 0px;
+    width: 0px;
 }
 
-.tcwrapper .left .chartWrapper
+.chart-page-container .center-container .fgen-button-container .fgen-button
 {
-    display: block;
-    height: 100%;
-    position: relative;
-    flex: 1 1 auto;
-    -webkit-flex: 1 1 auto;
-    //background-color: yellow; 
-   
+    margin-top: 0.1rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
 }
 
-.tcwrapper .controls-wrapper 
+
+//Bottom
+.chart-page-container .bottom-bar-container
 {
-    display: block;
-    height: 100%;
-    position: relative;
-    width: 15%;
-    background-color: #535353;
+    z-index: 5;
+    flex: 0 0 auto;
+    min-height: 21px;
+}
+
+//Disables scroll for all pages
+scroll-content {
+    overflow-y: auto;
 }

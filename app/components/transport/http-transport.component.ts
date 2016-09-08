@@ -5,6 +5,9 @@ import 'rxjs/Rx';
 //Components
 import {TransportComponent} from './transport.component';
 
+//Interfaces
+import {MyEventResponse} from './http-transport.interface';
+
 @Component({})
 export class HttpTransportComponent extends TransportComponent {
 
@@ -35,13 +38,12 @@ export class HttpTransportComponent extends TransportComponent {
     writeReadHelper(rootUri: string, endpoint: string, sendData: any, dataType: string): Observable<any> {
         let uri = rootUri + endpoint;
         let body = sendData;
-
         return Observable.create((observer) => {
             let XHR = new XMLHttpRequest();
 
 
             // We define what will happen if the data are successfully sent
-            XHR.addEventListener("load", function (event) {
+            XHR.addEventListener("load", function (event: MyEventResponse) {
                 observer.next(event.currentTarget.response);
                 observer.complete();
             });

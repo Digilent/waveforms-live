@@ -1,20 +1,24 @@
 .dc-container
 {
-    //background-color:orange; 
+    color: white;
 }
 
 .dc-container .title
 {
-    border: solid black 1px;
+    padding: 1px 0px 1px 0px;
+    border-top: solid black 1px;
+    border-bottom: solid black 1px;
     text-align: center;
-    background-color: #003366;
+    background-color: #444444;
     font-size: 100%;
+    color: white;
     
 }
 
 .dc-container .center
 {
     text-align: center;
+    color: white;
 }
 
 .dc-container .power-controls
@@ -56,4 +60,9 @@
 .dc-container .wrongCurrent
 {
     background-color: yellow;
+}
+
+.dc-container .set-background-color
+{
+    background-color: #535353;
 }

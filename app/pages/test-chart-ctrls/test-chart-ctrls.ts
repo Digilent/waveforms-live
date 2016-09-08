@@ -4,7 +4,6 @@ import {ViewChild, ElementRef, Component, Input} from '@angular/core';
 //Components
 import {SilverNeedleChart} from '../../components/chart/chart.component';
 import {BottomBarComponent} from '../../components/bottom-bar/bottom-bar.component';
-import {SideBarComponent} from '../../components/side-bar/side-bar.component';
 import {XAxisComponent} from '../../components/xaxis-controls/xaxis-controls.component';
 import {YAxisComponent} from '../../components/yaxis-controls/yaxis-controls.component';
 import {TimelineComponent} from '../../components/timeline/timeline.component';
@@ -12,6 +11,7 @@ import {TimelineChartComponent} from '../../components/timeline-chart/timeline-c
 import {DeviceComponent} from '../../components/device/device.component';
 import {AutoscaleComponent} from '../../components/autoscale/autoscale.component';
 import {TriggerComponent} from '../../components/trigger/trigger.component';
+import {FgenComponent} from '../../components/function-gen/function-gen.component';
 
 
 //Services
@@ -21,7 +21,8 @@ import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
     templateUrl: 'build/pages/test-chart-ctrls/test-chart-ctrls.html',
-    directives: [SilverNeedleChart, BottomBarComponent, SideBarComponent, XAxisComponent, YAxisComponent, TimelineComponent, TimelineChartComponent, AutoscaleComponent, TriggerComponent]
+    directives: [SilverNeedleChart, BottomBarComponent, XAxisComponent, YAxisComponent, 
+    TimelineComponent, TimelineChartComponent, AutoscaleComponent, TriggerComponent, FgenComponent]
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
@@ -83,11 +84,6 @@ export class TestChartCtrlsPage {
             this.chart1.redrawChart();
         }, 550);
     }
-    
-    //Toggle series visibility
-    toggleSeries(event) {
-        this.chart1.chart.series[event.channel].setVisible(event.value, true);
-    }
 
     //Run osc single
     singleClick() {
@@ -113,7 +109,7 @@ export class TestChartCtrlsPage {
             () => {
                 //console.log('binary finished in test chart ctrls');
             }
-        ); */ 
+        ); */
 
         this.activeDevice.instruments.osc.setParameters([1], [0], [1]).subscribe(
             (data) => {
@@ -133,11 +129,11 @@ export class TestChartCtrlsPage {
                 instrument: 'osc',
                 channel: 1,
                 type: 'risingEdge',
-                lowerThreshold: 3300,
-                upperThreshold: 4000
+                lowerThreshold: -5,
+                upperThreshold: 0
             }],
             [{
-                osc: [1, 2]
+                osc: [1]
             }]
         ).subscribe(
             (data) => {
@@ -167,7 +163,17 @@ export class TestChartCtrlsPage {
             (data) => {
                 //console.log(data);
                 this.chart1.clearExtraSeries([0]);
-                this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][0]);
+                if (this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1 < 0) {
+                    for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex].length; i++) {
+                        this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][i]);
+                    }
+                }
+                else {
+                    for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1].length; i++) {
+                        this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][i]);
+                    }
+                }
+                
                 //this.chart1.drawWaveform(1, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][1]);
             },
             (err) => {
@@ -182,7 +188,7 @@ export class TestChartCtrlsPage {
     //Stream osc buffers
     runClick() {
         console.log('run');
-        let multipliers = [];
+        /*let multipliers = [];
         for (let i = 0; i < this.oscopeChans.length; i++) {
             if (this.chart1.voltageMultipliers[i] === 'mV') {
                 multipliers[i] = 1;
@@ -194,13 +200,13 @@ export class TestChartCtrlsPage {
         this.running = true;
         this.activeDevice.instruments.osc.streamRunSingle(this.oscopeChans, multipliers).subscribe(
             (buffer) => {
-                this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
-                this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
+                this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][0]);
+                this.chart1.drawWaveform(1, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][1]);
             },
             (err) => {
                 console.log('OSC Run Single Failed.');
             }
-        );
+        );*/
     }
 
     //Stop dc stream
@@ -219,5 +225,7 @@ export class TestChartCtrlsPage {
     initSettings() {
         this.chart1.enableCursors();
         this.chart1.enableTimelineView();
+        this.chart1.enableMath();
+        this.chart1.redrawChart();
     }
 }

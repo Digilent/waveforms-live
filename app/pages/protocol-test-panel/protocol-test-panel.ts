@@ -1,4 +1,6 @@
 import {Component} from '@angular/core';
+import {CHART_DIRECTIVES} from 'angular2-highcharts';
+import {ModalController, NavParams, ViewController, Platform} from 'ionic-angular';
 
 //Components
 import {TransportComponent} from '../../components/transport/transport.component';
@@ -7,6 +9,9 @@ import {DropDownMenu} from '../../libs/digilent-ionic2-utilities/drop-down-menu/
 
 //Services
 import {StorageService} from '../../services/storage/storage.service';
+
+//Interfaces
+import {Chart} from '../../components/chart/chart.interface';
 
 @Component({
     templateUrl: 'build/pages/protocol-test-panel/protocol-test-panel.html',
@@ -50,9 +55,11 @@ export class ProtocolTestPanel {
     private selectedRepsonseBinaryFormat: string;
 
     private XHR: XMLHttpRequest;
+    private modalCtrl: ModalController;
 
-    constructor(_storage: StorageService) {
+    constructor(_storage: StorageService, _modalCtrl: ModalController) {
         console.log('ProtocolTestPanel Constructor');
+        this.modalCtrl = _modalCtrl;
         this.storage = _storage;
         //this.transport = new HttpTransportComponent('');
         this.selectedHttpMethod = this.httpMethodNames[0];
@@ -470,7 +477,7 @@ export class ProtocolTestPanel {
                     "1": [
                         {
                             "command": "setParameters",
-                            "offset": 3000,
+                            "offset": 0,
                             "gain": 1
                         }
                     ]
@@ -496,17 +503,12 @@ export class ProtocolTestPanel {
                                 "instrument": "osc",
                                 "channel": 1,
                                 "type": "risingEdge",
-                                "lowerThreshold": 3300,
-                                "upperThreshold": 4000
+                                "lowerThreshold": -5,
+                                "upperThreshold": 0
                             },
                             "targets": {
                                 "osc": [
-                                    1,
-                                    2
-                                ],
-                                "la": [
-                                    1,
-                                    2
+                                    1
                                 ]
                             }
                         }
@@ -551,4 +553,140 @@ export class ProtocolTestPanel {
             }
         }
     };
+
+    chartData() {
+        let dataArray = new Int16Array(this.responseRawBinary, 0, 8000);
+        let untypedArray = Array.prototype.slice.call(dataArray);
+        let modal = this.modalCtrl.create(ChartModal, {
+            dataToDisplay: untypedArray
+        });
+        modal.onDidDismiss(data=> {
+            console.log('dismiss');
+        });
+        modal.present();
+    }
+}
+
+@Component({
+    template: `
+    <div class="chart-component-wrapper" style="background-color:silver;display:block;width:100%;height:600px;">
+        <chart [options]="options" (load)="chartLoad($event.context)"></chart>
+    </div>
+  `,
+  directives: [CHART_DIRECTIVES]
+})
+export class ChartModal {
+    private platform: Platform;
+    private viewCtrl: ViewController;
+    private params: NavParams;
+    
+    private data: number[];
+    public chart: Chart;
+    private options: Object;
+
+    constructor(
+        _platform: Platform,
+        _viewCtrl: ViewController,
+        _params: NavParams
+    ) {
+        this.platform = _platform;
+        this.viewCtrl = _viewCtrl;
+        this.params = _params;
+        this.data = this.params.get('dataToDisplay');
+        this.options = {
+            chart: {
+                type: 'line',
+                zoomType: 'x',
+                animation: false,
+                spacingTop: 20
+            },
+            title: {
+                text: ''
+            },
+            tooltip: {
+                enabled: true
+            },
+            series: [{
+                data: [29.9, 36, 47, 57, 67, 71.5, 82, 92, 102, 106.4, 110, 120, 129.2],
+                allowPointSelect: true
+            }],
+            legend: {
+                enabled: false
+            },
+            yAxis: [{
+                gridLineWidth: 1,
+                tickPositioner: function () {
+                    let numTicks = 11;
+                    let ticks = [];
+                    let min = this.chart.yAxis[0].min;
+                    let max = this.chart.yAxis[0].max;
+                    let delta = (max - min) / (numTicks - 1);
+                    for (var i = 0; i < numTicks; i++) {
+                        ticks[i] = (min + i * delta).toFixed(3);
+                    }
+                    return ticks;
+                },
+                title: {
+                    text: 'Series 1'
+                }
+            }],
+            plotOptions: {
+                series: {
+                    pointInterval: 1,
+                    pointStart: 0,
+                    stickyTracking: false
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            xAxis: {
+                minRange: 0.000000001,
+                startOnTick: true,
+                endOnTick: true,
+
+                gridLineWidth: 1,
+                minorGridLineWidth: 0,
+
+                tickPositioner: function () {
+                    let numTicks = 11;
+                    let ticks = [];
+                    let min = this.chart.xAxis[0].min;
+                    let max = this.chart.xAxis[0].max;
+                    let delta = (max - min) / (numTicks - 1);
+                    let mult = 3;
+                    if (delta < .001) {
+                        let exp = delta.toExponential(3);
+                        let real1 = exp.slice(exp.indexOf('e') - exp.length + 1);
+                        mult = -1 * Number(real1) + 3;
+                        if (mult > 20) {
+                            mult = 20;
+                        }
+                    }
+                    for (var i = 0; i < numTicks; i++) {
+                        ticks[i] = (min + i * delta).toFixed(mult); 
+                    }
+                    return ticks;
+                },
+
+                minorTickInterval: 'auto',
+                minorTickLength: 10,
+                minorTickWidth: 1,
+                minorTickPosition: 'inside',
+
+            }
+        };
+    }
+
+    chartLoad(chart) {
+        console.log(chart);
+        this.chart = chart;
+        this.chart.reflow();
+        this.chart.series[0].setData(this.data, false, false, false);
+        this.chart.redraw(false);
+    }
+
+    close() {
+        this.viewCtrl.dismiss();
+    }
 }

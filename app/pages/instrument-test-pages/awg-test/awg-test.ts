@@ -49,7 +49,7 @@ export class AwgTestPage {
         //Ensure offsets are numbers
         if (typeof offsets[0] == 'string') {
             offsets.forEach((element, index, array) => {
-                array[index] = parseFloat(element);
+                this.targetOffset[index] = parseFloat(element.toString());
             });
         }
         
