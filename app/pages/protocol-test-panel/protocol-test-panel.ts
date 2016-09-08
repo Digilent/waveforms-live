@@ -27,6 +27,7 @@ export class ProtocolTestPanel {
     private sendHeaders: Array<Object> = [{}];
 
     private deviceCommands: Array<string> = ['Device', 'enumerate'];
+    private awgCommands: Array<string> = ['AWG', 'setParameters Reg', 'setParameters Arb', 'run', 'stop'];
     private dcCommands: Array<string> = ['DC', 'getVoltage', 'setVoltage'];
     private oscCommands: Array<string> = ['OSC', 'read', 'setParameters'];
     private triggerCommands: Array<string> = ['Trigger', 'forceTrigger', 'read', 'run', 'single', 'setParameters', 'stop'];
@@ -176,6 +177,27 @@ export class ProtocolTestPanel {
         switch (data.value) {
             case "enumerate":
                 this.sendBody = JSON.stringify(this.commands.device.enumerate);
+                break;
+            default:
+                this.sendBody = "";
+                break;
+        }
+    }
+
+    //Callback called when an AWG command template is selected
+    onAwgCommandChange(data) {
+        switch (data.value) {
+            case "setParameters Reg":
+                this.sendBody = JSON.stringify(this.commands.awg.setParametersReg);
+                break;
+            case "setParameters Arb":
+                this.sendBody = JSON.stringify(this.commands.awg.setParametersArb);
+                break;
+            case "run":
+                this.sendBody = JSON.stringify(this.commands.awg.run);
+                break;
+            case "stop":
+                this.sendBody = JSON.stringify(this.commands.awg.stop);
                 break;
             default:
                 this.sendBody = "";
@@ -366,7 +388,7 @@ export class ProtocolTestPanel {
             }
         },
         "awg": {
-            "setParameters Reg": {
+            "setParametersReg": {
                 "awg": {
                     "1": {
                         "command": "setParameters",
@@ -377,7 +399,7 @@ export class ProtocolTestPanel {
                     }
                 }
             },
-            "setParameters Arb": {
+            "setParametersArb": {
                 "awg": {
                     "1": {
                         "command": "setParameters",
