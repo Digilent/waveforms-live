@@ -332,7 +332,7 @@ export class SilverNeedleChart {
     }
 
     loadDeviceSpecificValues(deviceComponent: DeviceComponent) {
-        let resolution = (deviceComponent.instruments.osc.chans[0].adcRange / 1000) / Math.pow(2, deviceComponent.instruments.osc.chans[0].effectiveBits);
+        let resolution = (deviceComponent.instruments.osc.chans[0].adcVpp / 1000) / Math.pow(2, deviceComponent.instruments.osc.chans[0].effectiveBits);
         let i = 0;
         while (resolution > this.generalVoltsPerDivVals[i] && i < this.generalVoltsPerDivVals.length - 1) {
             i++;

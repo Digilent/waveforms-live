@@ -97,6 +97,9 @@ export class DcSupplyComponent {
         this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
             (voltages) => {
                 console.log('Voltages are currently: ' + voltages);
+                for (let i = 0; i < voltages.length; i++) {
+                    this.voltages[i] = voltages[i].toString();
+                }
             },
             (err) => {
                 console.log(err);

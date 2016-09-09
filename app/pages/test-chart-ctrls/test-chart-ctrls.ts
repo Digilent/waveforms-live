@@ -147,7 +147,7 @@ export class TestChartCtrlsPage {
             }
         );
 
-        this.activeDevice.instruments.trigger.run([1]).subscribe(
+        this.activeDevice.instruments.trigger.single([1]).subscribe(
             (data) => {
                 //console.log(data);
             },

@@ -31,12 +31,18 @@
                     <li *ngFor="let awgChan of device.instruments.awg.chans, let i = index;">
                         <b>{{i + 1}}</b>
                         <ul>
-                            <li>Max Resolution: {{awgChan.resolutionMax}}</li>
+                            <li>Signal Types: {{awgChan.signalTypes}}</li>
                             <li>Max Buffer Size: {{awgChan.bufferSizeMax}}</li>
-                            <li>Min Frequency: {{awgChan.freqMin}}</li>
-                            <li>Max Frequency: {{awgChan.freqMax}}</li>
-                            <li>Min Voltage: {{awgChan.voltageMin}}</li>
-                            <li>Max Voltage: {{awgChan.voltageMax}}</li>
+                            <li>Min Signal Frequency: {{awgChan.signalFreqMin}}</li>
+                            <li>Max Signal Frequency: {{awgChan.signalFreqMax}}</li>
+                            <li>Data Type: {{awgChan.dataType}}</li>
+                            <li>Min Voltage Out: {{awgChan.vOutMin}}</li>
+                            <li>Max Voltage Out: {{awgChan.vOutMax}}</li>
+                            <li>Min Voltage Offset: {{awgChan.vOffsetMin}}</li>
+                            <li>Max Voltage Offset: {{awgChan.vOffsetMax}}</li>
+                            <li>DAC Vpp: {{awgChan.dacVpp}}</li>
+                            <li>Min dt: {{awgChan.dtMin}}</li>
+                            <li>Max dt: {{awgChan.dtMax}}</li>
                         </ul>
                     </li>
                 </ul>
@@ -81,15 +87,16 @@
                     <li *ngFor="let oscChan of device.instruments.osc.chans, let i = index;">
                         <b>{{i + 1}}</b>
                         <ul>
-                            <li>Adc Range: {{oscChan.adcRange}}</li>
+                            <li>Resolution: {{oscChan.resolution}}</li>
+                            <li>Adc Vpp: {{oscChan.adcVpp}}</li>
                             <li>Buffer Data Type: {{oscChan.bufferDataType}}</li>
                             <li>Buffer Size Max: {{oscChan.bufferSizeMax}}</li>
                             <li>Effective Bits: {{oscChan.effectiveBits}}</li>
                             <li>Gains: {{oscChan.gains}}</li>
-                            <li>Input Swing Offset: {{oscChan.inputSwingOffset}}</li>
-                            <li>Input Swing Range: {{oscChan.inputSwingRange}}</li>
-                            <li>Sample Clock: {{oscChan.sampleClock}}</li>
-                            <li>Sample Clock Dividers: {{oscChan.sampleClockDividers}}</li>
+                            <li>Input Voltage Min: {{oscChan.inputVoltageMin}}</li>
+                            <li>Input Voltage Max: {{oscChan.inputVoltageMax}}</li>
+                            <li>Min dt: {{oscChan.dtMin}}</li>
+                            <li>Max dt: {{oscChan.dtMax}}</li>
                         </ul>
                     </li>
                 </ul>

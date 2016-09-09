@@ -80,7 +80,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
         });
     }
 
-    run(chans: number[]): Observable<any> {
+    single(chans: number[]): Observable<any> {
         //If no channels are active no need to talk to hardware
         if (chans.length == 0) {
             return Observable.create((observer) => {
@@ -104,6 +104,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    console.log(data);
                     observer.next(data);
                     //Handle device errors and warnings
                     observer.complete();
