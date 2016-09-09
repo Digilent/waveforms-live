@@ -36,6 +36,7 @@ export class DeviceComponent {
 
     constructor(_rootUri: string, deviceDescriptor: any) {
         console.log('Device Contructor');
+        console.log(deviceDescriptor);
         //TODO If deviceDescriptor is empty, attempt to enumerate the deviceDescriptor [?]
 
         this.rootUri = _rootUri;

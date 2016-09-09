@@ -23,6 +23,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         console.log('OSC Instrument Constructor');
 
         //Populate DC supply parameters
+        console.log(_oscInstrumentDescriptor);
         this.numChans = _oscInstrumentDescriptor.numChans;
 
         //Populate channels        
