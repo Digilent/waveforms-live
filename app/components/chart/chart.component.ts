@@ -51,11 +51,11 @@ export class SilverNeedleChart {
     private activeChannels = [0, 0];
     private autoscaleAll: boolean = false;
     private mathEnabled: boolean = false;
-    private voltsPerDivOpts: string[] = null;
-    private voltsPerDivVals: number[] = null;
     private generalVoltsPerDivOpts: string[] = ['1 mV', '2 mV', '5 mv', '10 mV', '20 mV', '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
     private activeVPDIndex: number[] = [9, 9];
     private generalVoltsPerDivVals: number[] = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5];
+    private voltsPerDivOpts: string[] = this.generalVoltsPerDivOpts;
+    private voltsPerDivVals: number[] = this.generalVoltsPerDivVals;
 
     private secsPerDivOpts: string[] = ['1 ns', '2 ns', '5 ns', '10 ns', '20 ns', '50 ns', '100 ns', '200 ns', '500 ns', '1 us',
             '2 us', '5 us', '10 us', '20 us', '50 us', '100 us', '200 us', '500 us', '1 ms', '2 ms', '5 ms', '10 ms', '20 ms', 

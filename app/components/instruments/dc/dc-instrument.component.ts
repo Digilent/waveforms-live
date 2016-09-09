@@ -50,24 +50,21 @@ export class DcInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    if (data.statusCode < 1) {
-                        let voltages = [];
 
-                        //Scale from mV to V                            
-                        for (let voltageRead in data.dc) {
-                            if (voltageRead !== 'statusCode') {
-                                //hopefully the voltage is located in the first object in the 0th index of the array of the channel property in the dc object in the response object.
-                                voltages.push(data.dc[voltageRead][0].voltage / 1000);
-                            }
+                    let voltages = [];
+
+                    //Scale from mV to V                            
+                    for (let voltageRead in data.dc) {
+                        if (voltageRead !== 'statusCode') {
+                            //hopefully the voltage is located in the first object in the 0th index of the array of the channel property in the dc object in the response object.
+                            voltages.push(data.dc[voltageRead][0].voltage / 1000);
                         }
+                    }
 
-                        //Return voltages and complete observer
-                        observer.next(voltages);
-                        observer.complete();
-                    }
-                    else {
-                        observer.error(data.statusCode);
-                    }
+                    //Return voltages and complete observer
+                    observer.next(voltages);
+                    observer.complete();
+                    
                 },
                 (err) => {
                     observer.error(err);
@@ -101,13 +98,9 @@ export class DcInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    if (data.statusCode < 1) {
-                        observer.next(data);
-                        observer.complete();
-                    }
-                    else {
-                        observer.error(data.statusCode);
-                    }
+                    observer.next(data);
+                    observer.complete();
+
                 },
                 (err) => {
                     observer.error(err);

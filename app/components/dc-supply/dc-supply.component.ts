@@ -83,12 +83,7 @@ export class DcSupplyComponent {
     setVoltages(chans: Array<number>, voltages: Array<number>) {
         this.activeDevice.instruments.dc.setVoltages(chans, voltages).subscribe(
             (data) => {
-                if (data.statusCode == 0) {
-                    console.log('DC channels: ' + chans + ' set to ' + voltages);
-                }
-                else {
-                    console.log('DC set n chan failed');
-                }
+                console.log('DC channels: ' + chans + ' set to ' + voltages);
             },
             (err) => {
                 console.log(err);
@@ -121,6 +116,7 @@ export class DcSupplyComponent {
         }
         this.dcPower = !this.dcPower;
         if (this.dcPower) {
+            //this.getVoltages(this.voltageSupplies);
             this.setVoltages(this.voltageSupplies, this.voltages.map(Number));
         }
         else {
