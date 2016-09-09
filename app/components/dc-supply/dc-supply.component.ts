@@ -65,11 +65,12 @@ export class DcSupplyComponent {
             let channelNumArray = [];
             this.voltages = [];
             for (let i = 0; i < this.activeDevice.instruments.dc.numChans; i++) {
-                channelNumArray[i] = this.activeDevice.instruments.dc.chans[i].currentIncrement;
-                this.voltages[i] = "5.00";
+                channelNumArray[i] = i + 1;
+                this.voltages[i] = "3.30";
                 this.currents[i] = "1.00";
             }
             this.voltageSupplies = channelNumArray;
+            console.log(this.voltageSupplies);
         }
     }
 

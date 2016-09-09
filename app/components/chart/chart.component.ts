@@ -1173,7 +1173,7 @@ export class SilverNeedleChart {
 
     openMathModal() {
         let modal = this.modalCtrl.create(MathModalPage, {
-            chart: this.chart
+            chartComponent: this
         });
         modal.onDidDismiss(data => {
             console.log('rip math modal');
@@ -1775,6 +1775,255 @@ export class SilverNeedleChart {
             this.autoscaleYaxes[seriesNum] = !this.autoscaleYaxes[seriesNum];
         }
         
+    }
+
+//---------------------------------- MATH INFO ------------------------------
+
+    addMathInfo(mathInfo: string, seriesNum: number, maxIndex: number, minIndex: number) {
+        console.log(mathInfo);
+        document.getElementById('test-test').innerHTML = mathInfo + ': {{' + this.getMax(seriesNum, maxIndex, minIndex) + '}}';
+    }
+
+    getMax(seriesNum: number, maxIndex: number, minIndex: number) {
+        //Spread operator '...' uses each index as the corresponding parameter in the function
+        let activeIndices = this.chart.series[seriesNum].yData.slice(minIndex, maxIndex);
+        let value = Math.max(...activeIndices);
+        let vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
+        let i = 0;
+        let unit = '';
+        while (vPerDiv < 1) {
+            i++;
+            vPerDiv = vPerDiv * 1000;
+        }
+        if (i == 0) {
+            unit = ' V';
+        }
+        else if (i == 1) {
+            unit = ' mV';
+        }
+        else if (i == 2) {
+            unit = ' uV';
+        }
+        else if (i == 3) {
+            unit = ' nV';
+        }
+
+        return (value * Math.pow(1000, i)).toFixed(0) + unit;
+        
+    }
+
+    getMin(seriesNum: number, maxIndex: number, minIndex: number) {
+        let activeIndices = this.chart.series[seriesNum].yData.slice(minIndex, maxIndex);
+        let value = Math.min(...activeIndices);
+        let vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
+        let i = 0;
+        let unit = '';
+        while (vPerDiv < 1) {
+            i++;
+            vPerDiv = vPerDiv * 1000;
+        }
+        if (i == 0) {
+            unit = ' V';
+        }
+        else if (i == 1) {
+            unit = ' mV';
+        }
+        else if (i == 2) {
+            unit = ' uV';
+        }
+        else if (i == 3) {
+            unit = ' nV';
+        }
+
+        return (value * Math.pow(1000, i)).toFixed(0) + unit;
+    }
+    
+    getLocalMax(seriesNum: number, maxIndex: number, minIndex: number) {
+        let maxCoordinates = [];
+        let detector: boolean = true;
+        for (let i = minIndex; i < maxIndex - 1; i++) {
+            if (this.chart.series[seriesNum].yData[i] - this.chart.series[seriesNum].yData[i + 1] >= 0 && !detector) {
+                maxCoordinates.push({
+                    x: this.chart.series[seriesNum].xData[i],
+                    y: this.chart.series[seriesNum].yData[i]
+                });
+                detector = true;
+            }
+            if (this.chart.series[seriesNum].yData[i] - this.chart.series[seriesNum].yData[i + 1] < 0 && detector) {
+                detector = false;
+            }
+        }
+    }
+
+    getLocalMin(seriesNum: number, maxIndex: number, minIndex: number) {
+        let minCoordinates = [];
+        let detector: boolean = true;
+        for (let i = minIndex; i < maxIndex - 1; i++) {
+            if (this.chart.series[seriesNum].yData[i] - this.chart.series[seriesNum].yData[i + 1] < 0 && !detector) {
+                minCoordinates.push({
+                    x: this.chart.series[seriesNum].xData[i],
+                    y: this.chart.series[seriesNum].yData[i]
+                });
+                detector = true;
+            }
+            if (this.chart.series[seriesNum].yData[i] - this.chart.series[seriesNum].yData[i + 1] >= 0 && detector) {
+                detector = false;
+            }
+        }
+    }
+
+    getAmplitude(seriesNum: number, maxIndex: number, minIndex: number) {
+        let max = this.getMax(seriesNum, maxIndex, minIndex);
+        let min = this.getMin(seriesNum, maxIndex, minIndex);
+        let amplitude = (parseFloat(max) - parseFloat(min)) / 2;
+        let unit = max.substr(max.indexOf(' '));
+        return (amplitude).toFixed(0) + unit;
+    }
+
+    getMean(seriesNum: number, maxIndex: number, minIndex: number) {
+        let sum = 0;
+        for (let i = minIndex; i < maxIndex; i++) {
+            sum += this.chart.series[seriesNum].yData[i];
+        }
+        let value = sum / (maxIndex - minIndex);
+        let vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
+        let i = 0;
+        let unit = '';
+        while (vPerDiv < 1) {
+            i++;
+            vPerDiv = vPerDiv * 1000;
+        }
+        if (i == 0) {
+            unit = ' V';
+        }
+        else if (i == 1) {
+            unit = ' mV';
+        }
+        else if (i == 2) {
+            unit = ' uV';
+        }
+        else if (i == 3) {
+            unit = ' nV';
+        }
+
+        return (value * Math.pow(1000, i)).toFixed(0) + unit;
+    }
+
+    getRMS(seriesNum: number, maxIndex: number, minIndex: number) {
+        let sum = 0;
+        for (let i = minIndex; i < maxIndex; i++) {
+            sum += Math.pow(this.chart.series[seriesNum].yData[i], 2);
+        }
+        let value = Math.sqrt(sum / (maxIndex - minIndex));
+        let vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
+        let i = 0;
+        let unit = '';
+        while (vPerDiv < 1) {
+            i++;
+            vPerDiv = vPerDiv * 1000;
+        }
+        if (i == 0) {
+            unit = ' V';
+        }
+        else if (i == 1) {
+            unit = ' mV';
+        }
+        else if (i == 2) {
+            unit = ' uV';
+        }
+        else if (i == 3) {
+            unit = ' nV';
+        }
+        let scaledValue = (value * Math.pow(1000, i)).toFixed(0) + unit;
+        return scaledValue;
+    }
+
+    getPeakToPeak(seriesNum: number, maxIndex: number, minIndex: number) {
+        let max = this.getMax(seriesNum, maxIndex, minIndex);
+        let min = this.getMin(seriesNum, maxIndex, minIndex);
+        let unit = max.substr(max.indexOf(' '));
+        let p2p = Math.abs(parseFloat(max)) + Math.abs(parseFloat(min));
+        return (p2p).toFixed(0) + unit;
+    }
+
+    getFrequency(seriesNum: number, maxIndex: number, minIndex: number) {
+        let value = this.chart.series[seriesNum].yData[minIndex];
+        let points = [];
+        for (let i = minIndex; i < maxIndex - 1; i++) {
+            if (this.chart.series[seriesNum].yData[i] <= value && this.chart.series[seriesNum].yData[i + 1] >= value) {
+                points.push(this.chart.series[seriesNum].xData[i]);
+            }
+        }
+        let sum = 0;
+        for (let i = 0; i < points.length - 1; i++) {
+            sum += (points[i + 1] - points[i]);
+        }
+
+        let freqRange = 1 / (sum / (points.length - 1));
+        let i = 0;
+        let unit = '';
+        while (freqRange > 1) {
+            i++;
+            freqRange = freqRange / 1000;
+        }
+        i--;
+        if (i == 0) {
+            unit = ' Hz';
+        }
+        else if (i == 1) {
+            unit = ' kHz';
+        }
+        else if (i == 2) {
+            unit = ' Mhz';
+        }
+        else if (i == 3) {
+            unit = ' GHz';
+        }
+
+        let xFreq = ((1 / (sum / (points.length - 1))) / Math.pow(1000, i)).toFixed(0) + unit;
+
+        return xFreq;
+    }
+
+    getPeriod(seriesNum: number, maxIndex: number, minIndex: number) {
+        let value = this.chart.series[seriesNum].yData[minIndex];
+        let points = [];
+        for (let i = minIndex; i < maxIndex - 1; i++) {
+            if (this.chart.series[seriesNum].yData[i] <= value && this.chart.series[seriesNum].yData[i + 1] >= value) {
+                points.push(this.chart.series[seriesNum].xData[i]);
+            }
+        }
+        let sum = 0;
+        for (let i = 0; i < points.length - 1; i++) {
+            sum += (points[i + 1] - points[i]);
+        }
+
+        let timeInterval = sum / (points.length - 1);
+        let i = 0;
+        let unit = '';
+        while (timeInterval < 1) {
+            i++;
+            timeInterval = timeInterval * 1000;
+        }
+        if (i == 0) {
+            unit = ' s';
+        }
+        else if (i == 1) {
+            unit = ' ms';
+        }
+        else if (i == 2) {
+            unit = ' us';
+        }
+        else if (i == 3) {
+            unit = ' ns';
+        }
+        else if (i == 4) {
+            unit = ' ps';
+        }
+
+        let xDelta = ((sum / (points.length - 1)) * Math.pow(1000, i)).toFixed(0) + unit;
+
+        return xDelta;
     }
 
 }

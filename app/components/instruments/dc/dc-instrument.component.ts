@@ -45,7 +45,6 @@ export class DcInstrumentComponent extends InstrumentComponent {
                 }
             ]
         });
-
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
@@ -97,7 +96,6 @@ export class DcInstrumentComponent extends InstrumentComponent {
                     }
                 ]
         });
-
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {

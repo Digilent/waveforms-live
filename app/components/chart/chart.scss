@@ -76,8 +76,6 @@
 .chart-info
 {
     background-color: #535353;
-
-    flex: 0 0 21px;
 }
 
 .chart-info .info-col
@@ -86,7 +84,15 @@
     display: inline-block;
 }
 
-.chart-info .info-col .cursor-info-col
+.chart-info .cursor-info-col
 {
     padding: 1px;
+    color: white;
+}
+
+.chart-info-container
+{
+    flex: 0 0 26px;
+    width: 100%;
+    background-color: #535353;
 }
