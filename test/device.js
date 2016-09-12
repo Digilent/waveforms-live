@@ -96,19 +96,7 @@ let processCommands = function (instrument, commandObject, params) {
         case 'awgstop':
             return awg.stop(params[0]);
 
-        //---------- DC ----------            
-        case 'dcCalibrate':
-            //callback(null, dc.calibrate());
-            break;
-        case 'dcEnumerate':
-            //callback(null, dc.enumerate());
-            break;
-        case 'dcGetVoltages':
-            //callback(null, dc.getVoltages(event.chans));
-            break;
-        case 'dcSetVoltages':
-            //callback(null, dc.setVoltages(event.chans, event.voltages));
-            break;
+        //---------- DC ----------        
         case 'dcsetVoltage':
             return dc.setVoltage(params[0], commandObject.voltage);
         case 'dcgetVoltage':
@@ -123,18 +111,15 @@ let processCommands = function (instrument, commandObject, params) {
             return trigger.read(params[0]);
 
         //---------- OSC ----------            
-        case 'oscCalibrate':
-            //callback(null, osc.calibrate());
-            break;
-        case 'oscEnumerate':
-            //callback(null, osc.enumerate());
-            break;
         case 'oscrunSingle':
             return osc.runSingle(params[0]);
         case 'oscsetParameters':
             return osc.setParameters(params[0], commandObject.offset, commandObject.gain);
         default:
-        //callback(null, 'Unknown Command');
+            return {
+                statusCode: 1,
+                errorMessage: 'Not a recognized command'
+            };
     }
 };
 
@@ -181,9 +166,6 @@ exports.handler = (event, context, postResponse) => {
             }
 
         }
-        /*if (instrument === 'osc') {
-            binaryDataFlag = 1;
-        }*/
     }
     responseObject.statusCode = sumStatusCode
     if (binaryDataFlag) {

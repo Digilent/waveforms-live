@@ -18,6 +18,7 @@ let postResponse;
 
 function handleRequest(request, response) {
     try {
+        console.log(JSON.stringify(request.headers, null, 4));
         dispatcher.dispatch(request, response);
     } catch (err) {
         console.log(err);
@@ -33,10 +34,40 @@ dispatcher.onGet("/", (req, res) => {
     res.end('Silver Needle Device Simulator');
 });
 
+//Device Root OPTIONS
+dispatcher.onOptions("/", (req, res) => {
+    console.log('options');
+    optionsResponse = res;
+    optionsResponse.setHeader('Access-Control-Allow-Origin', '*');
+    optionsResponse.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    optionsResponse.end('hey');
+});
+
 //Device Root POST
 dispatcher.onPost("/", (req, res) => {
+    console.log('hey');
     postResponse = res;
-    device.handler(JSON.parse(req.body), null, res);
+    let dataType = req.headers["content-type"];
+    if (dataType === 'application/json') {
+        device.handler(JSON.parse(req.body), null, res);
+    }
+    else if (dataType === 'application/octet-stream') {
+        console.log('binary data hi');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        let dummyRespnose = {
+            awg: {
+                1: [
+                    {
+                        command: 'setArbitraryWaveform',
+                        statusCode: 0,
+                        wait: 0
+                    }
+                ]
+            }
+        }
+        res.end('Derp');
+    }
+    
 });
 
 //Echo POST

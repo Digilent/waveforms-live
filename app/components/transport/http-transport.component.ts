@@ -57,10 +57,16 @@ export class HttpTransportComponent extends TransportComponent {
 
             // We setup our request
             XHR.open("POST", uri);
+            if (dataType === 'json') {
+                XHR.setRequestHeader("Content-Type", "application/json");
+            }
+            else if (dataType === 'binary') {
+                XHR.setRequestHeader("Content-Type", "application/octet-stream");
+            }
+            
             //Set resposne type as arraybuffer to receive response as bytes
             XHR.responseType = 'arraybuffer';
-            //Setting request header content type as application json causes nodejs error?
-            //XHR.setRequestHeader("Content-Type", "application/json");
+            
             XHR.send(body);
         });
     }

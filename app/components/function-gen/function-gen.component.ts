@@ -15,14 +15,6 @@ import {StorageService} from '../../services/storage/storage.service';
 //Interfaces
 import {SettingsObject} from '../instruments/awg/awg-instrument.component';
 
-/* Notes for component and modal
-* Eventually receive info from modal and update service with new values
-* Discuss small version of waveform that is viewable from the main slide out menu
-* Pass chart by reference (?) or load settings from service so each chart looks the same
-*   Small highchart -> http://jsfiddle.net/zPDca/1/
-* Nav Params must be objects
-*/
-
 @Component({
   templateUrl: 'build/components/function-gen/function-gen.html',
   selector: 'fgen'
@@ -111,13 +103,29 @@ export class FgenComponent {
             this.stop(chans);
         }
         else {
-            this.setRegularWaveform(chans, settings);
+            //this.setRegularWaveform(chans, settings);
+            let numPoints = 30000;
+            let waveform = {
+                y: [],
+                t0: 0,
+                dt: 1
+            };
+            let period = 0;
+            if (parseFloat(this.frequency) != 0) {
+                period = 1 / parseFloat(this.frequency);
+            }
+            let dt = (2 * period) / numPoints;
+            waveform.dt = dt;
+            for (let i = 0; i < numPoints; i++) {
+                waveform.y[i] = parseFloat(this.amplitude) * Math.sin(((Math.PI * 2) / (numPoints / 2)) * i) + parseFloat(this.offset);
+            }
+            this.setArbitraryWaveform(chans, [waveform], ['I16']);
         }
     }
 
     //Get settings from awg
-    setArbitraryWaveform(chans: number[]) {
-        this.activeDevice.instruments.awg.setArbitraryWaveform(chans, [[0, 1]], ['I16']).subscribe(
+    setArbitraryWaveform(chans: number[], waveforms, dataTypes: string[]) {
+        this.activeDevice.instruments.awg.setArbitraryWaveform(chans, waveforms, ['I16']).subscribe(
             (data) => {
                 console.log(data);
             },

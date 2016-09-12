@@ -47,6 +47,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         let command = {
             "awg": {}
         }
+        console.log(waveforms);
         let binaryOffset = 0;
         let binaryLength = 0;
         chans.forEach((element, index, array) => {
