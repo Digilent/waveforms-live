@@ -82,22 +82,19 @@ let processCommands = function (instrument, commandObject, params) {
             break;
 
         //---------- AWG ----------            
-        case 'awgCalibrate':
-            //callback(null, awg.calibrate());
-            break;
-        case 'awgEnumerate':
-            //callback(null, awg.enumerate());
-            break;
-        case 'awgGetOffsets':
-            //callback(null, awg.getOffsets(event.chans));
-            break;
-        case 'awgSetOffsets':
-            //callback(null, awg.setOffsets(event.chans, event.offsets));
-            break;
         case 'awggetSetting':
             return awg.getSetting(params[0]);
         case 'awgsetSetting':
             return awg.setSetting(params[0], commandObject.settings);
+
+        case 'awgsetArbitraryWaveform':
+            return awg.setArbitraryWaveform(params[0]);
+        case 'awgsetRegularWaveform':
+            return awg.setRegularWaveform(params[0], commandObject);
+        case 'awgrun':
+            return awg.run(params[0]);
+        case 'awgstop':
+            return awg.stop(params[0]);
 
         //---------- DC ----------            
         case 'dcCalibrate':
@@ -248,9 +245,14 @@ let device = {
 
 //------------------------------ AWG ------------------------------
 let awg = {
+    signalTypes: ['', '', '', '', '', '', '', ''],
+    signalFreqs: [0, 0, 0, 0, 0, 0, 0, 0],
+    vpps: [0, 0, 0 , 0, 0, 0, 0, 0],
+    vOffsets: [0, 0, 0, 0, 0, 0, 0, 0],
+
+    //Not sure if these are necessary
     numSamples: [0, 0, 0, 0, 0, 0, 0, 0],
     sampleRates: [0, 0, 0, 0, 0, 0, 0, 0],
-    offsets: [0, 0, 0, 0, 0, 0, 0, 0],
     buffers: [[], [], [], [], [], [], [], []],
 
     //Calibrate
@@ -268,70 +270,36 @@ let awg = {
         return response;
     },
 
-    //Get Offset
-    getOffsets: function (_chans) {
-        let _offsets = [];
-        for (let i = 0; i < _chans.length; i++) {
-            _offsets.push(this.offsets[_chans[i]]);
+    setArbitraryWaveform: function(chan) {
+        return {
+            statusCode: 0,
+            wait: 0
+        };
+    },
+
+    setRegularWaveform: function(chan, commandObject) {
+        this.signalTypes[chan] = commandObject.signalType;
+        this.signalFreqs[chan] = commandObject.signalFreq;
+        this.vpps[chan] = commandObject.vpp;
+        this.vOffsets[chan] = commandObject.vOffset;
+        return {
+            statusCode: 0,
+            wait: 0
+        };
+    },
+
+    run: function(chan) {
+        return {
+            statusCode: 0,
+            wait: 0
         }
-        return {
-            offsets: _offsets,
-            statusCode: statusOk
-        };
     },
 
-    //Set Offset
-    setOffsets: function (_chans, _offsets) {
-        for (let i = 0; i < _chans.length; i++) {
-            this.offsets[_chans[i]] = _offsets[i];
-        };
+    stop: function(chan) {
         return {
-            statusCode: statusOk
-        };
-    },
-
-    //Set Custom Waveform
-    setCustomWaveforms: function (chan, numSamples, sampleRate, offset, samples) {
-        this.numSamples[chan] = numSamples;
-        this.sampleRates[chan] = sampleRate;
-        this.offsets[chan] = offset;
-        this.samples[chan] = samples;
-        return {
-            statusCode: statusOk
-        };
-    },
-
-    //Set Waveform
-    setWaveforms: function (chan, type, freq, amplitude, offset) {
-        return {
-            statusCode: statusOk
-        };
-    },
-
-    //Get All Settings
-    getSetting: function (chan) {
-        let settings = {};
-
-
-        settings.numSamples = this.numSamples[parseInt(chan)];
-        settings.sampleRate = this.sampleRates[parseInt(chan)];
-        settings.offset = this.offsets[parseInt(chan)];
-
-
-        return {
-            settings: settings,
-            statusCode: statusOk
-        };
-    },
-
-    //Set All Settings
-    setSetting: function (chan, settings) {
-        this.numSamples[parseInt(chan)] = settings.numSamples;
-        this.sampleRates[parseInt(chan)] = settings.sampleRate;
-        this.offsets[parseInt(chan)] = settings.offset;
-        return {
-            statusCode: statusOk
-        };
+            statusCode: 0,
+            wait: 0
+        }
     }
 }
 

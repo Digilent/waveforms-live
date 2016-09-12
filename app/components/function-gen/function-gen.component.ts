@@ -12,6 +12,9 @@ import {DeviceComponent} from '../../components/device/device.component';
 import {DeviceManagerService} from '../../services/device/device-manager.service';
 import {StorageService} from '../../services/storage/storage.service';
 
+//Interfaces
+import {SettingsObject} from '../instruments/awg/awg-instrument.component';
+
 /* Notes for component and modal
 * Eventually receive info from modal and update service with new values
 * Discuss small version of waveform that is viewable from the main slide out menu
@@ -93,45 +96,75 @@ export class FgenComponent {
     togglePower() {
         this.powerOn = !this.powerOn;
         let chans = [];
-        let settings = [{},{}];
+        let settings = [];
         for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {
-            chans[i] = i;
+            chans[i] = i + 1;
             settings[i] = {
-                numSamples: 5 * (i + 1),
-                sampleRate: 5 * (i + 1),
-                offset: 5 * (i + 1),
+                signalType: this.waveType,
+                signalFreq: parseFloat(this.frequency),
+                vpp: 3,
+                vOffset: parseFloat(this.offset)
             };
         }
         if (this.powerOn) {
-            this.getSettings(chans);
+            this.run(chans);
+            this.stop(chans);
         }
         else {
-            this.setSettings(chans,settings);
+            this.setRegularWaveform(chans, settings);
         }
     }
 
     //Get settings from awg
-    getSettings(chans: number[]) {
-        this.activeDevice.instruments.awg.getSettings(chans).subscribe(
+    setArbitraryWaveform(chans: number[]) {
+        this.activeDevice.instruments.awg.setArbitraryWaveform(chans, [[0, 1]], ['I16']).subscribe(
             (data) => {
                 console.log(data);
             },
             (err) => {
-                console.log('AWG Read Offset Failed');
+                console.log('AWG Set Arbitrary Failed');
             },
             () => {
 
             });
     }
 
-    //Set awg settings
-    setSettings(chans: number[], settings: Array<Object>) {
-        this.activeDevice.instruments.awg.setSettings(chans, settings).subscribe(
+    //Set regular waveform for awg
+    setRegularWaveform(chans: number[], settings: Array<SettingsObject>) {
+        this.activeDevice.instruments.awg.setRegularWaveform(chans, settings).subscribe(
             (data) => {
                 console.log(data);
             },
             (err) => {
-                console.log('AWG Set Settings Failed');
+                console.log('AWG Set Regular Failed');
+            },
+            () => {
+
+            });
+    }
+
+    //Run awg
+    run(chans: number[]) {
+        this.activeDevice.instruments.awg.run(chans).subscribe(
+            (data) => {
+                console.log(data);
+            },
+            (err) => {
+                console.log('AWG Run Failed');
+            },
+            () => {
+
+            });
+    }
+
+    //Stop awg
+    stop(chans: number[]) {
+        this.activeDevice.instruments.awg.stop(chans).subscribe(
+            (data) => {
+                console.log(data);
+            },
+            (err) => {
+                console.log('AWG Stop Failed');
             },
             () => {
 

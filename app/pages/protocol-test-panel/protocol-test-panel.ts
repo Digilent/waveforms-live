@@ -316,8 +316,6 @@ export class ProtocolTestPanel {
         })
         console.log(this.sendBody);
         this.XHR.send(this.sendBody);
-
-        this.XHR.send(this.sendBody);
     }
 
     abort() {
