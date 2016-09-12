@@ -18,7 +18,6 @@ let postResponse;
 
 function handleRequest(request, response) {
     try {
-        console.log(JSON.stringify(request.headers, null, 4));
         dispatcher.dispatch(request, response);
     } catch (err) {
         console.log(err);
@@ -36,16 +35,16 @@ dispatcher.onGet("/", (req, res) => {
 
 //Device Root OPTIONS
 dispatcher.onOptions("/", (req, res) => {
-    console.log('options');
+    console.log('options request');
     optionsResponse = res;
     optionsResponse.setHeader('Access-Control-Allow-Origin', '*');
     optionsResponse.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    optionsResponse.end('hey');
+    optionsResponse.setHeader('Access-Control-Max-Age', 86400);
+    optionsResponse.end('Options Response Successful');
 });
 
 //Device Root POST
 dispatcher.onPost("/", (req, res) => {
-    console.log('hey');
     postResponse = res;
     let dataType = req.headers["content-type"];
     if (dataType === 'application/json') {
@@ -54,7 +53,7 @@ dispatcher.onPost("/", (req, res) => {
     else if (dataType === 'application/octet-stream') {
         console.log('binary data hi');
         res.setHeader('Access-Control-Allow-Origin', '*');
-        let dummyRespnose = {
+        let dummyResponse = {
             awg: {
                 1: [
                     {
@@ -65,7 +64,7 @@ dispatcher.onPost("/", (req, res) => {
                 ]
             }
         }
-        res.end('Derp');
+        res.end(JSON.stringify(dummyResponse));
     }
     
 });

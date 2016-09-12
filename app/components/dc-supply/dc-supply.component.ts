@@ -30,6 +30,8 @@ export class DcSupplyComponent {
 
     private storageService: StorageService;
     private storageEventListener: EventEmitter<any>;
+
+    private intervalReference;
     
     constructor(_deviceManagerService: DeviceManagerService, _storageService: StorageService) {
         this.voltageSupplies = [0, 1, 2];
@@ -121,9 +123,12 @@ export class DcSupplyComponent {
         if (this.dcPower) {
             //this.getVoltages(this.voltageSupplies);
             this.setVoltages(this.voltageSupplies, this.voltages.map(Number));
+            this.intervalReference = setInterval(function(){
+                this.getVoltages(this.voltageSupplies);
+            }.bind(this), 1000);
         }
         else {
-            this.getVoltages(this.voltageSupplies);
+            clearInterval(this.intervalReference);
         }
     }
 
