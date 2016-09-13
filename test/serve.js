@@ -66,6 +66,30 @@ dispatcher.onPost("/", (req, res) => {
         }
         res.end(JSON.stringify(dummyResponse));
     }
+    else {
+        try {
+            console.log('Unidentified content-type: Attempting JSON parse');
+            device.handler(JSON.parse(req.body), null, res);
+        }
+        catch(error) {
+            console.log('Error occurred. Sending dummy response');
+            console.log(error);
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            let dummyResponse = {
+                awg: {
+                    1: [
+                        {
+                            command: 'setArbitraryWaveform',
+                            statusCode: 0,
+                            wait: 0
+                        }
+                    ]
+                }
+            }
+            res.end(JSON.stringify(dummyResponse));
+        }
+        
+    }
     
 });
 

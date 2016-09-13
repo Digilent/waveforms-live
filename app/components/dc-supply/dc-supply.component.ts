@@ -72,7 +72,6 @@ export class DcSupplyComponent {
                 this.currents[i] = "1.00";
             }
             this.voltageSupplies = channelNumArray;
-            console.log(this.voltageSupplies);
         }
     }
 
