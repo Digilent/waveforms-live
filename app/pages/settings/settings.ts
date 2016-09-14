@@ -39,7 +39,7 @@ export class SettingsPage {
     connect(targetUri: string) {
         this.deviceManangerService.connect(targetUri).subscribe(
             (data) => {
-                
+                this.deviceManangerService.addDeviceFromDescriptor(targetUri, data);                
 
             },
             (err) => {

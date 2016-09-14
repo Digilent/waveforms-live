@@ -1,0 +1,82 @@
+.first-tab-container
+{
+    background-color: #535353;
+    height: 100%;
+}
+
+.first-tab-container .add-device-container
+{
+    max-width: 500px;
+}
+
+.first-tab-container .align-center
+{
+    text-align: center;
+}
+
+.first-tab-container .dev-menu-button
+{
+    width: 100%;
+    color: white;
+    background-color: #535353;
+}
+
+.first-tab-container .dev-menu-item
+{
+    background-color: #535353;
+    color: white;
+}
+
+.first-tab-container .connection-notice
+{
+    color: white;
+}
+
+.first-tab-container .connect-button
+{
+    background-color: #535353;
+    border: solid black 1px;
+}
+
+.first-tab-container .device-manager-card
+{
+    max-width: 500px;
+    cursor: pointer;
+    background-color: #535353;
+}
+
+.first-tab-container .device-manager-card .card-item
+{
+    background-color: #535353;
+    margin: 0px 0px 0px 0px;
+    border: solid black 1px;
+}
+
+.first-tab-container .device-manager-card .card-label > h2
+{
+    color: white;
+}
+
+.first-tab-container .device-manager-card .card-label > p
+{
+    color: white;
+    opacity: 0.5;
+}
+
+.first-tab-container .device-manager-card .card-button
+{
+    min-width: 35px;
+    margin: 0.4rem 0.2rem;
+}
+
+.first-tab-container .device-manager-card .card-label
+{
+    margin: 1px 0px 1px 0px;
+}
+
+ion-avatar img {
+    border-radius: 0px;
+    max-width: 50px;
+    max-height: 50px;
+}
+

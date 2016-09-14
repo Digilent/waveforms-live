@@ -3,8 +3,8 @@ import {ViewController, NavParams} from 'ionic-angular';
 
 @Component({
     template: `
-    <ion-item *ngFor="let data of dataArray">
-        <button clear (click)="close(data)">{{data}}</button>
+    <ion-item (click)="close(data)" *ngFor="let data of dataArray">
+        <button clear>{{data}}</button>
     </ion-item>
   `
 })
@@ -25,6 +25,7 @@ export class GenPopover {
 
     //Close popover and send option string as a NavParam
     close(option: string) {
+        console.log('closing gen pop');
         this.viewCtrl.dismiss({
             option: option
         });
