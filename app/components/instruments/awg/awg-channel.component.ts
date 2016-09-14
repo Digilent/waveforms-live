@@ -4,24 +4,33 @@ import {Component} from '@angular/core';
 })
 export class AwgChannelComponent {
 
-    public resolutionMax: number = 0;
-    public bufferSizeMax: number = 0;
-
-    public freqMin: number = 0;
-    public freqMax: number = 0;
-
-    public voltageMin: number = 0;
-    public voltageMax: number = 0;
+    public signalTypes: string[];
+    public signalFreqMin: number;
+    public signalFreqMax: number;
+    public dataType: string;
+    public bufferSizeMax: number;
+    public dacVpp: number;
+    public dtMin: number;
+    public dtMax: number;
+    public vOffsetMin: number;
+    public vOffsetMax: number;
+    public vOutMin: number;
+    public vOutMax: number;
 
     constructor(awgChannelDescriptor: any) {
 
-        this.resolutionMax = awgChannelDescriptor.resolutionMax;
+        this.signalTypes = awgChannelDescriptor.signalTypes;
+        this.signalFreqMin = awgChannelDescriptor.signalFreqMin;
+        this.signalFreqMax = awgChannelDescriptor.signalFreqMax;
+        this.dataType = awgChannelDescriptor.dataType;
         this.bufferSizeMax = awgChannelDescriptor.bufferSizeMax;
-        
-        this.freqMin = awgChannelDescriptor.freqMin;
-        this.freqMax = awgChannelDescriptor.freqMax;
-        
-        this.voltageMin = awgChannelDescriptor.voltageMin;
-        this.voltageMax = awgChannelDescriptor.voltageMax;
+        this.dacVpp = awgChannelDescriptor.dacVpp;
+        this.dtMin = awgChannelDescriptor.dtMin;
+        this.dtMax = awgChannelDescriptor.dtMax;
+        this.vOffsetMin = awgChannelDescriptor.vOffsetMin;
+        this.vOffsetMax = awgChannelDescriptor.vOffsetMax;
+        this.vOutMin = awgChannelDescriptor.vOutMin;
+        this.vOutMax = awgChannelDescriptor.vOutMax;
     }
+    
 }

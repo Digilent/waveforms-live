@@ -33,10 +33,64 @@ dispatcher.onGet("/", (req, res) => {
     res.end('Silver Needle Device Simulator');
 });
 
+//Device Root OPTIONS
+dispatcher.onOptions("/", (req, res) => {
+    console.log('options request');
+    optionsResponse = res;
+    optionsResponse.setHeader('Access-Control-Allow-Origin', '*');
+    optionsResponse.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    optionsResponse.setHeader('Access-Control-Max-Age', 86400);
+    optionsResponse.end('Options Response Successful');
+});
+
 //Device Root POST
 dispatcher.onPost("/", (req, res) => {
     postResponse = res;
-    device.handler(JSON.parse(req.body), null, res);
+    let dataType = req.headers["content-type"];
+    if (dataType === 'application/json') {
+        device.handler(JSON.parse(req.body), null, res);
+    }
+    else if (dataType === 'application/octet-stream') {
+        console.log('binary data hi');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        let dummyResponse = {
+            awg: {
+                1: [
+                    {
+                        command: 'setArbitraryWaveform',
+                        statusCode: 0,
+                        wait: 0
+                    }
+                ]
+            }
+        }
+        res.end(JSON.stringify(dummyResponse));
+    }
+    else {
+        try {
+            console.log('Unidentified content-type: Attempting JSON parse');
+            device.handler(JSON.parse(req.body), null, res);
+        }
+        catch(error) {
+            console.log('Error occurred. Sending dummy response');
+            console.log(error);
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            let dummyResponse = {
+                awg: {
+                    1: [
+                        {
+                            command: 'setArbitraryWaveform',
+                            statusCode: 0,
+                            wait: 0
+                        }
+                    ]
+                }
+            }
+            res.end(JSON.stringify(dummyResponse));
+        }
+        
+    }
+    
 });
 
 //Echo POST

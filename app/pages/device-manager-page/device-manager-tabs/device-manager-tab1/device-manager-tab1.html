@@ -1,0 +1,49 @@
+<ion-header>
+    <ion-navbar>
+        <button menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Saved Devices</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content class="first-tab-container">
+
+    <center>
+        <div class="add-device-container">
+            <div class="align-center">
+                <button (click)="toggleAddDevMenu()" clear class="dev-menu-button">
+                    <ion-icon *ngIf="!showDevMenu" name="arrow-dropdown"></ion-icon>
+                    <ion-icon *ngIf="showDevMenu" name="arrow-dropup"></ion-icon>
+                    Add a Device
+                </button>
+            </div>
+            <div [ngClass]="{fadein: showDevMenu}" class="fadeout">
+                <ion-item class="dev-menu-item">
+                    <ion-label stacked>Hostname / IP</ion-label>
+                    <ion-input [(ngModel)]="addDeviceIp"></ion-input>
+                    <button class="connect-button" item-right (click)="attemptConnect(addDeviceIp)">Connect</button>
+                </ion-item>
+            </div>
+            <p class="connection-notice" *ngIf="connectingToDevice">Attempting to Connect to Device</p>
+            <ion-spinner *ngIf="connectingToDevice" name="crescent"></ion-spinner>
+            
+        </div>
+
+        <ion-card class="device-manager-card" *ngFor="let device of devices, let i = index;">
+            <ion-item class="card-item">
+                <ion-avatar item-left (click)="connectToDevice(i)">
+                    <img src="img/osmz.png">
+                </ion-avatar>
+                <ion-label class="card-label" (click)="connectToDevice(i)">
+                    <h2 class="turn-white">Hostname</h2>
+                    <p class="turn-white">{{device.ipAddress}}</p>
+                    <p class="turn-white">{{device.deviceDescriptor.deviceModel}}</p>
+                </ion-label>
+                
+                <button class="card-button" clear item-right (click)="openPopover($event, i)"><ion-icon name="more"></ion-icon></button>
+            </ion-item>
+        
+        </ion-card>
+    </center>
+</ion-content>

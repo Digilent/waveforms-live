@@ -3,6 +3,7 @@ import {ViewChild, Component} from '@angular/core';
 
 //Components
 import {DeviceComponent} from '../../components/device/device.component';
+import {SilverNeedleChart} from '../../components/chart/chart.component';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
@@ -16,6 +17,7 @@ import {SelectedData} from './math-modal.interface';
 })
 
 export class MathModalPage {
+    private chartComponent: SilverNeedleChart;
     private platform: Platform;
     private viewCtrl: ViewController;
     private params: NavParams;
@@ -43,7 +45,8 @@ export class MathModalPage {
         this.platform = _platform;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
-        this.chart = this.params.get('chart');
+        this.chartComponent = this.params.get('chartComponent');
+        this.chart = this.chartComponent.chart;
         this.calcSelectedRange();
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
@@ -75,9 +78,6 @@ export class MathModalPage {
         let seriesNum = this.selectedData.channel - 1;
         this.minIndex = Math.round((this.chartMin - this.chart.series[seriesNum].xData[0]) / this.chart.series[seriesNum].options.pointInterval);
         this.maxIndex = Math.round((this.chartMax - this.chart.series[seriesNum].xData[0]) / this.chart.series[seriesNum].options.pointInterval);
-        this.getLocalMax();
-        this.getLocalMin();
-        this.getAmplitude();
     }
     
     setActiveSeries(channel: string) {
@@ -91,7 +91,7 @@ export class MathModalPage {
     getMetrics(metric: string) {
         switch (metric) {
             case 'Frequency': 
-                return this.getFrequency();
+                return this.chartComponent.getFrequency(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
                 
             case 'Pos Pulse Width':
                 return 'Pos Pulse Width'
@@ -100,7 +100,7 @@ export class MathModalPage {
                 return 'Pos Duty Cycle'
                 
             case 'Period':
-                return this.getPeriod();
+                return this.chartComponent.getPeriod(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
 
             case 'Neg Pulse Width':
                 return 'Neg Pulse Width'
@@ -115,7 +115,7 @@ export class MathModalPage {
                 return 'Rise Time'
                 
             case 'Amplitude':
-                return this.getAmplitude();
+                return this.chartComponent.getAmplitude(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
                 
             case 'High':
                 return 'High'
@@ -124,19 +124,19 @@ export class MathModalPage {
                 return 'Low'
                 
             case 'Peak to Peak':
-                return this.getPeakToPeak();
+                return this.chartComponent.getPeakToPeak(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
                 
             case 'Maximum':
-                return this.getMax();
+                return this.chartComponent.getMax(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
                 
             case 'Minimum':
-                return this.getMin();
+                return this.chartComponent.getMin(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
                 
             case 'Mean':
-                return this.getMean();
+                return this.chartComponent.getMean(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
                 
             case 'RMS':
-                return this.getRMS();
+                return this.chartComponent.getRMS(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
                 
             case 'Overshoot':
                 return 'Overshoot'
@@ -157,246 +157,8 @@ export class MathModalPage {
 
     }
 
-    getMax() {
-        //Spread operator '...' uses each index as the corresponding parameter in the function
-        let activeIndices = this.chart.series[this.selectedData.channel - 1].yData.slice(this.minIndex, this.maxIndex);
-        let value = Math.max(...activeIndices);
-        let vPerDiv = Math.abs(this.chart.yAxis[this.selectedData.channel - 1].max - this.chart.yAxis[this.selectedData.channel - 1].min) / 10;
-        let i = 0;
-        let unit = '';
-        while (vPerDiv < 1) {
-            i++;
-            vPerDiv = vPerDiv * 1000;
-        }
-        if (i == 0) {
-            unit = ' V';
-        }
-        else if (i == 1) {
-            unit = ' mV';
-        }
-        else if (i == 2) {
-            unit = ' uV';
-        }
-        else if (i == 3) {
-            unit = ' nV';
-        }
-
-        return (value * Math.pow(1000, i)).toFixed(0) + unit;
-        
-    }
-
-    getMin() {
-        let activeIndices = this.chart.series[this.selectedData.channel - 1].yData.slice(this.minIndex, this.maxIndex);
-        let value = Math.min(...activeIndices);
-        let vPerDiv = Math.abs(this.chart.yAxis[this.selectedData.channel - 1].max - this.chart.yAxis[this.selectedData.channel - 1].min) / 10;
-        let i = 0;
-        let unit = '';
-        while (vPerDiv < 1) {
-            i++;
-            vPerDiv = vPerDiv * 1000;
-        }
-        if (i == 0) {
-            unit = ' V';
-        }
-        else if (i == 1) {
-            unit = ' mV';
-        }
-        else if (i == 2) {
-            unit = ' uV';
-        }
-        else if (i == 3) {
-            unit = ' nV';
-        }
-
-        return (value * Math.pow(1000, i)).toFixed(0) + unit;
-    }
-    
-    getLocalMax() {
-        let maxCoordinates = [];
-        let detector: boolean = true;
-        for (let i = this.minIndex; i < this.maxIndex - 1; i++) {
-            if (this.chart.series[this.selectedData.channel - 1].yData[i] - this.chart.series[this.selectedData.channel - 1].yData[i + 1] >= 0 && !detector) {
-                maxCoordinates.push({
-                    x: this.chart.series[this.selectedData.channel - 1].xData[i],
-                    y: this.chart.series[this.selectedData.channel - 1].yData[i]
-                });
-                detector = true;
-            }
-            if (this.chart.series[this.selectedData.channel - 1].yData[i] - this.chart.series[this.selectedData.channel - 1].yData[i + 1] < 0 && detector) {
-                detector = false;
-            }
-        }
-    }
-
-    getLocalMin() {
-        let minCoordinates = [];
-        let detector: boolean = true;
-        for (let i = this.minIndex; i < this.maxIndex - 1; i++) {
-            if (this.chart.series[this.selectedData.channel - 1].yData[i] - this.chart.series[this.selectedData.channel - 1].yData[i + 1] < 0 && !detector) {
-                minCoordinates.push({
-                    x: this.chart.series[this.selectedData.channel - 1].xData[i],
-                    y: this.chart.series[this.selectedData.channel - 1].yData[i]
-                });
-                detector = true;
-            }
-            if (this.chart.series[this.selectedData.channel - 1].yData[i] - this.chart.series[this.selectedData.channel - 1].yData[i + 1] >= 0 && detector) {
-                detector = false;
-            }
-        }
-    }
-
-    getAmplitude() {
-        let max = this.getMax();
-        let min = this.getMin();
-        let amplitude = (parseFloat(max) - parseFloat(min)) / 2;
-        let unit = max.substr(max.indexOf(' '));
-        return (amplitude).toFixed(0) + unit;
-    }
-
-    getMean() {
-        let sum = 0;
-        for (let i = this.minIndex; i < this.maxIndex; i++) {
-            sum += this.chart.series[this.selectedData.channel - 1].yData[i];
-        }
-        let value = sum / (this.maxIndex - this.minIndex);
-        let vPerDiv = Math.abs(this.chart.yAxis[this.selectedData.channel - 1].max - this.chart.yAxis[this.selectedData.channel - 1].min) / 10;
-        let i = 0;
-        let unit = '';
-        while (vPerDiv < 1) {
-            i++;
-            vPerDiv = vPerDiv * 1000;
-        }
-        if (i == 0) {
-            unit = ' V';
-        }
-        else if (i == 1) {
-            unit = ' mV';
-        }
-        else if (i == 2) {
-            unit = ' uV';
-        }
-        else if (i == 3) {
-            unit = ' nV';
-        }
-
-        return (value * Math.pow(1000, i)).toFixed(0) + unit;
-    }
-
-    getRMS() {
-        let sum = 0;
-        for (let i = this.minIndex; i < this.maxIndex; i++) {
-            sum += Math.pow(this.chart.series[this.selectedData.channel - 1].yData[i], 2);
-        }
-        let value = Math.sqrt(sum / (this.maxIndex - this.minIndex));
-        let vPerDiv = Math.abs(this.chart.yAxis[this.selectedData.channel - 1].max - this.chart.yAxis[this.selectedData.channel - 1].min) / 10;
-        let i = 0;
-        let unit = '';
-        while (vPerDiv < 1) {
-            i++;
-            vPerDiv = vPerDiv * 1000;
-        }
-        if (i == 0) {
-            unit = ' V';
-        }
-        else if (i == 1) {
-            unit = ' mV';
-        }
-        else if (i == 2) {
-            unit = ' uV';
-        }
-        else if (i == 3) {
-            unit = ' nV';
-        }
-        let scaledValue = (value * Math.pow(1000, i)).toFixed(0) + unit;
-        return scaledValue;
-    }
-
-    getPeakToPeak() {
-        let max = this.getMax();
-        let min = this.getMin();
-        let unit = max.substr(max.indexOf(' '));
-        let p2p = Math.abs(parseFloat(max)) + Math.abs(parseFloat(min));
-        return (p2p).toFixed(0) + unit;
-    }
-
-    getFrequency() {
-        let value = this.chart.series[this.selectedData.channel - 1].yData[this.minIndex];
-        let points = [];
-        for (let i = this.minIndex; i < this.maxIndex - 1; i++) {
-            if (this.chart.series[this.selectedData.channel - 1].yData[i] <= value && this.chart.series[this.selectedData.channel - 1].yData[i + 1] >= value) {
-                points.push(this.chart.series[this.selectedData.channel - 1].xData[i]);
-            }
-        }
-        let sum = 0;
-        for (let i = 0; i < points.length - 1; i++) {
-            sum += (points[i + 1] - points[i]);
-        }
-
-        let freqRange = 1 / (sum / (points.length - 1));
-        let i = 0;
-        let unit = '';
-        while (freqRange > 1) {
-            i++;
-            freqRange = freqRange / 1000;
-        }
-        i--;
-        if (i == 0) {
-            unit = ' Hz';
-        }
-        else if (i == 1) {
-            unit = ' kHz';
-        }
-        else if (i == 2) {
-            unit = ' Mhz';
-        }
-        else if (i == 3) {
-            unit = ' GHz';
-        }
-
-        let xFreq = ((1 / (sum / (points.length - 1))) / Math.pow(1000, i)).toFixed(0) + unit;
-
-        return xFreq;
-    }
-
-    getPeriod() {
-        let value = this.chart.series[this.selectedData.channel - 1].yData[this.minIndex];
-        let points = [];
-        for (let i = this.minIndex; i < this.maxIndex - 1; i++) {
-            if (this.chart.series[this.selectedData.channel - 1].yData[i] <= value && this.chart.series[this.selectedData.channel - 1].yData[i + 1] >= value) {
-                points.push(this.chart.series[this.selectedData.channel - 1].xData[i]);
-            }
-        }
-        let sum = 0;
-        for (let i = 0; i < points.length - 1; i++) {
-            sum += (points[i + 1] - points[i]);
-        }
-
-        let timeInterval = sum / (points.length - 1);
-        let i = 0;
-        let unit = '';
-        while (timeInterval < 1) {
-            i++;
-            timeInterval = timeInterval * 1000;
-        }
-        if (i == 0) {
-            unit = ' s';
-        }
-        else if (i == 1) {
-            unit = ' ms';
-        }
-        else if (i == 2) {
-            unit = ' us';
-        }
-        else if (i == 3) {
-            unit = ' ns';
-        }
-        else if (i == 4) {
-            unit = ' ps';
-        }
-
-        let xDelta = ((sum / (points.length - 1)) * Math.pow(1000, i)).toFixed(0) + unit;
-
-        return xDelta;
+    exportMathInfoToChart() {
+        this.chartComponent.addMathInfo('Maximum', this.selectedData.channel - 1, this.maxIndex, this.minIndex);
     }
     
 }

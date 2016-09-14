@@ -80,7 +80,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
         });
     }
 
-    run(chans: number[]): Observable<any> {
+    single(chans: number[]): Observable<any> {
         //If no channels are active no need to talk to hardware
         if (chans.length == 0) {
             return Observable.create((observer) => {
@@ -143,6 +143,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (data) => {
                     //Handle device errors and warnings
+                    console.log('start');
                     let bufferCount = 0;
                     let count = 0;
                     let i = 0;
@@ -158,7 +159,18 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                     }
                     let binaryIndexStringLength = stringBuffer.indexOf('\r\n');
                     let binaryIndex = parseFloat(stringBuffer.substring(0, binaryIndexStringLength));
-                    let command = JSON.parse(stringBuffer.substring(binaryIndexStringLength + 2, binaryIndexStringLength + binaryIndex + 2));
+                    let command;
+                    try {
+                        command = JSON.parse(stringBuffer.substring(binaryIndexStringLength + 2, binaryIndexStringLength + binaryIndex + 2))
+                    }
+                    catch(error) {
+                        console.log(error);
+                        console.log('Error parsing response from trigger read. Printing entire response');
+                        console.log(String.fromCharCode.apply(null, new Int8Array(data.slice(0))));
+                        observer.error(error);
+                        observer.complete();
+                    }
+                    
                     for (let channel in command.trigger) {
                         if (command.trigger[channel][0].osc !== undefined) {
                             for (let instrumentChannel in command.trigger[channel][0].osc) {

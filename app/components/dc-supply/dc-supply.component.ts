@@ -30,6 +30,8 @@ export class DcSupplyComponent {
 
     private storageService: StorageService;
     private storageEventListener: EventEmitter<any>;
+
+    private intervalReference;
     
     constructor(_deviceManagerService: DeviceManagerService, _storageService: StorageService) {
         this.voltageSupplies = [0, 1, 2];
@@ -65,8 +67,8 @@ export class DcSupplyComponent {
             let channelNumArray = [];
             this.voltages = [];
             for (let i = 0; i < this.activeDevice.instruments.dc.numChans; i++) {
-                channelNumArray[i] = this.activeDevice.instruments.dc.chans[i].currentIncrement;
-                this.voltages[i] = "5.00";
+                channelNumArray[i] = i + 1;
+                this.voltages[i] = "3.30";
                 this.currents[i] = "1.00";
             }
             this.voltageSupplies = channelNumArray;
@@ -82,12 +84,7 @@ export class DcSupplyComponent {
     setVoltages(chans: Array<number>, voltages: Array<number>) {
         this.activeDevice.instruments.dc.setVoltages(chans, voltages).subscribe(
             (data) => {
-                if (data.statusCode == 0) {
-                    console.log('DC channels: ' + chans + ' set to ' + voltages);
-                }
-                else {
-                    console.log('DC set n chan failed');
-                }
+                console.log('DC channels: ' + chans + ' set to ' + voltages);
             },
             (err) => {
                 console.log(err);
@@ -101,6 +98,9 @@ export class DcSupplyComponent {
         this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
             (voltages) => {
                 console.log('Voltages are currently: ' + voltages);
+                for (let i = 0; i < voltages.length; i++) {
+                    this.voltages[i] = voltages[i].toString();
+                }
             },
             (err) => {
                 console.log(err);
@@ -120,10 +120,14 @@ export class DcSupplyComponent {
         }
         this.dcPower = !this.dcPower;
         if (this.dcPower) {
+            //this.getVoltages(this.voltageSupplies);
             this.setVoltages(this.voltageSupplies, this.voltages.map(Number));
+            this.intervalReference = setInterval(function(){
+                this.getVoltages(this.voltageSupplies);
+            }.bind(this), 1000);
         }
         else {
-            this.getVoltages(this.voltageSupplies);
+            clearInterval(this.intervalReference);
         }
     }
 

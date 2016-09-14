@@ -37,9 +37,7 @@ export class DeviceManagerService {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (deviceDescriptor) => {
                     let response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(deviceDescriptor.slice(0))));
-                    let dev = new DeviceComponent(uri, response.device[0]);
-                    this.activeDeviceIndex = this.devices.push(dev)-1;
-                    observer.next(this.activeDeviceIndex);
+                    observer.next(response);
                     observer.complete();
                 },
                 (err) => {
@@ -59,5 +57,10 @@ export class DeviceManagerService {
     //Sets active device
     setActiveDevice(_activeDeviceIndex: number) {
         this.activeDeviceIndex = _activeDeviceIndex;
+    }
+
+    addDeviceFromDescriptor(uri: string, deviceDescriptor: Object) {
+        let dev = new DeviceComponent(uri, deviceDescriptor.device[0]);
+        this.activeDeviceIndex = this.devices.push(dev) - 1;
     }
 }

@@ -314,7 +314,7 @@ export class ProtocolTestPanel {
                 this.XHR.setRequestHeader(element.key, element.value);
             }
         })
-
+        console.log(this.sendBody);
         this.XHR.send(this.sendBody);
     }
 

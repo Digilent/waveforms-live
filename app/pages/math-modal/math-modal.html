@@ -10,7 +10,7 @@
         <ion-col class="data-container">
             <ion-row *ngFor="let row of buttonNames, let i = index;">
                 <ion-col *ngFor="let button of row, let j = index;">
-                    <center><button class="button-effects disable-hover">{{button}}</button></center>
+                    <center><button (click)="exportMathInfoToChart()" class="button-effects disable-hover">{{button}}</button></center>
                     <div class="center">{{getMetrics(button)}}</div>
                 </ion-col>
             </ion-row>

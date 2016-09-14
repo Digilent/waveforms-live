@@ -33,33 +33,4 @@ export class AwgTestPage {
             });
     }
 
-    getOffsets(chans: Array<number>) {
-        this.activeDevice.instruments.awg.getOffsets(chans).subscribe(
-            (offsets) => {
-                offsets.forEach((element, index, array) => {
-                    this.readOffsets[chans[index]] = element;
-                })
-            },
-            (err) => {
-                console.log('AWG Read Offset Failed');
-            });
-    }
-    
-    setOffsets(chans: Array<number>, offsets: Array<number>) {
-        //Ensure offsets are numbers
-        if (typeof offsets[0] == 'string') {
-            offsets.forEach((element, index, array) => {
-                this.targetOffset[index] = parseFloat(element.toString());
-            });
-        }
-        
-        this.activeDevice.instruments.awg.setOffsets(chans, offsets).subscribe(
-            (status) => {
-                //this.readOffsets[chan] = offset/1000;
-            },
-            (err) => {
-                console.log('AWG Set Offset Failed');
-            });
-    }
-
 }

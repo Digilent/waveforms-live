@@ -1,7 +1,7 @@
 {
+    "command": "enumerate",
     "statusCode": 0,
     "wait": 0,
-    "command": "enumerate",
     "deviceMake": "Digilent",
     "deviceModel": "OpenScope-MZ",
     "firmwareVersion": {
@@ -10,22 +10,25 @@
         "patch": 0
     },
     "awg": {
-        "numChans": 2,
+        "numChans": 1,
         "1": {
-            "resolutionMax": 10,
-            "bufferSizeMax": 1024,
-            "freqMin": 100,
-            "freqMax": 1000000,
-            "voltageMin": -5000,
-            "voltageMax": 5000
-        },
-        "2": {
-            "resolutionMax": 10,
-            "bufferSizeMax": 1024,
-            "freqMin": 100,
-            "freqMax": 1000000,
-            "voltageMin": -5000,
-            "voltageMax": 5000
+            "signalTypes": [
+                "sine",
+                "square",
+                "sawtooth",
+                "triangle"
+            ],
+            "signalFreqMin": 312000,
+            "signalFreqMax": 1000000000,
+            "dataType": "I16",
+            "bufferSizeMax": 32640,
+            "dacVpp": 3000,
+            "dtMin": 1000000,
+            "dtMax": 1000000000000,
+            "vOffsetMin": -1500,
+            "vOffsetMax": 1500,
+            "vOutMin": -3000,
+            "vOutMax": 3000
         }
     },
     "dc": {
@@ -33,39 +36,35 @@
         "1": {
             "voltageMin": -4000,
             "voltageMax": 4000,
-            "voltageIncrement": 50,
+            "voltageIncrement": 40,
             "currentMin": 0,
-            "currentMax": 500,
+            "currentMax": 50,
             "currentIncrement": 0
         },
         "2": {
-            "voltageMin": 0,
-            "voltageMax": 5000,
-            "voltageIncrement": 0,
+            "voltageMin": -4000,
+            "voltageMax": 4000,
+            "voltageIncrement": 40,
             "currentMin": 0,
-            "currentMax": 1000,
-            "currentIncrement": 1
+            "currentMax": 50,
+            "currentIncrement": 0
         }
     },
     "la": {
-        "numChans": 8
+        "numChans": 10
     },
     "osc": {
         "numChans": 2,
         "1": {
+            "resolution": 12,
             "effectiveBits": 11,
-            "bufferSizeMax": 32000,
+            "bufferSizeMax": 32640,
             "bufferDataType": "I16",
-            "sampleClock": 10000000,
-            "sampleClockDividers": [
-                1,
-                0.25,
-                0.125,
-                0.075
-            ],
-            "adcRange": 3000,
-            "inputSwingOffset": 0,
-            "inputSwingRange": 40000,
+            "dtMin": 160000,
+            "dtMax": 655350000,
+            "adcVpp": 3000,
+            "inputVoltageMax": 20000,
+            "inputVoltageMin": -20000,
             "gains": [
                 1,
                 0.25,
@@ -74,19 +73,15 @@
             ]
         },
         "2": {
+            "resolution": 12,
             "effectiveBits": 11,
-            "bufferSizeMax": 32000,
+            "bufferSizeMax": 32640,
             "bufferDataType": "I16",
-            "sampleClock": 10000000,
-            "sampleClockDividers": [
-                1,
-                0.25,
-                0.125,
-                0.075
-            ],
-            "adcRange": 3000,
-            "inputSwingOffset": 0,
-            "inputSwingRange": 40000,
+            "dtMin": 160000,
+            "dtMax": 655350000,
+            "adcVpp": 3000,
+            "inputVoltageMax": 20000,
+            "inputVoltageMin": -20000,
             "gains": [
                 1,
                 0.25,
@@ -94,5 +89,5 @@
                 0.075
             ]
         }
-    }    
+    }
 }

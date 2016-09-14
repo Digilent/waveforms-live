@@ -147,7 +147,7 @@ export class TestChartCtrlsPage {
             }
         );
 
-        this.activeDevice.instruments.trigger.run([1]).subscribe(
+        this.activeDevice.instruments.trigger.single([1]).subscribe(
             (data) => {
                 //console.log(data);
             },
@@ -165,12 +165,18 @@ export class TestChartCtrlsPage {
                 this.chart1.clearExtraSeries([0]);
                 if (this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1 < 0) {
                     for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex].length; i++) {
+                        console.log('starting draw');
                         this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][i]);
+                        console.log('finished draw');
                     }
                 }
                 else {
                     for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1].length; i++) {
+                        let initial = performance.now();
+                        
                         this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][i]);
+                        let final = performance.now();
+                        console.log((final - initial));
                     }
                 }
                 

@@ -6,10 +6,10 @@ export interface Chart {
     plotLeft: number,
     reflow(),
     redraw(animate?: boolean),
-    addSeries(object: Object, something: boolean, somethingElse: boolean),
+    addSeries(options: Object, redraw: boolean, animation: boolean),
     renderer: any,
     setTitle(titleObject: Object),
-    addAxis(options: Object, something1: boolean, something2: boolean, something3: boolean)
+    addAxis(options: Object, isX: boolean, redraw: boolean, animation: boolean)
 }
 
 export interface ChartBounds {

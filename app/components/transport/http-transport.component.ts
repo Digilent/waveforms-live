@@ -37,7 +37,7 @@ export class HttpTransportComponent extends TransportComponent {
 
     writeReadHelper(rootUri: string, endpoint: string, sendData: any, dataType: string): Observable<any> {
         let uri = rootUri + endpoint;
-        let body = sendData;
+        let body = sendData;;
         return Observable.create((observer) => {
             let XHR = new XMLHttpRequest();
 
@@ -54,12 +54,18 @@ export class HttpTransportComponent extends TransportComponent {
             });
 
 
-            // We setup our request
+            // We set up our request
             XHR.open("POST", uri);
+            if (dataType === 'json') {
+                //XHR.setRequestHeader("Content-Type", "application/json");
+            }
+            else if (dataType === 'binary') {
+                //XHR.setRequestHeader("Content-Type", "application/octet-stream");
+            }
+            
             //Set resposne type as arraybuffer to receive response as bytes
             XHR.responseType = 'arraybuffer';
-            //Setting request header content type as application json causes nodejs error?
-            //XHR.setRequestHeader("Content-Type", "application/json");
+            
             XHR.send(body);
         });
     }
