@@ -1,4 +1,5 @@
 import {Component, Output, EventEmitter} from '@angular/core';
+import {NgClass} from '@angular/common';
 import {PopoverController, ToastController, NavController, ModalController} from 'ionic-angular';
 
 //Pages
@@ -13,7 +14,8 @@ import {DeviceManagerService} from '../../../../services/device/device-manager.s
 import {StorageService} from '../../../../services/storage/storage.service';
 
 @Component({
-  templateUrl: 'build/pages/device-manager-page/device-manager-tabs/device-manager-tab1/device-manager-tab1.html'
+  templateUrl: 'build/pages/device-manager-page/device-manager-tabs/device-manager-tab1/device-manager-tab1.html',
+  directives: [NgClass]
 })
 export class Tab1 {
     @Output() navToInstrumentPage: EventEmitter<any> = new EventEmitter;

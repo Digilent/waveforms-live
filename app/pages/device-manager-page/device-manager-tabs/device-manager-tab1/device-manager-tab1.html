@@ -18,11 +18,13 @@
                     Add a Device
                 </button>
             </div>
-            <ion-item *ngIf="showDevMenu" class="dev-menu-item">
-                <ion-label stacked>Hostname / IP</ion-label>
-                <ion-input [(ngModel)]="addDeviceIp"></ion-input>
-                <button class="connect-button" item-right (click)="attemptConnect(addDeviceIp)">Connect</button>
-            </ion-item>
+            <div [ngClass]="{fadein: showDevMenu}" class="fadeout">
+                <ion-item class="dev-menu-item">
+                    <ion-label stacked>Hostname / IP</ion-label>
+                    <ion-input [(ngModel)]="addDeviceIp"></ion-input>
+                    <button class="connect-button" item-right (click)="attemptConnect(addDeviceIp)">Connect</button>
+                </ion-item>
+            </div>
             <p class="connection-notice" *ngIf="connectingToDevice">Attempting to Connect to Device</p>
             <ion-spinner *ngIf="connectingToDevice" name="crescent"></ion-spinner>
             

@@ -69,6 +69,18 @@
     margin: 0.4rem 0.2rem;
 }
 
+.fadein, .fadeout {
+    max-height: 0;            
+    overflow-y: hidden;
+    -webkit-transition: max-height 0.5s ease-in-out;
+    -moz-transition: max-height 0.5s ease-in-out;
+    -o-transition: max-height 0.5s ease-in-out;
+    transition: max-height 0.5s ease-in-out;
+}
+.fadein {
+    max-height: 63px;
+}
+
 .first-tab-container .device-manager-card .card-label
 {
     margin: 1px 0px 1px 0px;
