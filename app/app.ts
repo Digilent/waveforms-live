@@ -40,12 +40,12 @@ class MyApp {
 
     // set our app's pages
     this.pages = [
-      { title: 'Home', component: HomePage },
+      { title: 'Lobby', component: HomePage },
       //{ title: 'Test Chart', component: TestChartPage },
-      { title: 'Test Chart Controls', component: TestChartCtrlsPage },
+      { title: 'Instrument Panel', component: TestChartCtrlsPage },
       //{ title: 'Test Page', component: TestPage },
       { title: 'Settings', component: SettingsPage },
-      { title: 'Protocol Test Panel', component: ProtocolTestPanel }
+      { title: 'Test Panel', component: ProtocolTestPanel }
     ];
   }
 
