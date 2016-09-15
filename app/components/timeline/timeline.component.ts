@@ -56,7 +56,7 @@ export class TimelineComponent {
         }
         console.log('loading buffer: ' + buffCalc);
         for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[buffCalc].length; i++) {
-            this.chart.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[buffCalc][i]);
+            this.chart.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[buffCalc][i], true);
         }
     }
     

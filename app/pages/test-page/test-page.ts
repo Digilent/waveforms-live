@@ -96,7 +96,7 @@ export class TestPage {
         for (let i = 0; i < this.numPoints; i++) {
             waveform[i] = [dt * i, parseFloat(this.amplitude) * Math.sin(((Math.PI * 2) / (this.numPoints / 2)) * i) + parseFloat(this.offset)];
         }
-        this.chart.drawWaveform(0, waveform);
+        this.chart.drawWaveform(0, waveform, true);
     }
     
     drawRampUp() {
@@ -110,7 +110,7 @@ export class TestPage {
             waveform[i] = [dt * i, (i % (this.numPoints / 2)) * (parseFloat(this.amplitude) / (this.numPoints / 2)) + 
             parseFloat(this.offset)];
         }
-        this.chart.drawWaveform(0, waveform);
+        this.chart.drawWaveform(0, waveform, true);
     }
     
     drawDc() {
@@ -118,7 +118,7 @@ export class TestPage {
         for (let i = 0; i < this.numPoints; i++) {
             waveform[i] = parseFloat(this.offset);
         }
-        this.chart.drawWaveform(0, waveform);
+        this.chart.drawWaveform(0, waveform, true);
     }
     
     drawTriangle() {
@@ -142,7 +142,7 @@ export class TestPage {
             waveform[i + this.numPoints / 2] = [dt * (i + this.numPoints / 2), (waveform[i])[1]];
         }
         console.log(waveform);
-        this.chart.drawWaveform(0, waveform);
+        this.chart.drawWaveform(0, waveform, true);
     }
     
     drawRampDown() {
@@ -156,7 +156,7 @@ export class TestPage {
             waveform[i] = [dt * i, ((-1 * i) % (this.numPoints / 2)) * (parseFloat(this.amplitude) / (this.numPoints / 2)) + 
             parseFloat(this.amplitude) + parseFloat(this.offset)];
         }
-        this.chart.drawWaveform(0, waveform);
+        this.chart.drawWaveform(0, waveform, true);
     }
     
     drawNoise() {
@@ -188,6 +188,6 @@ export class TestPage {
         for (let j = 0; i < this.numPoints; i++, j++) {
             waveform[i] = [dt * i, waveform[j][1]];
         }
-        this.chart.drawWaveform(0, waveform);
+        this.chart.drawWaveform(0, waveform, true);
     }
 }

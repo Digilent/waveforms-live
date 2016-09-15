@@ -167,7 +167,7 @@ export class TestChartCtrlsPage {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex]);
                     for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex].length; i++) {
                         console.log('starting draw');
-                        this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][i]);
+                        this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][i], true);
                         console.log('finished draw');
                     }
                 }
@@ -176,7 +176,7 @@ export class TestChartCtrlsPage {
                     for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1].length; i++) {
                         let initial = performance.now();
                         
-                        this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][i]);
+                        this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][i], true);
                         let final = performance.now();
                         console.log((final - initial));
                     }

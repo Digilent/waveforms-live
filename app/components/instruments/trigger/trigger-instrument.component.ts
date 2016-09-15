@@ -169,6 +169,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                         console.log(String.fromCharCode.apply(null, new Int8Array(data.slice(0))));
                         observer.error(error);
                         observer.complete();
+                        return;
                     }
                     
                     for (let channel in command.trigger) {
