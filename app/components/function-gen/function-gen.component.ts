@@ -1,5 +1,5 @@
 import {Component, EventEmitter} from '@angular/core';
-import {ModalController} from 'ionic-angular';
+import {ModalController, PopoverController} from 'ionic-angular';
 
 //Pages
 import {ModalFgenPage} from '../../pages/fgen-modal/fgen-modal';
@@ -7,6 +7,7 @@ import {TestPage} from '../../pages/test-page/test-page';
 
 //Components
 import {DeviceComponent} from '../../components/device/device.component';
+import {GenPopover} from '../../components/gen-popover/gen-popover.component';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
@@ -30,20 +31,27 @@ export class FgenComponent {
     private powerOn: boolean;
     private deviceManagerService: DeviceManagerService;
     private activeDevice: DeviceComponent;
+    private supportedSignalTypes: string[];
 
     private storageService: StorageService;
     private storageEventListener: EventEmitter<any>;
     private modalCtrl: ModalController;
+    private popoverCtrl: PopoverController;
     
-    constructor(_deviceManagerService: DeviceManagerService, _storageService: StorageService, _modalCtrl: ModalController) {
+    constructor(_deviceManagerService: DeviceManagerService, 
+                _storageService: StorageService, 
+                _modalCtrl: ModalController,
+                _popoverCtrl: PopoverController) {
         this.modalCtrl = _modalCtrl;
+        this.popoverCtrl = _popoverCtrl;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
+        this.supportedSignalTypes = this.activeDevice.instruments.awg.chans[0].signalTypes;
         this.showDutyCycle = false;
         this.waveType = 'sine';
         this.frequency = '1000';
-        this.amplitude = '2.5';
-        this.offset = '2.5';
+        this.amplitude = '3';
+        this.offset = '0';
         this.dutyCycle = '50';
         this.showWaves = false;
         this.powerOn = false;
@@ -94,17 +102,17 @@ export class FgenComponent {
             settings[i] = {
                 signalType: this.waveType,
                 signalFreq: parseFloat(this.frequency),
-                vpp: 3,
+                vpp: parseFloat(this.amplitude),
                 vOffset: parseFloat(this.offset)
             };
         }
         if (this.powerOn) {
+            this.setRegularWaveform(chans, settings);
             this.run(chans);
-            this.stop(chans);
         }
         else {
-            //this.setRegularWaveform(chans, settings);
-            let numPoints = 30000;
+            this.stop(chans);
+            /*let numPoints = 30000;
             let waveform = {
                 y: [],
                 t0: 0,
@@ -119,7 +127,7 @@ export class FgenComponent {
             for (let i = 0; i < numPoints; i++) {
                 waveform.y[i] = parseFloat(this.amplitude) * Math.sin(((Math.PI * 2) / (numPoints / 2)) * i) + parseFloat(this.offset);
             }
-            this.setArbitraryWaveform(chans, [waveform], ['I16']);
+            this.setArbitraryWaveform(chans, [waveform], ['I16']);*/
         }
     }
 
@@ -197,6 +205,18 @@ export class FgenComponent {
            this.dutyCycle = data.dutyCycle; 
         });
         modal.present();
+    }
+
+    openPopover(event) {
+        let genPopover = this.popoverCtrl.create(GenPopover, {
+                dataArray: this.supportedSignalTypes
+            });
+        genPopover.present({
+            ev: event
+        });
+        genPopover.onDidDismiss(data=> {
+            this.toggleWave(data.option);
+        });
     }
     
     //Determines if active wave type is a square wave

@@ -107,6 +107,7 @@ export class ModalFgenPage {
         for (let i = 0; i < this.numPoints; i++) {
             waveform.y[i] = parseFloat(this.amplitude) * Math.sin(((Math.PI * 2) / (this.numPoints / 2)) * i) + parseFloat(this.offset);
         }
+        this.chart.setCurrentBuffer([waveform]);
         this.chart.drawWaveform(0, waveform, true);
     }
     
@@ -127,6 +128,7 @@ export class ModalFgenPage {
             waveform.y[i] = (i % (this.numPoints / 2)) * (parseFloat(this.amplitude) / (this.numPoints / 2)) + 
             parseFloat(this.offset);
         }
+        this.chart.setCurrentBuffer([waveform]);
         this.chart.drawWaveform(0, waveform, true);
     }
     
@@ -141,6 +143,7 @@ export class ModalFgenPage {
         for (let i = 0; i < this.numPoints; i++) {
             waveform.y[i] = parseFloat(this.offset);
         }
+        this.chart.setCurrentBuffer([waveform]);
         this.chart.drawWaveform(0, waveform, true);
     }
     
@@ -170,6 +173,7 @@ export class ModalFgenPage {
         for (let i = 0; i < (this.numPoints / 2); i++) {
             waveform.y[i + this.numPoints / 2] = (waveform.y[i]);
         }
+        this.chart.setCurrentBuffer([waveform]);
         this.chart.drawWaveform(0, waveform, true);
     }
     
@@ -190,6 +194,7 @@ export class ModalFgenPage {
             waveform.y[i] = ((-1 * i) % (this.numPoints / 2)) * (parseFloat(this.amplitude) / (this.numPoints / 2)) + 
             parseFloat(this.amplitude) + parseFloat(this.offset);
         }
+        this.chart.setCurrentBuffer([waveform]);
         this.chart.drawWaveform(0, waveform, true);
     }
     
@@ -231,6 +236,7 @@ export class ModalFgenPage {
         for (let j = 0; i < this.numPoints; i++, j++) {
             waveform.y[i] = waveform.y[j];
         }
+        this.chart.setCurrentBuffer([waveform]);
         this.chart.drawWaveform(0, waveform, true);
     }
 }

@@ -57,10 +57,10 @@ export class HttpTransportComponent extends TransportComponent {
             // We set up our request
             XHR.open("POST", uri);
             if (dataType === 'json') {
-                //XHR.setRequestHeader("Content-Type", "application/json");
+                XHR.setRequestHeader("Content-Type", "application/json");
             }
             else if (dataType === 'binary') {
-                //XHR.setRequestHeader("Content-Type", "application/octet-stream");
+                XHR.setRequestHeader("Content-Type", "application/octet-stream");
             }
             
             //Set resposne type as arraybuffer to receive response as bytes

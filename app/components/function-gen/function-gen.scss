@@ -1,37 +1,37 @@
-.dropdown 
+.fgen-container .power-button-container
 {
-    position: relative;
-    display: inline-block;
+    text-align: center;
 }
 
-.clear-fgen
+.fgen-container .awg-header
 {
-    clear: both;
+    background-color: #444444;
+    border-top: 0px;
 }
 
-.dropdown-content 
+.fgen-container .button-label
 {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    border: solid black 1px;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
-.dropdown-content a 
+.fgen-container .ion-item-outline
 {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    z-index: 2;
+    margin-left: 16px;
+    border-bottom: solid #686868 1px;
 }
 
-.dropdown-content a:hover 
+.fgen-container .custom-ion-item
 {
-    background-color: #f1f1f1;
-    cursor: pointer;
+    
+    background-color: #444444;
+    border-bottom: solid black 1px;
+}
+
+.fgen-container .custom-ion-label
+{
+    color: #999;
+    font-size: 1.2rem;
 }
 
 .show 
@@ -42,29 +42,47 @@
 
 .fgen-container .powerOff
 {
-    background-color: red;
+    background-color: #444444;
+    color: #A1A1A1;
+    border-radius: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    border:solid #444444 1px;
 }
 
 .fgen-container .powerOn
 {
-    background-color: green;
+    background-color: #4487BA;
+    color: white;
+}
+
+.fgen-container .power-underline
+{
+    border-bottom: solid #686868 1px !important;
 }
 
 .fgen-container .powerOff:hover
 {
-    background-color: red;
+    background-color: #444444;
+    border: solid white 1px;
+}
+
+.fgen-container .dummy-power-underline
+{
+    display: inline-block;
+    border-bottom: solid #444444 1px;
 }
 
 .fgen-container .powerOn:hover
 {
-    background-color: green;
+    background-color: #4487BA;
 }
 
 .fgen-container .list-controls
 {
     margin-bottom: 2px;
-    background-color: #535353;
-    border-top: solid black 1px;
+    background-color: #444444;
 }
 
 .fgen-container .list-item

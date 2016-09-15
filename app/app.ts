@@ -10,6 +10,7 @@ import {TestChartCtrlsPage} from './pages/test-chart-ctrls/test-chart-ctrls';
 import {TestPage} from './pages/test-page/test-page';
 import {SettingsPage} from './pages/settings/settings';
 import {ProtocolTestPanel} from './pages/protocol-test-panel/protocol-test-panel';
+import {DeviceManagerPage} from './pages/device-manager-page/device-manager-page';
 
 //Services
 import {DeviceManagerService} from './services/device/device-manager.service';
@@ -28,7 +29,7 @@ enableProdMode();
 class MyApp {
   // make HelloIonicPage the root (or first) page
   @ViewChild(Nav) nav: Nav;
-  rootPage: any = SettingsPage;
+  rootPage: any = DeviceManagerPage;
   pages: Array<{ title: string, component: any }>;
 
   constructor(
@@ -40,12 +41,13 @@ class MyApp {
 
     // set our app's pages
     this.pages = [
-      { title: 'Lobby', component: HomePage },
+      //{ title: 'Lobby', component: HomePage },
       //{ title: 'Test Chart', component: TestChartPage },
       { title: 'Instrument Panel', component: TestChartCtrlsPage },
       //{ title: 'Test Page', component: TestPage },
-      { title: 'Settings', component: SettingsPage },
-      { title: 'Test Panel', component: ProtocolTestPanel }
+      //{ title: 'Settings', component: SettingsPage },
+      { title: 'Test Panel', component: ProtocolTestPanel },
+      { title: 'Device Manager', component: DeviceManagerPage}
     ];
   }
 
