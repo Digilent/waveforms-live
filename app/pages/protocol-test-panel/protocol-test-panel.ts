@@ -32,7 +32,7 @@ export class ProtocolTestPanel {
     private sendHeaders: Array<Object> = [{}];
 
     private deviceCommands: Array<string> = ['Device', 'enumerate'];
-    private awgCommands: Array<string> = ['AWG', 'setParameters Reg', 'setParameters Arb', 'run', 'stop'];
+    private awgCommands: Array<string> = ['AWG', 'setArbitraryWaveform', 'setRegularWaveform', 'run', 'stop'];
     private dcCommands: Array<string> = ['DC', 'getVoltage', 'setVoltage'];
     private oscCommands: Array<string> = ['OSC', 'read', 'setParameters'];
     private triggerCommands: Array<string> = ['Trigger', 'forceTrigger', 'read', 'run', 'single', 'setParameters', 'stop'];
@@ -194,11 +194,11 @@ export class ProtocolTestPanel {
     //Callback called when an AWG command template is selected
     onAwgCommandChange(data) {
         switch (data.value) {
-            case "setParameters Reg":
-                this.sendBody = JSON.stringify(this.commands.awg.setParametersReg);
+            case "setRegularWaveform":
+                this.sendBody = JSON.stringify(this.commands.awg.setRegularWaveform);
                 break;
-            case "setParameters Arb":
-                this.sendBody = JSON.stringify(this.commands.awg.setParametersArb);
+            case "setArbitraryWaveform":
+                this.sendBody = JSON.stringify(this.commands.awg.setArbitraryWaveform);
                 break;
             case "run":
                 this.sendBody = JSON.stringify(this.commands.awg.run);
@@ -382,6 +382,18 @@ export class ProtocolTestPanel {
         */
     }
 
+    chartData() {
+        let dataArray = new Int16Array(this.responseRawBinary, 0, 8000);
+        let untypedArray = Array.prototype.slice.call(dataArray);
+        let modal = this.modalCtrl.create(ChartModal, {
+            dataToDisplay: untypedArray
+        });
+        modal.onDidDismiss(data => {
+            console.log('dismiss');
+        });
+        modal.present();
+    }
+
     //---------- OpenScope Command Templates ----------
     private commands =
     {
@@ -395,42 +407,50 @@ export class ProtocolTestPanel {
             }
         },
         "awg": {
-            "setParametersReg": {
+            "setArbitraryWaveform": {
                 "awg": {
-                    "1": {
-                        "command": "setParameters",
-                        "signalType": "sine",
-                        "signalPeriod": 1000000000,
-                        "vpp": 3000,
-                        "vOffset": 1500
-                    }
+                    "1": [
+                        {
+                            "command": "setArbitraryWaveform",
+                            "binaryOffset": 0,
+                            "binaryLength": 20000,
+                            "binaryType": "I16",
+                            "vpp": 3000,
+                            "vOffset": 0,
+                            "dt": 100000
+                        }
+                    ]
                 }
             },
-            "setParametersArb": {
+            "setRegularWaveform": {
                 "awg": {
-                    "1": {
-                        "command": "setParameters",
-                        "signalType": "arbitrary",
-                        "gain": 1,
-                        "binaryOffset": 0,
-                        "binaryLength": 20000,
-                        "binaryType": "I16",
-                        "clockDivider": 1,
-                    }
+                    "1": [
+                        {
+                            "command": "setRegularWaveform",
+                            "signalType": "sine",
+                            "signalFreq": 1000000,
+                            "vpp": 3000,
+                            "vOffset": 0
+                        }
+                    ]
                 }
             },
             "run": {
                 "awg": {
-                    "1": {
-                        "command": "run",
-                    }
+                    "1": [
+                        {
+                            "command": "run",
+                        }
+                    ]
                 }
             },
             "stop": {
                 "awg": {
-                    "1": {
-                        "command": "stop",
-                    }
+                    "1": [
+                        {
+                            "command": "stop",
+                        }
+                    ]
                 }
             }
         },
@@ -553,33 +573,25 @@ export class ProtocolTestPanel {
             }
         }
     };
-
-    chartData() {
-        let dataArray = new Int16Array(this.responseRawBinary, 0, 8000);
-        let untypedArray = Array.prototype.slice.call(dataArray);
-        let modal = this.modalCtrl.create(ChartModal, {
-            dataToDisplay: untypedArray
-        });
-        modal.onDidDismiss(data=> {
-            console.log('dismiss');
-        });
-        modal.present();
-    }
 }
 
+
+/****************************************
+ * Chart Modal
+ ****************************************/
 @Component({
     template: `
     <div class="chart-component-wrapper" style="background-color:silver;display:block;width:100%;height:600px;">
         <chart [options]="options" (load)="chartLoad($event.context)"></chart>
     </div>
   `,
-  directives: [CHART_DIRECTIVES]
+    directives: [CHART_DIRECTIVES]
 })
 export class ChartModal {
     private platform: Platform;
     private viewCtrl: ViewController;
     private params: NavParams;
-    
+
     private data: number[];
     public chart: Chart;
     private options: Object;
@@ -664,7 +676,7 @@ export class ChartModal {
                         }
                     }
                     for (var i = 0; i < numTicks; i++) {
-                        ticks[i] = (min + i * delta).toFixed(mult); 
+                        ticks[i] = (min + i * delta).toFixed(mult);
                     }
                     return ticks;
                 },

@@ -7,7 +7,7 @@
             <center><button (click)="autoscaleAxis('x', 0)" class="text-button-side disable-hover">x-axis</button></center>
         </ion-col>
         <ion-col>
-            <center><button (click)="chart.toggleAxisAutoscale('x', 0)" [ngClass]="{autoscaleActive: chart.autoscaleXaxis}" class="active-toggle disable-hover"><center><ion-icon style="vertical-align:middle;font-size: 25px;" name="square"></ion-icon></center></button></center>
+            <center><button (click)="chart.toggleAxisAutoscale('x', 0)" [ngClass]="{autoscaleActive: chart.autoscaleXaxis}" class="active-toggle disable-hover"></button></center>
         </ion-col>
     </ion-row>
     <ion-row *ngFor="let channel of chart.numSeries; let i = index">
