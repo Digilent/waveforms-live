@@ -6,6 +6,7 @@ import {NgClass} from '@angular/common';
 //Components
 import {TimelineChartComponent} from '../timeline-chart/timeline-chart.component';
 import {DeviceComponent} from '../device/device.component';
+import {WaveformComponent} from '../data-types/waveform';
 
 //Pages
 import {ModalCursorPage} from '../../pages/cursor-modal/cursor-modal';
@@ -86,6 +87,8 @@ export class SilverNeedleChart {
 
     public autoscaleYaxes: boolean[] = [];
     public autoscaleXaxis: boolean = false;
+
+    private currentBufferArray: WaveformComponent[] = [];
 
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
@@ -443,8 +446,55 @@ export class SilverNeedleChart {
         }
     }
 
+    decimateData(seriesNum: number, waveform: any, bounds: any) {
+        //bounds are x1 and x2 of chart view window. Timeline will be all data and chart will be data in view
+        //100 points per division
+        /*let timePerDiv = (bounds.max - bounds.min) / 10;
+        console.log(timePerDiv, bounds.max, bounds.min);*/
+        /*if (waveform.dt * 100 <= timePerDiv) {
+            console.log('returning');
+            return waveform.y;
+        }*/
+        
+        let numPointsInView = Math.round((bounds.max - bounds.min) / waveform.dt);
+        console.log('number of points in view' + numPointsInView);
+        if (numPointsInView <= 1000) {
+            console.log('points drawn: ' + waveform.y.length);
+            return this.currentBufferArray[seriesNum];
+        }
+        let iterator = Math.floor(numPointsInView / 1000);
+        let newPoints = [];
+        for (let i = 0; i < waveform.y.length; i = iterator + i) {
+            newPoints.push(waveform.y[i]);
+        }
+        console.log('points drawn: ' + newPoints.length);
+        let newWaveform = {
+            y: [],
+            dt: 0,
+            t0: 0
+        }
+        newWaveform.y = newPoints;
+        newWaveform.dt = waveform.dt * iterator;
+        newWaveform.t0 = waveform.t0;
+        return newWaveform;
+    }
+
+    setCurrentBuffer(bufferArray: WaveformComponent[]) {
+        this.currentBufferArray = bufferArray;
+        console.log(this.currentBufferArray[0]);
+    }
+
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
     drawWaveform(seriesNum: number, waveform: any) {
+        console.log(waveform);
+        let bounds = this.chart.xAxis[0].getExtremes();
+        if (bounds.min < waveform.t0) {bounds.min = waveform.t0}
+        if (bounds.max > waveform.dt * waveform.y.length) {bounds.max = waveform.dt * waveform.y.length}
+        waveform = this.decimateData(seriesNum, waveform, bounds);
+        this.chart.series[seriesNum].update({
+            pointStart: waveform.t0,
+            pointInterval: waveform.dt
+        });
         if (seriesNum < this.chart.yAxis.length) {
             this.chart.series[seriesNum].setData(waveform.y, false, false, false);
         }
@@ -464,14 +514,11 @@ export class SilverNeedleChart {
                 this.timelineChart.addSeries(timelineOptions, false, false);
             }
         }
-        this.chart.series[seriesNum].update({
-            pointStart: waveform.t0,
-            pointInterval: waveform.dt
-        });
+        
         //Update point interval in timeline as well to show where user view is in timeline
         this.chart.redraw(false);
         this.updateCursorLabels();
-        if (this.timelineView) {
+        /*if (this.timelineView) {
             this.timelineChart.series[seriesNum].setData(waveform.y, false, false, false);
             this.timelineChart.series[seriesNum].update({
                 pointStart: waveform.t0,
@@ -487,7 +534,7 @@ export class SilverNeedleChart {
             let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(this.chartBoundsX.max) + 5);
             this.updatePlotBands([2, 3], [[extremesX.min, this.chartBoundsX.min], [this.chartBoundsX.max, extremesX.max]]);
             this.updatePlotLines([0, 1], [left, right]);*/
-        }
+        //}*/
         if (this.autoscaleAll) {
             this.autoscaleAllAxes();
         }
@@ -1350,7 +1397,14 @@ export class SilverNeedleChart {
         this.base = parseFloat(timeObj.base);
         let min = this.base - (this.timeDivision * 5);
         let max = this.base + (this.timeDivision * 5);
-        this.chart.xAxis[0].setExtremes(min, max, true, false);
+        if (this.currentBufferArray[0] !== undefined) {
+            this.chart.xAxis[0].setExtremes(min, max, false, false);
+            this.drawWaveform(0, this.currentBufferArray[0]);
+        }
+        else {
+            this.chart.xAxis[0].setExtremes(min, max, true, false);
+        }
+        
         if (this.timelineView) {
             this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
             let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);

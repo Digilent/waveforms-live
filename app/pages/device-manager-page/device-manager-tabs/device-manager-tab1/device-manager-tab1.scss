@@ -45,6 +45,11 @@
     background-color: #535353;
 }
 
+.first-tab-container .device-manager-card .card-item:active
+{
+    background-color: #686868;
+}
+
 .first-tab-container .device-manager-card .card-item
 {
     background-color: #535353;
@@ -78,12 +83,17 @@
     transition: max-height 0.5s ease-in-out;
 }
 .fadein {
-    max-height: 63px;
+    max-height: 100px;
 }
 
 .first-tab-container .device-manager-card .card-label
 {
     margin: 1px 0px 1px 0px;
+}
+
+.first-tab-container .color-spinner,.spinner-crescent circle
+{
+    stroke: #387ef5;
 }
 
 ion-avatar img {

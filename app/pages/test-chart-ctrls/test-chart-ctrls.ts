@@ -164,6 +164,7 @@ export class TestChartCtrlsPage {
                 //console.log(data);
                 this.chart1.clearExtraSeries([0]);
                 if (this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1 < 0) {
+                    this.chart1.setCurrentBuffer(this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex]);
                     for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex].length; i++) {
                         console.log('starting draw');
                         this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][i]);
@@ -171,6 +172,7 @@ export class TestChartCtrlsPage {
                     }
                 }
                 else {
+                    this.chart1.setCurrentBuffer(this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1]);
                     for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1].length; i++) {
                         let initial = performance.now();
                         

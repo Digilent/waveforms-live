@@ -118,6 +118,7 @@ export class Tab1 {
                         ipAddress: ipAddress
                     }
                 );
+                this.storage.saveData('savedDevices', JSON.stringify(this.devices));
                 this.showDevMenu = false;
                 let toast = this.toastCtrl.create({
                     message: 'Device Added Successfully',

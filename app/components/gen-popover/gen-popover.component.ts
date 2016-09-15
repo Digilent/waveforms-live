@@ -2,11 +2,7 @@ import {Component} from '@angular/core';
 import {ViewController, NavParams} from 'ionic-angular';
 
 @Component({
-    template: `
-    <ion-item (click)="close(data)" *ngFor="let data of dataArray">
-        <button clear>{{data}}</button>
-    </ion-item>
-  `
+    templateUrl: 'build/components/gen-popover/gen-popover.html'
 })
 
 export class GenPopover {
