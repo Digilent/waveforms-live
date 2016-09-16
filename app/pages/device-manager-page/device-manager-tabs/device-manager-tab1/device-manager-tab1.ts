@@ -91,7 +91,7 @@ export class Tab1 {
         this.showDevMenu = !this.showDevMenu;
     }
 
-    checkIfMatching(ipAddress: string) {
+    checkIfMatchingIp(ipAddress: string) {
         for (let i = 0; i < this.devices.length; i++) {
             if (this.devices[i].ipAddress === ipAddress) {
                 return true;
@@ -99,8 +99,17 @@ export class Tab1 {
         }
     }
 
+    checkIfMatchingLocal(device: string) {
+        for (let i = 0; i < this.devices.length; i++) {
+            if (this.devices[i].deviceDescriptor.deviceModel === device && this.devices[i].ipAddress === 'local') {
+                return true;
+            }
+        }
+        return false;
+    }
+
     attemptConnect(ipAddress: string) {
-        if (this.checkIfMatching(ipAddress)) {
+        if (this.checkIfMatchingIp(ipAddress)) {
             let toast = this.toastCtrl.create({
                 message: 'Device is Added Already',
                 showCloseButton: true,
@@ -117,7 +126,8 @@ export class Tab1 {
                 this.devices.unshift(
                     {
                         deviceDescriptor: success.device[0],
-                        ipAddress: ipAddress
+                        ipAddress: ipAddress,
+                        hostname: 'Hostname'
                     }
                 );
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
@@ -152,7 +162,7 @@ export class Tab1 {
         });
         genPopover.onDidDismiss(data => {
             if (data.option === 'OpenScope-MZ') {
-                if (this.checkIfMatching(data.option)) {
+                if (this.checkIfMatchingLocal(data.option)) {
                     let toast = this.toastCtrl.create({
                         message: 'Device is Added Already',
                         showCloseButton: true,
@@ -169,7 +179,8 @@ export class Tab1 {
                             this.devices.unshift(
                                 {
                                     deviceDescriptor: success.device[0],
-                                    ipAddress: 'local'
+                                    ipAddress: 'local',
+                                    hostname: 'Simulated ' + data.option
                                 }
                             );
                             this.storage.saveData('savedDevices', JSON.stringify(this.devices));
@@ -183,7 +194,6 @@ export class Tab1 {
                         },
                         (err) => {
                             this.connectingToDevice = false;
-                            console.log(err);
                             let toast = this.toastCtrl.create({
                                 message: 'Error: No Response Received',
                                 showCloseButton: true,

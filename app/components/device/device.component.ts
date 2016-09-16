@@ -41,7 +41,6 @@ export class DeviceComponent {
         this.rootUri = _rootUri;
         this.transport = new TransportService(this.rootUri);
         if (_rootUri === 'local') {
-            console.log('creating device component and hit local if');
             this.transport.setLocalTransport(deviceDescriptor);
         }
         this.deviceMake = deviceDescriptor.deviceMake;

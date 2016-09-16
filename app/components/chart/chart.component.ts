@@ -457,9 +457,7 @@ export class SilverNeedleChart {
         }*/
         
         let numPointsInView = Math.round((bounds.max - bounds.min) / waveform.dt);
-        console.log('number of points in view' + numPointsInView);
         if (numPointsInView <= 2000) {
-            console.log('points drawn: ' + waveform.y.length);
             return this.currentBufferArray[seriesNum];
         }
         let iterator = Math.floor(numPointsInView / 2000);
@@ -467,7 +465,6 @@ export class SilverNeedleChart {
         for (let i = 0; i < waveform.y.length; i = iterator + i) {
             newPoints.push(waveform.y[i]);
         }
-        console.log('points drawn: ' + newPoints.length);
         let newWaveform = {
             y: [],
             dt: 0,
@@ -482,6 +479,9 @@ export class SilverNeedleChart {
     decimateTimeline(seriesNum: number, waveform: any) {
         let numPoints = waveform.y.length;
         let iterator = Math.floor(numPoints / 2000);
+        if (iterator < 2) {
+            return waveform;
+        }
         let newPoints = [];
         for (let i = 0; i < waveform.y.length; i = iterator + i) {
             newPoints.push(waveform.y[i]);
@@ -499,12 +499,10 @@ export class SilverNeedleChart {
 
     setCurrentBuffer(bufferArray: WaveformComponent[]) {
         this.currentBufferArray = bufferArray;
-        console.log(this.currentBufferArray[0]);
     }
 
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
     drawWaveform(seriesNum: number, waveform: any, initialDraw: boolean) {
-        console.log(waveform);
         let bounds = this.chart.xAxis[0].getExtremes();
         if (bounds.min < waveform.t0) {bounds.min = waveform.t0}
         if (bounds.max > waveform.dt * waveform.y.length) {bounds.max = waveform.dt * waveform.y.length}
@@ -547,12 +545,6 @@ export class SilverNeedleChart {
             let extremesX = this.timelineChart.xAxis[0].getExtremes();
             let extremesY = this.timelineChart.yAxis[0].getExtremes();
             this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
-            //Not sure if needed? The plot lines and bands should be in the same position.
-            /*this.chartBoundsX = this.chart.xAxis[0].getExtremes();
-            let left = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(this.chartBoundsX.min) - 5);
-            let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(this.chartBoundsX.max) + 5);
-            this.updatePlotBands([2, 3], [[extremesX.min, this.chartBoundsX.min], [this.chartBoundsX.max, extremesX.max]]);
-            this.updatePlotLines([0, 1], [left, right]);*/
         }
         if (this.autoscaleAll) {
             this.autoscaleAllAxes();

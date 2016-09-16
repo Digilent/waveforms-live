@@ -10,7 +10,7 @@ export class SimulatedTriggerComponent {
         "lowerThreshold": null,
         "upperThreshold": null
     }];
-    private targets: Object = {};
+    public targets: Object = {};
 
     constructor() {
            

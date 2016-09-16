@@ -43,9 +43,7 @@ export class SimulatedDeviceComponent {
         let responseObject: any = {};
         let sumStatusCode = 0;
         let binaryDataFlag = 0;
-        console.log(event);
         for (let instrument in event) {
-            console.log(instrument, event[instrument], event.hasOwnProperty(instrument));
             //create property on response object
             responseObject[instrument] = {};
             if (event[instrument][0] !== undefined && event[instrument][0].command !== undefined) {
@@ -68,7 +66,6 @@ export class SimulatedDeviceComponent {
                     event[instrument][channel].forEach((element, index, array) => {
                         let activeIndex = responseObject[instrument][channel].push(this.processCommands(instrument, event[instrument][channel][index], [channel])) - 1;
                         sumStatusCode += responseObject[instrument][channel][activeIndex].statusCode;
-                        console.log(element.command);
                         if (element.command === 'read') {
                             binaryDataFlag = 1;
                         }
@@ -80,17 +77,7 @@ export class SimulatedDeviceComponent {
         }
         responseObject.statusCode = sumStatusCode
         if (binaryDataFlag) {
-            //processBinaryDataAndSend(responseObject, postResponse);
-            let woops = {
-                woops: 'woops'
-            }
-            let response = JSON.stringify(woops);
-            let buf = new ArrayBuffer(response.length);
-            let bufView = new Uint8Array(buf);
-            for (let i = 0; i < response.length; i++) {
-                bufView[i] = response.charCodeAt(i);
-            }
-            return bufView;
+            return this.processBinaryDataAndSend(responseObject); 
         }
         else {
             let response = JSON.stringify(responseObject);
@@ -143,5 +130,41 @@ export class SimulatedDeviceComponent {
                     errorMessage: 'Not a recognized command'
                 };
         }
+    }
+
+    processBinaryDataAndSend(commandObject: any) {
+        let binaryDataContainer = {};
+        let binaryOffset = 0;
+        for (let triggerChannel in commandObject.trigger) {
+
+            for (let instrument in this.trigger.targets) {
+
+                for (let channel in commandObject.trigger[triggerChannel][0][instrument]) {
+                    binaryDataContainer[channel] = commandObject.trigger[triggerChannel][0][instrument][channel].y;
+                    commandObject.trigger[triggerChannel][0][instrument][channel].binaryOffset = binaryOffset;
+                    binaryOffset += commandObject.trigger[triggerChannel][0][instrument][channel].binaryLength;
+                    delete commandObject.trigger[triggerChannel][0][instrument][channel].y;
+                }
+
+            }
+
+        }
+        let stringCommand = JSON.stringify(commandObject);
+        let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
+
+        let stringSection = binaryIndex + stringCommand + '\r\n';
+        let buf = new ArrayBuffer(stringSection.length + binaryOffset * 2);
+        let bufView = new Uint8Array(buf);
+        for (let i = 0; i < stringSection.length; i++) {
+            bufView[i] = stringSection.charCodeAt(i);
+        }
+        for (let channel in binaryDataContainer) {
+            let unsignedConversion = new Uint8Array(binaryDataContainer[channel].buffer);
+            for (let i = stringSection.length, j = 0; i < binaryOffset + stringSection.length; i = i + 2, j = j + 2) {
+                bufView[i] = unsignedConversion[j];
+                bufView[i + 1] = unsignedConversion[j + 1];
+            }
+        }
+        return bufView.buffer;
     }
 }

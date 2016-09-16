@@ -77,9 +77,10 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         }
         for (let i = 0; i < chans.length; i++) {
             let typedArray = new Int16Array(waveforms[i].y);
-            for (let i = fullString.length, j = 0; i < binaryOffset + fullString.length; i = i + 2, j++) {
-                binaryBufferToSend[i] = typedArray[j] >> 8;
-                binaryBufferToSend[i + 1] = typedArray[j] & 256;
+            let byteConvert = new Uint8Array(typedArray.buffer);
+            for (let i = fullString.length, j = 0; i < binaryOffset + fullString.length; i = i + 2, j = j + 2) {
+                binaryBufferToSend[i] = byteConvert[j];
+                binaryBufferToSend[i + 1] = byteConvert[j + 1];
             }
         }
 

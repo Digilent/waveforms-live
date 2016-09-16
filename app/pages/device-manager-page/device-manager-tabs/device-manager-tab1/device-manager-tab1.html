@@ -39,7 +39,7 @@
                     <img src="img/osmz.png">
                 </ion-avatar>
                 <ion-label class="card-label" (click)="connectToDevice(i)">
-                    <h2 class="turn-white">Hostname</h2>
+                    <h2 class="turn-white">{{device.hostname}}</h2>
                     <p class="turn-white">{{device.ipAddress}}</p>
                     <p class="turn-white">{{device.deviceDescriptor.deviceModel}}</p>
                 </ion-label>

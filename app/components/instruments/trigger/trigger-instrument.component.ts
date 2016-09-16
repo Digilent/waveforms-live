@@ -161,7 +161,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                     let binaryIndex = parseFloat(stringBuffer.substring(0, binaryIndexStringLength));
                     let command;
                     try {
-                        command = JSON.parse(stringBuffer.substring(binaryIndexStringLength + 2, binaryIndexStringLength + binaryIndex + 2))
+                        command = JSON.parse(stringBuffer.substring(binaryIndexStringLength + 2, binaryIndexStringLength + binaryIndex + 2));
                     }
                     catch(error) {
                         console.log(error);
