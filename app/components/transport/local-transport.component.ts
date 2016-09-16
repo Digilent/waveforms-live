@@ -39,7 +39,6 @@ export class LocalTransportComponent extends TransportComponent {
         return Observable.create((observer) => {
             this.simulatedDevice.send(body).subscribe(
                 (data) => {
-                    console.log(data);
                     observer.next(data);
                 },
                 (err) => {

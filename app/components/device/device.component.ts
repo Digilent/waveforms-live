@@ -14,7 +14,7 @@ import {TransportService} from '../../services/transport/transport.service';
 })
 export class DeviceComponent {
 
-    private transport;
+    private transport: TransportService;
 
     private rootUri: string;
     public deviceMake: string;
@@ -40,6 +40,10 @@ export class DeviceComponent {
 
         this.rootUri = _rootUri;
         this.transport = new TransportService(this.rootUri);
+        if (_rootUri === 'local') {
+            console.log('creating device component and hit local if');
+            this.transport.setLocalTransport(deviceDescriptor);
+        }
         this.deviceMake = deviceDescriptor.deviceMake;
         this.deviceModel = deviceDescriptor.deviceModel;
         this.firmwareVersion = deviceDescriptor.firmwareVersion;

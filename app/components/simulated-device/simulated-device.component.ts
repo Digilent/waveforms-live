@@ -3,8 +3,10 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-
-//Interfaces
+import {SimulatedAwgComponent} from './instruments/simulated-awg.component.ts';
+import {SimulatedDcComponent} from './instruments/simulated-dc.component.ts';
+import {SimulatedOscComponent} from './instruments/simulated-osc.component.ts';
+import {SimulatedTriggerComponent} from './instruments/simulated-trigger.component.ts';
 
 @Component({
 
@@ -17,9 +19,17 @@ export class SimulatedDeviceComponent {
     };
 
     private descriptor: string;
+    private awg: SimulatedAwgComponent;
+    private dc: SimulatedDcComponent;
+    private osc: SimulatedOscComponent;
+    private trigger: SimulatedTriggerComponent;
 
     constructor(enumeration) {
         this.descriptor = enumeration;
+        this.awg = new SimulatedAwgComponent();
+        this.dc = new SimulatedDcComponent();
+        this.osc = new SimulatedOscComponent();
+        this.trigger = new SimulatedTriggerComponent();
     }
 
     send(command: any): Observable<any> {
@@ -52,7 +62,6 @@ export class SimulatedDeviceComponent {
             }
 
             for (let channel in event[instrument]) {
-                console.log(event[instrument][0]);
                 if (event[instrument][channel][0] !== undefined) {
                     //create property on response object 
                     responseObject[instrument][channel] = [];
@@ -100,57 +109,34 @@ export class SimulatedDeviceComponent {
             //---------- Device ----------
             case 'deviceenumerate':
                 return JSON.parse(this.descriptor);
-                //break;
-            case 'getMake':
-                //callback(null, device.getMake());
-                break;
-            case 'getModel':
-                //callback(null, device.getModel());
-                break;
-            case 'getFirmwareVersion':
-                //callback(null, device.getFirmwareVersion());
-                break;
-            case 'getInstruments':
-                //callback(null, device.getInstruments());
-                break;
-            case 'getId':
-                //callback(null, device.getId());
-                break;
 
             //---------- AWG ----------            
-            case 'awggetSetting':
-                //return awg.getSetting(params[0]);
-            case 'awgsetSetting':
-                //return awg.setSetting(params[0], commandObject.settings);
-
             case 'awgsetArbitraryWaveform':
-                //return awg.setArbitraryWaveform(params[0]);
+                return this.awg.setArbitraryWaveform(params[0]);
             case 'awgsetRegularWaveform':
-                //return awg.setRegularWaveform(params[0], commandObject);
+                return this.awg.setRegularWaveform(params[0], commandObject);
             case 'awgrun':
-                //return awg.run(params[0]);
+                return this.awg.run(params[0]);
             case 'awgstop':
-                //return awg.stop(params[0]);
+                return this.awg.stop(params[0]);
 
             //---------- DC ----------        
             case 'dcsetVoltage':
-                //return dc.setVoltage(params[0], commandObject.voltage);
+                return this.dc.setVoltage(params[0], commandObject.voltage);
             case 'dcgetVoltage':
-                //return dc.getVoltage(params[0]);
+                return this.dc.getVoltage(params[0]);
 
             //-------- TRIGGER --------
             case 'triggersetParameters':
-                //return trigger.setParameters(params[0], commandObject.source, commandObject.targets);
+                return this.trigger.setParameters(params[0], commandObject.source, commandObject.targets);
             case 'triggerrun':
-                //return trigger.run();
+                return this.trigger.run();
             case 'triggerread':
-                //return trigger.read(params[0]);
+                return this.trigger.read(params[0]);
 
             //---------- OSC ----------            
-            case 'oscrunSingle':
-                //return osc.runSingle(params[0]);
             case 'oscsetParameters':
-                //return osc.setParameters(params[0], commandObject.offset, commandObject.gain);
+                return this.osc.setParameters(params[0], commandObject.offset, commandObject.gain);
             default:
                 return {
                     statusCode: 1,

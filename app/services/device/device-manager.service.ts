@@ -114,6 +114,7 @@ export class DeviceManagerService {
     }
 
     addDeviceFromDescriptor(uri: string, deviceDescriptor: any) {
+        console.log(deviceDescriptor);
         let dev = new DeviceComponent(uri, deviceDescriptor.device[0]);
         this.activeDeviceIndex = this.devices.push(dev) - 1;
     }

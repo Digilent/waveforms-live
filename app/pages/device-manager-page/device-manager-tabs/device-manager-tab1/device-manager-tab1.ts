@@ -199,6 +199,11 @@ export class Tab1 {
     }
 
     connectToDevice(deviceIndex: number) {
+        if (this.devices[deviceIndex].ipAddress === 'local') {
+            this.deviceManagerService.addDeviceFromDescriptor('local', {device: [this.devices[deviceIndex].deviceDescriptor]});
+            this.navCtrl.parent.parent.setRoot(TestChartCtrlsPage);
+            return;
+        }
         let ipAddress = this.devices[deviceIndex].ipAddress;
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
