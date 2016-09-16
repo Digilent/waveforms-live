@@ -56,11 +56,13 @@
             <br />
             <h4>Body</h4>
             <h4 class="sendBodyHeader">Templates:</h4>
-            <drop-down-menu class="sendCommand" [itemNames]="deviceCommands" (valueChange)="onDeviceCommandChange($event)"></drop-down-menu>
-            <drop-down-menu class="sendCommand" [itemNames]="awgCommands" (valueChange)="onAwgCommandChange($event)"></drop-down-menu>
-            <drop-down-menu class="sendCommand" [itemNames]="dcCommands" (valueChange)="onDcCommandChange($event)"></drop-down-menu>
-            <drop-down-menu class="sendCommand" [itemNames]="oscCommands" (valueChange)="onOscCommandChange($event)"></drop-down-menu>
-            <drop-down-menu class="sendCommand" [itemNames]="triggerCommands" (valueChange)="onTriggerCommandChange($event)"></drop-down-menu>
+            <div style="inline-block">
+                <drop-down-menu class="sendCommand" [itemNames]="deviceCommands" (valueChange)="onDeviceCommandChange($event)"></drop-down-menu>
+                <drop-down-menu class="sendCommand" [itemNames]="awgCommands" (valueChange)="onAwgCommandChange($event)"></drop-down-menu>
+                <drop-down-menu class="sendCommand" [itemNames]="dcCommands" (valueChange)="onDcCommandChange($event)"></drop-down-menu>
+                <drop-down-menu class="sendCommand" [itemNames]="oscCommands" (valueChange)="onOscCommandChange($event)"></drop-down-menu>
+                <drop-down-menu class="sendCommand" [itemNames]="triggerCommands" (valueChange)="onTriggerCommandChange($event)"></drop-down-menu>
+            </div>
         </div>
         <textarea class="sendBody" [(ngModel)]="sendBody"></textarea>
     </div>

@@ -1,5 +1,5 @@
 //Top level dropdown button
-.dropdown-btn {
+.dropdown .dropdown-btn {
     background-color: #f9f9f9;
     color: black; 
     cursor: pointer;
@@ -7,7 +7,7 @@
 }
 
 //Dropdown button on hover & focus (click)
-.dropdown-btn:hover, .dropdown-btn:focus {
+.dropdown .dropdown-btn:hover, .dropdown-btn:focus {
     background-color: #f9f9f9;
 }
 
@@ -19,13 +19,13 @@
     width: 100%;
 }
 
-.dropDownIcon
+.dropdown .dropDownIcon
 {
     margin-left: auto;
 }
 
 //Dropdown items div (hidden by default)
-.dropdown-content {
+.dropdown .dropdown-content {
     display: none;
     position: absolute;
     top: 37px;
@@ -34,21 +34,26 @@
     min-width: 160px;
     border: 0px !important;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    
 }
 
 //Drop down 'links'
-.dropdown-content a {
+.dropdown .dropdown-content a {
     text-decoration: none;
     display: block;
     border-bottom: 1px solid #DDD;
+    padding: 10px 5px;
+    font-weight: bold;
+    color: #535353;
+    cursor: pointer;
 }
 
 //Override default hover opacity so font does not gray out on hover
-.dropdown-content a:hover {
+.dropdown .dropdown-content a:hover {
     opacity: 1;
 }
 
 //Display the div - Add to dropdown-content div to show drop down items
-.show {
+.dropdown .show {
     display: block;
 }

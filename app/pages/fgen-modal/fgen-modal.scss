@@ -15,7 +15,6 @@
 {
     margin-bottom: 0px;
     padding-bottom: 1rem;
-    border-bottom: solid black 1px;
 }
 
 @media only screen and (min-height: 768px) and (min-width: 768px)
@@ -41,5 +40,50 @@
 .fgen-chart-container .fgen-settings-container .fgen-segment-button
 {
     color: white;
+}
+
+.fgen-chart-container .powerOff
+{
+    background-color: #535353;
+    color: #A1A1A1;
+    border-radius: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    border:solid #535353 1px;
+}
+
+.fgen-chart-container .powerOn
+{
+    background-color: #4487BA;
+    color: white;
+}
+
+.fgen-chart-container .power-underline
+{
+    border-bottom: solid #686868 1px !important;
+}
+
+.fgen-chart-container .powerOff:hover
+{
+    background-color: #535353;
+    border: solid white 1px;
+}
+
+.fgen-chart-container .dummy-power-underline
+{
+    display: inline-block;
+    border-bottom: solid #535353 1px;
+    margin-bottom: 5px;
+}
+
+.fgen-chart-container .power-button-divider
+{
+    border-bottom: solid black 1px;
+}
+
+.fgen-chart-container .powerOn:hover
+{
+    background-color: #4487BA;
 }
 

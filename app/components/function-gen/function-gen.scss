@@ -32,6 +32,7 @@
 {
     color: #999;
     font-size: 1.2rem;
+    margin-top: 8px;
 }
 
 .show 
@@ -72,6 +73,12 @@
 {
     display: inline-block;
     border-bottom: solid #444444 1px;
+    margin-bottom: 5px;
+}
+
+.fgen-container .power-button-divider
+{
+    border-bottom: solid black 1px;
 }
 
 .fgen-container .powerOn:hover
@@ -83,6 +90,7 @@
 {
     margin-bottom: 2px;
     background-color: #444444;
+    border-top: solid #686868 1px;
 }
 
 .fgen-container .list-item

@@ -22,16 +22,16 @@ import {SettingsObject} from '../instruments/awg/awg-instrument.component';
 })
 export class FgenComponent { 
     private showDutyCycle: boolean;
-    private waveType: string;
-    private frequency: string;
-    private amplitude: string;
-    private offset: string;
-    private dutyCycle: string;
+    public waveType: string;
+    public frequency: string;
+    public amplitude: string;
+    public offset: string;
+    public dutyCycle: string;
     private showWaves: boolean;
-    private powerOn: boolean;
+    public powerOn: boolean;
     private deviceManagerService: DeviceManagerService;
     private activeDevice: DeviceComponent;
-    private supportedSignalTypes: string[];
+    public supportedSignalTypes: string[];
 
     private storageService: StorageService;
     private storageEventListener: EventEmitter<any>;
@@ -195,14 +195,8 @@ export class FgenComponent {
             frequency: this.frequency,
             amplitude: this.amplitude,
             offset: this.offset,
-            dutyCycle: this.dutyCycle
-        });
-        modal.onDidDismiss(data=> {
-           this.waveType = data.waveType;
-           this.frequency = data.frequency;
-           this.amplitude = data.amplitude;
-           this.offset = data.offset;
-           this.dutyCycle = data.dutyCycle; 
+            dutyCycle: this.dutyCycle,
+            fgenComponent: this
         });
         modal.present();
     }

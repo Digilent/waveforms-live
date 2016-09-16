@@ -6,11 +6,12 @@
 ****************************************************************************/
 
 import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {NgClass} from '@angular/common';
 
 @Component({
     templateUrl: 'build/libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu.html',
     selector: 'drop-down-menu',
-    directives: []
+    directives: [NgClass]
 })
 
 export class DropDownMenu {
@@ -18,6 +19,7 @@ export class DropDownMenu {
     private showEnabled: boolean = false;
     private selectedIndex: number = 0;
     public selectedValue: string = '';
+    private bodyEventFired: boolean = false;
 
     private boundCloseListener = this.closeListener.bind(this);
 
@@ -28,17 +30,30 @@ export class DropDownMenu {
         //console.log('DropDownMenu Constructor');
         this.selectedValue = this.itemNames[0];        
     }
-
+    
     //Toggle drop down items visible
-    toggleShow() {
-        this.showEnabled = !this.showEnabled;
+    toggleShow(event) {
+        if (event !== null && !this.showEnabled && !this.bodyEventFired) {
+            this.showEnabled = true;
+        }
+        else if (event !== null && !this.showEnabled && this.bodyEventFired) {
+            this.bodyEventFired = false;
+        }
+        else if (event === null) {
+            this.showEnabled = false;
+            this.bodyEventFired = true;
+            setTimeout(() => {
+                this.bodyEventFired = false;
+            }, 10);
+        }
         
         //If menu is now open, listen for mouse click
         if (this.showEnabled) {     
             //Add listener to document body to close drop down if user clicks outside the drop down
             document.body.addEventListener('click', this.boundCloseListener, true);
-        } else {
-            this.removeCloseListener();        
+        } 
+        else if (!this.showEnabled && event === null) {
+            this.removeCloseListener();     
         }
     }
 
@@ -48,8 +63,8 @@ export class DropDownMenu {
     }
 
     //Callback called when user clicks outside of open drop down
-    closeListener() {
-        this.toggleShow();
+    closeListener(event) {
+        this.toggleShow(null);
     }   
 
     //Callback called when user selects an item from the drop down

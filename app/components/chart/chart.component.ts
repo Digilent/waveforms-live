@@ -502,7 +502,7 @@ export class SilverNeedleChart {
     }
 
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
-    drawWaveform(seriesNum: number, waveform: any, initialDraw: boolean) {
+    drawWaveform(seriesNum: number, waveform: any, initialDraw: boolean, ignoreAutoscale?: boolean) {
         let bounds = this.chart.xAxis[0].getExtremes();
         if (bounds.min < waveform.t0) {bounds.min = waveform.t0}
         if (bounds.max > waveform.dt * waveform.y.length) {bounds.max = waveform.dt * waveform.y.length}
@@ -546,18 +546,20 @@ export class SilverNeedleChart {
             let extremesY = this.timelineChart.yAxis[0].getExtremes();
             this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
         }
-        if (this.autoscaleAll) {
-            this.autoscaleAllAxes();
-        }
-        else {
-            if (this.autoscaleXaxis) {
-                this.autoscaleAxis('x', 0);
+        if (!ignoreAutoscale) {
+            if (this.autoscaleAll) {
+                this.autoscaleAllAxes();
             }
-            let i = -1;
-            while((i = this.autoscaleYaxes.indexOf(true, i + 1)) >= 0) {
-                this.autoscaleAxis('y', i)
+            else {
+                if (this.autoscaleXaxis) {
+                    this.autoscaleAxis('x', 0);
+                }
+                let i = -1;
+                while((i = this.autoscaleYaxes.indexOf(true, i + 1)) >= 0 && this.chart.series[i] !== undefined) {
+                    this.autoscaleAxis('y', i)
+                }
             }
-        }
+        }   
     }
 
     //Remove extra series and axes from the chart
@@ -1403,14 +1405,14 @@ export class SilverNeedleChart {
     }
 
     //Set time settings (base and time/div) from an object containing the base and timeDivision
-    setTimeSettings(timeObj: any) {
+    setTimeSettings(timeObj: any, autoscale: boolean) {
         this.timeDivision = parseFloat(timeObj.timePerDiv);
         this.base = parseFloat(timeObj.base);
         let min = this.base - (this.timeDivision * 5);
         let max = this.base + (this.timeDivision * 5);
         if (this.currentBufferArray[0] !== undefined) {
             this.chart.xAxis[0].setExtremes(min, max, false, false);
-            this.drawWaveform(0, this.currentBufferArray[0], false);
+            this.drawWaveform(0, this.currentBufferArray[0], false, autoscale);
         }
         else {
             this.chart.xAxis[0].setExtremes(min, max, true, false);
@@ -1496,7 +1498,7 @@ export class SilverNeedleChart {
             this.setTimeSettings({
                 timePerDiv: this.timeDivision,
                 base: this.base
-            });
+            }, true);
             if (this.timelineView) {
                 let extremes = this.chart.xAxis[0].getExtremes();
                 this.updatePlotBands([2, 3], [[this.timelineBounds[0], extremes.dataMin], [extremes.dataMax, this.timelineBounds[1]]]);
@@ -1790,7 +1792,7 @@ export class SilverNeedleChart {
         this.setTimeSettings({
             timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
             base: this.base
-        });
+        }, true);
     }
 
     incrementTPD(seriesNum) {
@@ -1801,7 +1803,7 @@ export class SilverNeedleChart {
         this.setTimeSettings({
             timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
             base: this.base
-        });
+        }, true);
     }
 
     incrementBase() {
@@ -1809,7 +1811,7 @@ export class SilverNeedleChart {
         this.setTimeSettings({
             timePerDiv: this.timeDivision,
             base: this.base
-        });
+        }, true);
     }
 
     decrementBase() {
@@ -1817,7 +1819,7 @@ export class SilverNeedleChart {
         this.setTimeSettings({
             timePerDiv: this.timeDivision,
             base: this.base
-        }); 
+        }, true); 
     }
 
     toggleVisibility(seriesNum: number) {

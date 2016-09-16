@@ -1,6 +1,6 @@
 <div class="dropdown">
-  <button (click)="toggleShow()" class="dropdown-btn disable-hover">{{itemNames[selectedIndex]}} <ion-icon class="dropDownIcon" name="arrow-dropdown"></ion-icon></button>
-  <div class="dropdown-content" [class.show]="showEnabled">
+  <button id="buttontest" (click)="toggleShow($event)" class="dropdown-btn disable-hover">{{itemNames[selectedIndex]}} <ion-icon class="dropDownIcon" name="arrow-dropdown"></ion-icon></button>
+  <div class="dropdown-content" [ngClass]="{show: showEnabled}">
     <a *ngFor="let item of itemNames; let i = index;" (click)="onItemSelected(i)">{{item}}</a>
   </div>
 </div>

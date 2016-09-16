@@ -36,7 +36,7 @@ export class XAxisComponent {
                     console.log(dataObject);
                     this.chart.base = dataObject.base;
                     this.chart.timeDivision = dataObject.timePerDiv;
-                    this.chart.setTimeSettings(dataObject);
+                    this.chart.setTimeSettings(dataObject, false);
                 });
             }
         });
@@ -53,7 +53,7 @@ export class XAxisComponent {
         this.chart.setTimeSettings({
             timePerDiv: this.chart.timeDivision,
             base: this.chart.base
-        });
+        }, false);
     }
 
     //Call chart autoscale on the x axis
