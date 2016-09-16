@@ -188,6 +188,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    console.log(data);
                     if (data.awg["1"][0].statusCode > 0) {
                         observer.error(data);
                     }

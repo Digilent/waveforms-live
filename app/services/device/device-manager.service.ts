@@ -77,7 +77,6 @@ export class DeviceManagerService {
                     this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                         (deviceDescriptor) => {
                             let response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(deviceDescriptor.slice(0))));
-                            console.log(response);
                             observer.next(response);
                             observer.complete();
                         },
@@ -96,7 +95,7 @@ export class DeviceManagerService {
 
 
                 // We set up our request
-                XHR.open("GET", 'enumerations/OpenScope-MZ.json');
+                XHR.open("GET", 'devices/openscope-mz/descriptor.json');
 
                 XHR.send();
             }
