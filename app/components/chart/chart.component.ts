@@ -49,7 +49,7 @@ export class SilverNeedleChart {
     private chartBoundsX: ChartBounds = null;
     private chartBoundsY: ChartBounds = null;
     private inTimelineDrag: boolean = false;
-    private activeChannels = [0, 0];
+    private activeChannels = [1, 1];
     private autoscaleAll: boolean = false;
     private mathEnabled: boolean = false;
     private generalVoltsPerDivOpts: string[] = ['1 mV', '2 mV', '5 mv', '10 mV', '20 mV', '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
@@ -617,7 +617,7 @@ export class SilverNeedleChart {
             this.activeChannels[0] = parseInt(this.cursor1Chan.slice(-1));
             this.cursorPositions[0] = {
                 x: extremes.min,
-                y: this.chart.series[this.activeChannels[0] - 1].data[0].y
+                y: this.chart.series[this.activeChannels[0] - 1].yData[0]
             };
             style = 'longdash';
             color = this.chart.series[this.activeChannels[0] - 1].color;
@@ -627,7 +627,7 @@ export class SilverNeedleChart {
             this.activeChannels[1] = parseInt(this.cursor2Chan.slice(-1));
             this.cursorPositions[1] = {
                 x: extremes.max,
-                y: this.chart.series[this.activeChannels[1] - 1].data[this.chart.series[this.activeChannels[1] - 1].data.length - 1].y
+                y: this.chart.series[this.activeChannels[1] - 1].yData[this.chart.series[this.activeChannels[1] - 1].yData.length - 1]
             };
             style = 'dash';
             color = this.chart.series[this.activeChannels[1] - 1].color;
@@ -1121,7 +1121,6 @@ export class SilverNeedleChart {
                 }
 
                 let cursorPosition = (this.cursorPositions[index].x * Math.pow(1000, i)).toFixed(0) + unit;
-
                 let vPerDiv = Math.abs(this.chart.yAxis[this.activeChannels[index] - 1].max - this.chart.yAxis[this.activeChannels[index] - 1].min) / 10;
                 i = 0;
                 while (vPerDiv < 1) {
@@ -1848,7 +1847,6 @@ export class SilverNeedleChart {
 
     addMathInfo(mathInfo: string, seriesNum: number, maxIndex: number, minIndex: number) {
         console.log(mathInfo);
-        document.getElementById('test-test').innerHTML = mathInfo + ': {{' + this.getMax(seriesNum, maxIndex, minIndex) + '}}';
     }
 
     getMax(seriesNum: number, maxIndex: number, minIndex: number) {

@@ -64,37 +64,31 @@ export class SimulatedTriggerComponent {
 
         //---------- Simulate Signal ----------
         //Set default values
-        let sampleRate = 1000;
-        let numSamples = 1000;
-        let sigFreq = 100;
+        let numSamples = 10000; //ten thousand points 
+        let sigFreq = 1000000; //in mHz
+        let sampleRate = 30 * (sigFreq / 1000); //30 points per period
         let t0 = 0;
-        let phaseOffset = 0;
+        let vOffset = 0; //in mV
+        let vpp = 3; //mV
 
         //Calculate dt - time between data points
-        var dt = 1 / sampleRate * 1000;
+        var dt = 1 / sampleRate;
 
-        //Calculate start time offset to simulate continuously running signal
-        var d = new Date();
         //Clock time in seconds.  Rolls ever every hour.
-        var clockTimeOffset = (d.getTime() % 3600000) / 1000;
 
         //Build Y point arrays
-        let wf = null;
 
         let y = [];
         for (var j = 0; j < numSamples; j++) {
-            y[j] = 1000 * Math.sin((Math.PI / 180) * ((360 * ((dt / 1000 * j * sigFreq) + clockTimeOffset)) + phaseOffset + 90 * parseInt(chan)));
+            y[j] = (1000 * vpp / 2) * Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j);
         }
+        
         let typedArray = new Int16Array(y);
-        wf = {
-            't0': clockTimeOffset,
-            'dt': 0.001,
-            'y': typedArray
-        };
+        
         //length is 2x the array length because 2 bytes per entry
         return {
             verticalOffset: 0,
-            dt: 160000,
+            dt: dt * 1000000000000,
             y: typedArray,
             binaryLength: 2 * typedArray.length,
             binaryOffset: null,
