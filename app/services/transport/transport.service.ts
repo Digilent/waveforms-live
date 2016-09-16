@@ -5,6 +5,7 @@ import 'rxjs/Rx';
 //Components
 import {TransportComponent} from '../../components/transport/transport.component';
 import {HttpTransportComponent} from '../../components/transport/http-transport.component';
+import {LocalTransportComponent} from '../../components/transport/local-transport.component';
 
 @Injectable()
 export class TransportService {
@@ -38,5 +39,15 @@ export class TransportService {
     //Get type of transport service (parent)
     getType() {
         return 'Parent';
+    }
+
+    setHttpTransport(uri) {
+        delete this.transport;
+        this.transport = new HttpTransportComponent(uri);
+    }
+
+    setLocalTransport(deviceEnumeration: string) {
+        delete this.transport;
+        this.transport = new LocalTransportComponent(deviceEnumeration);
     }
 }

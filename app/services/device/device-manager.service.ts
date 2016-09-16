@@ -8,6 +8,9 @@ import {DeviceComponent} from '../../components/device/device.component';
 //Services
 import {TransportService} from '../transport/transport.service';
 
+//Interfaces
+import {MyEventResponse} from '../../components/transport/http-transport.interface';
+
 @Injectable()
 export class DeviceManagerService {
 
@@ -36,7 +39,14 @@ export class DeviceManagerService {
 
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (deviceDescriptor) => {
-                    let response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(deviceDescriptor.slice(0))));
+                    let response;
+                    try {
+                        response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(deviceDescriptor.slice(0))));
+                    }
+                    catch (error) {
+                        observer.error(error);
+                    }
+                    
                     observer.next(response);
                     observer.complete();
                 },
@@ -46,6 +56,50 @@ export class DeviceManagerService {
                 () => {
                      observer.complete();
                 });
+        });
+    }
+
+    connectLocal(deviceName: string): Observable<any> {
+        return Observable.create((observer) => {
+            let deviceEnumeration: string;
+            if (deviceName === 'OpenScope-MZ') {
+                let XHR = new XMLHttpRequest();
+                // We define what will happen if the data are successfully sent
+                XHR.addEventListener("load", function (event: MyEventResponse) {
+                    this.transport.setLocalTransport(event.currentTarget.response);
+                    let command = {
+                        'device': [
+                            {
+                                command: 'enumerate'
+                            }
+                        ]
+                    }
+                    this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
+                        (deviceDescriptor) => {
+                            let response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(deviceDescriptor.slice(0))));
+                            console.log(response);
+                            observer.next(response);
+                            observer.complete();
+                        },
+                        (err) => {
+                            observer.error(err);
+                        },
+                        () => {
+                            observer.complete();
+                        });
+                }.bind(this));
+
+                // We define what will happen in case of error
+                XHR.addEventListener("error", function (event) {
+                    observer.error('TX Error: ', event);
+                });
+
+
+                // We set up our request
+                XHR.open("GET", 'enumerations/OpenScope-MZ.json');
+
+                XHR.send();
+            }
         });
     }
 

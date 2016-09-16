@@ -66,6 +66,7 @@ export class Tab1 {
         genPopover.onDidDismiss(data=> {
             if (data.option === 'remove') {
                 this.devices.splice(arrayIndex, 1);
+                this.storage.saveData('savedDevices', JSON.stringify(this.devices));
             }
             else if (data.option === 'connect') {
                 this.connectToDevice(arrayIndex);
@@ -108,6 +109,7 @@ export class Tab1 {
             toast.present();
             return;
         }
+
         this.connectingToDevice = true;
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
@@ -137,8 +139,63 @@ export class Tab1 {
                 });
                 toast.present();
             },
-            () => {}
+            () => { }
         );
+    }
+
+    openSimDevicePopover($event) {
+        let genPopover = this.popoverCtrl.create(GenPopover, {
+                dataArray: ['OpenScope-MZ']
+            });
+        genPopover.present({
+            ev: event
+        });
+        genPopover.onDidDismiss(data => {
+            if (data.option === 'OpenScope-MZ') {
+                if (this.checkIfMatching(data.option)) {
+                    let toast = this.toastCtrl.create({
+                        message: 'Device is Added Already',
+                        showCloseButton: true,
+                        position: 'bottom'
+                    });
+                    toast.present();
+                    return;
+                }
+                else {
+                    this.connectingToDevice = true;
+                    this.deviceManagerService.connectLocal(data.option).subscribe(
+                        (success) => {
+                            this.connectingToDevice = false;
+                            this.devices.unshift(
+                                {
+                                    deviceDescriptor: success.device[0],
+                                    ipAddress: 'local'
+                                }
+                            );
+                            this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                            this.showDevMenu = false;
+                            let toast = this.toastCtrl.create({
+                                message: 'Device Added Successfully',
+                                duration: 5000,
+                                position: 'bottom'
+                            });
+                            toast.present();
+                        },
+                        (err) => {
+                            this.connectingToDevice = false;
+                            console.log(err);
+                            let toast = this.toastCtrl.create({
+                                message: 'Error: No Response Received',
+                                showCloseButton: true,
+                                position: 'bottom'
+                            });
+                            toast.present();
+                        },
+                        () => { }
+                    );
+                }
+            }
+        });
     }
 
     connectToDevice(deviceIndex: number) {

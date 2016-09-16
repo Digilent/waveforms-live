@@ -7,15 +7,16 @@
     </ion-navbar>
 </ion-header>
 
-<ion-content class="first-tab-container">
+<ion-content class="first-tab-container" padding>
 
     <center>
+        <img src="img/OpenScope-logo-color-500.png">
         <div class="add-device-container">
             <div class="align-center">
                 <button (click)="toggleAddDevMenu()" clear class="dev-menu-button">
+                    Add a Device
                     <ion-icon *ngIf="!showDevMenu" name="arrow-dropdown"></ion-icon>
                     <ion-icon *ngIf="showDevMenu" name="arrow-dropup"></ion-icon>
-                    Add a Device
                 </button>
             </div>
             <div [ngClass]="{fadein: showDevMenu}" class="fadeout">
@@ -27,9 +28,11 @@
             </div>
             <p class="connection-notice" *ngIf="connectingToDevice">Attempting to Connect to Device</p>
             <ion-spinner class="color-spinner" *ngIf="connectingToDevice" name="crescent"></ion-spinner>
-            
+            <button clear class="dev-menu-button" (click)="openSimDevicePopover($event)">
+                Simulate Device
+                <ion-icon name="arrow-dropdown"></ion-icon>
+            </button>
         </div>
-
         <ion-card class="device-manager-card" *ngFor="let device of devices, let i = index;">
             <ion-item class="card-item">
                 <ion-avatar item-left (click)="connectToDevice(i)">
