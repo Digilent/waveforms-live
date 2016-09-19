@@ -1,12 +1,16 @@
 import {Component} from '@angular/core';
 
+//Services
+import {SimulatedDeviceService} from '../../../services/simulated-device/simulated-device.service.ts';
+
 @Component({
 })
 export class SimulatedDcComponent {
+    private simulatedDeviceService: SimulatedDeviceService;
     private voltages: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
-    constructor() {
-        
+    constructor(_simulatedDeviceService: SimulatedDeviceService) {
+        this.simulatedDeviceService = _simulatedDeviceService;
         
     }
 

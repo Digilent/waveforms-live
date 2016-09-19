@@ -37,6 +37,7 @@ class MyApp {
     private platform: Platform,
     private menu: MenuController
   ) {
+    console.log('app constructor');
     this.initializeApp();
 
     // set our app's pages

@@ -1,8 +1,12 @@
 import {Component} from '@angular/core';
 
+//Services
+import {SimulatedDeviceService} from '../../../services/simulated-device/simulated-device.service.ts';
+
 @Component({
 })
 export class SimulatedTriggerComponent {
+    private simulatedDeviceService: SimulatedDeviceService;
     private sources: Array<Object> = [{
         "instrument": null,
         "channel": null,
@@ -12,8 +16,8 @@ export class SimulatedTriggerComponent {
     }];
     public targets: Object = {};
 
-    constructor() {
-           
+    constructor(_simulatedDeviceService: SimulatedDeviceService) {
+        this.simulatedDeviceService = _simulatedDeviceService;
     }
 
     setParameters(chan, source, targets) {
@@ -46,11 +50,25 @@ export class SimulatedTriggerComponent {
             returnInfo[instrument] = {};
             this.targets[instrument].forEach((element, index, array) => {
                 returnInfo[instrument][index] = {};
-                returnInfo[instrument][index] = this.drawSawtooth();
+                let settings: any = this.simulatedDeviceService.getAwgSettings(element);
+                console.log(settings, element);
+                if (settings.signalType === 'sine') {
+                    returnInfo[instrument][index] = this.drawSine(settings);
+                }
+                else if (settings.signalType === 'triangle') {
+                    returnInfo[instrument][index] = this.drawTriangle(settings);
+                }
+                else if (settings.signalType === 'sawtooth') {
+                    returnInfo[instrument][index] = this.drawSawtooth(settings);
+                }
+                else if (settings.signalType === 'square') {
+                    returnInfo[instrument][index] = this.drawSquare(settings);
+                }
+                
             });
 
         }
-
+        console.log(returnInfo);
         return returnInfo;
     }
 
@@ -60,7 +78,7 @@ export class SimulatedTriggerComponent {
         };
     }
 
-    drawSine() {
+    drawSine(settings: any) {
 
         //---------- Simulate Signal ----------
         //Set default values
@@ -95,7 +113,7 @@ export class SimulatedTriggerComponent {
             statusCode: 0
         };
     }
-    drawSquare() {
+    drawSquare(settings: any) {
         //Set default values
         let numSamples = 10000; //ten thousand points 
         let sigFreq = 1000000; //in mHz
@@ -134,7 +152,7 @@ export class SimulatedTriggerComponent {
         };  
     }
 
-    drawTriangle() {
+    drawTriangle(settings: any) {
         let numSamples = 10000; //ten thousand points 
         let sigFreq = 1000000; //in mHz
         let sampleRate = 30 * (sigFreq / 1000); //30 points per period
@@ -166,7 +184,7 @@ export class SimulatedTriggerComponent {
 
     }
 
-    drawSawtooth() {
+    drawSawtooth(settings: any) {
         let numSamples = 10000; //ten thousand points 
         let sigFreq = 1000000; //in mHz
         let sampleRate = 30 * (sigFreq / 1000); //30 points per period

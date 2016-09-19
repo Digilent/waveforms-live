@@ -1,8 +1,12 @@
 import {Component} from '@angular/core';
 
+//Services
+import {SimulatedDeviceService} from '../../../services/simulated-device/simulated-device.service.ts';
+
 @Component({
 })
 export class SimulatedOscComponent {
+    private simulatedDeviceService: SimulatedDeviceService;
     private buffers: number[][] = [
         [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
         [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
@@ -14,8 +18,8 @@ export class SimulatedOscComponent {
     private offsets: number[] = [0, 0, 0];
     private gains: number[] = [1, 1, 1];
 
-    constructor() {
-        
+    constructor(_simulatedDeviceService: SimulatedDeviceService) {
+        this.simulatedDeviceService = _simulatedDeviceService;
     }
 
     setParameters(chan, offset, gain) {

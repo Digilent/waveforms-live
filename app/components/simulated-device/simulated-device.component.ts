@@ -8,6 +8,9 @@ import {SimulatedDcComponent} from './instruments/simulated-dc.component.ts';
 import {SimulatedOscComponent} from './instruments/simulated-osc.component.ts';
 import {SimulatedTriggerComponent} from './instruments/simulated-trigger.component.ts';
 
+//Services
+import {SimulatedDeviceService} from '../../services/simulated-device/simulated-device.service.ts';
+
 @Component({
 
 })
@@ -17,19 +20,20 @@ export class SimulatedDeviceComponent {
         mode: string,
         remainingSamples: number
     };
-
     private descriptor: string;
     private awg: SimulatedAwgComponent;
     private dc: SimulatedDcComponent;
     private osc: SimulatedOscComponent;
     private trigger: SimulatedTriggerComponent;
+    private simDevService: SimulatedDeviceService;
 
     constructor(enumeration) {
         this.descriptor = enumeration;
-        this.awg = new SimulatedAwgComponent();
-        this.dc = new SimulatedDcComponent();
-        this.osc = new SimulatedOscComponent();
-        this.trigger = new SimulatedTriggerComponent();
+        this.simDevService = new SimulatedDeviceService();
+        this.awg = new SimulatedAwgComponent(this.simDevService);
+        this.dc = new SimulatedDcComponent(this.simDevService);
+        this.osc = new SimulatedOscComponent(this.simDevService);
+        this.trigger = new SimulatedTriggerComponent(this.simDevService);
     }
 
     send(command: any): Observable<any> {
