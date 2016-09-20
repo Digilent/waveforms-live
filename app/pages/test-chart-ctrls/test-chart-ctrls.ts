@@ -65,6 +65,9 @@ export class TestChartCtrlsPage {
             this.chartReady = true;
             this.chart1.loadDeviceSpecificValues(this.activeDevice);
         }
+    }
+
+    ionViewDidEnter() {
         this.app.setTitle('Instrument Panel');
     }
 
