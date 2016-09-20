@@ -15,11 +15,15 @@ export class SimulatedTriggerComponent {
         "upperThreshold": null
     }];
     public targets: Object = {};
-    private defaultSettings: Object = {
+    private defaultAwgSettings: Object = {
         signalType: 'sine',
         signalFreq: 1000000,
         vpp: 3,
         vOffset: 0
+    }
+    private defaultOscSettings: Object = {
+        sampleFreq: 3000000,
+        bufferSize: 10000
     }
 
     constructor(_simulatedDeviceService: SimulatedDeviceService) {
@@ -56,28 +60,27 @@ export class SimulatedTriggerComponent {
             returnInfo[instrument] = {};
             this.targets[instrument].forEach((element, index, array) => {
                 returnInfo[instrument][index] = {};
-                let settings: any = this.simulatedDeviceService.getAwgSettings(element);
-                console.log(settings, element);
-                if (settings.signalType === 'sine') {
-                    returnInfo[instrument][index] = this.drawSine(settings);
+                let awgSettings: any = this.simulatedDeviceService.getAwgSettings(element);
+                let oscSettings = this.simulatedDeviceService.getOscParameters(element);
+                if (awgSettings.signalType === 'sine') {
+                    returnInfo[instrument][index] = this.drawSine(awgSettings, oscSettings);
                 }
-                else if (settings.signalType === 'triangle') {
-                    returnInfo[instrument][index] = this.drawTriangle(settings);
+                else if (awgSettings.signalType === 'triangle') {
+                    returnInfo[instrument][index] = this.drawTriangle(awgSettings, oscSettings);
                 }
-                else if (settings.signalType === 'sawtooth') {
-                    returnInfo[instrument][index] = this.drawSawtooth(settings);
+                else if (awgSettings.signalType === 'sawtooth') {
+                    returnInfo[instrument][index] = this.drawSawtooth(awgSettings, oscSettings);
                 }
-                else if (settings.signalType === 'square') {
-                    returnInfo[instrument][index] = this.drawSquare(settings);
+                else if (awgSettings.signalType === 'square') {
+                    returnInfo[instrument][index] = this.drawSquare(awgSettings, oscSettings);
                 }
                 else {
-                    returnInfo[instrument][index] = this.drawSine(this.defaultSettings);
+                    returnInfo[instrument][index] = this.drawSine(this.defaultAwgSettings, this.defaultOscSettings);
                 }
                 
             });
 
         }
-        console.log(returnInfo);
         return returnInfo;
     }
 
@@ -87,31 +90,29 @@ export class SimulatedTriggerComponent {
         };
     }
 
-    drawSine(settings: any) {
+    drawSine(awgSettings, oscSettings) {
 
         //---------- Simulate Signal ----------
         //Set default values
-        let numSamples = 10000; //ten thousand points 
-        let sigFreq = 1000000; //in mHz
-        let sampleRate = 30 * (sigFreq / 1000); //30 points per period
+        let numSamples = oscSettings.bufferSize; //ten thousand points 
+        let sigFreq = awgSettings.signalFreq; //in mHz
+        let sampleRate = oscSettings.sampleFreq; //30 points per period
         let t0 = 0;
-        let vOffset = 0; //in mV
-        let vpp = 3; //mV
+        let vOffset = awgSettings.vOffset; //in mV
+        let vpp = awgSettings.vpp; //mV
 
         //Calculate dt - time between data points
-        let dt = 1 / sampleRate;
+        let dt = 1000 / sampleRate;
 
         //Clock time in seconds.  Rolls ever every hour.
 
         //Build Y point arrays
-
         let y = [];
         for (let j = 0; j < numSamples; j++) {
-            y[j] = (1000 * vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j) + vOffset);
+            y[j] = (vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j) + vOffset);
         }
         
         let typedArray = new Int16Array(y);
-        
         //length is 2x the array length because 2 bytes per entry
         return {
             verticalOffset: 0,
@@ -122,29 +123,29 @@ export class SimulatedTriggerComponent {
             statusCode: 0
         };
     }
-    drawSquare(settings: any) {
+    drawSquare(awgSettings, oscSettings) {
         //Set default values
-        let numSamples = 10000; //ten thousand points 
-        let sigFreq = 1000000; //in mHz
-        let sampleRate = 30 * (sigFreq / 1000); //30 points per period
+        let numSamples = oscSettings.bufferSize; //ten thousand points 
+        let sigFreq = awgSettings.signalFreq; //in mHz
+        let sampleRate = oscSettings.sampleFreq; //30 points per period
         let t0 = 0;
-        let vOffset = 0; //in mV
-        let vpp = 3; //mV
+        let vOffset = awgSettings.vOffset; //in mV
+        let vpp = awgSettings.vpp; //mV
         let dutyCycle = 50;
 
         //Calculate dt - time between data points
-        let dt = 1 / sampleRate;
+        let dt = 1000 / sampleRate;
         let y = [];
         for (let j = 0; j < numSamples; j++) {
-            let val = (1000 * vpp / 2) * Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j);
+            let val = (vpp / 2) * Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j);
             if (val > 0) {
-                y[j] = vOffset + 1000 * (vpp / 2);
+                y[j] = vOffset + (vpp / 2);
             }
             else if (val === 0) {
                 y[j]
             }
             else {
-                y[j] = vOffset - 1000 * (vpp / 2);
+                y[j] = vOffset - (vpp / 2);
             }
         }
         
@@ -161,22 +162,21 @@ export class SimulatedTriggerComponent {
         };  
     }
 
-    drawTriangle(settings: any) {
-        let numSamples = 10000; //ten thousand points 
-        let sigFreq = 1000000; //in mHz
-        let sampleRate = 30 * (sigFreq / 1000); //30 points per period
+    drawTriangle(awgSettings, oscSettings) {
+        let numSamples = oscSettings.bufferSize; //ten thousand points 
+        let sigFreq = awgSettings.signalFreq; //in mHz
+        let sampleRate = oscSettings.sampleFreq; //30 points per period
         let t0 = 0;
-        let vOffset = 0; //in mV
-        let vpp = 3; //mV
-        let dutyCycle = 50;
+        let vOffset = awgSettings.vOffset; //in mV
+        let vpp = awgSettings.vpp; //mV
 
         //Calculate dt - time between data points
-        let dt = 1 / sampleRate;
+        let dt = 1000 / sampleRate;
         let y = [];
         let period = 1 / (sigFreq / 1000);
 
         for (let i = 0; i < numSamples; i++) {
-            y[i] = ((4000 * (vpp / 2)) / period) * (Math.abs(((i * dt) % period) - period / 2) - period / 4);
+            y[i] = ((4 * (vpp / 2)) / period) * (Math.abs(((i * dt + 3 * period / 4) % period) - period / 2) - period / 4);
         }
 
         let typedArray = new Int16Array(y);
@@ -193,22 +193,21 @@ export class SimulatedTriggerComponent {
 
     }
 
-    drawSawtooth(settings: any) {
-        let numSamples = 10000; //ten thousand points 
-        let sigFreq = 1000000; //in mHz
-        let sampleRate = 30 * (sigFreq / 1000); //30 points per period
+    drawSawtooth(awgSettings, oscSettings) {
+        let numSamples = oscSettings.bufferSize; //ten thousand points 
+        let sigFreq = awgSettings.signalFreq; //in mHz
+        let sampleRate = oscSettings.sampleFreq; //30 points per period
         let t0 = 0;
-        let vOffset = 0; //in mV
-        let vpp = 3; //mV
-        let dutyCycle = 50;
+        let vOffset = awgSettings.vOffset; //in mV
+        let vpp = awgSettings.vpp; //mV
 
         //Calculate dt - time between data points
-        let dt = 1 / sampleRate;
+        let dt = 1000 / sampleRate;
         let y = [];
         let period = 1 / (sigFreq / 1000);
 
         for (let i = 0; i < numSamples; i++) {
-            y[i] = (1000 * vpp / period) * ((dt * i) % period);
+            y[i] = (vpp / period) * ((dt * i) % period);
         }
 
         let typedArray = new Int16Array(y);

@@ -114,7 +114,7 @@ export class TestChartCtrlsPage {
             }
         ); */
 
-        this.activeDevice.instruments.osc.setParameters([1], [0], [1]).subscribe(
+        this.activeDevice.instruments.osc.setParameters([1], [0], [1], [6250000000], [30000]).subscribe(
             (data) => {
                 //console.log(data);
             },

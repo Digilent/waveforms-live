@@ -55,7 +55,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
     }
 
     //Tell OpenScope to run once and return a buffer
-    setParameters(chans: number[], offsets: number[], gains: number[]): Observable<any> {
+    setParameters(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[]): Observable<any> {
         if (chans.length == 0) {
             return Observable.create((observer) => {
                 observer.complete();
@@ -71,7 +71,9 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     {
                         "command": "setParameters",
                         "offset": offsets[index],
-                        "gain": gains[index]
+                        "gain": gains[index],
+                        "sampleFreq": sampleFreqs[index],
+                        "bufferSize": bufferSizes[index]
                     }
                 ]
         });

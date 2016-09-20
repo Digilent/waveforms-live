@@ -125,7 +125,7 @@ export class SimulatedDeviceComponent {
 
             //---------- OSC ----------            
             case 'oscsetParameters':
-                return this.osc.setParameters(params[0], commandObject.offset, commandObject.gain);
+                return this.osc.setParameters(params[0], commandObject);
             default:
                 return {
                     statusCode: 1,

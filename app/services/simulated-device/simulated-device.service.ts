@@ -6,11 +6,15 @@ export class SimulatedDeviceService {
     constructor() {
         console.log('sim device service constructor');
     }
-
+    /*AWG Settings*/
     private signalTypes: string[] = ['', '', '', '', '', '', '', ''];
     private signalFreqs: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
     private vpps: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
     private vOffsets: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
+
+    /*Osc Parameters*/
+    private sampleFreqs: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
+    private bufferSizes: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
     setAwgSettings(settings: any, channel: number) {
         this.signalTypes[channel] = settings.signalType;
@@ -24,7 +28,20 @@ export class SimulatedDeviceService {
             signalType: this.signalTypes[channel],
             signalFreq: this.signalFreqs[channel],
             vpp: this.vpps[channel],
-            vOffsets: this.vOffsets[channel]
+            vOffset: this.vOffsets[channel]
+        }
+    }
+
+    //Not sure if needed after moving read to oscope but here we go anyways TODO tag for future delete
+    setOscParameters(parameters: any, channel: number) {
+        this.sampleFreqs[channel] = parameters.sampleFreq;
+        this.bufferSizes[channel] = parameters.bufferSize;
+    }
+
+    getOscParameters(channel: number) {
+        return {
+            sampleFreq: this.sampleFreqs[channel],
+            bufferSize: this.bufferSizes[channel]
         }
     }
 }

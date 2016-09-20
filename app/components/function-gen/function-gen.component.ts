@@ -153,7 +153,7 @@ export class FgenComponent {
     setRegularWaveform(chans: number[], settings: Array<SettingsObject>) {
         this.activeDevice.instruments.awg.setRegularWaveform(chans, settings).subscribe(
             (data) => {
-                console.log(data);
+                //console.log(data);
             },
             (err) => {
                 console.log('AWG Set Regular Failed');
@@ -167,7 +167,7 @@ export class FgenComponent {
     run(chans: number[]) {
         this.activeDevice.instruments.awg.run(chans).subscribe(
             (data) => {
-                console.log(data);
+                //console.log(data);
                 if (data.statusCode === undefined) {
                     console.log('AWG Run Successful');
                     this.powerOn = !this.powerOn;
@@ -189,7 +189,7 @@ export class FgenComponent {
     stop(chans: number[]) {
         this.activeDevice.instruments.awg.stop(chans).subscribe(
             (data) => {
-                console.log(data);
+                //console.log(data);
                 this.powerOn = false;
                 if (data.awg['1'][0].statusCode === 0 && this.attemptingPowerOff) {
                     this.attemptingPowerOff = false;
