@@ -530,7 +530,6 @@ export class ProtocolTestPanel {
     saveState() {
         this.storage.saveData('uri', this.uri);
         this.storage.saveData('sendHeaders', JSON.stringify(this.sendHeaders));
-        this.storage.saveData('sendBody', this.sendBody);
         this.storage.saveData('responseHeaders', JSON.stringify(this.responseHeaders));
         this.storage.saveData('responseRawBinary', btoa(String.fromCharCode.apply(null, new Uint8Array(this.responseRawBinary))));
         this.storage.saveData('responseBody', this.responseBody);
@@ -568,9 +567,6 @@ export class ProtocolTestPanel {
                 this.sendHeaders = [{}];
             }
 
-        });
-        this.storage.getData('sendBody').then((value) => {
-            this.sendBody = value;
         });
         this.storage.getData('responseHeaders').then((value) => {
             if (value != null && value != 'null') {

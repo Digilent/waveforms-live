@@ -69,7 +69,6 @@ export class SimulatedDeviceComponent {
                     responseObject[instrument][channel] = [];
                     event[instrument][channel].forEach((element, index, array) => {
                         let activeIndex = responseObject[instrument][channel].push(this.processCommands(instrument, event[instrument][channel][index], [channel])) - 1;
-                        sumStatusCode += responseObject[instrument][channel][activeIndex].statusCode;
                         if (element.command === 'read') {
                             binaryDataFlag = 1;
                         }
@@ -79,7 +78,6 @@ export class SimulatedDeviceComponent {
 
             }
         }
-        responseObject.statusCode = sumStatusCode
         if (binaryDataFlag) {
             return this.processBinaryDataAndSend(responseObject); 
         }

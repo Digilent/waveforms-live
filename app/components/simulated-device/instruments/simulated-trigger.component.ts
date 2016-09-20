@@ -15,6 +15,12 @@ export class SimulatedTriggerComponent {
         "upperThreshold": null
     }];
     public targets: Object = {};
+    private defaultSettings: Object = {
+        signalType: 'sine',
+        signalFreq: 1000000,
+        vpp: 3,
+        vOffset: 0
+    }
 
     constructor(_simulatedDeviceService: SimulatedDeviceService) {
         this.simulatedDeviceService = _simulatedDeviceService;
@@ -64,6 +70,9 @@ export class SimulatedTriggerComponent {
                 else if (settings.signalType === 'square') {
                     returnInfo[instrument][index] = this.drawSquare(settings);
                 }
+                else {
+                    returnInfo[instrument][index] = this.drawSine(this.defaultSettings);
+                }
                 
             });
 
@@ -106,7 +115,7 @@ export class SimulatedTriggerComponent {
         //length is 2x the array length because 2 bytes per entry
         return {
             verticalOffset: 0,
-            dt: dt * 1000000000000,
+            sampleFreq: 1000 / dt,
             y: typedArray,
             binaryLength: 2 * typedArray.length,
             binaryOffset: null,
@@ -144,7 +153,7 @@ export class SimulatedTriggerComponent {
         //length is 2x the array length because 2 bytes per entry
         return {
             verticalOffset: 0,
-            dt: dt * 1000000000000,
+            sampleFreq: 1000 / dt,
             y: typedArray,
             binaryLength: 2 * typedArray.length,
             binaryOffset: null,
@@ -175,7 +184,7 @@ export class SimulatedTriggerComponent {
         //length is 2x the array length because 2 bytes per entry
         return {
             verticalOffset: 0,
-            dt: dt * 1000000000000,
+            sampleFreq: 1000 / dt,
             y: typedArray,
             binaryLength: 2 * typedArray.length,
             binaryOffset: null,
@@ -207,7 +216,7 @@ export class SimulatedTriggerComponent {
         //length is 2x the array length because 2 bytes per entry
         return {
             verticalOffset: 0,
-            dt: dt * 1000000000000,
+            sampleFreq: 1000 / dt,
             y: typedArray,
             binaryLength: 2 * typedArray.length,
             binaryOffset: null,
