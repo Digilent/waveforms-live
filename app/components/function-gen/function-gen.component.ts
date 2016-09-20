@@ -1,5 +1,5 @@
 import {Component, EventEmitter} from '@angular/core';
-import {ModalController, PopoverController} from 'ionic-angular';
+import {ModalController, PopoverController, ToastController} from 'ionic-angular';
 
 //Pages
 import {ModalFgenPage} from '../../pages/fgen-modal/fgen-modal';
@@ -32,18 +32,23 @@ export class FgenComponent {
     private deviceManagerService: DeviceManagerService;
     private activeDevice: DeviceComponent;
     public supportedSignalTypes: string[];
+    private attemptingPowerOff: boolean = false;
 
     private storageService: StorageService;
     private storageEventListener: EventEmitter<any>;
     private modalCtrl: ModalController;
     private popoverCtrl: PopoverController;
+    private toastCtrl: ToastController;
     
     constructor(_deviceManagerService: DeviceManagerService, 
                 _storageService: StorageService, 
                 _modalCtrl: ModalController,
-                _popoverCtrl: PopoverController) {
+                _popoverCtrl: PopoverController,
+                _toastCtrl: ToastController) 
+    {
         this.modalCtrl = _modalCtrl;
         this.popoverCtrl = _popoverCtrl;
+        this.toastCtrl = _toastCtrl;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.supportedSignalTypes = this.activeDevice.instruments.awg.chans[0].signalTypes;
@@ -94,7 +99,6 @@ export class FgenComponent {
     
     //Toggle power to awg
     togglePower() {
-        this.powerOn = !this.powerOn;
         let chans = [];
         let settings = [];
         for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {
@@ -106,7 +110,7 @@ export class FgenComponent {
                 vOffset: parseFloat(this.offset)
             };
         }
-        if (this.powerOn) {
+        if (!this.powerOn) {
             this.setRegularWaveform(chans, settings);
             this.run(chans);
         }
@@ -164,6 +168,14 @@ export class FgenComponent {
         this.activeDevice.instruments.awg.run(chans).subscribe(
             (data) => {
                 console.log(data);
+                if (data.statusCode === undefined) {
+                    console.log('AWG Run Successful');
+                    this.powerOn = !this.powerOn;
+                }
+                else {
+                    this.attemptingPowerOff = true;
+                    this.stop(chans);
+                }
             },
             (err) => {
                 console.log('AWG Run Failed');
@@ -178,6 +190,16 @@ export class FgenComponent {
         this.activeDevice.instruments.awg.stop(chans).subscribe(
             (data) => {
                 console.log(data);
+                this.powerOn = false;
+                if (data.awg['1'][0].statusCode === 0 && this.attemptingPowerOff) {
+                    this.attemptingPowerOff = false;
+                    let toast = this.toastCtrl.create({
+                        message: 'Error Running AWG. AWG Has Been Stopped Automatically. Please Try Again',
+                        showCloseButton: true,
+                        position: 'bottom'
+                    });
+                    toast.present();
+                }
             },
             (err) => {
                 console.log('AWG Stop Failed');

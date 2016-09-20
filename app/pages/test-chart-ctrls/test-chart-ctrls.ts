@@ -1,4 +1,4 @@
-import {ToastController} from 'ionic-angular';
+import {ToastController, App} from 'ionic-angular';
 import {ViewChild, ElementRef, Component, Input} from '@angular/core';
 
 //Components
@@ -26,6 +26,7 @@ import {StorageService} from '../../services/storage/storage.service';
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
+    private app: App;
     public controlsVisible = false;
     public botVisible = false;
     public sideVisible = false;
@@ -40,8 +41,9 @@ export class TestChartCtrlsPage {
     private chartReady: boolean = false;
     private toastCtrl: ToastController;
 
-    constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController) {
+    constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController, _app: App) {
         this.toastCtrl = _toastCtrl;
+        this.app = _app;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.storage = _storage;
@@ -63,6 +65,7 @@ export class TestChartCtrlsPage {
             this.chartReady = true;
             this.chart1.loadDeviceSpecificValues(this.activeDevice);
         }
+        this.app.setTitle('Instrument Panel');
     }
 
     saveTimelineChart(event) {
