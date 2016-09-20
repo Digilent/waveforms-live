@@ -116,8 +116,7 @@ export class TestChartCtrlsPage {
                 //console.log('binary finished in test chart ctrls');
             }
         ); */
-
-        this.activeDevice.instruments.osc.setParameters([1], [0], [1], [6250000000], [30000]).subscribe(
+        this.activeDevice.instruments.osc.setParameters([1], [0], [1], [this.activeDevice.instruments.osc.chans[0].sampleFreqMax / 1000], [30000]).subscribe(
             (data) => {
                 //console.log(data);
             },

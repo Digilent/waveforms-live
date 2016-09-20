@@ -10,7 +10,6 @@
         "patch": 0
     },
     "awg": {
-        "numChans": 1,
         "1": {
             "signalTypes": [
                 "sine",
@@ -18,21 +17,21 @@
                 "sawtooth",
                 "triangle"
             ],
-            "signalFreqMin": 312000,
+            "signalFreqMin": 1000,
             "signalFreqMax": 1000000000,
             "dataType": "I16",
             "bufferSizeMax": 32640,
             "dacVpp": 3000,
-            "dtMin": 1000000,
-            "dtMax": 1000000000000,
+            "sampleFreqMin": 1000000,
+            "sampleFreqMax": 10000000000,
             "vOffsetMin": -1500,
             "vOffsetMax": 1500,
             "vOutMin": -3000,
             "vOutMax": 3000
-        }
+        },
+        "numChans": 1
     },
     "dc": {
-        "numChans": 2,
         "1": {
             "voltageMin": -4000,
             "voltageMax": 4000,
@@ -48,20 +47,20 @@
             "currentMin": 0,
             "currentMax": 50,
             "currentIncrement": 0
-        }
+        },
+        "numChans": 2
     },
     "la": {
         "numChans": 10
     },
     "osc": {
-        "numChans": 2,
         "1": {
             "resolution": 12,
             "effectiveBits": 11,
             "bufferSizeMax": 32640,
             "bufferDataType": "I16",
-            "dtMin": 160000,
-            "dtMax": 655350000,
+            "sampleFreqMin": 3052000,
+            "sampleFreqMax": 6250000000,
             "adcVpp": 3000,
             "inputVoltageMax": 20000,
             "inputVoltageMin": -20000,
@@ -77,8 +76,8 @@
             "effectiveBits": 11,
             "bufferSizeMax": 32640,
             "bufferDataType": "I16",
-            "dtMin": 160000,
-            "dtMax": 655350000,
+            "sampleFreqMin": 3052000,
+            "sampleFreqMax": 6250000000,
             "adcVpp": 3000,
             "inputVoltageMax": 20000,
             "inputVoltageMin": -20000,
@@ -88,6 +87,7 @@
                 0.125,
                 0.075
             ]
-        }
+        },
+        "numChans": 2
     }
 }

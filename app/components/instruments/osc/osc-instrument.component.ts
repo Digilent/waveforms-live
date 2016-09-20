@@ -70,9 +70,9 @@ export class OscInstrumentComponent extends InstrumentComponent {
                 [
                     {
                         "command": "setParameters",
-                        "offset": offsets[index],
+                        "offset": offsets[index] * 1000,
                         "gain": gains[index],
-                        "sampleFreq": sampleFreqs[index],
+                        "sampleFreq": sampleFreqs[index] * 1000,
                         "bufferSize": bufferSizes[index]
                     }
                 ]

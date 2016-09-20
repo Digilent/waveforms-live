@@ -18,7 +18,7 @@ export class SimulatedTriggerComponent {
     private defaultAwgSettings: Object = {
         signalType: 'sine',
         signalFreq: 1000000,
-        vpp: 3,
+        vpp: 3000,
         vOffset: 0
     }
     private defaultOscSettings: Object = {

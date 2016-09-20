@@ -45,6 +45,7 @@ export class DeviceComponent {
         if (_rootUri === 'local') {
             this.transport.setLocalTransport(deviceDescriptor);
         }
+        console.log(deviceDescriptor);
         this.deviceMake = deviceDescriptor.deviceMake;
         this.deviceModel = deviceDescriptor.deviceModel;
         this.firmwareVersion = deviceDescriptor.firmwareVersion;

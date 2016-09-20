@@ -2017,6 +2017,8 @@ export class SilverNeedleChart {
         for (let i = minIndex; i < maxIndex - 1; i++) {
             if (this.chart.series[seriesNum].yData[i] <= value && this.chart.series[seriesNum].yData[i + 1] >= value) {
                 points.push(this.chart.series[seriesNum].xData[i]);
+                //Increment i twice in case one of the points was equal to the value
+                i++;
             }
         }
         let sum = 0;
@@ -2056,6 +2058,8 @@ export class SilverNeedleChart {
         for (let i = minIndex; i < maxIndex - 1; i++) {
             if (this.chart.series[seriesNum].yData[i] <= value && this.chart.series[seriesNum].yData[i + 1] >= value) {
                 points.push(this.chart.series[seriesNum].xData[i]);
+                //Increment i twice in case one of the points was equal to the value
+                i++;
             }
         }
         let sum = 0;
