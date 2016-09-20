@@ -33,7 +33,49 @@ export class DcInstrumentComponent extends InstrumentComponent {
     //TODO - Calibrate the DC power supply.
 
     //Get the output voltage(s) of the specified DC power supply channel(s).
-    getVoltages(chans: Array<number>): Observable<Array<number>> {
+    getVoltagesJson(chans) {
+        console.log('dc get voltages');
+        let command = {
+            "dc": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.dc[chans[index]] =
+            [
+                {
+                    "command": "getVoltage"
+                }
+            ]
+        });
+        return command;
+    }
+
+    getVoltageParse(chan, responseObject) {
+        return 'Channel ' + chan + ' ' + responseObject.command + ' successful';
+    }
+
+    setVoltagesJson(chans, voltages) {
+        let scaledVoltages = [];
+        let command = {
+            "dc": {}
+        }
+        voltages.forEach((element, index, array) => {
+            scaledVoltages.push(element * 1000);
+            command.dc[chans[index]] =
+                [
+                    {
+                        "command": "setVoltage",
+                        "voltage": (element * 1000)
+                    }
+                ]
+        });
+        return command;
+    }
+
+    setVoltageParse(chan, responseObject) {
+        return 'Channel ' + chan + ' ' + responseObject.command + ' successful';
+    }
+
+    getVoltages(chans: Array<number>): Observable<any> {
         let command = {
             "dc": {}
         }
@@ -51,18 +93,16 @@ export class DcInstrumentComponent extends InstrumentComponent {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
 
-                    let voltages = [];
-
                     //Scale from mV to V                            
                     for (let voltageRead in data.dc) {
                         if (voltageRead !== 'statusCode') {
                             //hopefully the voltage is located in the first object in the 0th index of the array of the channel property in the dc object in the response object.
-                            voltages.push(data.dc[voltageRead][0].voltage / 1000);
+                            data.dc[voltageRead][0].voltage = data.dc[voltageRead][0].voltage / 1000;
                         }
                     }
 
                     //Return voltages and complete observer
-                    observer.next(voltages);
+                    observer.next(data);
                     observer.complete();
                     
                 },
@@ -108,7 +148,7 @@ export class DcInstrumentComponent extends InstrumentComponent {
                 () => {
                     observer.complete();
                 }
-            )
+            );
         });
     }
 

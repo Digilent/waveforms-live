@@ -27,7 +27,9 @@ export class SimulatedDcComponent {
         console.log('setting ' + _chan + ' to ' + _voltage + 'mV');
         this.voltages[_chan] = _voltage;
         return {
-            statusCode: 0
+            command: 'setVoltage',
+            statusCode: 0,
+            wait: 0
         };
     }
 

@@ -33,6 +33,27 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
     }
 
+    setParametersJson(chans, offsets, gains) {
+        let command = {
+            "osc": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.osc[chans[index]] =
+                [
+                    {
+                        "command": "setParameters",
+                        "offset": offsets[index],
+                        "gain": gains[index]
+                    }
+                ]
+        });
+        return command;
+    }
+
+    setParametersParse(chan, responseObject) {
+        return 'Channel ' + chan + ' ' + responseObject.command + ' successful';
+    }
+
     //Tell OpenScope to run once and return a buffer
     setParameters(chans: number[], offsets: number[], gains: number[]): Observable<any> {
         if (chans.length == 0) {

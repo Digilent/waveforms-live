@@ -96,11 +96,11 @@ export class DcSupplyComponent {
     //Receive desired voltages from OpenScope
     getVoltages(chans: Array<number>) {
         this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
-            (voltages) => {
-                console.log('Voltages are currently: ' + voltages);
-                for (let i = 0; i < voltages.length; i++) {
-                    this.voltages[i] = voltages[i].toString();
+            (data) => {
+                for (let channel in data.dc) {
+                    this.voltages[parseInt(channel) - 1] = data.dc[channel][0].voltage;
                 }
+                console.log(this.voltages);
             },
             (err) => {
                 console.log(err);
