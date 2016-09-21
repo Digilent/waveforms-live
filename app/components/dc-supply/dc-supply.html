@@ -1,10 +1,10 @@
 <div class="dc-container">
-    <div class="title" (click)="headerClicked.emit(null)">
+    <div class="title" (click)="hideBar()">
         DC POWER SUPPLY
     </div>
     <ion-row class="set-background-color" [hidden]="contentHidden">
         <ion-col *ngFor="let supply of voltageSupplies; let i = index">
-            DC Power Supply {{i}}
+            DC Power Supply {{i + 1}}
             <ion-item class="set-background-color">
                 <ion-label stacked>Volts</ion-label>
                 <ion-input type="number" [disabled]="dcPower" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)" [ngClass]="{powerOn: dcPower, wrongPower: !correctVoltages[i]}" class="power-controls"></ion-input>

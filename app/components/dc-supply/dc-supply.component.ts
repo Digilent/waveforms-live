@@ -131,6 +131,12 @@ export class DcSupplyComponent {
         }
     }
 
+    hideBar() {
+        this.headerClicked.emit(null);
+        clearInterval(this.intervalReference);
+        this.dcPower = false;
+    }
+
     //Validate voltage supplies 
     validateSupply(supplyNum: number) {
         if ((parseFloat(this.voltages[supplyNum]) < 0 || parseFloat(this.voltages[supplyNum]) > this.maxVoltages[supplyNum]) && this.maxVoltages[supplyNum] > 0) {

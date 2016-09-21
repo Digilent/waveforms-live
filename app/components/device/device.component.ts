@@ -113,8 +113,9 @@ export class DeviceComponent {
                     }
             }
             //MultiCommand packet is complete. Now to send
-            let multiCommandResponse
-            this.transport.writeRead(this.rootUri, JSON.stringify(commandToBeSent), 'json').subscribe(
+            let multiCommandResponse;
+            console.log(this.rootUri);
+            this.transport.writeRead('/', JSON.stringify(commandToBeSent), 'json').subscribe(
                 (arrayBuffer) => {
                     try {
                         multiCommandResponse = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
