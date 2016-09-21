@@ -118,6 +118,46 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
         });
     }
 
+
+    readParse(chan, command, entireBinaryData) {
+        let bufferCount = 0;
+        console.log(command);
+        for (let channel in command.trigger) {
+            if (command.trigger[channel][0].osc !== undefined) {
+                for (let instrumentChannel in command.trigger[channel][0].osc) {
+                    let binaryData = new Int16Array(entireBinaryData.slice(command.trigger[channel][0].osc[instrumentChannel].binaryOffset, command.trigger[channel][0].osc[instrumentChannel].binaryOffset + command.trigger[channel][0].osc[instrumentChannel].binaryLength));
+                    let untypedArray = Array.prototype.slice.call(binaryData);
+                    let scaledArray = untypedArray.map((voltage) => {
+                        return voltage / 1000;
+                    });
+                    this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
+                        dt: 1 / (command.trigger[channel][0].osc[instrumentChannel].sampleFreq / 1000),
+                        t0: 0,
+                        y: scaledArray
+                    });
+                    bufferCount++;
+                }
+
+            }
+        }
+        return 'Done parsing read';
+    }
+
+    readJson(chans: number[]) {
+        let command = {
+            "trigger": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.trigger[chans[index]] =
+                [
+                    {
+                        "command": "read"
+                    }
+                ]
+        });
+        return command;
+    }
+
     //Read
     read(chans: number[]): Observable<any> {
         //If no channels are active no need to talk to hardware

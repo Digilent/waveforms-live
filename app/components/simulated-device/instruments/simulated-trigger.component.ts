@@ -86,6 +86,7 @@ export class SimulatedTriggerComponent {
 
     forceTrigger() {
         return {
+            "command": "forceTrigger",
             "statusCode": 0
         };
     }
@@ -109,7 +110,7 @@ export class SimulatedTriggerComponent {
         //Build Y point arrays
         let y = [];
         for (let j = 0; j < numSamples; j++) {
-            y[j] = (vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j) + vOffset);
+            y[j] = (vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j)) + vOffset;
         }
         
         let typedArray = new Int16Array(y);
@@ -136,16 +137,14 @@ export class SimulatedTriggerComponent {
         //Calculate dt - time between data points
         let dt = 1000 / sampleRate;
         let y = [];
-        for (let j = 0; j < numSamples; j++) {
-            let val = (vpp / 2) * Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j);
-            if (val > 0) {
-                y[j] = vOffset + (vpp / 2);
-            }
-            else if (val === 0) {
-                y[j]
+        let period = 1 / (sigFreq / 1000);
+
+        for (let i = 0; i < numSamples; i++) {
+            if ((dt * i) % period < period * (dutyCycle / 100)) {
+                y[i] = (vOffset + vpp / 2);
             }
             else {
-                y[j] = vOffset - (vpp / 2);
+                y[i] = (vOffset - vpp / 2);
             }
         }
         
@@ -176,7 +175,7 @@ export class SimulatedTriggerComponent {
         let period = 1 / (sigFreq / 1000);
 
         for (let i = 0; i < numSamples; i++) {
-            y[i] = ((4 * (vpp / 2)) / period) * (Math.abs(((i * dt + 3 * period / 4) % period) - period / 2) - period / 4);
+            y[i] = ((4 * (vpp / 2)) / period) * (Math.abs(((i * dt + 3 * period / 4) % period) - period / 2) - period / 4) + vOffset;
         }
 
         let typedArray = new Int16Array(y);
@@ -207,7 +206,7 @@ export class SimulatedTriggerComponent {
         let period = 1 / (sigFreq / 1000);
 
         for (let i = 0; i < numSamples; i++) {
-            y[i] = (vpp / period) * ((dt * i) % period);
+            y[i] = (vpp / period) * ((dt * i) % period) + vOffset;
         }
 
         let typedArray = new Int16Array(y);
