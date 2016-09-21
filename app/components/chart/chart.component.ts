@@ -157,11 +157,11 @@ export class SilverNeedleChart {
                 }
             },
             series: [{
-                data: [0, 1, 0, -1, 0, 1, 0, -1, 0, 1, 0, -1, 0],
+                data: [],
                 allowPointSelect: true
             },
             {
-                data: [1, 0, -1, 0, 1, 0, -1, 0, 1, 0, -1, 0, 1],
+                data: [],
                 allowPointSelect: true,
                 yAxis: 1
             }

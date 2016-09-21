@@ -116,7 +116,46 @@ export class TestChartCtrlsPage {
                 //console.log('binary finished in test chart ctrls');
             }
         ); */
-        this.activeDevice.instruments.osc.setParameters([1], [0], [1], [this.activeDevice.instruments.osc.chans[0].sampleFreqMax / 1000], [30000]).subscribe(
+        this.activeDevice.multiCommand(
+            {
+                osc: {
+                    setParameters: [[1], [0], [1], [this.activeDevice.instruments.osc.chans[0].sampleFreqMax / 1000], [30000]]
+                },
+                trigger: {
+                    setParameters: [
+                        [1],
+                        [
+                            {
+                                instrument: 'osc',
+                                channel: 1,
+                                type: 'risingEdge',
+                                lowerThreshold: -5,
+                                upperThreshold: 0
+                            }
+                        ],
+                        [
+                            {
+                                osc: [1]
+                            }
+                        ]
+                    ],
+                    single: [[1]]
+                }
+            }
+        ).subscribe(
+            (data) => {
+                //console.log(data);
+            },
+            (err) => {
+                //console.log(err);
+            },
+            () => {
+                //console.log('single multi done');
+                this.readOscope();
+            }
+        );
+
+        /*this.activeDevice.instruments.osc.setParameters([1], [0], [1], [this.activeDevice.instruments.osc.chans[0].sampleFreqMax / 1000], [30000]).subscribe(
             (data) => {
                 //console.log(data);
             },
@@ -162,11 +201,16 @@ export class TestChartCtrlsPage {
             () => {
                 //console.log('binary finished in test chart ctrls');
             }
-        );
+        );*/
 
+        
+    }
+
+    readOscope() {
         this.activeDevice.instruments.trigger.read([1]).subscribe(
             (data) => {
                 //console.log(data);
+                
                 this.chart1.clearExtraSeries([0]);
                 if (this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1 < 0) {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBuffer.length - 1]);

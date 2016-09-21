@@ -40,9 +40,9 @@ export class SimulatedTriggerComponent {
         };
     }
 
-    run() {
+    single() {
         return {
-            "command": "run",
+            "command": "single",
             "statusCode": 0,
             "wait": -1,
             "acqCount": 27

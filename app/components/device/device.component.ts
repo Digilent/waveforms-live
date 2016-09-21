@@ -54,26 +54,6 @@ export class DeviceComponent {
         this.instruments.la = new LaInstrumentComponent(this.transport, deviceDescriptor.la);
         this.instruments.osc = new OscInstrumentComponent(this.transport, deviceDescriptor.osc);
         this.instruments.trigger = new TriggerInstrumentComponent(this.transport, 'deviceDescriptor.trigger');
-        this.multiCommand(
-            {
-                dc: {
-                    getVoltages: [[1, 2]],
-                    setVoltages: [[1, 2], [3.3, 3.3]]
-                },
-                osc: {
-                    setParameters: [[1], [0], [1]]
-                }
-        }).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => {
-                console.log('multiCommand complete');
-            }
-        );
     }
 
     multiCommand(commandObject: any): Observable<any> {
@@ -88,9 +68,7 @@ export class DeviceComponent {
                     for (let element of functionNames) {
                         let responseJson;
                         try {
-                            console.log(element);
                             responseJson = this.instruments[instrument][element + 'Json'](...commandObject[instrument][element]);
-                            console.log(responseJson);
                         }
                         catch (e) {
                             console.log(e);
@@ -108,20 +86,17 @@ export class DeviceComponent {
                             else {
                                 commandToBeSent[instrument][channel].push(responseJson[instrument][channel][0]);
                             }
-                            console.log(commandToBeSent);
                         }
                     }
             }
             //MultiCommand packet is complete. Now to send
             let multiCommandResponse;
-            console.log(this.rootUri);
             this.transport.writeRead('/', JSON.stringify(commandToBeSent), 'json').subscribe(
                 (arrayBuffer) => {
-                    console.log('response');
                     let firstChar = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0, 1)));
                     if (!isNaN(parseInt(firstChar))) {
                         //OSJB
-                        console.log('OSJB');
+                        //console.log('OSJB');
 
                         let count = 0;
                         let i = 0;
@@ -150,7 +125,7 @@ export class DeviceComponent {
                             observer.error(error);
                             return;
                         }
-                        console.log('command parsed. Now calling individual parsing functions');
+                        //console.log('command parsed. Now calling individual parsing functions');
                         let flag = false;
                         for (let instrument in command) {
                             for (let channel in command[instrument]) {
@@ -178,17 +153,15 @@ export class DeviceComponent {
                     }
                     else if (firstChar === '{') {
                         //JSON
-                        console.log('JSON');
+                        //console.log('JSON');
                         try {
                             multiCommandResponse = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                            console.log(multiCommandResponse);
                         }
                         catch (e) {
                             console.log(e);
                             observer.error('Error in multiCommand().\nThis is most likely due to an unparseable response.\nAuto-generated error: ' + e);
                         }
                         //Response Received! Now to reparse and call observer.next for each command
-                        console.log('moving on');
                         let flag = false;
                         for (let instrument in multiCommandResponse) {
                             for (let channel in multiCommandResponse[instrument]) {
@@ -205,7 +178,6 @@ export class DeviceComponent {
                                 }
                             }
                         }
-                        observer.next('noice');
                         observer.complete();
                     }
                     else {
@@ -216,7 +188,7 @@ export class DeviceComponent {
                     console.log(err);
                 },
                 () => {
-                    console.log('complete');
+                    
                 }
             );
             

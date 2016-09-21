@@ -118,8 +118,8 @@ export class SimulatedDeviceComponent {
             //-------- TRIGGER --------
             case 'triggersetParameters':
                 return this.trigger.setParameters(params[0], commandObject.source, commandObject.targets);
-            case 'triggerrun':
-                return this.trigger.run();
+            case 'triggersingle':
+                return this.trigger.single();
             case 'triggerread':
                 return this.trigger.read(params[0]);
 

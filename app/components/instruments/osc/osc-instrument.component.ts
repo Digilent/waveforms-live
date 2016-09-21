@@ -33,7 +33,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
     }
 
-    setParametersJson(chans, offsets, gains) {
+    setParametersJson(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[]) {
         let command = {
             "osc": {}
         }
@@ -42,8 +42,10 @@ export class OscInstrumentComponent extends InstrumentComponent {
                 [
                     {
                         "command": "setParameters",
-                        "offset": offsets[index],
-                        "gain": gains[index]
+                        "offset": offsets[index] * 1000,
+                        "gain": gains[index],
+                        "sampleFreq": sampleFreqs[index] * 1000,
+                        "bufferSize": bufferSizes[index]
                     }
                 ]
         });

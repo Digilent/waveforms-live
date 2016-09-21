@@ -41,6 +41,27 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
         }*/
     }
 
+    setParametersJson(chans: number[], sources: Object[], targetsArray: Object[]) {
+        let command = {
+            "trigger": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.trigger[chans[index]] =
+                [
+                    {
+                        "command": "setParameters",
+                        "source": sources[index],
+                        "targets": targetsArray[index]
+                    }
+                ]
+        });
+        return command;
+    }
+
+    setParametersParse(chan, command) {
+        return 'set Parameters channel ' + chan + ' is done!';
+    }
+
     //Tell OpenScope to run once and return a buffer
     setParameters(chans: number[], sources: Object[], targetsArray: Object[]): Observable<any> {
         if (chans.length == 0) {
@@ -78,6 +99,25 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                 }
             )
         });
+    }
+
+    singleJson(chans: number[]) {
+        let command = {
+            "trigger": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.trigger[chans[index]] =
+                [
+                    {
+                        "command": "single"
+                    }
+                ]
+        });
+        return command;
+    }
+
+    singleParse(chan, command) {
+        return 'run channel ' + chan + ' is done';
     }
 
     single(chans: number[]): Observable<any> {
