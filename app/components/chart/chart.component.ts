@@ -2095,4 +2095,48 @@ export class SilverNeedleChart {
         return xDelta;
     }
 
+    calculateDataFromWindow() {
+        //100 points per division
+        let numPoints = 1000;
+        //Need to sample at 100 times in 1 time division
+        let sampleFreq = 100 * (1 / this.secsPerDivVals[this.activeTPDIndex]);
+
+        return {
+            bufferSize: numPoints,
+            sampleFreq: sampleFreq //Hz since it's converted in the instrument
+        };
+    }
+
+    addSeriesAnchor(seriesNum: number, offset: number) {
+        //convert offset to V from mV
+        offset = offset / 1000;
+        let color = this.chart.series[seriesNum].color;
+        let test = this.chart.renderer.rect(this.chart.plotLeft - 12, this.chart.yAxis[0].toPixels(offset) - 6, 10, 10, 1)
+            .attr({
+                'stroke-width': 2,
+                stroke: 'black',
+                fill: color,
+                zIndex: 3,
+                id: ('seriesAnchor' + (seriesNum).toString())
+            })
+            .css({
+                'cursor': 'pointer'
+            })
+            .add()
+            .on('mousedown', (event) => {
+                this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.verticalOffsetListener);
+                this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.verticalOffsetListener);
+            })
+            .on('touchstart', (event) => {
+                this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.verticalOffsetListener);
+                this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.verticalOffsetListener);
+            })
+            .on('mouseup', (event) => {
+                this.clearMouse();
+            })
+            .on('touchend', (event) => {
+                this.clearMouse();
+            });
+    }
+
 }
