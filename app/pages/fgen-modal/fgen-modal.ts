@@ -5,6 +5,7 @@ import {NgClass} from '@angular/common';
 //Components
 import {SilverNeedleChart} from '../../components/chart/chart.component';
 import {FgenComponent} from '../../components/function-gen/function-gen.component';
+import {WaveformComponent} from '../../components/data-types/waveform';
 
 @Component({
     templateUrl: "build/pages/fgen-modal/fgen-modal.html",
@@ -87,7 +88,10 @@ export class ModalFgenPage {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1
+            dt: 1, 
+            pointOfInterest: 0,
+            triggerPosition: 0,
+            seriesOffset: parseFloat(this.fgenComponent.offset)
         };
         let period = 0;
         if (parseFloat(this.fgenComponent.frequency) != 0) {
@@ -98,7 +102,7 @@ export class ModalFgenPage {
         for (let i = 0; i < this.numPoints; i++) {
             waveform.y[i] = parseFloat(this.fgenComponent.amplitude) * Math.sin(((Math.PI * 2) / (this.numPoints / 2)) * i) + parseFloat(this.fgenComponent.offset);
         }
-        this.chart.setCurrentBuffer([waveform]);
+        this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.drawWaveform(0, waveform, true);
     }
     
@@ -107,7 +111,10 @@ export class ModalFgenPage {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1
+            dt: 1, 
+            pointOfInterest: 0,
+            triggerPosition: 0,
+            seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
         if (parseFloat(this.fgenComponent.frequency) != 0) {
@@ -119,7 +126,7 @@ export class ModalFgenPage {
             waveform.y[i] = (i % (this.numPoints / 2)) * (parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 2)) + 
             parseFloat(this.fgenComponent.offset);
         }
-        this.chart.setCurrentBuffer([waveform]);
+        this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.drawWaveform(0, waveform, true);
     }
     
@@ -128,13 +135,16 @@ export class ModalFgenPage {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1
+            dt: 1, 
+            pointOfInterest: 0,
+            triggerPosition: 0,
+            seriesOffset: this.fgenComponent.offset
         };
         waveform.dt = 1;
         for (let i = 0; i < this.numPoints; i++) {
             waveform.y[i] = parseFloat(this.fgenComponent.offset);
         }
-        this.chart.setCurrentBuffer([waveform]);
+        this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.drawWaveform(0, waveform, true);
     }
     
@@ -143,7 +153,10 @@ export class ModalFgenPage {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1
+            dt: 1, 
+            pointOfInterest: 0,
+            triggerPosition: 0,
+            seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
         if (parseFloat(this.fgenComponent.frequency) != 0) {
@@ -164,7 +177,7 @@ export class ModalFgenPage {
         for (let i = 0; i < (this.numPoints / 2); i++) {
             waveform.y[i + this.numPoints / 2] = (waveform.y[i]);
         }
-        this.chart.setCurrentBuffer([waveform]);
+        this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.drawWaveform(0, waveform, true);
     }
     
@@ -173,7 +186,10 @@ export class ModalFgenPage {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1
+            dt: 1, 
+            pointOfInterest: 0,
+            triggerPosition: 0,
+            seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
         if (parseFloat(this.fgenComponent.frequency) != 0) {
@@ -185,7 +201,7 @@ export class ModalFgenPage {
             waveform.y[i] = ((-1 * i) % (this.numPoints / 2)) * (parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 2)) + 
             parseFloat(this.fgenComponent.amplitude) + parseFloat(this.fgenComponent.offset);
         }
-        this.chart.setCurrentBuffer([waveform]);
+        this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.drawWaveform(0, waveform, true);
     }
     
@@ -209,7 +225,10 @@ export class ModalFgenPage {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1
+            dt: 1, 
+            pointOfInterest: 0,
+            triggerPosition: 0,
+            seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
         if (parseFloat(this.fgenComponent.frequency) != 0) {
@@ -227,7 +246,7 @@ export class ModalFgenPage {
         for (let j = 0; i < this.numPoints; i++, j++) {
             waveform.y[i] = waveform.y[j];
         }
-        this.chart.setCurrentBuffer([waveform]);
-        this.chart.drawWaveform(0, waveform, true);
+        this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
+        this.chart.drawWaveform(0, waveform, true); 
     }
 }

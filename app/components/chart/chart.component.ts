@@ -90,6 +90,8 @@ export class SilverNeedleChart {
 
     private currentBufferArray: WaveformComponent[] = [];
 
+    private seriesAnchors: Array<any> = [];
+
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
         this.options = {
@@ -444,6 +446,14 @@ export class SilverNeedleChart {
         else if (this.chart != undefined) {
             this.chart.reflow();
         }
+        if (this.cursorsEnabled) {
+            this.updateCursorLabels();
+        }
+        for (let i = 0; i < this.seriesAnchors.length; i++) {
+            if (this.seriesAnchors[i] !== undefined) {
+                
+            }
+        }
     }
 
     decimateData(seriesNum: number, waveform: any, bounds: any) {
@@ -455,7 +465,6 @@ export class SilverNeedleChart {
             console.log('returning');
             return waveform.y;
         }*/
-        
         let numPointsInView = Math.round((bounds.max - bounds.min) / waveform.dt);
         if (numPointsInView <= 2000) {
             return this.currentBufferArray[seriesNum];
@@ -504,8 +513,8 @@ export class SilverNeedleChart {
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
     drawWaveform(seriesNum: number, waveform: any, initialDraw: boolean, ignoreAutoscale?: boolean) {
         let bounds = this.chart.xAxis[0].getExtremes();
-        if (bounds.min < waveform.t0) {bounds.min = waveform.t0}
-        if (bounds.max > waveform.dt * waveform.y.length) {bounds.max = waveform.dt * waveform.y.length}
+        if (bounds.min < waveform.t0 || isNaN(bounds.min)) {bounds.min = waveform.t0}
+        if (bounds.max > waveform.dt * waveform.y.length || isNaN(bounds.max)) {bounds.max = waveform.dt * waveform.y.length}
         waveform = this.decimateData(seriesNum, waveform, bounds);
         this.chart.series[seriesNum].update({
             pointStart: waveform.t0,
@@ -1336,6 +1345,9 @@ export class SilverNeedleChart {
         this.setYExtremes(seriesSettings);
         this.voltBase[this.activeSeries - 1] = parseFloat((parseFloat(this.voltBase[this.activeSeries - 1]) - difference).toFixed(3));
         this.yPositionPixels = event.chartY;
+        this.seriesAnchors[this.activeSeries - 1].attr({
+            y: event.chartY - 6
+        });
     }.bind(this);
 
     //Sets x extremes based on position change from previos position
@@ -1524,6 +1536,7 @@ export class SilverNeedleChart {
                 voltsPerDiv: this.voltDivision[axisIndex],
                 voltBase: this.voltBase[axisIndex]
             });
+            this.updateSeriesAnchor(axisIndex);
         }
         else {
             console.log('invalid axis');
@@ -2111,13 +2124,30 @@ export class SilverNeedleChart {
         //convert offset to V from mV
         offset = offset / 1000;
         let color = this.chart.series[seriesNum].color;
-        let test = this.chart.renderer.rect(this.chart.plotLeft - 12, this.chart.yAxis[0].toPixels(offset) - 6, 10, 10, 1)
+        let startingPos = this.chart.yAxis[seriesNum].toPixels(offset);
+        console.log(startingPos);
+        if (isNaN(startingPos)) {
+            
+            return;
+        } 
+        this.yPositionPixels = startingPos;
+        console.log(this.seriesAnchors[seriesNum]);
+        if (this.seriesAnchors[seriesNum] !== undefined) {
+            console.log('updating existing');
+            this.seriesAnchors[this.activeSeries - 1].attr({
+                y: startingPos - 6,
+                id: ('seriesAnchor' + (seriesNum).toString() + 'offset' + offset.toString())
+            });
+            return;
+        }
+        console.log('adding new');
+        this.seriesAnchors[seriesNum] = this.chart.renderer.rect(this.chart.plotLeft - 12, startingPos - 6, 10, 10, 1)
             .attr({
                 'stroke-width': 2,
                 stroke: 'black',
                 fill: color,
                 zIndex: 3,
-                id: ('seriesAnchor' + (seriesNum).toString())
+                id: ('seriesAnchor' + (seriesNum).toString() + 'offset' + offset.toString())
             })
             .css({
                 'cursor': 'pointer'
@@ -2136,7 +2166,15 @@ export class SilverNeedleChart {
             })
             .on('touchend', (event) => {
                 this.clearMouse();
-            });
+            });   
+    }
+
+    updateSeriesAnchor(seriesNum: number) {
+        let offset = parseFloat(this.seriesAnchors[seriesNum].element.id.substring(this.seriesAnchors[seriesNum].element.id.indexOf('offset') + 'offset'.length));
+        this.seriesAnchors[seriesNum].attr({
+            y: this.chart.yAxis[seriesNum].toPixels(offset) - 6
+        });
+        this.yPositionPixels = this.chart.yAxis[seriesNum].toPixels(offset);
     }
 
 }
