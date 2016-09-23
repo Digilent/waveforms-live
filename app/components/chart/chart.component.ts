@@ -512,6 +512,7 @@ export class SilverNeedleChart {
 
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
     drawWaveform(seriesNum: number, waveform: any, initialDraw: boolean, ignoreAutoscale?: boolean) {
+        console.log('drawing');
         let bounds = this.chart.xAxis[0].getExtremes();
         if (bounds.min < waveform.t0 || isNaN(bounds.min)) {bounds.min = waveform.t0}
         if (bounds.max > waveform.dt * waveform.y.length || isNaN(bounds.max)) {bounds.max = waveform.dt * waveform.y.length}
@@ -1334,6 +1335,7 @@ export class SilverNeedleChart {
 
     //Callback function for vertical panning of a series
     verticalOffsetListener = function(event) {
+        
         let newVal = parseFloat(this.chart.yAxis[this.activeSeries - 1].toValue(event.chartY));
         let oldValinNewWindow = parseFloat(this.chart.yAxis[this.activeSeries - 1].toValue(this.yPositionPixels));
         let difference = newVal - oldValinNewWindow;
@@ -1342,12 +1344,15 @@ export class SilverNeedleChart {
             voltsPerDiv: this.voltDivision[this.activeSeries - 1],
             voltBase: parseFloat(this.voltBase[this.activeSeries - 1]) - difference
         };
+        //let start = performance.now();
         this.setYExtremes(seriesSettings);
+        //let finish = performance.now();
         this.voltBase[this.activeSeries - 1] = parseFloat((parseFloat(this.voltBase[this.activeSeries - 1]) - difference).toFixed(3));
         this.yPositionPixels = event.chartY;
-        this.seriesAnchors[this.activeSeries - 1].attr({
-            y: event.chartY - 6
-        });
+        
+        this.seriesAnchors[this.activeSeries - 1].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeSeries - 1].toPixels(this.currentBufferArray[this.activeSeries - 1].seriesOffset / 1000) - 6);
+        
+       // console.log(finish - start);
     }.bind(this);
 
     //Sets x extremes based on position change from previos position
@@ -1367,10 +1372,14 @@ export class SilverNeedleChart {
 
     //Sets y extremes based on an object containing a voltBase, voltsPerDivision, and a series number
     setYExtremes(seriesSettings: any) {
+        
         let offset = parseFloat(seriesSettings.voltBase);
         let min = offset - (parseFloat(seriesSettings.voltsPerDiv) * 5);
         let max = offset + (parseFloat(seriesSettings.voltsPerDiv) * 5);
+        let start = performance.now();
         this.chart.yAxis[seriesSettings.seriesNum].setExtremes(min, max);
+        let finish = performance.now();
+        console.log(finish - start);
         this.updateCursorLabels();
     }
 
@@ -1436,6 +1445,7 @@ export class SilverNeedleChart {
             this.updatePlotLines([0, 1], [val1, val2]);
         }
         this.updateCursorLabels();
+        console.log(this.chart);
     }
 
     //Set series settings based on an object containing the series number, volts per division, and base
@@ -2120,14 +2130,15 @@ export class SilverNeedleChart {
         };
     }
 
-    addSeriesAnchor(seriesNum: number, offset: number) {
+    addSeriesAnchor(seriesNum: number) {
         //convert offset to V from mV
-        offset = offset / 1000;
+        console.log(this.currentBufferArray);
+        let offset = this.currentBufferArray[seriesNum].seriesOffset / 1000;
         let color = this.chart.series[seriesNum].color;
         let startingPos = this.chart.yAxis[seriesNum].toPixels(offset);
-        console.log(startingPos);
-        if (isNaN(startingPos)) {
-            
+        let extremes = this.chart.yAxis[seriesNum].getExtremes();
+        if (isNaN(startingPos) || offset > extremes.max || offset < extremes.min) {
+            console.log('return');
             return;
         } 
         this.yPositionPixels = startingPos;
@@ -2135,19 +2146,21 @@ export class SilverNeedleChart {
         if (this.seriesAnchors[seriesNum] !== undefined) {
             console.log('updating existing');
             this.seriesAnchors[this.activeSeries - 1].attr({
-                y: startingPos - 6,
-                id: ('seriesAnchor' + (seriesNum).toString() + 'offset' + offset.toString())
+                x: this.chart.plotLeft - 12,
+                y: startingPos - 6
             });
             return;
         }
         console.log('adding new');
-        this.seriesAnchors[seriesNum] = this.chart.renderer.rect(this.chart.plotLeft - 12, startingPos - 6, 10, 10, 1)
+        //TODO try to set attr after render to fix performance problems.
+        let path = ['M', 0, 0, 'L', 9, 5, 0, 10, 'Z'];
+        this.seriesAnchors[seriesNum] = this.chart.renderer.path(path)
             .attr({
-                'stroke-width': 2,
+                'stroke-width': 1,
                 stroke: 'black',
                 fill: color,
                 zIndex: 3,
-                id: ('seriesAnchor' + (seriesNum).toString() + 'offset' + offset.toString())
+                id: ('seriesAnchor' + (seriesNum).toString())
             })
             .css({
                 'cursor': 'pointer'
@@ -2166,14 +2179,23 @@ export class SilverNeedleChart {
             })
             .on('touchend', (event) => {
                 this.clearMouse();
-            });   
+            }); 
+            setTimeout(() => {
+                this.seriesAnchors[seriesNum].translate(this.chart.plotLeft - 12, startingPos - 6);
+            }, 3000);
+        
     }
 
     updateSeriesAnchor(seriesNum: number) {
-        let offset = parseFloat(this.seriesAnchors[seriesNum].element.id.substring(this.seriesAnchors[seriesNum].element.id.indexOf('offset') + 'offset'.length));
-        this.seriesAnchors[seriesNum].attr({
-            y: this.chart.yAxis[seriesNum].toPixels(offset) - 6
-        });
+        console.log(this.seriesAnchors[seriesNum]);
+        if (this.seriesAnchors[seriesNum] === undefined) {
+            this.addSeriesAnchor(seriesNum);
+            console.log('calling addSeriesAnchor');
+            return;
+        }
+        let offset = this.currentBufferArray[seriesNum].seriesOffset / 1000;
+        console.log(offset);
+        this.seriesAnchors[seriesNum].translate(this.chart.plotLeft - 12, this.chart.yAxis[seriesNum].toPixels(offset) - 6);
         this.yPositionPixels = this.chart.yAxis[seriesNum].toPixels(offset);
     }
 

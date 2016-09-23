@@ -210,7 +210,6 @@ export class TestChartCtrlsPage {
         this.activeDevice.instruments.trigger.read([1]).subscribe(
             (data) => {
                 console.log(data);
-                this.chart1.addSeriesAnchor(0, data.trigger["1"][0].osc["1"].actualVOffset);
                 this.chart1.clearExtraSeries([0]);
                 if (this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1 < 0) {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBuffer.length - 1]);
@@ -218,6 +217,7 @@ export class TestChartCtrlsPage {
                         console.log('starting draw');
                         this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBuffer.length - 1][i], true);
                         console.log('finished draw');
+                        this.chart1.addSeriesAnchor(0);
                     }
                 }
                 else {
@@ -228,6 +228,7 @@ export class TestChartCtrlsPage {
                         this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][i], true);
                         let final = performance.now();
                         console.log((final - initial));
+                        this.chart1.addSeriesAnchor(0);
                     }
                 }
 

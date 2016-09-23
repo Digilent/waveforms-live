@@ -173,7 +173,10 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                     this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
                         dt: 1 / (command.trigger[channel][0].osc[instrumentChannel].sampleFreq / 1000),
                         t0: 0,
-                        y: scaledArray
+                        y: scaledArray,
+                        pointOfInterest: command.trigger[channel][0].osc[instrumentChannel].pointOfInterest,
+                        triggerPosition: command.trigger[channel][0].osc[instrumentChannel].triggerDelta,
+                        seriesOffset: command.trigger[channel][0].osc[instrumentChannel].actualVOffset
                     });
                     bufferCount++;
                 }
@@ -263,7 +266,10 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                                 this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
                                     dt: 1 / (command.trigger[channel][0].osc[instrumentChannel].sampleFreq / 1000),
                                     t0: 0,
-                                    y: scaledArray
+                                    y: scaledArray,
+                                    pointOfInterest: command.trigger[channel][0].osc[instrumentChannel].pointOfInterest,
+                                    triggerPosition: command.trigger[channel][0].osc[instrumentChannel].triggerDelta,
+                                    seriesOffset: command.trigger[channel][0].osc[instrumentChannel].actualVOffset
                                 });
                                 bufferCount++;
                             }
