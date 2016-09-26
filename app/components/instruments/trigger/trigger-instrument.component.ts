@@ -171,7 +171,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                         return voltage / 1000;
                     });
                     this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
-                        dt: 1 / (command.trigger[channel][0].osc[instrumentChannel].sampleFreq / 1000),
+                        dt: 1 / (command.trigger[channel][0].osc[instrumentChannel].actualSampleFreq / 1000),
                         t0: 0,
                         y: scaledArray,
                         pointOfInterest: command.trigger[channel][0].osc[instrumentChannel].pointOfInterest,
@@ -226,7 +226,6 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (data) => {
                     //Handle device errors and warnings
-                    console.log('start');
                     let bufferCount = 0;
                     let count = 0;
                     let i = 0;
@@ -264,7 +263,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                                     return voltage / 1000;
                                 });
                                 this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
-                                    dt: 1 / (command.trigger[channel][0].osc[instrumentChannel].sampleFreq / 1000),
+                                    dt: 1 / (command.trigger[channel][0].osc[instrumentChannel].actualSampleFreq / 1000),
                                     t0: 0,
                                     y: scaledArray,
                                     pointOfInterest: command.trigger[channel][0].osc[instrumentChannel].pointOfInterest,

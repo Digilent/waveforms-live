@@ -116,12 +116,17 @@ export class SimulatedTriggerComponent {
         let typedArray = new Int16Array(y);
         //length is 2x the array length because 2 bytes per entry
         return {
-            verticalOffset: 0,
-            sampleFreq: 1000 / dt,
-            y: typedArray,
+            command: "read",
+            statusCode: 0,
             binaryLength: 2 * typedArray.length,
             binaryOffset: null,
-            statusCode: 0
+            acqCount: 3,
+            actualSampleFreq: 1000 / dt,
+            y: typedArray,
+            pointOfInterest: 16384,
+            triggerDelta: -16384,
+            actualVOffset: vOffset,
+            actualGain: 1
         };
     }
     drawSquare(awgSettings, oscSettings) {
@@ -152,12 +157,17 @@ export class SimulatedTriggerComponent {
         
         //length is 2x the array length because 2 bytes per entry
         return {
-            verticalOffset: 0,
-            sampleFreq: 1000 / dt,
-            y: typedArray,
+            command: "read",
+            statusCode: 0,
             binaryLength: 2 * typedArray.length,
             binaryOffset: null,
-            statusCode: 0
+            acqCount: 3,
+            actualSampleFreq: 1000 / dt,
+            y: typedArray,
+            pointOfInterest: 16384,
+            triggerDelta: -16384,
+            actualVOffset: vOffset,
+            actualGain: 1
         };  
     }
 
@@ -182,12 +192,17 @@ export class SimulatedTriggerComponent {
         
         //length is 2x the array length because 2 bytes per entry
         return {
-            verticalOffset: 0,
-            sampleFreq: 1000 / dt,
-            y: typedArray,
+            command: "read",
+            statusCode: 0,
             binaryLength: 2 * typedArray.length,
             binaryOffset: null,
-            statusCode: 0
+            acqCount: 3,
+            actualSampleFreq: 1000 / dt,
+            y: typedArray,
+            pointOfInterest: 16384,
+            triggerDelta: -16384,
+            actualVOffset: vOffset,
+            actualGain: 1
         };
 
     }
@@ -213,12 +228,17 @@ export class SimulatedTriggerComponent {
         
         //length is 2x the array length because 2 bytes per entry
         return {
-            verticalOffset: 0,
-            sampleFreq: 1000 / dt,
-            y: typedArray,
+            command: "read",
+            statusCode: 0,
             binaryLength: 2 * typedArray.length,
             binaryOffset: null,
-            statusCode: 0
+            acqCount: 3,
+            actualSampleFreq: 1000 / dt,
+            y: typedArray,
+            pointOfInterest: 16384,
+            triggerDelta: -16384,
+            actualVOffset: vOffset,
+            actualGain: 1
         };
 
     }

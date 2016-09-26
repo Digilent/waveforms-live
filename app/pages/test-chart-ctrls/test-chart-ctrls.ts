@@ -209,7 +209,6 @@ export class TestChartCtrlsPage {
     readOscope() {
         this.activeDevice.instruments.trigger.read([1]).subscribe(
             (data) => {
-                console.log(data);
                 this.chart1.clearExtraSeries([0]);
                 if (this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1 < 0) {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBuffer.length - 1]);
