@@ -17,8 +17,9 @@
 
 .dc-container .center
 {
-    text-align: center;
-    color: white;
+    color: #999;
+    font-size: 1.2rem;
+    padding-top: 2px;
 }
 
 .dc-container .power-controls
@@ -27,29 +28,44 @@
     font-weight: bold;
 }
 
+.dc-container .powerOff
+{
+    background-color: #444444;
+    color: #A1A1A1;
+    border-radius: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    border:solid #444444 1px;
+}
+
 .dc-container .powerOn
 {
+    background-color: #4487BA;
     color: white;
 }
 
-.dc-container .powerButtonOff
+.dc-container .power-underline
 {
-    background-color: red;
+    border-bottom: solid #686868 1px !important;
 }
 
-.dc-container .powerButtonOff:hover
+.dc-container .powerOff:hover
 {
-    background-color: red;
+    background-color: #444444;
+    border: solid white 1px;
 }
 
-.dc-container .powerButtonOn:hover
+.dc-container .dummy-power-underline
 {
-    background-color: green;
+    display: inline-block;
+    border-bottom: solid #444444 1px;
+    margin-bottom: 0px;
 }
 
-.dc-container .powerButtonOn
+.dc-container .powerOn:hover
 {
-    background-color: green;
+    background-color: #4487BA;
 }
 
 .dc-container .wrongPower
@@ -64,5 +80,60 @@
 
 .dc-container .set-background-color
 {
-    background-color: #535353;
+    background-color: #444444;
+}
+
+.dc-container .flex-container
+{
+    display: flex;
+    flex-direction: row;
+}
+
+.dc-container .flex-container .flex-left
+{
+    flex: 1 1 80px;
+    //font-family: monospace;
+}
+
+.dc-container .flex-container .item {
+    padding-left: 0px;
+}
+
+.dc-container .flex-container .flex-right
+{
+    flex: 1 1 80px;
+}
+
+.dc-container .flex-container .flex-left .item .item-inner 
+{
+    border-bottom: solid #686868 1px;
+    box-shadow: inset 0 -1px 0 0 black;
+    padding-right: 0px;
+}
+
+.dc-container .dc-content
+{
+    border-top: solid #686868 1px;
+}
+
+.dc-container .flex-left .item-label-stacked .text-input
+{
+    text-align: right;
+}
+
+.dc-container .flex-right .item-label-stacked .text-input
+{
+    text-align: left;
+    margin-left: 10px;
+}
+
+.dc-container .flex-left ion-label[stacked]
+{
+    text-align: right;
+}
+
+.dc-container .flex-right ion-label[stacked]
+{
+    text-align: left;
+    margin-left: 10px;
 }

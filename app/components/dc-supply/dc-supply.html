@@ -2,25 +2,39 @@
     <div class="title" (click)="hideBar()">
         DC POWER SUPPLY
     </div>
-    <ion-row class="set-background-color" [hidden]="contentHidden">
+    <ion-row class="set-background-color dc-content" [hidden]="contentHidden">
         <ion-col *ngFor="let supply of voltageSupplies; let i = index">
-            DC Power Supply {{i + 1}}
-            <ion-item class="set-background-color">
-                <ion-label stacked>Volts</ion-label>
-                <ion-input type="number" [disabled]="dcPower" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)" [ngClass]="{powerOn: dcPower, wrongPower: !correctVoltages[i]}" class="power-controls"></ion-input>
-            </ion-item>
-            <ion-item class="set-background-color">
+            <center>Channel {{i + 1}}</center>
+            <div class="flex-container">
+                <div class="flex-left">
+                    <ion-item class="set-background-color actual">
+                        <ion-label stacked>Value</ion-label>
+                        <ion-input [disabled]="true" [value]="readVoltages[i]" class="power-controls"></ion-input>
+                    </ion-item>
+                </div>
+                <div class="flex-right">
+                    <ion-item class="set-background-color">
+                        <ion-label stacked>Volts</ion-label>
+                        <ion-input type="number" [disabled]="dcPower" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)" [ngClass]="{wrongPower: !correctVoltages[i]}"
+                            class="power-controls"></ion-input>
+                    </ion-item>
+                </div>
+            </div>
+            <ion-item class="set-background-color" *ngIf="showCurrent">
                 <ion-label stacked>Amps</ion-label>
-                <ion-input type="number" [disabled]="dcPower" [(ngModel)]="currents[i]" (ngModelChange)="validateCurrent(i)" [ngClass]="{powerOn: dcPower, wrongCurrent: !correctCurrents[i]}" class="power-controls"></ion-input>
-            </ion-item> 
-            <ion-item class="set-background-color">
-                <div class="center">{{maxVoltages[i]}}V</div>
-            </ion-item>          
+                <ion-input type="number" [disabled]="dcPower" [(ngModel)]="currents[i]" (ngModelChange)="validateCurrent(i)" [ngClass]="{wrongCurrent: !correctCurrents[i]}"
+                    class="power-controls"></ion-input>
+            </ion-item>
+            <center>
+                <div class="power-button-container">
+                    <div class="dummy-power-underline" [ngClass]="{'power-underline': dcOn[i]}">
+                        <button clear (click)="togglePower(i)" class="powerOff" [ngClass]="{powerOn: dcOn[i]}">
+                            <ion-icon name="power"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="center">{{voltageLimitFormats[i]}}</div>
+            </center>
         </ion-col>
     </ion-row>
-    <div [hidden]="contentHidden" class="center set-background-color">
-        <button (click)="togglePower()" [ngClass]="{powerButtonOn: dcPower}" class="powerButtonOff">
-            <ion-icon name="power"></ion-icon>
-        </button>
-    </div>
 </div>

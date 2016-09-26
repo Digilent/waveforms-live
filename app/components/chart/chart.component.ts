@@ -109,7 +109,7 @@ export class SilverNeedleChart {
                 formatter: function () {
                     let timePerDiv = Math.abs(this.series.xAxis.max - this.series.xAxis.min) / 10;
                     if (parseFloat(this.value) == 0) {
-                        return this.value + 's';
+                        return 0 + 's';
                     }
                     let i = 0;
                     let unit = '';
@@ -273,7 +273,7 @@ export class SilverNeedleChart {
                     formatter: function() {
                         let timePerDiv = Math.abs(this.chart.xAxis[0].max - this.chart.xAxis[0].min) / 10;
                         if (parseFloat(this.value) == 0) {
-                            return this.value + 's';
+                            return 0 + 's';
                         }
                         let i = 0;
                         let unit = '';

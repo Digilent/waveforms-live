@@ -19,11 +19,12 @@ export class DcSupplyComponent {
     private voltageSupplies: any[];
     private voltages: string[];
     private currents: string[];
-    private dcPower: boolean;
+    private dcOn: boolean[] = [];
     private maxVoltages: number[];
     private maxCurrents: number[];
     private correctVoltages: boolean[];
     private correctCurrents: boolean[];
+    private voltageLimitFormats: string[] = [];
 
     private deviceManagerService: DeviceManagerService;
     private activeDevice: DeviceComponent;
@@ -32,13 +33,16 @@ export class DcSupplyComponent {
     private storageEventListener: EventEmitter<any>;
 
     private intervalReference;
+
+    private showCurrent: boolean = false;
+
+    private readVoltages: string[] = [];
     
     constructor(_deviceManagerService: DeviceManagerService, _storageService: StorageService) {
         this.voltageSupplies = [0, 1, 2];
         this.contentHidden = true;
         this.voltages = ['5.00', '5.00', '-5.00'];
         this.currents = ['1.00', '1.00', '1.00'];
-        this.dcPower = false;
         this.maxVoltages = [6, 25, -25];
         this.maxCurrents = [1, 1, 1];
         this.correctCurrents = [true, true, true];
@@ -46,7 +50,10 @@ export class DcSupplyComponent {
 
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
-        console.log('dc supply component constructor');
+        console.log(this.activeDevice.instruments.dc);
+        if (this.activeDevice.instruments.dc.chans[0].currentIncrement !== 0) {
+            this.showCurrent = true;
+        }
         this.storageService = _storageService;
         this.storageEventListener = this.storageService.saveLoadEventEmitter.subscribe((data) => {
             console.log(data);
@@ -70,8 +77,36 @@ export class DcSupplyComponent {
                 channelNumArray[i] = i + 1;
                 this.voltages[i] = "3.30";
                 this.currents[i] = "1.00";
+                this.readVoltages[i] = "-.--- V";
+                this.formatExtremes(i);
+                this.dcOn[i] = false;
             }
             this.voltageSupplies = channelNumArray;
+        }
+    }
+
+    formatExtremes(channel: number) {
+        let min = this.activeDevice.instruments.dc.chans[channel].voltageMin;
+        let max = this.activeDevice.instruments.dc.chans[channel].voltageMax;
+        let minString = (min / 1000).toString();
+        let maxString = (max / 1000).toString();
+        if (min > 0) {
+            minString = ('+' + min / 1000);
+        }
+        if (max > 0) {
+            maxString = ('+' + max / 1000);
+        }
+        if (Math.abs(min) === Math.abs(max)) {
+            this.voltageLimitFormats.push('\xB1 ' + (max / 1000) + ' V');
+        }
+        else if (min === 0) {
+            this.voltageLimitFormats.push('+ ' + maxString + ' V');
+        }
+        else if (max === 0) {
+            this.voltageLimitFormats.push(minString + ' V');
+        }
+        else {
+            this.voltageLimitFormats.push('' + minString + '\xA0\xA0:\xA0\xA0' + maxString + ' V');
         }
     }
 
@@ -97,10 +132,10 @@ export class DcSupplyComponent {
     getVoltages(chans: Array<number>) {
         this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
             (data) => {
+                console.log(data);
                 for (let channel in data.dc) {
-                    this.voltages[parseInt(channel) - 1] = data.dc[channel][0].voltage;
+                    this.readVoltages[parseInt(channel) - 1] = data.dc[channel][0].voltage.toFixed(3) + ' V';
                 }
-                console.log(this.voltages);
             },
             (err) => {
                 console.log(err);
@@ -112,29 +147,28 @@ export class DcSupplyComponent {
     }
     
     //Toggle voltages on/off
-    togglePower() {
+    togglePower(channel: number) {
         for (let i = 0; i < this.voltageSupplies.length; i++) {
             if (this.correctCurrents[i] === false || this.correctVoltages[i] === false) {
                 return;
             }
         }
-        this.dcPower = !this.dcPower;
-        if (this.dcPower) {
+        this.dcOn[channel] = !this.dcOn[channel];
+        if (this.dcOn[channel]) {
             //this.getVoltages(this.voltageSupplies);
-            this.setVoltages(this.voltageSupplies, this.voltages.map(Number));
-            this.intervalReference = setInterval(function(){
-                this.getVoltages(this.voltageSupplies);
-            }.bind(this), 1000);
-        }
-        else {
-            clearInterval(this.intervalReference);
+            this.setVoltages([channel + 1], [parseFloat(this.voltages[channel])]);
+            setTimeout(() => {
+                this.getVoltages([channel + 1]);
+            }, 500);
         }
     }
 
     hideBar() {
         this.headerClicked.emit(null);
         clearInterval(this.intervalReference);
-        this.dcPower = false;
+        for (let i = 0; i < this.activeDevice.instruments.dc.chans.length; i++) {
+            this.dcOn[i] = false;
+        }
     }
 
     //Validate voltage supplies 
