@@ -16,6 +16,9 @@ export class SimulatedDeviceService {
     private sampleFreqs: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
     private bufferSizes: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
+    /*Trigger Parameters*/
+    private targets: any;
+
     setAwgSettings(settings: any, channel: number) {
         this.signalTypes[channel] = settings.signalType;
         this.signalFreqs[channel] = settings.signalFreq;
@@ -43,5 +46,13 @@ export class SimulatedDeviceService {
             sampleFreq: this.sampleFreqs[channel],
             bufferSize: this.bufferSizes[channel]
         }
+    }
+
+    setTriggerTargets(targets: any) {
+        this.targets = targets;
+    }
+
+    getTriggerTargets() {
+        return this.targets;
     }
 }

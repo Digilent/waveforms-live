@@ -161,6 +161,9 @@ export class DcSupplyComponent {
                 this.getVoltages([channel + 1]);
             }, 500);
         }
+        else {
+            this.readVoltages[channel] = '-.---';
+        }
     }
 
     hideBar() {

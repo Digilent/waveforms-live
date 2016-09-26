@@ -1,7 +1,7 @@
 <span class="timeline-component-container">
     <button class="icon-only-button-side disable-hover" (click)="decrementBuffer()"><ion-icon name="arrow-back"></ion-icon></button>
     Buffer: 
-    <ion-input class="timelineComponentInput" [(ngModel)]="activeDevice.instruments.trigger.activeBuffer" (ngModelChange)="activeBufferChange()"></ion-input>
-    of {{activeDevice.instruments.trigger.dataBufferFillSize}}
+    <ion-input class="timelineComponentInput" [(ngModel)]="activeDevice.instruments.osc.activeBuffer" (ngModelChange)="activeBufferChange()"></ion-input>
+    of {{activeDevice.instruments.osc.dataBufferFillSize}}
     <button class="icon-only-button-side disable-hover" (click)="incrementBuffer()"><ion-icon name="arrow-forward"></ion-icon></button>
 </span>

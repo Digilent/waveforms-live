@@ -51,6 +51,9 @@ export class TestChartCtrlsPage {
 
     //Alert user with toast if no active device is set
     ngOnInit() {
+        this.chart1.enableCursors();
+        this.chart1.enableTimelineView();
+        this.chart1.enableMath();
         if (this.deviceManagerService.activeDeviceIndex === undefined) {
             console.log('in if');
             let toast = this.toastCtrl.create({
@@ -207,24 +210,24 @@ export class TestChartCtrlsPage {
     }
 
     readOscope() {
-        this.activeDevice.instruments.trigger.read([1]).subscribe(
+        this.activeDevice.instruments.osc.read([1]).subscribe(
             (data) => {
                 this.chart1.clearExtraSeries([0]);
-                if (this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1 < 0) {
-                    this.chart1.setCurrentBuffer(this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBuffer.length - 1]);
-                    for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex].length; i++) {
+                if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
+                    this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1]);
+                    for (let i = 0; i < this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex].length; i++) {
                         console.log('starting draw');
-                        this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBuffer.length - 1][i], true);
+                        this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1][i], true);
                         console.log('finished draw');
                         this.chart1.addSeriesAnchor(0);
                     }
                 }
                 else {
-                    this.chart1.setCurrentBuffer(this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1]);
-                    for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1].length; i++) {
+                    this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1]);
+                    for (let i = 0; i < this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1].length; i++) {
                         let initial = performance.now();
 
-                        this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][i], true);
+                        this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1][i], true);
                         let final = performance.now();
                         console.log((final - initial));
                         this.chart1.addSeriesAnchor(0);
@@ -318,9 +321,8 @@ export class TestChartCtrlsPage {
 
     //Enable cursors and timeline view
     initSettings() {
-        this.chart1.enableCursors();
-        this.chart1.enableTimelineView();
-        this.chart1.enableMath();
-        this.chart1.redrawChart();
+        setTimeout(() => {
+            this.chart1.redrawChart();
+        }, 100);
     }
 }

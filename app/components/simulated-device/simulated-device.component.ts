@@ -120,12 +120,12 @@ export class SimulatedDeviceComponent {
                 return this.trigger.setParameters(params[0], commandObject.source, commandObject.targets);
             case 'triggersingle':
                 return this.trigger.single();
-            case 'triggerread':
-                return this.trigger.read(params[0]);
 
             //---------- OSC ----------            
             case 'oscsetParameters':
                 return this.osc.setParameters(params[0], commandObject);
+            case 'oscread':
+                return this.osc.read(params[0]);
             default:
                 return {
                     statusCode: 1,
@@ -137,20 +137,19 @@ export class SimulatedDeviceComponent {
     processBinaryDataAndSend(commandObject: any) {
         let binaryDataContainer = {};
         let binaryOffset = 0;
-        for (let triggerChannel in commandObject.trigger) {
 
             for (let instrument in this.trigger.targets) {
 
-                for (let channel in commandObject.trigger[triggerChannel][0][instrument]) {
-                    binaryDataContainer[channel] = commandObject.trigger[triggerChannel][0][instrument][channel].y;
-                    commandObject.trigger[triggerChannel][0][instrument][channel].binaryOffset = binaryOffset;
-                    binaryOffset += commandObject.trigger[triggerChannel][0][instrument][channel].binaryLength;
-                    delete commandObject.trigger[triggerChannel][0][instrument][channel].y;
+                for (let channel in commandObject[instrument]) {
+                    binaryDataContainer[channel] = commandObject[instrument][channel][0].y;
+                    commandObject[instrument][channel][0].binaryOffset = binaryOffset;
+                    binaryOffset += commandObject[instrument][channel][0].binaryLength;
+                    delete commandObject[instrument][channel][0].y;
                 }
 
             }
 
-        }
+        
         let stringCommand = JSON.stringify(commandObject);
         let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
 

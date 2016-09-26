@@ -22,24 +22,24 @@ export class TimelineComponent {
     }
 
     incrementBuffer() {
-        if (parseInt(this.activeDevice.instruments.trigger.activeBuffer) == this.activeDevice.instruments.trigger.dataBufferFillSize) {
+        if (parseInt(this.activeDevice.instruments.osc.activeBuffer) == this.activeDevice.instruments.osc.dataBufferFillSize) {
             return;
         }
-        this.activeDevice.instruments.trigger.activeBuffer = (parseInt(this.activeDevice.instruments.trigger.activeBuffer) + 1).toString();
+        this.activeDevice.instruments.osc.activeBuffer = (parseInt(this.activeDevice.instruments.osc.activeBuffer) + 1).toString();
         this.loadBuffer();
     }
 
     decrementBuffer() {
-        if (parseInt(this.activeDevice.instruments.trigger.activeBuffer) < 2) {
+        if (parseInt(this.activeDevice.instruments.osc.activeBuffer) < 2) {
             return;
         }
-        this.activeDevice.instruments.trigger.activeBuffer = (parseInt(this.activeDevice.instruments.trigger.activeBuffer) - 1).toString();
+        this.activeDevice.instruments.osc.activeBuffer = (parseInt(this.activeDevice.instruments.osc.activeBuffer) - 1).toString();
         this.loadBuffer();
     }
 
     activeBufferChange() {
-        if (parseInt(this.activeDevice.instruments.trigger.activeBuffer) > this.activeDevice.instruments.trigger.dataBufferFillSize || parseInt(this.activeDevice.instruments.trigger.activeBuffer) < 1 || this.activeDevice.instruments.trigger.activeBuffer === '') {
-            this.activeDevice.instruments.trigger.activeBuffer = this.activeDevice.instruments.trigger.dataBufferFillSize.toString();
+        if (parseInt(this.activeDevice.instruments.osc.activeBuffer) > this.activeDevice.instruments.osc.dataBufferFillSize || parseInt(this.activeDevice.instruments.osc.activeBuffer) < 1 || this.activeDevice.instruments.osc.activeBuffer === '') {
+            this.activeDevice.instruments.osc.activeBuffer = this.activeDevice.instruments.osc.dataBufferFillSize.toString();
             console.log('entry error: showing newest buffer');
             this.loadBuffer();
         }
@@ -49,14 +49,14 @@ export class TimelineComponent {
     }
 
     loadBuffer() {
-        let buffNum = parseInt(this.activeDevice.instruments.trigger.activeBuffer) - this.activeDevice.instruments.trigger.dataBufferFillSize;
-        let buffCalc = (buffNum + this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1) % 8;
+        let buffNum = parseInt(this.activeDevice.instruments.osc.activeBuffer) - this.activeDevice.instruments.osc.dataBufferFillSize;
+        let buffCalc = (buffNum + this.activeDevice.instruments.osc.dataBufferWriteIndex - 1) % 8;
         if (buffCalc < 0) {
             buffCalc += 8;
         }
         console.log('loading buffer: ' + buffCalc);
-        for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[buffCalc].length; i++) {
-            this.chart.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[buffCalc][i], true);
+        for (let i = 0; i < this.activeDevice.instruments.osc.dataBuffer[buffCalc].length; i++) {
+            this.chart.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[buffCalc][i], true);
         }
     }
     
