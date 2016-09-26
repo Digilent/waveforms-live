@@ -7,3 +7,33 @@
     }
 }
 
+.cursor-modal-container
+{
+    background-color: #535353;
+}
+
+.cursor-modal-container, ion-list > .item:last-child {
+    border: none;
+}
+
+.cursor-modal-container .cursor-modal-item
+{
+    background-color: #535353;
+    color: white;
+}
+
+.cursor-modal-container .cursor-modal-button
+{
+    color: white;
+}
+
+.cursor-modal-container .close-buttons
+{
+    color: white;
+    background-color: #535353;
+    border: solid black 1px;
+}
+
+.cursor-modal-container .item .item-inner {
+    border-bottom: solid black 1px;
+}
