@@ -659,10 +659,14 @@ export class ChartModal {
             tooltip: {
                 enabled: true
             },
-            series: [{
-                data: [29.9, 36, 47, 57, 67, 71.5, 82, 92, 102, 106.4, 110, 120, 129.2],
-                allowPointSelect: true
-            }],
+            series: [
+                {
+                    data: [],
+                    allowPointSelect: true
+                }, {
+                    data: [],
+                    allowPointSelect: true
+                }],
             legend: {
                 enabled: false
             },
@@ -739,7 +743,7 @@ export class ChartModal {
         let i = 0;
         for (let channel in this.command["osc"]) {
             let length = this.command["osc"][channel][0].binaryLength / 2;
-            let channelData = this.data.slice(offset, length);
+            let channelData = this.data.slice(offset, length + offset);
             this.chart.series[i].setData(channelData, false, false, false);
             offset += length;
             i++;
