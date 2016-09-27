@@ -3,28 +3,25 @@
     text-align: center;
 }
 
-.active-toggle
+.autoscale-container .active-toggle
 {
-    margin-top: 0.1rem;
-    margin-right: 0.1rem;
-    margin-bottom: 0.1rem;
-    margin-left: 0.1rem;
-    height: 25px;
-    font-size: 8px;
-    width: 25px;
-    background-color: black;
-    border-radius: 2px;
-    background-color: #686868;
+    background-color: #4487BA;
+    border: solid #33658B 2px;
+    width: 20px;
+    font-size: 4px;
+    height: 20px;
+    opacity: 0.2;
+    margin: 2px;
+    padding: 0px;
+}
+
+.autoscale-container .button-container
+{
+    display: inline-block;
     border: solid black 1px;
 }
 
-.autoscaleIcon
+.autoscale-container .autoscaleActive
 {
-    background-color: red;
-}
-
-.autoscaleActive
-{
-    background-color: white;
     opacity: 1;
 }

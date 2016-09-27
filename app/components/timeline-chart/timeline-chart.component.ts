@@ -33,10 +33,7 @@ export class TimelineChartComponent {
                 enabled: false
             },
             series: [{
-                data: [],
-            }, {
-                data: [],
-                yAxis: 0
+                data: []
             }],
             legend: {
                 enabled: false

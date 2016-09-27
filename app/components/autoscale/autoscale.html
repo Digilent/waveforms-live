@@ -1,29 +1,31 @@
-<div (dblclick)="toggleVisibility()" [ngClass]="{'header-bar-side-closed': !show}" class="auto-main header-bar-side">
-    <div class="align-center">Autoscale</div>
-</div>
-<div class="options" *ngIf="show" class="controls-container">
-    <ion-row>
-        <ion-col>
-            <center><button (click)="autoscaleAxis('x', 0)" class="text-button-side disable-hover">x-axis</button></center>
-        </ion-col>
-        <ion-col>
-            <center><button (click)="chart.toggleAxisAutoscale('x', 0)" [ngClass]="{autoscaleActive: chart.autoscaleXaxis}" class="active-toggle disable-hover"></button></center>
-        </ion-col>
-    </ion-row>
-    <ion-row *ngFor="let channel of chart.numSeries; let i = index">
-        <ion-col>
-            <center><button (click)="autoscaleAxis('y', i)" class="text-button-side disable-hover">y-axis {{i + 1}}</button></center>
-        </ion-col>
-        <ion-col>
-            <center><button (click)="chart.toggleAxisAutoscale('y', i)" [ngClass]="{autoscaleActive: chart.autoscaleYaxes[i]}" class="active-toggle disable-hover"></button></center>
-        </ion-col>
-    </ion-row>
-    <ion-row>
-        <ion-col>
-            <center><button (click)="autoscaleAll()" class="text-button-side disable-hover">All</button></center>
-        </ion-col>
-        <ion-col>
-            <center><button (click)="chart.toggleAutoscale()" [ngClass]="{autoscaleActive: chart.autoscaleAll}" class="active-toggle disable-hover"></button></center>
-        </ion-col>
-    </ion-row>
+<div class="autoscale-container">
+    <div (dblclick)="toggleVisibility()" [ngClass]="{'header-bar-side-closed': !show}" class="auto-main header-bar-side">
+        <div class="align-center">Autoscale</div>
+    </div>
+    <div class="options" *ngIf="show" class="controls-container">
+        <ion-row>
+            <ion-col text-center>
+                <button (click)="autoscaleAxis('x', 0)" class="text-button-side disable-hover">x-axis</button>
+            </ion-col>
+            <ion-col text-center>
+                <div class="button-container"><button (click)="chart.toggleAxisAutoscale('x', 0)" [ngClass]="{autoscaleActive: chart.autoscaleXaxis}" class="active-toggle disable-hover"></button></div>
+            </ion-col>
+        </ion-row>
+        <ion-row *ngFor="let channel of chart.numSeries; let i = index">
+            <ion-col text-center>
+                <button (click)="autoscaleAxis('y', i)" class="text-button-side disable-hover">y-axis {{i + 1}}</button>
+            </ion-col>
+            <ion-col text-center>
+                <div class="button-container"><button (click)="chart.toggleAxisAutoscale('y', i)" [ngClass]="{autoscaleActive: chart.autoscaleYaxes[i]}" class="active-toggle disable-hover"></button></div>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col text-center>
+                <button (click)="autoscaleAll()" class="text-button-side disable-hover">All</button>
+            </ion-col>
+            <ion-col text-center>
+                <div class="button-container"><button (click)="chart.toggleAutoscale()" [ngClass]="{autoscaleActive: chart.autoscaleAll}" class="active-toggle disable-hover"></button></div>
+            </ion-col>
+        </ion-row>
+    </div>
 </div>

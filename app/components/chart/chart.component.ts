@@ -71,7 +71,7 @@ export class SilverNeedleChart {
 
     public timeDivision: number = 1;
     public base: number = 0;
-    public numSeries: number[] = [0, 1];
+    public numSeries: number[] = [0];
 
     public voltDivision: number[] = [1, 1];
     public voltBase: number[] = [0, 0];
@@ -158,19 +158,12 @@ export class SilverNeedleChart {
                         + this.y + ')</b>';
                 }
             },
-            series: [{
-                data: [],
-                allowPointSelect: true
-            },
-            {
-                data: [],
-                allowPointSelect: true,
-                yAxis: 1
-            }
-            ],
             legend: {
                 enabled: false
             },
+            series: [{
+                data: []
+            }],
             yAxis: [{
                 gridLineWidth: 1,
                 offset: 0,
@@ -393,7 +386,6 @@ export class SilverNeedleChart {
         this.attachPlotLineEvents();
         this.autoscaleAxis('x', 0);
         this.autoscaleAxis('y', 0);
-        this.autoscaleAxis('y', 1);
         let extremesX = this.timelineChart.xAxis[0].getExtremes();
         let extremesY = this.timelineChart.yAxis[0].getExtremes();
         this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
@@ -515,15 +507,10 @@ export class SilverNeedleChart {
         if (bounds.min < waveform.t0 || isNaN(bounds.min) || ignoreAutoscale) {bounds.min = waveform.t0}
         if (bounds.max > waveform.dt * waveform.y.length || isNaN(bounds.max) || ignoreAutoscale) {bounds.max = waveform.dt * waveform.y.length}
         waveform = this.decimateData(seriesNum, waveform, bounds);
-        this.chart.series[seriesNum].update({
-            pointStart: waveform.t0,
-            pointInterval: waveform.dt
-        });
-        if (seriesNum < this.chart.yAxis.length) {
+        if (seriesNum < this.chart.series.length) {
             this.chart.series[seriesNum].setData(waveform.y, false, false, false);
         }
         else {
-            this.numSeries.push(seriesNum);
             this.addYAxis(seriesNum);
             let options = {
                 data: waveform.y,
@@ -538,6 +525,10 @@ export class SilverNeedleChart {
                 this.timelineChart.addSeries(timelineOptions, false, false);
             }
         }
+        this.chart.series[seriesNum].update({
+            pointStart: waveform.t0,
+            pointInterval: waveform.dt
+        });
         
         //Update point interval in timeline as well to show where user view is in timeline
         this.chart.redraw(false);
