@@ -600,10 +600,11 @@ export class ProtocolTestPanel {
     }
 
     chartData() {
-        let dataArray = new Int16Array(this.responseRawBinary, 0, 8000);
+        let dataArray = new Int16Array(this.responseRawBinary);
         let untypedArray = Array.prototype.slice.call(dataArray);
         let modal = this.modalCtrl.create(ChartModal, {
-            dataToDisplay: untypedArray
+            dataToDisplay: untypedArray,
+            command: JSON.parse(this.formattedResponseBody)
         });
         modal.onDidDismiss(data => {
             console.log('dismiss');
@@ -632,6 +633,7 @@ export class ChartModal {
     private data: number[];
     public chart: Chart;
     private options: Object;
+    private command: any;
 
     constructor(
         _platform: Platform,
@@ -642,6 +644,8 @@ export class ChartModal {
         this.viewCtrl = _viewCtrl;
         this.params = _params;
         this.data = this.params.get('dataToDisplay');
+        this.command = this.params.get('command');
+        console.log(this.command);
         this.options = {
             chart: {
                 type: 'line',
@@ -731,7 +735,16 @@ export class ChartModal {
         console.log(chart);
         this.chart = chart;
         this.chart.reflow();
-        this.chart.series[0].setData(this.data, false, false, false);
+        let offset = 0;
+        let i = 0;
+        for (let channel in this.command["osc"]) {
+            let length = this.command["osc"][channel][0].binaryLength / 2;
+            let channelData = this.data.slice(offset, length);
+            this.chart.series[i].setData(channelData, false, false, false);
+            offset += length;
+            i++;
+        }
+        
         this.chart.redraw(false);
     }
 
