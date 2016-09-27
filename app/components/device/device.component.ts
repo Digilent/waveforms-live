@@ -8,6 +8,7 @@ import {DcInstrumentComponent} from '../instruments/dc/dc-instrument.component';
 import {LaInstrumentComponent} from '../instruments/la/la-instrument.component';
 import {OscInstrumentComponent} from '../instruments/osc/osc-instrument.component';
 import {TriggerInstrumentComponent} from '../instruments/trigger/trigger-instrument.component';
+import {GpioInstrumentComponent} from '../instruments/gpio/gpio-instrument.component';
 
 //Services
 import {TransportService} from '../../services/transport/transport.service';
@@ -27,13 +28,15 @@ export class DeviceComponent {
         dc: DcInstrumentComponent,
         la: LaInstrumentComponent,
         osc: OscInstrumentComponent,
-        trigger: TriggerInstrumentComponent
+        trigger: TriggerInstrumentComponent,
+        gpio: GpioInstrumentComponent
     } = {
         awg: null,
         dc: null,
         la: null,
         osc: null,
-        trigger: null
+        trigger: null,
+        gpio: null
     };
 
     constructor(_rootUri: string, deviceDescriptor: any) {
@@ -54,6 +57,7 @@ export class DeviceComponent {
         this.instruments.la = new LaInstrumentComponent(this.transport, deviceDescriptor.la);
         this.instruments.osc = new OscInstrumentComponent(this.transport, deviceDescriptor.osc);
         this.instruments.trigger = new TriggerInstrumentComponent(this.transport, 'deviceDescriptor.trigger');
+        this.instruments.gpio = new GpioInstrumentComponent(this.transport, deviceDescriptor.gpio);
     }
 
     multiCommand(commandObject: any): Observable<any> {

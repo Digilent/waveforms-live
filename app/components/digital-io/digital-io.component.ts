@@ -2,6 +2,12 @@ import {Component, Output, EventEmitter, Input} from '@angular/core';
 import {AlertController} from 'ionic-angular';
 import {NgClass} from '@angular/common';
 
+//Components
+import {DeviceComponent} from '../device/device.component';
+
+//Services
+import {DeviceManagerService} from '../../services/device/device-manager.service';
+
 @Component({
   templateUrl: 'build/components/digital-io/digital-io.html',
   selector: 'digital-io',
@@ -10,60 +16,63 @@ import {NgClass} from '@angular/common';
 export class DigitalIoComponent { 
     @Output() headerClicked: EventEmitter<any> = new EventEmitter();
     @Input() contentHidden: boolean;
-    private numGpio: number;
-    private gpioArray: number[];
-    private showMenu: boolean;
     private alertCtrl: AlertController
-    private outputArray: boolean[];
+    private deviceManagerService: DeviceManagerService;
+    private activeDev: DeviceComponent;
+    private gpioChans: number[] = [];
+    private gpioVals: boolean[] = [];
+    //false = input, true = output
+    private gpioDirections: boolean[] = [];
+
     
-    private gpioObject: Object;
-    
-    constructor(_alertCtrl: AlertController) {
+    constructor(_alertCtrl: AlertController, _devManagerService: DeviceManagerService) {
         this.alertCtrl = _alertCtrl;
-        this.numGpio = 8;
-        this.gpioArray = [0, 1, 2, 3, 4, 5, 6, 7];
-        this.gpioObject = {
-            channels: [0, 1, 2, 3, 4, 5, 6, 7],
-            outputs: [false, false, false, false, false, false, false, false]
-        };
-        this.outputArray = [true, true, true, true, false, false, false, false];
+        this.deviceManagerService = _devManagerService;
+        this.activeDev = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+        for (let i = 0; i < this.activeDev.instruments.gpio.numChans; i++) {
+            this.gpioChans.push(i + 1);
+            this.gpioVals.push(false);
+            this.gpioDirections.push(false);
+        }
         this.contentHidden = true;
-        this.showMenu = false;
         
     }
     
-    //Determines if channel is an input
-    isInput(channel: number) {
-        if (this.outputArray[channel] === false) {
-            return true;
-        }
-        return false;
+    emitEvent() {
+        console.log('hey2');
+        this.headerClicked.emit(null);
     }
-    
-    //Determines if channel value is high or low
-    isHigh(channel: number) {
-        if (channel % 2 == 0) {
-            return true;
+
+    toggleChannel(channel: number) {
+        this.gpioVals[channel] = !this.gpioVals[channel];
+        let value = 0;
+        if (this.gpioVals[channel] === true) {
+            value = 1;
         }
-        return false;
-    }
-    
-    //Togges menu
-    toggleMenu() {
-        this.showMenu = !this.showMenu;
+        this.activeDev.instruments.gpio.setValues([channel + 1], [value]).subscribe(
+            (data) => {
+                console.log(data);
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {}
+        );
+        
     }
     
     //Open checkbox alert
     doCheckbox() {
+        event.stopPropagation();
         let okFlag: boolean = false;   
         let alert = this.alertCtrl.create();
         alert.setTitle('Select Outputs');
         
-        for(let i = 0; i < this.gpioArray.length; i++) {
-            if (this.outputArray[i] == true) {
+        for (let i = 0; i < this.gpioChans.length; i++) {
+            if (this.gpioDirections[i] == true) {
                 alert.addInput({
                     type: 'checkbox',
-                    label: 'Channel: ' + i,
+                    label: 'Channel: ' + (i + 1),
                     value: i.toString(),
                     checked: true
                 });
@@ -71,10 +80,12 @@ export class DigitalIoComponent {
             else {
                 alert.addInput({
                     type: 'checkbox',
-                    label: 'Channel: ' + i,
-                    value: i.toString()
+                    label: 'Channel: ' + (i + 1),
+                    value: i.toString(),
+                    checked: false
                 });
             }
+            
         }
 
         alert.addButton({
@@ -87,13 +98,19 @@ export class DigitalIoComponent {
         alert.addButton({
             text: 'Done',
             handler: data => {
-                for (let i = 0, j = 0; i < this.outputArray.length; i++) {
-                    if (i == parseInt(data[j])) {
-                        this.outputArray[parseInt(data[i])] = true;
+                for (let i = 0, j = 0; i < this.gpioDirections.length; i++) {
+                    if (parseInt(data[j]) === i) {
+                        if (this.gpioDirections[i] === false) {
+                            this.gpioDirections[parseInt(data[j])] = true;
+                            this.gpioVals[parseInt(data[j])] = false;
+                        }
                         j++;
                     }
                     else {
-                        this.outputArray[i] = false;
+                        if (this.gpioDirections[i] === true) {
+                            this.gpioVals[i] = false;
+                        }
+                        this.gpioDirections[i] = false;
                     }
                 }
                 return true;

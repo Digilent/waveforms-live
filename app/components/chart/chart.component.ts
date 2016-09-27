@@ -273,7 +273,7 @@ export class SilverNeedleChart {
                     formatter: function() {
                         let timePerDiv = Math.abs(this.chart.xAxis[0].max - this.chart.xAxis[0].min) / 10;
                         if (parseFloat(this.value) == 0) {
-                            return 0 + 's';
+                            return 0 + ' s';
                         }
                         let i = 0;
                         let unit = '';
@@ -450,9 +450,7 @@ export class SilverNeedleChart {
             this.updateCursorLabels();
         }
         for (let i = 0; i < this.seriesAnchors.length; i++) {
-            if (this.seriesAnchors[i] !== undefined) {
-                
-            }
+            this.updateSeriesAnchor(i); 
         }
     }
 

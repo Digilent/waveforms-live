@@ -7,7 +7,6 @@
 {
     padding: 1px 0px 1px 0px;
     border-top: solid black 1px;
-    border-bottom: solid black 1px;
     text-align: center;
     background-color: #444444;
     font-size: 100%;
@@ -16,7 +15,7 @@
 
 .digi-container .input
 {
-    border: solid black 1px;
+    border: none;
 }
 
 .digi-right
@@ -26,8 +25,58 @@
     border-top: solid #686868 1px;
 }
 
-.digi-container .digi-button
+.digi-container .channel-container
 {
-    background-color: #444444;
-    border: solid black 1px;
+    color: white;
+    display: inline-block;
+}
+
+.digi-container .channel-button
+{
+    background-color: #4487BA;
+    border: solid #33658B 2px;
+    width: 25px;
+    font-size: 8px;
+    height: 25px;
+    opacity: 0.1;
+    margin: 2px;
+    padding: none;
+}
+
+.digi-container .button-on
+{
+    opacity: 1;
+}
+
+.digi-container .digi-col
+{
+     max-width: 41px;
+     min-width: 41px;
+}
+
+.digi-container .align-center-container
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+.digi-container .header-bar
+{
+    background-color:#444444;
+    color: white;
+}
+
+.digi-container .title-container
+{
+    padding-top: 5px;
+}
+
+.digi-container .button-output
+{
+    border: solid black 1px !important;
+}
+
+.digi-container .dummy-border
+{
+    border: solid #444444 1px;
 }

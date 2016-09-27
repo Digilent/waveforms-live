@@ -4,23 +4,20 @@ import 'rxjs/Rx';
 
 //Components
 import {LaChannelComponent} from './la-channel.component';
+import {InstrumentComponent} from '../instrument.component';
 
 //Services
 import {TransportService} from '../../../services/transport/transport.service';
 
 @Component({
 })
-export class LaInstrumentComponent {
-
-    private transport: TransportService;
-    private endpoint: string = '/la';
+export class LaInstrumentComponent extends InstrumentComponent {
 
     public numChans: number;
     public chans: Array<LaChannelComponent> = [];
 
     constructor(_transport: TransportService, _laInstrumentDescriptor: any) {
-        //Store reference to device transport for communication with device
-        this.transport = _transport;
+        super(_transport, '/')
 
         //Populate LA supply parameters
         this.numChans = _laInstrumentDescriptor.numChans;

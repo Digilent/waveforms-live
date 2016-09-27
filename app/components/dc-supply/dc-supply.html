@@ -1,15 +1,19 @@
 <div class="dc-container">
     <div class="title" (click)="hideBar()">
-        DC POWER SUPPLY
+        <div class="align-center-container header-bar">
+            <div style="width:25px;height:27px;"></div>
+            <div class="title-container">DC Power Supply</div>
+            <div style="width:25px;height:27px;"></div>
+        </div>
     </div>
     <ion-row class="set-background-color dc-content" [hidden]="contentHidden">
         <ion-col *ngFor="let supply of voltageSupplies; let i = index">
-            <center>Channel {{i + 1}}</center>
+            <center>Ch {{i + 1}}</center>
             <div class="flex-container">
                 <div class="flex-left">
                     <ion-item class="set-background-color actual">
                         <ion-label stacked>Value</ion-label>
-                        <ion-input [disabled]="true" [value]="readVoltages[i]" class="power-controls"></ion-input>
+                        <ion-input [disabled]="true" [value]="readVoltages[i]" class="power-controls" style="text-align:right;"></ion-input>
                     </ion-item>
                 </div>
                 <div class="flex-right">

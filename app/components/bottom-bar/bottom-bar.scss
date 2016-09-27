@@ -8,7 +8,7 @@
 .bottom-wrapper .bottom-left
 {
     margin-right: 1px;
-    flex: 1 0;
+    flex: 0 1 331px;
     //border-left: solid black 1px;
     border-right: solid black 1px;
     background-color: #444444;
@@ -16,7 +16,7 @@
 
 .bottom-right
 {
-    flex: 3 0;
+    flex: 1 0 336px;
     border-left: solid black 1px;
     border-right: solid black 1px;
     background-color: #444444;

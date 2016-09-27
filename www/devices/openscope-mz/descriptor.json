@@ -50,6 +50,11 @@
         },
         "numChans": 2
     },
+    "gpio": {
+        "numChans": 10,
+        "sourceCurrentMax": 200000000000000000,
+        "sinkCurrentMax": 1
+    },
     "la": {
         "numChans": 10
     },
