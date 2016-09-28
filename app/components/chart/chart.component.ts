@@ -545,7 +545,7 @@ export class SilverNeedleChart {
             let extremesY = this.timelineChart.yAxis[0].getExtremes();
             this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
         }
-        if (!ignoreAutoscale) {
+        if (!ignoreAutoscale && initialDraw) {
             if (this.autoscaleAll) {
                 this.autoscaleAllAxes();
             }
