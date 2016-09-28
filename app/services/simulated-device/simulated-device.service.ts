@@ -13,8 +13,10 @@ export class SimulatedDeviceService {
     private vOffsets: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
     /*Osc Parameters*/
-    private sampleFreqs: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
-    private bufferSizes: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
+    private oscSampleFreqs: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
+    private oscBufferSizes: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
+    private laSampleFreqs: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
+    private laBufferSizes: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
     /*Trigger Parameters*/
     private targets: any;
@@ -37,14 +39,26 @@ export class SimulatedDeviceService {
 
     //Not sure if needed after moving read to oscope but here we go anyways TODO tag for future delete
     setOscParameters(parameters: any, channel: number) {
-        this.sampleFreqs[channel] = parameters.sampleFreq;
-        this.bufferSizes[channel] = parameters.bufferSize;
+        this.oscSampleFreqs[channel] = parameters.sampleFreq;
+        this.oscBufferSizes[channel] = parameters.bufferSize;
     }
 
     getOscParameters(channel: number) {
         return {
-            sampleFreq: this.sampleFreqs[channel],
-            bufferSize: this.bufferSizes[channel]
+            sampleFreq: this.oscSampleFreqs[channel],
+            bufferSize: this.oscBufferSizes[channel]
+        }
+    }
+
+    setLaParameters(parameters: any, channel: number) {
+        this.laSampleFreqs[channel] = parameters.sampleFreq;
+        this.laBufferSizes[channel] = parameters.bufferSize;
+    }
+
+    getLaParameters(channel: number) {
+        return {
+            sampleFreq: this.laSampleFreqs[channel],
+            bufferSize: this.laBufferSizes[channel]
         }
     }
 

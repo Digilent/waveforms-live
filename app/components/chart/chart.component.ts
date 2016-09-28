@@ -1267,11 +1267,6 @@ export class SilverNeedleChart {
     //Enable cursors on the chart component. Called after chart initialization
     enableCursors() {
         this.cursorsEnabled = true;
-        //Wait for ngClass to apply css class and reflow chart to fill correctly. 
-        //TODO check for ngclass event that fires on class change.
-        setTimeout(() => {
-            this.chart.reflow();
-        }, 100);
     }
 
     //Called on chart mousedown. Sets either vertical or horizontal pan listener
@@ -1537,10 +1532,6 @@ export class SilverNeedleChart {
     //Enables timeline view. Called when chart is initialized
     enableTimelineView() {
         this.timelineView = true;
-        setTimeout(() => {
-            this.chart.reflow();
-            this.timelineChart.reflow();
-        }, 200);
     }
 
     enableMath() {

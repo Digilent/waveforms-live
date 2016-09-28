@@ -50,7 +50,6 @@ export class DcSupplyComponent {
 
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
-        console.log(this.activeDevice.instruments.dc);
         if (this.activeDevice.instruments.dc.chans[0].currentIncrement !== 0) {
             this.showCurrent = true;
         }

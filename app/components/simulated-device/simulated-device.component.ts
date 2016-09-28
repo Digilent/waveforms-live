@@ -7,6 +7,7 @@ import {SimulatedAwgComponent} from './instruments/simulated-awg.component.ts';
 import {SimulatedDcComponent} from './instruments/simulated-dc.component.ts';
 import {SimulatedOscComponent} from './instruments/simulated-osc.component.ts';
 import {SimulatedTriggerComponent} from './instruments/simulated-trigger.component.ts';
+import {SimulatedLaComponent} from './instruments/simulated-la.component.ts';
 
 //Services
 import {SimulatedDeviceService} from '../../services/simulated-device/simulated-device.service.ts';
@@ -23,6 +24,7 @@ export class SimulatedDeviceComponent {
     private descriptor: string;
     private awg: SimulatedAwgComponent;
     private dc: SimulatedDcComponent;
+    private la: SimulatedLaComponent;
     private osc: SimulatedOscComponent;
     private trigger: SimulatedTriggerComponent;
     private simDevService: SimulatedDeviceService;
@@ -34,6 +36,7 @@ export class SimulatedDeviceComponent {
         this.dc = new SimulatedDcComponent(this.simDevService);
         this.osc = new SimulatedOscComponent(this.simDevService);
         this.trigger = new SimulatedTriggerComponent(this.simDevService);
+        this.la = new SimulatedLaComponent(this.simDevService);
     }
 
     send(command: any): Observable<any> {
@@ -126,6 +129,12 @@ export class SimulatedDeviceComponent {
                 return this.osc.setParameters(params[0], commandObject);
             case 'oscread':
                 return this.osc.read(params[0]);
+
+            //---------- LA ----------            
+            case 'lasetParameters':
+                return this.la.setParameters(params[0], commandObject);
+            case 'laread':
+                return this.la.read(params[0]);
             default:
                 return {
                     statusCode: 1,

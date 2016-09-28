@@ -16,7 +16,7 @@
         <ion-row class="chart-info">
             <ion-col *ngIf="mathEnabled" class="info-col">
                 <ion-row class="cursor-container">
-                    <div tooltip="Math Settings" tooltip-presistent><button class="text-button-side disable-hover" (click)="openMathModal()">Math</button></div>
+                    <button class="text-button-side disable-hover" (click)="openMathModal()">Math</button>
                     <ion-col class="cursor-info-col" id="test-test">
 
                     </ion-col>
@@ -24,7 +24,7 @@
             </ion-col>
             <ion-col *ngIf="cursorsEnabled" class="info-col">
                 <ion-row class="cursor-container">
-                    <div tooltip="Cursor Settings" tooltip-presistent><button class="text-button-side disable-hover" (click)="openCursorModal()">Cursors</button></div>
+                    <button class="text-button-side disable-hover" (click)="openCursorModal()">Cursors</button>
                     <ion-col *ngIf="cursorType === 'time'" class="cursor-info-col">
                         Cur1: {{getCursorInfo('cursorPosition0')}} <br> Cur2: {{getCursorInfo('cursorPosition1')}}
                     </ion-col>

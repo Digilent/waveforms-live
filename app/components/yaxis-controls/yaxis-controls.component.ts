@@ -25,6 +25,8 @@ export class YAxisComponent {
     private popoverCtrl: PopoverController;
     private names: string[] = [];
     private showSeriesSettings: boolean[] = [];
+    private configHover: boolean = false;
+    private timeoutRef: any;
     
     constructor(_storageService: StorageService, _viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController) {
         this.popoverCtrl = _popoverCtrl;

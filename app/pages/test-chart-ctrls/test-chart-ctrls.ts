@@ -138,7 +138,8 @@ export class TestChartCtrlsPage {
                         ],
                         [
                             {
-                                osc: [1]
+                                osc: [1],
+                                la: [1]
                             }
                         ]
                     ],
@@ -155,6 +156,7 @@ export class TestChartCtrlsPage {
             () => {
                 //console.log('single multi done');
                 this.readOscope();
+                this.readLa();
             }
         );
 
@@ -207,6 +209,18 @@ export class TestChartCtrlsPage {
         );*/
 
         
+    }
+
+    readLa() {
+        this.activeDevice.instruments.la.read([1]).subscribe(
+            (data) => {
+                console.log(data);
+            },
+            (err) => {
+
+            }, 
+            () => {}
+        );
     }
 
     readOscope() {
@@ -323,6 +337,6 @@ export class TestChartCtrlsPage {
     initSettings() {
         setTimeout(() => {
             this.chart1.redrawChart();
-        }, 100);
+        }, 200);
     }
 }
