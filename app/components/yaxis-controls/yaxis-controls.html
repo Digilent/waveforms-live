@@ -1,5 +1,5 @@
-<div *ngFor="let series of chart.numSeries; let i = index" (click)="setActiveSeries(i)">
-    <div>
+<div *ngFor="let series of chart.numSeries; let i = index" (click)="setActiveSeries(i)" class="yaxis-component-wrapper">
+    <div tooltip="Change Vertical Settings" tooltip-presistent>
         <div (dblclick)="toggleSeriesSettings(i)" [ngClass]="{'header-bar-side-closed': !showSeriesSettings[i]}" class="align-center-container header-bar-side">
                 <button [ngClass]="{seriesHidden: !chart.getSeriesVisibility(i)}" (click)="toggleVisibility(i)" class="align-left disable-hover" [style.background-color]="chart.getSeriesColor(i)"></button>
                 <div class="vertical-align">{{names[i]}}</div>

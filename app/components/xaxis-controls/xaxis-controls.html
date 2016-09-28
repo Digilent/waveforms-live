@@ -1,25 +1,27 @@
-<div>
-    <div (dblclick)="toggleSeriesSettings()" [ngClass]="{'header-bar-side-closed': !showTimeSettings}" class="header-bar-side">
-        <div class="align-center">Time Settings</div>
+<div class="xaxis-component-wrapper">
+    <div tooltip="Change Time Settings" tooltip-presistent>
+        <div (dblclick)="toggleSeriesSettings()" [ngClass]="{'header-bar-side-closed': !showTimeSettings}" class="header-bar-side">
+            <div class="align-center">Time Settings</div>
+        </div>
+        <ion-row *ngIf="showTimeSettings" class="controls-container">
+            <ion-col>
+                <center>
+                    <div class="yaxis-control-wrapper">
+                        <div class="align-center"><button (click)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivOpts.length-1" class="icon-only-button-side disable-hover"><ion-icon name="arrow-up"></ion-icon></button></div>
+                        <div class="align-center">{{chart.secsPerDivOpts[chart.activeTPDIndex]}}/div</div>
+                        <div class="align-center"><button (click)="chart.decrementTPD()" [disabled]="chart.activeTPDIndex == 0" class="icon-only-button-side disable-hover"><ion-icon name="arrow-down"></ion-icon></button></div>
+                    </div>
+                </center>
+            </ion-col>
+            <ion-col>
+                <center>
+                    <div class="yaxis-control-wrapper">
+                        <div class="align-center"><button (click)="chart.incrementBase()" class="icon-only-button-side disable-hover"><ion-icon name="arrow-up"></ion-icon></button></div>
+                        <div class="align-center">Base</div>
+                        <div class="align-center"><button (click)="chart.decrementBase()" class="icon-only-button-side disable-hover"><ion-icon name="arrow-down"></ion-icon></button></div>
+                    </div>
+                </center>
+            </ion-col>
+        </ion-row>
     </div>
-    <ion-row *ngIf="showTimeSettings" class="controls-container">
-        <ion-col>
-            <center>
-                <div class="yaxis-control-wrapper">
-                    <div class="align-center"><button (click)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivOpts.length-1" class="icon-only-button-side disable-hover"><ion-icon name="arrow-up"></ion-icon></button></div>
-                    <div class="align-center">{{chart.secsPerDivOpts[chart.activeTPDIndex]}}/div</div>
-                    <div class="align-center"><button (click)="chart.decrementTPD()" [disabled]="chart.activeTPDIndex == 0" class="icon-only-button-side disable-hover"><ion-icon name="arrow-down"></ion-icon></button></div>
-                </div>
-            </center>
-        </ion-col>
-        <ion-col>
-            <center>
-                <div class="yaxis-control-wrapper">
-                    <div class="align-center"><button (click)="chart.incrementBase()" class="icon-only-button-side disable-hover"><ion-icon name="arrow-up"></ion-icon></button></div>
-                    <div class="align-center">Base</div>
-                    <div class="align-center"><button (click)="chart.decrementBase()" class="icon-only-button-side disable-hover"><ion-icon name="arrow-down"></ion-icon></button></div>
-                </div>
-            </center>
-        </ion-col>
-    </ion-row>
 </div>
