@@ -1,0 +1,27 @@
+.auto-main .align-center
+{
+    text-align: center;
+}
+
+.autoscale-container .active-toggle
+{
+    background-color: #4487BA;
+    border: solid #33658B 2px;
+    width: 20px;
+    font-size: 4px;
+    height: 20px;
+    opacity: 0.2;
+    margin: 2px;
+    padding: 0px;
+}
+
+.autoscale-container .button-container
+{
+    display: inline-block;
+    border: solid black 1px;
+}
+
+.autoscale-container .autoscaleActive
+{
+    opacity: 1;
+}

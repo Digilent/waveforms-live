@@ -1,0 +1,47 @@
+.gen-popover-list-container
+{
+    margin: 0px;
+    padding: 0px;
+    background-color: #3A3A3A;
+}
+
+.gen-popover-list-container .gen-popover-item
+{
+    background-color: #3A3A3A !important;
+    color: #535353;
+    padding: 10px 0px 10px 0px;
+    padding-left: 10px;
+}
+
+.gen-popover-list-container .gen-popover-item:hover{
+    background-color: #4487BA !important;
+    color: white;
+    cursor: pointer;
+    .gen-popover-button
+    {
+        background-color: #4487BA;
+        color: white;
+    }
+}
+
+.gen-popover-list-container .gen-popover-item .gen-popover-button
+{
+    background-color: #3A3A3A;
+    //border: solid black 1px;
+    color: #F0F6F8;
+    cursor: pointer;
+}
+
+.gen-popover-list-container .gen-popover-item .gen-popover-button:hover
+{
+    background-color: #4487BA;
+    //border: solid black 1px;
+    color: white;
+    opacity: 1;
+    cursor: pointer;
+}
+
+.popover-content 
+{
+    background-color: #3A3A3A !important;
+}

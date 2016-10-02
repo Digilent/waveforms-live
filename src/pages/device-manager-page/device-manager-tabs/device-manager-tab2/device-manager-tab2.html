@@ -1,0 +1,21 @@
+<ion-header>
+    <ion-navbar>
+        <button ion-button menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Discover Devices</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content class="second-tab-container">
+    <div style="text-align:center">
+        <div class="ui-discover-container">
+            <ion-item class="discover-item align-center">
+                <button ion-button (click)="findDevices()" class="discover-button">Find Devices</button>
+            </ion-item>
+        </div>
+        <div [ngClass]="{fadein: findingDevices}" class="fadeout">
+            <p class="make-font-white">Finding Devices</p>
+            <ion-spinner class="color-spinner" name="crescent"></ion-spinner>
+        </div>
+    </div>
+</ion-content>

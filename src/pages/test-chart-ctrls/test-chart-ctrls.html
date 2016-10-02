@@ -1,0 +1,69 @@
+<ion-content #mycontent>
+    <div class="chart-page-container">
+        <!-------------------------------- TOP BAR --------------------------------->
+        <div class="top-bar-container">
+            <ion-row>
+                <div class="move-left">
+                    <button ion-button menuToggle light>
+                        <ion-icon name="menu"></ion-icon>
+                    </button>
+                </div>
+
+                <ion-col width-30>
+                    <div class="timeline-chart-wrapper">
+                        <timeline-chart (timelineChartLoad)="saveTimelineChart($event)"></timeline-chart>
+                    </div>
+                </ion-col>
+                    <div class="inner-ctrls">
+                        <timeline *ngIf="chartReady" [chart]="chart1"></timeline>
+                        <button ion-button icon-right class="text-button-side disable-hover" (click)="exportChart()">
+                            Export
+                            <ion-icon name="download"></ion-icon>
+                        </button>
+                        <button ion-button icon-right class="text-button-side disable-hover" (click)="singleClick()">
+                            Single
+                            <ion-icon name="play"></ion-icon>
+                        </button>
+                        <button ion-button icon-right class="text-button-side disable-hover" (click)="runClick()" *ngIf="!running">
+                            Run
+                            <ion-icon name="repeat"></ion-icon>
+                        </button>
+                        <button ion-button icon-right class="text-button-side disable-hover" (click)="stopClick()" *ngIf="running">
+                            Stop
+                            <ion-icon name="hand"></ion-icon>
+                        </button>
+                    </div>
+            </ion-row>
+        </div>
+
+        <!-------------------------------- CENTER STAGE --------------------------------->
+        <div class="center-container">
+            <div class="chart-wrapper">
+                <!-- chart here -->
+                <silverNeedleChart #chart1 (chartLoad)="initSettings()"></silverNeedleChart>
+            </div>
+            <div class="controls-wrapper">
+                <!-- controls here -->
+                <div class="fgen-button-container">
+                    <button ion-button class="icon-only-button-side disable-hover fgen-button" (click)="toggleControls()">
+                        <ion-icon name="pulse"></ion-icon>
+                    </button>
+                </div>
+                <autoscale [chart]="chart1"></autoscale>
+                <trigger></trigger>
+                <!--<xaxis-controls [chart]="chart1"></xaxis-controls>
+                <yaxis-controls [chart]="chart1"></yaxis-controls>-->
+            </div>
+            <div class="fgen-wrapper" [ngClass]="{'show-fgen': controlsVisible}">
+                <!-- fgen here -->
+                <fgen [hidden]="!controlsVisible"></fgen>
+            </div>
+        </div>
+
+
+        <!-------------------------------- BOTTOM BAR --------------------------------->
+        <div class="bottom-bar-container">
+            <bottom-bar (headerClicked)="toggleBotControls();"></bottom-bar>
+        </div>
+    </div>
+</ion-content>

@@ -6,18 +6,13 @@ SilverNeedle (Web WaveForms PoC)
 | -------- | ----------------------:|
 | Node.js  | 6.2.1                  |
 | npm      | 3.9.3                  |
-| Ionic2   | Beta 8 (2.0.0-beta.30) |
+| Ionic2   | RC.0                   |
 
 ##Developer Quick Start
 1. Install Ionic2 globally
 
     ```
-    npm install -g ionic@beta
-    ```
-2. Install typings globally
-
-    ```
-    npm install -g typings
+    npm install -g ionic
     ```
 3. Clone this repository
 4. Change into project directory

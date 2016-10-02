@@ -1,0 +1,33 @@
+.second-tab-container
+{
+    background-color: #535353;
+}
+
+.second-tab-container .ui-discover-container
+{
+    max-width: 500px;
+    width: 500px;
+    display: inline-block;
+}
+
+.second-tab-container .make-font-white
+{
+    color: white;
+}
+
+.second-tab-container .color-spinner,.spinner-crescent circle
+{
+    stroke: #387ef5;
+}
+
+.second-tab-container .discover-item
+{
+    background-color: #535353;
+}
+
+.second-tab-container .discover-item .discover-button
+{
+    background-color: #535353;
+    border: solid black 1px;
+    color: white;
+}

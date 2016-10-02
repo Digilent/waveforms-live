@@ -1,0 +1,34 @@
+<ion-header>
+    <ion-navbar>
+        <button menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>AWG Test Page</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <button (click)=enumerate();>Enumerate</button>
+    <div *ngFor="let chan of activeDevice.instruments.awg.chans; let i = index">
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <h1> {{chan.name}} </h1>
+                    <br />
+                    <br />
+                    <ion-row>
+                        <ion-col>
+                            <h4>{{readOffsets[i]}} V </h4>
+                            <button (click)="getOffsets([i])">Get</button>
+                        </ion-col>
+                        <ion-col>
+                            <ion-input type="text" [(ngModel)]="targetOffset[i]"></ion-input>
+                            <button (click)="setOffsets([i], [targetOffset[i]])">Set</button>
+                        </ion-col>
+                    </ion-row>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+
+</ion-content>

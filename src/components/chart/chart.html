@@ -1,0 +1,51 @@
+<div #oscopeChartInner class="chart-component-wrapper">
+    <div class="chart-container-container">
+        <div class="chart-component-container-div" [ngClass]="{pan: canPan, 
+                'chart-component-container-div-cursor-timeline': isCursorTimeline(),
+                'chart-component-container-div-cursor-only': isCursorOnly(),
+                'chart-component-container-div-timeline-only': isTimelineOnly(),
+                'chart-component-container-div-vanilla': isVanilla()}">
+            <!--<chart [options]="options" (load)="onLoad($event.context)" (touchstart)="onChartClick($event)" (touchend)="clearMouse()" (mousedown)="onChartClick($event)" (mouseup)="clearMouse()">
+                <series>
+                    <point (click)="onPointSelect($event)"></point>
+                </series>
+            </chart>-->
+        </div>
+    </div>
+    <div>
+        <ion-row class="chart-info">
+            <ion-col *ngIf="mathEnabled" class="info-col">
+                <ion-row class="cursor-container">
+                    <button ion-button class="text-button-side disable-hover" (click)="openMathModal()">Math</button>
+                    <ion-col class="cursor-info-col" id="test-test">
+
+                    </ion-col>
+                </ion-row>
+            </ion-col>
+            <ion-col *ngIf="cursorsEnabled" class="info-col">
+                <ion-row class="cursor-container">
+                    <button ion-button class="text-button-side disable-hover" (click)="openCursorModal()">Cursors</button>
+                    <ion-col *ngIf="cursorType === 'time'" class="cursor-info-col">
+                        Cur1: {{getCursorInfo('cursorPosition0')}} <br> Cur2: {{getCursorInfo('cursorPosition1')}}
+                    </ion-col>
+                    <ion-col class="cursor-info-col" *ngIf="cursorType === 'time'">
+                        &Delta; X: {{getCursorInfo('xDelta')}} <br> 1/&Delta;X: {{getCursorInfo('xFreq')}}
+                    </ion-col>
+                    <ion-col class="cursor-info-col" *ngIf="cursorType === 'track'">
+                        Cur1: {{getCursorInfo('cursorPosition0')}} <br> Cur2: {{getCursorInfo('cursorPosition1')}}
+                    </ion-col>
+                    <ion-col class="cursor-info-col" *ngIf="cursorType === 'track'">
+                        &Delta;X: {{getCursorInfo('xDelta')}} &Delta;Y: {{getCursorInfo('yDelta')}} <br>
+                        1/&Delta;X: {{getCursorInfo('xFreq')}}
+                    </ion-col>
+                    <ion-col class="cursor-info-col" *ngIf="cursorType === 'voltage'">
+                        Cur1: {{getCursorInfo('cursorPosition0')}} <br> Cur2: {{getCursorInfo('cursorPosition1')}}
+                    </ion-col>
+                    <ion-col class="cursor-info-col" *ngIf="cursorType === 'voltage'">
+                        &Delta;Y: {{getCursorInfo('yDelta')}}
+                    </ion-col>
+                </ion-row>
+            </ion-col>
+        </ion-row>
+    </div>
+</div>

@@ -1,0 +1,107 @@
+.align-center
+{
+    text-align: center;
+}
+
+.align-center-container
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+.align-center-container .align-left
+{
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.5rem;
+    height: 25px;
+    font-size: 8px;
+    width: 25px;
+    background-color: black;
+    border-radius: 2px;
+}
+
+.align-center-container .align-right
+{
+    margin-top: 0.1rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
+    height: 25px;
+    font-size: 8px;
+    background-color: #535353;
+    border: solid black 1px;
+}
+
+.font-size-button
+{
+    font-size: 8px;
+}
+
+.align-center-container .vertical-align
+{
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
+}
+
+.icon-only-button-side
+{
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
+    font-size: 8px;
+    height: 25px;
+    background-color: #535353;
+    border: solid black 1px;
+}
+
+.text-button-side
+{
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
+    font-size: 8px;
+    height: 25px;
+    font-weight: 400;
+    min-width: 75px;
+    background-color: #535353;
+    border: solid black 1px;
+}
+
+.header-bar-side
+{
+    background-color:#535353;
+    border-top: solid #686868 1px;
+    padding-top: 1px; 
+    padding-bottom: 1px;
+    color: white;
+}
+
+.controls-container
+{
+    color: white;
+    font-weight: 300;
+    background-color: #535353;
+    border-bottom: solid black 1px;
+}
+
+.seriesHidden
+{
+    opacity: 0.4;
+}
+
+.header-bar-side-closed
+{
+    border-bottom: solid black 1px;
+}
+
+.text-button-main
+{
+    background-color: #535353;
+    border: solid black 1px;
+}
