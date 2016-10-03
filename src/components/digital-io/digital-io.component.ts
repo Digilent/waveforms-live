@@ -60,7 +60,7 @@ export class DigitalIoComponent {
     }
     
     //Open checkbox alert
-    doCheckbox() {
+    doCheckbox(event) {
         event.stopPropagation();
         let okFlag: boolean = false;   
         let alert = this.alertCtrl.create();

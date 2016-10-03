@@ -153,7 +153,7 @@ export class Tab1 {
         );
     }
 
-    openSimDevicePopover($event) {
+    openSimDevicePopover(event) {
         let genPopover = this.popoverCtrl.create(GenPopover, {
                 dataArray: ['OpenScope-MZ']
             });
