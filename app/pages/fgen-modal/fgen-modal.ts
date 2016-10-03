@@ -18,6 +18,7 @@ export class ModalFgenPage {
     private params: NavParams;
     private fgenComponent: FgenComponent;
     private numPoints: number;
+    public fileRead: any;
     
     public value: number;
     
@@ -31,6 +32,23 @@ export class ModalFgenPage {
         this.params = _params;
         this.fgenComponent = this.params.get('fgenComponent');
         this.numPoints = 1000;
+    }
+
+    openFileInput() {
+        document.getElementById('file').click();
+    }
+
+    fileChange(event) {
+        console.log(document.getElementById('file'));
+        if (event.target.files.length === 0) {return}
+        console.log(event);
+        let fileReader = new FileReader();
+        fileReader.onload = ((file) => {
+            let myFile: any = file;
+            console.log(myFile.target.result);
+            alert('File Read as Text: ' + myFile.target.result);
+        });
+        fileReader.readAsText(event.target.files[0]);
     }
 
     //Called when fgen modal is closed. Returns data

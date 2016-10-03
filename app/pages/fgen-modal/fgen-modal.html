@@ -38,6 +38,8 @@
             </ion-item>
             <button class="text-button-main disable-hover" (click)="closeModal();">Close Function Gen Configuration</button>  
         </ion-list>
+        <div><button class="text-button-main disable-hover" (click)="openFileInput()">Upload a File</button></div>
+        <input class="hidden-file-input" type="file" id="file" name="file" (change)="fileChange($event)" />
     </ion-col>
 </ion-row>
 

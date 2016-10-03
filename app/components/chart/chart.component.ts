@@ -88,7 +88,7 @@ export class SilverNeedleChart {
     public autoscaleYaxes: boolean[] = [];
     public autoscaleXaxis: boolean = false;
 
-    private currentBufferArray: WaveformComponent[] = [];
+    public currentBufferArray: WaveformComponent[] = [];
 
     private seriesAnchors: Array<any> = [];
 
@@ -1435,6 +1435,9 @@ export class SilverNeedleChart {
         this.activeSeries = seriesNum;
         this.updateYAxisLabels();
         this.updateCursorLabels();
+        for (let i = 0; i < this.seriesAnchors.length; i++) {
+            this.updateSeriesAnchor(i);
+        }
     }
 
     //Add y axis to chart and initialize with correct settings
@@ -2133,6 +2136,8 @@ export class SilverNeedleChart {
             })
             .add()
             .on('mousedown', (event) => {
+                let offset = this.currentBufferArray[seriesNum].seriesOffset / 1000;
+                this.yPositionPixels = this.chart.yAxis[seriesNum].toPixels(offset);
                 this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.verticalOffsetListener);
                 this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.verticalOffsetListener);
             })

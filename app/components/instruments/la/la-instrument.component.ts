@@ -183,7 +183,7 @@ export class LaInstrumentComponent extends InstrumentComponent {
                         this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
                             dt: 1 / (command.la[channel][0].actualSampleFreq / 1000),
                             t0: 0,
-                            y: untypedArray,
+                            y: channelsObject['0'],
                             pointOfInterest: command.la[channel][0].pointOfInterest,
                             triggerPosition: command.la[channel][0].triggerDelta,
                             seriesOffset: 500
