@@ -99,9 +99,9 @@
     color: white;
 }
 
-.item-input.ng-valid.input-has-value:not(.input-has-focus) .item-inner {
-    border-bottom-color: #686868;
-    box-shadow: inset 0 -1px 0 0 black;
+.fgen-container .item-inner {
+    border-bottom-color: #686868 !important;
+    box-shadow: inset 0 -1px 0 0 black !important;
 }
 
 .item-input.input-has-focus .item-inner {
@@ -121,4 +121,9 @@ ion-list .item-input.ng-valid.input-has-value:not(.input-has-focus):last-child {
 ion-list .item-input.input-has-focus:last-child {
     border-bottom-color: #535353;
     box-shadow: inset 0 -1px 0 0 black;
+}
+
+.fgen-container .list-md > .item-block:last-child
+{
+    border-bottom: none;
 }

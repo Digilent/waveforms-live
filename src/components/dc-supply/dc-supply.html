@@ -9,7 +9,7 @@
     <ion-row class="set-background-color dc-content" [hidden]="contentHidden">
         <ion-col *ngFor="let supply of voltageSupplies; let i = index">
             <!--<center>Ch {{i + 1}}</center>-->
-            <div>Ch {{i + 1}}</div>
+            <div text-center><div style="inline-blockify">Ch {{i + 1}}</div></div>
             <div class="flex-container">
                 <div class="flex-left">
                     <ion-item class="set-background-color actual">
@@ -31,7 +31,7 @@
                     class="power-controls"></ion-input>
             </ion-item>
             <!--<center>-->
-            <div>
+            <div text-center>
                 <div class="power-button-container">
                     <div class="dummy-power-underline" [ngClass]="{'power-underline': dcOn[i]}">
                         <button ion-button clear (click)="togglePower(i)" class="powerOff" [ngClass]="{powerOn: dcOn[i]}">

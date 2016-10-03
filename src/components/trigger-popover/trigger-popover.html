@@ -1,15 +1,15 @@
 <div class="trigger-pop-container">
     <ion-item class="trigger-pop-item">
-        <h3>Trigger</h3>
-        <button clear (click)="showGenPopover($event, 'trigger')">Trigger</button>
+        <div class="custom-ion-label">Trigger</div>
+        <button ion-button clear (click)="showGenPopover($event, 'trigger')">Trigger</button>
     </ion-item>
     <ion-item class="trigger-pop-item">
-        <h3>Source</h3>
-        <button clear (click)="showGenPopover($event, 'source')">Source</button>
+        <div class="custom-ion-label">Source</div>
+        <button ion-button clear (click)="showGenPopover($event, 'source')">Source</button>
     </ion-item>
     <ion-item class="trigger-pop-item">
-        <h3>Edge</h3>
-        <button clear (click)="showGenPopover($event, 'edge')">Edge</button>
+        <div class="custom-ion-label">Edge</div>
+        <button ion-button clear (click)="showGenPopover($event, 'edge')">Edge</button>
     </ion-item>
     <ion-item class="trigger-pop-item">
         <ion-label stacked>Lower Threshold</ion-label>

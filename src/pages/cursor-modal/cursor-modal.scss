@@ -7,19 +7,20 @@
     }
 }
 
-.cursor-modal-container
+.cursor-modal-list
 {
     background-color: #535353;
 }
 
-.cursor-modal-container, ion-list > .item:last-child {
-    border: none;
+.cursor-modal-container ion-list > .item:last-child {
+    border-bottom: solid #535353 1px !important;
 }
 
 .cursor-modal-container .cursor-modal-item
 {
     background-color: #535353;
     color: white;
+    border-top: solid #535353 1px !important;
 }
 
 .cursor-modal-container .cursor-modal-button
