@@ -214,7 +214,8 @@ export class TestChartCtrlsPage {
     readLa() {
         this.activeDevice.instruments.la.read([1]).subscribe(
             (data) => {
-                console.log(data);
+                this.chart1.currentBufferArray.push(this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferWriteIndex - 1][0]);
+                this.chart1.drawWaveform(1, this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferWriteIndex - 1][0], true);
             },
             (err) => {
 
@@ -226,7 +227,7 @@ export class TestChartCtrlsPage {
     readOscope() {
         this.activeDevice.instruments.osc.read([1]).subscribe(
             (data) => {
-                this.chart1.clearExtraSeries([0]);
+                this.chart1.clearExtraSeries([0, 1]);
                 if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1]);
                     for (let i = 0; i < this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex].length; i++) {

@@ -8,7 +8,7 @@
         <h3 class="settings-underline">Settings</h3>
         <div class="power-button-container">
             <div class="dummy-power-underline" [ngClass]="{'power-underline': fgenComponent.powerOn}">
-                <button clear (click)="togglePower()" class="powerOff" [ngClass]="{powerOn: fgenComponent.powerOn}">
+                <button ion-button clear (click)="togglePower()" class="powerOff" [ngClass]="{powerOn: fgenComponent.powerOn}">
                     <ion-icon name="power"></ion-icon>
                 </button>
             </div>
@@ -36,8 +36,10 @@
                 <ion-label stacked>Duty Cycle (%):</ion-label>
                 <ion-input [disabled]="!isSquare() || fgenComponent.powerOn" type="number" [(ngModel)]="fgenComponent.dutyCycle" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
-            <button class="text-button-main disable-hover" (click)="closeModal();">Close Function Gen Configuration</button>  
+            <button ion-button class="text-button-main disable-hover" (click)="closeModal();">Close Function Gen Configuration</button>  
         </ion-list>
+        <div><button class="text-button-main disable-hover" (click)="openFileInput()">Upload a File</button></div>
+        <input class="hidden-file-input" type="file" id="file" name="file" (change)="fileChange($event)" />
     </ion-col>
 </ion-row>
 

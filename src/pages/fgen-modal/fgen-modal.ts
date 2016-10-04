@@ -31,6 +31,23 @@ export class ModalFgenPage {
         this.numPoints = 1000;
     }
 
+    openFileInput() {
+         document.getElementById('file').click();
+     }
+ 
+    fileChange(event) {
+        console.log(document.getElementById('file'));
+         if (event.target.files.length === 0) {return}
+         console.log(event);
+         let fileReader = new FileReader();
+         fileReader.onload = ((file) => {
+            let myFile: any = file;
+            console.log(myFile.target.result);
+            alert('File Read as Text: ' + myFile.target.result);
+         });
+         fileReader.readAsText(event.target.files[0]);
+     }
+
     //Called when fgen modal is closed. Returns data
     closeModal() {
         this.viewCtrl.dismiss();

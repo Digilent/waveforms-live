@@ -20,9 +20,12 @@ import { SeriesPopover } from '../../components/series-popover/series-popover.co
 import { TriggerPopover } from '../../components/trigger-popover/trigger-popover.component';
 import { ModalFgenPage } from '../../pages/fgen-modal/fgen-modal';
 
+import { ChartModule } from 'angular2-highcharts';
+
 @NgModule({
     imports: [
         SharedModule,
+        ChartModule,
         IonicModule.forRoot(TestChartCtrlsPage),
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),
