@@ -1,10 +1,10 @@
-import {NavParams, ViewController, Platform} from 'ionic-angular';
-import {ViewChild, Component} from '@angular/core';
+import { NavParams, ViewController, Platform } from 'ionic-angular';
+import { ViewChild, Component } from '@angular/core';
 
 //Components
-import {SilverNeedleChart} from '../../components/chart/chart.component';
-import {FgenComponent} from '../../components/function-gen/function-gen.component';
-import {WaveformComponent} from '../../components/data-types/waveform';
+import { SilverNeedleChart } from '../../components/chart/chart.component';
+import { FgenComponent } from '../../components/function-gen/function-gen.component';
+import { WaveformComponent } from '../../components/data-types/waveform';
 
 @Component({
     templateUrl: "fgen-modal.html"
@@ -16,9 +16,9 @@ export class ModalFgenPage {
     public params: NavParams;
     public fgenComponent: FgenComponent;
     public numPoints: number;
-    
+
     public value: number;
-    
+
     constructor(
         _platform: Platform,
         _viewCtrl: ViewController,
@@ -32,21 +32,69 @@ export class ModalFgenPage {
     }
 
     openFileInput() {
-         document.getElementById('file').click();
-     }
- 
+        document.getElementById('file').click();
+    }
+
     fileChange(event) {
         console.log(document.getElementById('file'));
-         if (event.target.files.length === 0) {return}
-         console.log(event);
-         let fileReader = new FileReader();
-         fileReader.onload = ((file) => {
+        if (event.target.files.length === 0) { return }
+        console.log(event);
+        let fileReader = new FileReader();
+        fileReader.onload = ((file) => {
             let myFile: any = file;
             console.log(myFile.target.result);
+            this.parseCsv(myFile.target.result);
             alert('File Read as Text: ' + myFile.target.result);
-         });
-         fileReader.readAsText(event.target.files[0]);
-     }
+        });
+        fileReader.readAsText(event.target.files[0]);
+    }
+
+    parseCsv(fileAsText: string) {
+        let length = fileAsText.length;
+        let points = fileAsText.split('\n');
+        console.log(points.length);
+        let pointData = points[0].split(',');
+        let pointData2 = points[1].split(',');
+        let xInterval = parseFloat(pointData2[0]) - parseFloat(pointData[0]);
+        
+        let dataContainer = [];
+        for (let i = 0; i < pointData.length - 1; i++) {
+            dataContainer[i] = [parseFloat(pointData[i + 1])];
+        }
+
+        console.log(pointData);
+        //Assume first column is time
+        //Assume second column is y1
+        //Assume third column is y2 etc
+        for (let i = 0; i < points.length; i++) {
+            let currentPointData = points[i].split(',');
+            for (let j = 0; j < currentPointData.length - 1; j++) {
+                dataContainer[j].push(parseFloat(currentPointData[j + 1]));
+            }
+        }
+        console.log('data container: ');
+        console.log(dataContainer);
+        console.log('xInterval: ' + xInterval);
+
+        let waveformComponentArray: WaveformComponent[] = [];
+
+        for (let i = 0; i < dataContainer.length; i++) {
+            let waveform = {
+                y: dataContainer[i],
+                t0: 0,
+                dt: xInterval,
+                pointOfInterest: 0,
+                triggerPosition: 0,
+                seriesOffset: 0
+            };
+            waveformComponentArray[i] = new WaveformComponent(waveform);
+        }
+        this.chart.clearExtraSeries([0, 1]);
+        this.chart.setCurrentBuffer(waveformComponentArray);
+        for (let i = 0; i < dataContainer.length; i++) {
+            this.chart.drawWaveform(i, waveformComponentArray[i], true);
+        }
+    }
 
     //Called when fgen modal is closed. Returns data
     closeModal() {
@@ -56,7 +104,7 @@ export class ModalFgenPage {
     togglePower() {
         this.fgenComponent.togglePower();
     }
-    
+
     //Determines if current wave type is square
     isSquare() {
         if (this.fgenComponent.waveType === 'square') {
@@ -64,7 +112,7 @@ export class ModalFgenPage {
         }
         return false;
     }
-    
+
     //Determines if current wave type is dc
     isDc() {
         if (this.fgenComponent.waveType === 'dc') {
@@ -72,7 +120,7 @@ export class ModalFgenPage {
         }
         return false;
     }
-    
+
     //Initialize chart for awg config
     initChart(chart: Object) {
         this.chart.setTitle('AWG Configuration');
@@ -80,30 +128,30 @@ export class ModalFgenPage {
         this.drawWave();
         this.chart.redrawChart();
     }
-    
+
     //When a different tab is selected, draw new wavetype
     onSegmentChanged(event) {
         this.drawWave();
     }
-    
+
     //Case structure to determine which wavetype to draw
     drawWave() {
-        if (this.fgenComponent.waveType === 'sine') {this.drawSine();}
-        else if (this.fgenComponent.waveType === 'sawtooth') {this.drawRampUp();}
-        else if (this.fgenComponent.waveType === 'square') {this.drawSquare();}
-        else if (this.fgenComponent.waveType === 'dc') {this.drawDc();}
-        else if (this.fgenComponent.waveType === 'triangle') {this.drawTriangle();}
-        else if (this.fgenComponent.waveType === 'ramp-down') {this.drawRampDown();}
-        else {alert('wavetype not supported yet');}
+        if (this.fgenComponent.waveType === 'sine') { this.drawSine(); }
+        else if (this.fgenComponent.waveType === 'sawtooth') { this.drawRampUp(); }
+        else if (this.fgenComponent.waveType === 'square') { this.drawSquare(); }
+        else if (this.fgenComponent.waveType === 'dc') { this.drawDc(); }
+        else if (this.fgenComponent.waveType === 'triangle') { this.drawTriangle(); }
+        else if (this.fgenComponent.waveType === 'ramp-down') { this.drawRampDown(); }
+        else { alert('wavetype not supported yet'); }
     }
-    
+
     //Draws sine wave
     drawSine() {
         //incomplete: need to set up point interval for x axis
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1, 
+            dt: 1,
             pointOfInterest: 0,
             triggerPosition: 0,
             seriesOffset: parseFloat(this.fgenComponent.offset)
@@ -120,13 +168,13 @@ export class ModalFgenPage {
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.drawWaveform(0, waveform, true);
     }
-    
+
     //Draws ramp up 
     drawRampUp() {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1, 
+            dt: 1,
             pointOfInterest: 0,
             triggerPosition: 0,
             seriesOffset: this.fgenComponent.offset
@@ -138,19 +186,19 @@ export class ModalFgenPage {
         let dt = (2 * period) / this.numPoints;
         waveform.dt = dt;
         for (let i = 0; i < this.numPoints; i++) {
-            waveform.y[i] = (i % (this.numPoints / 2)) * (parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 2)) + 
-            parseFloat(this.fgenComponent.offset);
+            waveform.y[i] = (i % (this.numPoints / 2)) * (parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 2)) +
+                parseFloat(this.fgenComponent.offset);
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.drawWaveform(0, waveform, true);
     }
-    
+
     //Draws dc 
     drawDc() {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1, 
+            dt: 1,
             pointOfInterest: 0,
             triggerPosition: 0,
             seriesOffset: this.fgenComponent.offset
@@ -162,13 +210,13 @@ export class ModalFgenPage {
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.drawWaveform(0, waveform, true);
     }
-    
+
     //Draws triangle wave
     drawTriangle() {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1, 
+            dt: 1,
             pointOfInterest: 0,
             triggerPosition: 0,
             seriesOffset: this.fgenComponent.offset
@@ -183,8 +231,8 @@ export class ModalFgenPage {
             waveform.y[i] = ((parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 8)) * i) + parseFloat(this.fgenComponent.offset);
         }
         for (let i = 0; i < (this.numPoints / 4); i++) {
-            waveform.y[i + (this.numPoints / 8)] = parseFloat(this.fgenComponent.amplitude) + parseFloat(this.fgenComponent.offset) - 
-            ((parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 4)) * 2 * i);
+            waveform.y[i + (this.numPoints / 8)] = parseFloat(this.fgenComponent.amplitude) + parseFloat(this.fgenComponent.offset) -
+                ((parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 4)) * 2 * i);
         }
         for (let i = 0; i < (this.numPoints / 8); i++) {
             waveform.y[i + (this.numPoints * 3 / 8)] = waveform.y[i] - parseFloat(this.fgenComponent.amplitude);
@@ -195,13 +243,13 @@ export class ModalFgenPage {
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.drawWaveform(0, waveform, true);
     }
-    
+
     //Draws ramp down
     drawRampDown() {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1, 
+            dt: 1,
             pointOfInterest: 0,
             triggerPosition: 0,
             seriesOffset: this.fgenComponent.offset
@@ -213,34 +261,34 @@ export class ModalFgenPage {
         let dt = (2 * period) / this.numPoints;
         waveform.dt = dt;
         for (let i = 0; i < this.numPoints; i++) {
-            waveform.y[i] = ((-1 * i) % (this.numPoints / 2)) * (parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 2)) + 
-            parseFloat(this.fgenComponent.amplitude) + parseFloat(this.fgenComponent.offset);
+            waveform.y[i] = ((-1 * i) % (this.numPoints / 2)) * (parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 2)) +
+                parseFloat(this.fgenComponent.amplitude) + parseFloat(this.fgenComponent.offset);
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.drawWaveform(0, waveform, true);
     }
-    
+
     //Not yet implemented
     drawNoise() {
         let waveform: number[] = [];
     }
-    
+
     //Not yet implemented
     drawTrap() {
         let waveform: number[] = [];
     }
-    
+
     //Not yet implemented
     drawSinPow() {
         let waveform: number[] = [];
     }
-    
+
     //Draw square wave
     drawSquare() {
         let waveform = {
             y: [],
             t0: 0,
-            dt: 1, 
+            dt: 1,
             pointOfInterest: 0,
             triggerPosition: 0,
             seriesOffset: this.fgenComponent.offset
@@ -258,10 +306,10 @@ export class ModalFgenPage {
         for (; i < (this.numPoints / 2); i++) {
             waveform.y[i] = parseFloat(this.fgenComponent.offset) - parseFloat(this.fgenComponent.amplitude);
         }
-        for (let j = 0; i < this.numPoints; i++, j++) {
+        for (let j = 0; i < this.numPoints; i++ , j++) {
             waveform.y[i] = waveform.y[j];
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
-        this.chart.drawWaveform(0, waveform, true); 
+        this.chart.drawWaveform(0, waveform, true);
     }
 }
