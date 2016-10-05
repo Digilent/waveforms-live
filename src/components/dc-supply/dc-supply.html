@@ -8,19 +8,19 @@
     </div>
     <ion-row class="set-background-color dc-content" [hidden]="contentHidden">
         <ion-col *ngFor="let supply of voltageSupplies; let i = index">
-            <!--<center>Ch {{i + 1}}</center>-->
-            <div text-center><div style="inline-blockify">Ch {{i + 1}}</div></div>
+            <div text-center><div class="inline-blockify">Ch {{i + 1}}</div></div>
             <div class="flex-container">
                 <div class="flex-left">
                     <ion-item class="set-background-color actual">
                         <ion-label stacked>Value</ion-label>
+                        <button [disabled]="!dcOn[i]" ion-button item-left (click)="refreshDc(i)" class="icon-only-button-side refresh-button disable-hover"><ion-icon name="refresh"></ion-icon></button>
                         <ion-input [disabled]="true" [value]="readVoltages[i]" class="power-controls" style="text-align:right;"></ion-input>
                     </ion-item>
                 </div>
                 <div class="flex-right">
                     <ion-item class="set-background-color">
-                        <ion-label stacked>Volts</ion-label>
-                        <ion-input type="number" [disabled]="dcPower" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)" [ngClass]="{wrongPower: !correctVoltages[i]}"
+                        <ion-label stacked>Voltage (V)</ion-label>
+                        <ion-input (focusout)="inputLeave(i)" type="number" [disabled]="dcPower" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)" [ngClass]="{wrongPower: !correctVoltages[i]}"
                             class="power-controls"></ion-input>
                     </ion-item>
                 </div>
@@ -30,7 +30,6 @@
                 <ion-input type="number" [disabled]="dcPower" [(ngModel)]="currents[i]" (ngModelChange)="validateCurrent(i)" [ngClass]="{wrongCurrent: !correctCurrents[i]}"
                     class="power-controls"></ion-input>
             </ion-item>
-            <!--<center>-->
             <div text-center>
                 <div class="power-button-container">
                     <div class="dummy-power-underline" [ngClass]="{'power-underline': dcOn[i]}">
@@ -41,7 +40,6 @@
                 </div>
                 <div class="center">{{voltageLimitFormats[i]}}</div>
             </div>
-            <!--</center>-->
         </ion-col>
     </ion-row>
 </div>

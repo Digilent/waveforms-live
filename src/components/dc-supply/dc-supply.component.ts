@@ -72,8 +72,8 @@ export class DcSupplyComponent {
             this.voltages = [];
             for (let i = 0; i < this.activeDevice.instruments.dc.numChans; i++) {
                 channelNumArray[i] = i + 1;
-                this.voltages[i] = "3.30";
-                this.currents[i] = "1.00";
+                this.voltages[i] = "3.300";
+                this.currents[i] = "1.000";
                 this.readVoltages[i] = "-.--- V";
                 this.formatExtremes(i);
                 this.dcOn[i] = false;
@@ -159,8 +159,17 @@ export class DcSupplyComponent {
             }, 500);
         }
         else {
-            this.readVoltages[channel] = '-.---';
+            this.readVoltages[channel] = '-.--- V';
+            this.setVoltages([channel + 1], [0]);
         }
+    }
+
+    refreshDc(channel: number) {
+        this.getVoltages([channel + 1]);
+    }
+
+    inputLeave(channel: number) {
+        this.voltages[channel] = parseFloat(this.voltages[channel]).toFixed(3);
     }
 
     hideBar() {

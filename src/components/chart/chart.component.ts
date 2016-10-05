@@ -91,6 +91,7 @@ export class SilverNeedleChart {
 
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
+
         this.options = {
             chart: {
                 type: 'line',
@@ -326,6 +327,15 @@ export class SilverNeedleChart {
         };
     }
 
+    scrollEvent(event) {
+        if (event.deltaY > 0) {
+            this.incrementTPD(0);
+        }
+        else if (event.deltaY < 0) {
+            this.decrementTPD(0);
+        }
+    }
+
     loadDeviceSpecificValues(deviceComponent: DeviceComponent) {
         let resolution = (deviceComponent.instruments.osc.chans[0].adcVpp / 1000) / Math.pow(2, deviceComponent.instruments.osc.chans[0].effectiveBits);
         let i = 0;
@@ -355,6 +365,7 @@ export class SilverNeedleChart {
         else if (this.timelineView === false) {
             this.chartLoad.emit(this.chart);
         }
+        document.getElementById('chart-component-container').addEventListener("wheel", this.scrollEvent.bind(this));
 
     }
 

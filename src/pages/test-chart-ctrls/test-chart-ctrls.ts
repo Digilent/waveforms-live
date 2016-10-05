@@ -139,7 +139,7 @@ export class TestChartCtrlsPage {
                         [
                             {
                                 osc: [1],
-                                la: [1]
+                                //la: [1]
                             }
                         ]
                     ],
@@ -156,7 +156,7 @@ export class TestChartCtrlsPage {
             () => {
                 //console.log('single multi done');
                 this.readOscope();
-                this.readLa();
+                //this.readLa();
             }
         );
 
@@ -227,7 +227,7 @@ export class TestChartCtrlsPage {
     readOscope() {
         this.activeDevice.instruments.osc.read([1]).subscribe(
             (data) => {
-                this.chart1.clearExtraSeries([0, 1]);
+                this.chart1.clearExtraSeries([0]);
                 if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1]);
                     for (let i = 0; i < this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex].length; i++) {

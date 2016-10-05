@@ -11,7 +11,7 @@ function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({width: 800, height: 600});
 
-    var url = 'http://10.0.0.229:8100/';
+    var url = 'http://192.168.1.223:8100/';
     var Args = process.argv.slice(2);
     Args.forEach(function (val) {
         if (val === "dist") {
