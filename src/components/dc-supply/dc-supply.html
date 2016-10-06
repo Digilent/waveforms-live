@@ -20,7 +20,7 @@
                 <div class="flex-right">
                     <ion-item class="set-background-color">
                         <ion-label stacked>Voltage (V)</ion-label>
-                        <ion-input (focusout)="inputLeave(i)" type="number" [disabled]="dcPower" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)" [ngClass]="{wrongPower: !correctVoltages[i]}"
+                        <ion-input (focusout)="inputLeave(i)" type="number" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)" [ngClass]="{wrongPower: !correctVoltages[i]}"
                             class="power-controls"></ion-input>
                     </ion-item>
                 </div>

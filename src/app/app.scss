@@ -1,0 +1,27 @@
+.skinned-menu .menu-inner ion-header ion-toolbar div, .skinned-menu .menu-inner ion-content, .skinned-menu .menu-inner button
+{
+    background-color: #535353;
+    color: white;
+}
+
+.skinned-menu .menu-inner ion-header
+{
+    border-bottom: solid black 1px;
+    border-top: solid #686868 1px;
+}
+
+.skinned-menu .menu-inner button .item-inner
+{
+    border-top: solid #686868 1px;
+    border-bottom: solid black 1px;
+}
+
+.skinned-menu .menu-inner .item-block:first-child
+{
+    border: none;
+}
+
+.skinned-menu .menu-inner .item-block:last-child
+{
+    border-bottom: solid black 1px;
+}

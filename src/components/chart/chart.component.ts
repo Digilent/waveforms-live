@@ -1878,7 +1878,12 @@ export class SilverNeedleChart {
             unit = ' nV';
         }
 
-        return (value * Math.pow(1000, i)).toFixed(0) + unit;
+        let val = (value * Math.pow(1000, i)).toString();
+        let wholeLength = val.indexOf('.');
+        if (wholeLength === -1) {wholeLength = 4}
+        let fixedNum = 4 - wholeLength;
+
+        return (parseFloat(val)).toFixed(fixedNum) + unit;
         
     }
 
@@ -1905,7 +1910,12 @@ export class SilverNeedleChart {
             unit = ' nV';
         }
 
-        return (value * Math.pow(1000, i)).toFixed(0) + unit;
+        let val = (value * Math.pow(1000, i)).toString();
+        let wholeLength = val.indexOf('.');
+        if (wholeLength === -1) {wholeLength = 4}
+        let fixedNum = 4 - wholeLength;
+
+        return (parseFloat(val)).toFixed(fixedNum) + unit;
     }
     
     getLocalMax(seriesNum: number, maxIndex: number, minIndex: number) {
@@ -1947,7 +1957,12 @@ export class SilverNeedleChart {
         let min = this.getMin(seriesNum, maxIndex, minIndex);
         let amplitude = (parseFloat(max) - parseFloat(min)) / 2;
         let unit = max.substr(max.indexOf(' '));
-        return (amplitude).toFixed(0) + unit;
+
+        let wholeLength = amplitude.toString().indexOf('.');
+        if (wholeLength === -1) {wholeLength = 4}
+        let fixedNum = 4 - wholeLength;
+
+        return (amplitude).toFixed(fixedNum) + unit;
     }
 
     getMean(seriesNum: number, maxIndex: number, minIndex: number) {
@@ -1976,7 +1991,13 @@ export class SilverNeedleChart {
             unit = ' nV';
         }
 
-        return (value * Math.pow(1000, i)).toFixed(0) + unit;
+        let val = (value * Math.pow(1000, i)).toString();
+        let wholeLength = val.indexOf('.');
+        console.log(val, wholeLength);
+        if (wholeLength === -1) {wholeLength = 4}
+        let fixedNum = 4 - wholeLength;
+
+        return (parseFloat(val)).toFixed(fixedNum) + unit;
     }
 
     getRMS(seriesNum: number, maxIndex: number, minIndex: number) {
@@ -2004,8 +2025,12 @@ export class SilverNeedleChart {
         else if (i == 3) {
             unit = ' nV';
         }
-        let scaledValue = (value * Math.pow(1000, i)).toFixed(0) + unit;
-        return scaledValue;
+        let val = (value * Math.pow(1000, i)).toString();
+        let wholeLength = val.indexOf('.');
+        if (wholeLength === -1) {wholeLength = 4}
+        let fixedNum = 4 - wholeLength;
+
+        return (parseFloat(val)).toFixed(fixedNum) + unit;
     }
 
     getPeakToPeak(seriesNum: number, maxIndex: number, minIndex: number) {
@@ -2013,7 +2038,12 @@ export class SilverNeedleChart {
         let min = this.getMin(seriesNum, maxIndex, minIndex);
         let unit = max.substr(max.indexOf(' '));
         let p2p = Math.abs(parseFloat(max)) + Math.abs(parseFloat(min));
-        return (p2p).toFixed(0) + unit;
+
+        let wholeLength = p2p.toString().indexOf('.');
+        if (wholeLength === -1) {wholeLength = 4}
+        let fixedNum = 4 - wholeLength;
+
+        return (p2p).toFixed(fixedNum) + unit;
     }
 
     getFrequency(seriesNum: number, maxIndex: number, minIndex: number) {
@@ -2052,9 +2082,12 @@ export class SilverNeedleChart {
             unit = ' GHz';
         }
 
-        let xFreq = ((1 / (sum / (points.length - 1))) / Math.pow(1000, i)).toFixed(0) + unit;
+        let val = ((1 / (sum / (points.length - 1))) / Math.pow(1000, i)).toString();
+        let wholeLength = val.indexOf('.');
+        if (wholeLength === -1) {wholeLength = 4}
+        let fixedNum = 4 - wholeLength;
 
-        return xFreq;
+        return (parseFloat(val)).toFixed(fixedNum) + unit;
     }
 
     getPeriod(seriesNum: number, maxIndex: number, minIndex: number) {
@@ -2095,9 +2128,12 @@ export class SilverNeedleChart {
             unit = ' ps';
         }
 
-        let xDelta = ((sum / (points.length - 1)) * Math.pow(1000, i)).toFixed(0) + unit;
+        let val = ((sum / (points.length - 1)) * Math.pow(1000, i)).toString();
+        let wholeLength = val.indexOf('.');
+        if (wholeLength === -1) {wholeLength = 4}
+        let fixedNum = 4 - wholeLength;
 
-        return xDelta;
+        return (parseFloat(val)).toFixed(fixedNum) + unit;
     }
 
     calculateDataFromWindow() {

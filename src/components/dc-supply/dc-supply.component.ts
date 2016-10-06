@@ -170,6 +170,12 @@ export class DcSupplyComponent {
 
     inputLeave(channel: number) {
         this.voltages[channel] = parseFloat(this.voltages[channel]).toFixed(3);
+        if (this.dcOn[channel]) {
+            this.setVoltages([channel + 1], [parseFloat(this.voltages[channel])]);
+            setTimeout(() => {
+                this.getVoltages([channel + 1]);
+            }, 500);
+        }
     }
 
     hideBar() {

@@ -1,15 +1,14 @@
 <div class="digi-container">
     <div class="title" (click)="emitEvent()">
         <div class="align-center-container header-bar">
-            <div style="width:25px;height:25px;"></div>
+            <button ion-button class="align-left disable-hover" (click)="readAllIo($event)"><ion-icon name="refresh"></ion-icon></button>
             <div class="title-container">Digital I/O</div>
             <button ion-button class="align-right disable-hover" (click)="doCheckbox($event)"><ion-icon name="settings"></ion-icon></button>
         </div>
     </div>
     <ion-row wrap [hidden]="contentHidden">
-        <ion-col *ngFor="let channel of gpioChans, let i = index;" class="digi-col">
+        <ion-col *ngFor="let channel of gpioChans, let i = index;" class="digi-col" text-center>
             <div class="channel-container">
-                <!--<center><div>{{i + 1}}</div></center>-->
                 <div>{{i + 1}}</div>
                 <div class="dummy-border" [ngClass]="{'button-output': gpioDirections[i]}"><button (click)="toggleChannel(i)" class="channel-button" [disabled]="!gpioDirections[i]" [ngClass]="{'button-on': gpioVals[i]}"></button></div>
             </div>

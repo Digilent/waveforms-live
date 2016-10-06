@@ -1,19 +1,19 @@
-import {Component, Output, EventEmitter} from '@angular/core';
-import {PopoverController, ToastController, NavController, ModalController} from 'ionic-angular';
+import { Component, Output, EventEmitter } from '@angular/core';
+import { PopoverController, ToastController, NavController, ModalController } from 'ionic-angular';
 
 //Pages
-import {TestChartCtrlsPage} from '../../../../pages/test-chart-ctrls/test-chart-ctrls';
-import {DeviceConfigureModal} from '../../../../pages/device-configure-modal/device-configure-modal';
+import { TestChartCtrlsPage } from '../../../../pages/test-chart-ctrls/test-chart-ctrls';
+import { DeviceConfigureModal } from '../../../../pages/device-configure-modal/device-configure-modal';
 
 //Components
-import {GenPopover} from '../../../../components/gen-popover/gen-popover.component';
+import { GenPopover } from '../../../../components/gen-popover/gen-popover.component';
 
 //Services
-import {DeviceManagerService} from '../../../../services/device/device-manager.service';
-import {StorageService} from '../../../../services/storage/storage.service';
+import { DeviceManagerService } from '../../../../services/device/device-manager.service';
+import { StorageService } from '../../../../services/storage/storage.service';
 
 @Component({
-  templateUrl: 'device-manager-tab1.html'
+    templateUrl: 'device-manager-tab1.html'
 })
 export class Tab1 {
     @Output() navToInstrumentPage: EventEmitter<any> = new EventEmitter;
@@ -26,16 +26,16 @@ export class Tab1 {
     public storage: StorageService;
     public showDevMenu: boolean = false;
     public connectingToDevice: boolean = false;
+    public selectedSimulatedDevice: string = 'Select a Device';
 
     public devices = [];
 
-    constructor(_popoverCtrl: PopoverController, 
-                _deviceManagerService: DeviceManagerService,
-                _toastCtrl: ToastController,
-                _storage: StorageService,
-                _navCtrl: NavController,
-                _modalCtrl: ModalController) 
-    {
+    constructor(_popoverCtrl: PopoverController,
+        _deviceManagerService: DeviceManagerService,
+        _toastCtrl: ToastController,
+        _storage: StorageService,
+        _navCtrl: NavController,
+        _modalCtrl: ModalController) {
         console.log('tab1 constructor');
         this.popoverCtrl = _popoverCtrl;
         this.toastCtrl = _toastCtrl;
@@ -57,13 +57,13 @@ export class Tab1 {
 
     openPopover(event, arrayIndex: number) {
         let genPopover = this.popoverCtrl.create(GenPopover, {
-                dataArray: ['connect', 'remove', 'configure']
-            });
+            dataArray: ['connect', 'remove', 'configure']
+        });
         genPopover.present({
             ev: event
         });
         genPopover.onDidDismiss((data) => {
-            if (data === null) {return;}
+            if (data === null) { return; }
             if (data.option === 'remove') {
                 this.devices.splice(arrayIndex, 1);
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
@@ -153,65 +153,69 @@ export class Tab1 {
         );
     }
 
+    openSimDevice() {
+        if (this.selectedSimulatedDevice === 'OpenScope-MZ') {
+            if (this.checkIfMatchingLocal(this.selectedSimulatedDevice)) {
+                let toast = this.toastCtrl.create({
+                    message: 'Device is Added Already',
+                    showCloseButton: true,
+                    position: 'bottom'
+                });
+                toast.present();
+                return;
+            }
+            else {
+                this.connectingToDevice = true;
+                this.deviceManagerService.connectLocal(this.selectedSimulatedDevice).subscribe(
+                    (success) => {
+                        this.connectingToDevice = false;
+                        this.devices.unshift(
+                            {
+                                deviceDescriptor: success.device[0],
+                                ipAddress: 'local',
+                                hostname: 'Simulated ' + this.selectedSimulatedDevice
+                            }
+                        );
+                        this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                        this.showDevMenu = false;
+                        let toast = this.toastCtrl.create({
+                            message: 'Device Added Successfully',
+                            duration: 5000,
+                            position: 'bottom'
+                        });
+                        toast.present();
+                    },
+                    (err) => {
+                        this.connectingToDevice = false;
+                        let toast = this.toastCtrl.create({
+                            message: 'Error: No Response Received',
+                            showCloseButton: true,
+                            position: 'bottom'
+                        });
+                        toast.present();
+                    },
+                    () => { }
+                );
+            }
+        }
+    }
+
     openSimDevicePopover(event) {
         let genPopover = this.popoverCtrl.create(GenPopover, {
-                dataArray: ['OpenScope-MZ']
-            });
+            dataArray: ['OpenScope-MZ']
+        });
         genPopover.present({
             ev: event
         });
         genPopover.onDidDismiss(data => {
-            if (data === null) {return;}
-            if (data.option === 'OpenScope-MZ') {
-                if (this.checkIfMatchingLocal(data.option)) {
-                    let toast = this.toastCtrl.create({
-                        message: 'Device is Added Already',
-                        showCloseButton: true,
-                        position: 'bottom'
-                    });
-                    toast.present();
-                    return;
-                }
-                else {
-                    this.connectingToDevice = true;
-                    this.deviceManagerService.connectLocal(data.option).subscribe(
-                        (success) => {
-                            this.connectingToDevice = false;
-                            this.devices.unshift(
-                                {
-                                    deviceDescriptor: success.device[0],
-                                    ipAddress: 'local',
-                                    hostname: 'Simulated ' + data.option
-                                }
-                            );
-                            this.storage.saveData('savedDevices', JSON.stringify(this.devices));
-                            this.showDevMenu = false;
-                            let toast = this.toastCtrl.create({
-                                message: 'Device Added Successfully',
-                                duration: 5000,
-                                position: 'bottom'
-                            });
-                            toast.present();
-                        },
-                        (err) => {
-                            this.connectingToDevice = false;
-                            let toast = this.toastCtrl.create({
-                                message: 'Error: No Response Received',
-                                showCloseButton: true,
-                                position: 'bottom'
-                            });
-                            toast.present();
-                        },
-                        () => { }
-                    );
-                }
-            }
+            if (data === null) { return; }
+            this.selectedSimulatedDevice = data.option;
         });
     }
 
     connectToDevice(deviceIndex: number) {
         if (this.devices[deviceIndex].ipAddress === 'local') {
-            this.deviceManagerService.addDeviceFromDescriptor('local', {device: [this.devices[deviceIndex].deviceDescriptor]});
+            this.deviceManagerService.addDeviceFromDescriptor('local', { device: [this.devices[deviceIndex].deviceDescriptor] });
             this.navCtrl.parent.parent.setRoot(TestChartCtrlsPage);
             return;
         }
@@ -233,7 +237,7 @@ export class Tab1 {
                 });
                 toast.present();
             },
-            () => {}
+            () => { }
         );
     }
 }

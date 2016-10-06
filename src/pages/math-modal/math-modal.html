@@ -9,9 +9,8 @@
         </div>
         <ion-col class="data-container">
             <ion-row *ngFor="let row of buttonNames, let i = index;">
-                <ion-col *ngFor="let button of row, let j = index;">
-                    <div><button ion-button (click)="exportMathInfoToChart()" class="button-effects disable-hover">{{button}}</button></div>
-                    <!--<center><button (click)="exportMathInfoToChart()" class="button-effects disable-hover">{{button}}</button></center>-->
+                <ion-col *ngFor="let button of row, let j = index;" text-center>
+                    <div><button ion-button (click)="exportMathInfoToChart(button)" class="button-effects disable-hover">{{button}}</button></div>
                     <div class="center">{{getMetrics(button)}}</div>
                 </ion-col>
             </ion-row>

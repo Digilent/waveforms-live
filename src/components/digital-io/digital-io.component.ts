@@ -58,6 +58,27 @@ export class DigitalIoComponent {
         );
         
     }
+
+    readAllIo(event) {
+        event.stopPropagation();
+        let inputChans = [];
+        for (let i = 0; i < this.gpioChans.length; i++) {
+            if (this.gpioDirections[i] !== true) {
+                inputChans.push(i + 1);
+            }
+        }
+        this.activeDev.instruments.gpio.getValues(inputChans).subscribe(
+            (data) => {
+                for (let channel in data.gpio) {
+                    this.gpioVals[parseInt(channel) - 1] = data.gpio[channel][0].value === 1 ? true : false;
+                }
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {}
+        );
+    }
     
     //Open checkbox alert
     doCheckbox(event) {

@@ -16,10 +16,11 @@
     margin-bottom: 0.1rem;
     margin-left: 0.5rem;
     height: 25px;
-    font-size: 8px;
-    width: 25px;
-    background-color: black;
-    border-radius: 2px;
+    font-size: 1.1rem;
+    max-width: 25px;
+    background-color: #535353;
+    border: solid black 1px;
+    border-radius: 0px;
 }
 
 .align-center-container .align-right
@@ -32,11 +33,18 @@
     font-size: 8px;
     background-color: #535353;
     border: solid black 1px;
+    border-radius: 0px;
+}
+
+.align-center-container .align-right:hover
+{
+    border: solid white 1px;
 }
 
 .font-size-button
 {
-    font-size: 8px;
+    //Instead set font size in button container rather than icon explicity.
+    //font-size: 8px;
 }
 
 .align-center-container .vertical-align
@@ -57,6 +65,12 @@
     height: 25px;
     background-color: #535353;
     border: solid black 1px;
+    border-radius: 0px;
+}
+
+.icon-only-button-side:hover
+{
+    border: solid white 1px;
 }
 
 .text-button-side
@@ -71,6 +85,12 @@
     min-width: 75px;
     background-color: #535353;
     border: solid black 1px;
+    border-radius: 0px;
+}
+
+.text-button-side:hover
+{
+    border: solid white 1px;
 }
 
 .header-bar-side
@@ -104,4 +124,36 @@
 {
     background-color: #535353;
     border: solid black 1px;
+}
+
+/* Digital I/O Alert*/
+ion-alert .alert-wrapper
+{
+    background-color: #535353 !important;
+    color: white;
+}
+
+ion-alert .alert-wrapper .alert-checkbox-group
+{
+    color: white;
+    .alert-checkbox-icon
+    {
+        border: solid black 1px;
+        background-color: #535353;
+        border-radius: 0px;
+        .alert-checkbox-inner
+        {
+            left: 4px;
+        }
+    }
+
+    .alert-checkbox-label
+    {
+        color: white;
+    }
+}
+
+.alert-wrapper .alert-button-group button
+{
+    color: white;
 }

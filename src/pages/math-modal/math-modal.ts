@@ -24,8 +24,7 @@ export class MathModalPage {
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
     public mathChannels: string[];
-    public buttonNames: Array<string[]> = [['Frequency', 'Pos Pulse Width', 'Pos Duty Cycle'], ['Period', 'Neg Pulse Width', 'Neg Duty Cycle'], 
-        ['Rise Rate', 'Rise Time'], ['Amplitude', 'High', 'Low'], ['Peak to Peak', 'Maximum', 'Minimum'], ['Mean', 'RMS', 'Overshoot'], ['Cycle Mean', 'Cycle RMS', 'Undershoot']];
+    public buttonNames: Array<string[]> = [['Frequency', 'Period', 'Amplitude'], ['Peak to Peak', 'Maximum', 'Minimum'], ['Mean', 'RMS']];
     public chart: Chart;
     public selectedData: SelectedData = {
         instrument: 'osc',
@@ -157,8 +156,8 @@ export class MathModalPage {
 
     }
 
-    exportMathInfoToChart() {
-        this.chartComponent.addMathInfo('Maximum', this.selectedData.channel - 1, this.maxIndex, this.minIndex);
+    exportMathInfoToChart(info: string) {
+        this.chartComponent.addMathInfo(info, this.selectedData.channel - 1, this.maxIndex, this.minIndex);
     }
     
 }

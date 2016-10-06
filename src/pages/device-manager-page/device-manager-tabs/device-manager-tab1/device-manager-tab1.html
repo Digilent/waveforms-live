@@ -1,12 +1,3 @@
-<ion-header>
-    <ion-navbar>
-        <button ion-button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-        </button>
-        <ion-title>Saved Devices</ion-title>
-    </ion-navbar>
-</ion-header>
-
 <ion-content class="first-tab-container" padding>
     <div style="text-align: center">
         <img src="assets/img/OpenScope-logo-color-500.png">
@@ -20,11 +11,53 @@
                     </button>
                 </div>
                 <div [ngClass]="{fadein: showDevMenu}" class="fadeout">
-                    <ion-item class="dev-menu-item">
+                    <ion-card class="device-manager-card">
+                        <ion-item class="device-card-item">
+                            <ion-icon class="add-device-icon" item-left name="ios-wifi"></ion-icon>
+                            <ion-label class="add-device-label">
+                                <ion-item class="dev-menu-item">
+                                    <ion-label stacked>Hostname / IP</ion-label>
+                                    <ion-input [(ngModel)]="addDeviceIp"></ion-input>
+                                    <button ion-button class="connect-button" item-right (click)="attemptConnect(addDeviceIp)">Add</button>
+                                </ion-item>
+                            </ion-label>
+                        </ion-item>
+                    
+                    </ion-card>
+                    <ion-card class="device-manager-card">
+                        <ion-item class="device-card-item">
+                            <ion-icon class="add-device-icon" item-left name="ionitron"></ion-icon>
+                            <ion-label class="add-device-label">
+                                <ion-item class="dev-menu-item">
+                                    <div class="custom-ion-label">Simulated Device</div>
+                                    <button ion-button icon-right class="similated-device-button" (click)="openSimDevicePopover($event)">
+                                        {{selectedSimulatedDevice}}
+                                        <ion-icon name="arrow-dropdown"></ion-icon>
+                                    </button>
+                                    <button ion-button class="connect-button" item-right (click)="openSimDevice()">Add</button>
+                                </ion-item>
+                            </ion-label>
+                        </ion-item>
+                    
+                    </ion-card>
+                    <ion-card class="device-manager-card">
+                        <ion-item class="device-card-item">
+                            <ion-icon class="add-device-icon" item-left name="construct"></ion-icon>
+                            <ion-label class="add-device-label">
+                                <ion-item class="dev-menu-item">
+                                    <ion-label stacked>Bridge</ion-label>
+                                    <ion-input [(ngModel)]="addDeviceIp"></ion-input>
+                                    <button ion-button class="connect-button" item-right (click)="attemptConnect(addDeviceIp)">Add</button>
+                                </ion-item>
+                            </ion-label>
+                        </ion-item>
+                    
+                    </ion-card>
+                    <!--<ion-item class="dev-menu-item">
                         <ion-label stacked>Hostname / IP</ion-label>
                         <ion-input [(ngModel)]="addDeviceIp"></ion-input>
                         <button ion-button class="connect-button" item-right (click)="attemptConnect(addDeviceIp)">Connect</button>
-                    </ion-item>
+                    </ion-item>-->
                 </div>
                 <p class="connection-notice" *ngIf="connectingToDevice">Attempting to Connect to Device</p>
                 <ion-spinner class="color-spinner" *ngIf="connectingToDevice" name="crescent"></ion-spinner>

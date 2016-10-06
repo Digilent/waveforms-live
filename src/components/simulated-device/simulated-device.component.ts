@@ -8,6 +8,7 @@ import {SimulatedDcComponent} from './instruments/simulated-dc.component';
 import {SimulatedOscComponent} from './instruments/simulated-osc.component';
 import {SimulatedTriggerComponent} from './instruments/simulated-trigger.component';
 import {SimulatedLaComponent} from './instruments/simulated-la.component';
+import {SimulatedGpioComponent} from './instruments/simulated-gpio.component';
 
 //Services
 import {SimulatedDeviceService} from '../../services/simulated-device/simulated-device.service';
@@ -27,6 +28,7 @@ export class SimulatedDeviceComponent {
     public la: SimulatedLaComponent;
     public osc: SimulatedOscComponent;
     public trigger: SimulatedTriggerComponent;
+    public gpio: SimulatedGpioComponent;
     public simDevService: SimulatedDeviceService;
 
     constructor(enumeration) {
@@ -37,6 +39,7 @@ export class SimulatedDeviceComponent {
         this.osc = new SimulatedOscComponent(this.simDevService);
         this.trigger = new SimulatedTriggerComponent(this.simDevService);
         this.la = new SimulatedLaComponent(this.simDevService);
+        this.gpio = new SimulatedGpioComponent(this.simDevService);
     }
 
     send(command: any): Observable<any> {
@@ -117,6 +120,16 @@ export class SimulatedDeviceComponent {
                 return this.dc.setVoltage(params[0], commandObject.voltage);
             case 'dcgetVoltage':
                 return this.dc.getVoltage(params[0]);
+            
+            //---------- GPIO ----------        
+            case 'gpiosetValue':
+                return this.gpio.setValue(params[0], commandObject.value);
+            case 'gpiogetValue':
+                return this.gpio.getValue(params[0]);
+            case 'gpiosetDirection':
+                return this.gpio.setDirection(params[0], commandObject.value);
+            case 'gpiogetDirection':
+                return this.gpio.getDirection(params[0]);
 
             //-------- TRIGGER --------
             case 'triggersetParameters':
@@ -135,6 +148,7 @@ export class SimulatedDeviceComponent {
                 return this.la.setParameters(params[0], commandObject);
             case 'laread':
                 return this.la.read(params[0]);
+
             default:
                 return {
                     statusCode: 1,
