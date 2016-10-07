@@ -1,0 +1,9 @@
+<ion-content class="chart-modal-container">
+    <div class="functionality-wrapper">
+        <autoscale [chart]="chart"></autoscale>
+        <button ion-button icon-right class="text-button-side disable-hover" (click)="exportChart()">
+            Export
+            <ion-icon name="download"></ion-icon>
+        </button>
+    </div>
+</ion-content>

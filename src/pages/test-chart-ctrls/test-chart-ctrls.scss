@@ -11,7 +11,7 @@
 
 .chart-page-container .top-bar-container
 {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
     background-color: #535353;
 
     border-bottom: solid black 1px;
@@ -19,17 +19,26 @@
 
 .chart-page-container .timeline-chart-wrapper
 {
-    height: 6vh;
-    max-height: 70px;
-    min-height: 36px;
+    height: 10vh;
+    max-height: 52px;
+    min-height: 52px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .chart-page-container .top-bar-container .inner-ctrls
 {
-    text-align: right;
     padding-right: 2px;
     background-color: #535353;
     z-index: 5;
+    max-width: 165px;
+    padding-left: 5px;
+}
+
+.chart-page-container .top-bar-container .buffer-count-container
+{
+    max-width: 42px;
+    padding: 0 0 0 0;
 }
 
 //Center
@@ -109,10 +118,23 @@
     min-height: 21px;
 }
 
+.chart-page-container .move-left
+{
+    max-width: 50px;
+}
+
 .chart-page-container .move-left .open-menu-button
 {
-    background-color: #F8F8F8;
-    color: black;
+    background-color: #535353;
+    color: white;
+    border-radius: 0px;
+    vertical-align: middle;
+    margin: 0 0 0 0;
+}
+
+.chart-page-container .move-left .open-menu-button:hover
+{
+    background-color: #686868;
 }
 
 //Disables scroll for all pages

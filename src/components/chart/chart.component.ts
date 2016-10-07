@@ -9,6 +9,7 @@ import {WaveformComponent} from '../data-types/waveform';
 //Pages
 import {ModalCursorPage} from '../../pages/cursor-modal/cursor-modal';
 import {MathModalPage} from '../../pages/math-modal/math-modal';
+import {ChartModalPage} from '../../pages/chart-modal/chart-modal';
 
 //Interfaces
 import {Chart, ChartBounds, CursorPositions} from './chart.interface';
@@ -97,7 +98,8 @@ export class SilverNeedleChart {
                 type: 'line',
                 zoomType: '',
                 animation: false,
-                spacingTop: 20
+                spacingTop: 20,
+                backgroundColor: 'black'
             },
             title: {
                 text: ''
@@ -164,8 +166,12 @@ export class SilverNeedleChart {
             }],
             yAxis: [{
                 gridLineWidth: 1,
+                gridLineColor: '#666666',
                 offset: 0,
                 labels: {
+                    style: {
+                        color: '#666666'
+                    },
                     formatter: function() {
                         let vPerDiv = Math.abs(this.chart.yAxis[0].max - this.chart.yAxis[0].min) / 10;
                         let i = 0;
@@ -202,12 +208,19 @@ export class SilverNeedleChart {
                     return ticks;
                 },
                 title: {
-                    text: 'Series 1'
+                    text: 'Osc 1',
+                    style: {
+                        color: '#666666'
+                    },
                 }
             }, {
                 gridLineWidth: 1,
+                gridLineColor: '#666666',
                 offset: 0,
                 labels: {
+                    style: {
+                        color: '#666666'
+                    },
                     enabled: false,
                     formatter: function () {
                         let vPerDiv = Math.abs(this.chart.yAxis[1].max - this.chart.yAxis[1].min) / 10;
@@ -261,6 +274,9 @@ export class SilverNeedleChart {
             xAxis: {
                 minRange: 0.000000001,
                 labels: {
+                    style: {
+                        color: '#666666'
+                    },
                     formatter: function() {
                         let timePerDiv = Math.abs(this.chart.xAxis[0].max - this.chart.xAxis[0].min) / 10;
                         if (parseFloat(this.value) == 0) {
@@ -291,10 +307,13 @@ export class SilverNeedleChart {
                         return this.value + unit;
                     }
                 },
+                lineColor: '#666666',
                 startOnTick: true,
                 endOnTick: true,
-
+                tickColor: '#666666',
+                minorTickColor: '#666666',
                 gridLineWidth: 1,
+                gridLineColor: '#666666',
                 minorGridLineWidth: 0,
 
                 tickPositioner: function () {
@@ -366,6 +385,19 @@ export class SilverNeedleChart {
             this.chartLoad.emit(this.chart);
         }
         document.getElementById('chart-component-container').addEventListener("wheel", this.scrollEvent.bind(this));
+        this.chart.renderer.image('assets/img/settingsButton.png', 5, 5, 27, 25).attr({
+                id: ('settingsButton')
+            })
+            .css({
+                'cursor': 'pointer'
+            })
+            .add()
+            .on('click', (event) => {
+                let modal = this.modalCtrl.create(ChartModalPage, {
+                    chartComponent: this
+                });
+                modal.present();
+            });
 
     }
 
@@ -419,7 +451,7 @@ export class SilverNeedleChart {
                             enabled: true
                         },
                         title: {
-                            text: 'Series ' + (i + 1)
+                            text: 'Osc ' + (i + 1)
                         }
                     });
             }

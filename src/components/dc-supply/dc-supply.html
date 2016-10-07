@@ -11,11 +11,9 @@
             <div text-center><div class="inline-blockify">Ch {{i + 1}}</div></div>
             <div class="flex-container">
                 <div class="flex-left">
-                    <ion-item class="set-background-color actual">
                         <ion-label stacked>Value</ion-label>
                         <button [disabled]="!dcOn[i]" ion-button item-left (click)="refreshDc(i)" class="icon-only-button-side refresh-button disable-hover"><ion-icon name="refresh"></ion-icon></button>
-                        <ion-input [disabled]="true" [value]="readVoltages[i]" class="power-controls" style="text-align:right;"></ion-input>
-                    </ion-item>
+                        <input [disabled]="true" [value]="readVoltages[i]" class="power-controls custom-input" style="text-align:right;" />
                 </div>
                 <div class="flex-right">
                     <ion-item class="set-background-color">

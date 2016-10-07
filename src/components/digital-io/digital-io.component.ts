@@ -1,8 +1,9 @@
 import {Component, Output, EventEmitter, Input} from '@angular/core';
-import {AlertController} from 'ionic-angular';
+import {AlertController, PopoverController} from 'ionic-angular';
 
 //Components
 import {DeviceComponent} from '../device/device.component';
+import {DigitalIoPopover} from '../digital-io-popover/digital-io-popover.component';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
@@ -19,12 +20,13 @@ export class DigitalIoComponent {
     public activeDev: DeviceComponent;
     public gpioChans: number[] = [];
     public gpioVals: boolean[] = [];
-    //false = input, true = output
+    public popoverCtrl: PopoverController;
     public gpioDirections: boolean[] = [];
 
     
-    constructor(_alertCtrl: AlertController, _devManagerService: DeviceManagerService) {
+    constructor(_alertCtrl: AlertController, _devManagerService: DeviceManagerService, _popoverCtrl: PopoverController) {
         this.alertCtrl = _alertCtrl;
+        this.popoverCtrl = _popoverCtrl;
         this.deviceManagerService = _devManagerService;
         this.activeDev = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
         for (let i = 0; i < this.activeDev.instruments.gpio.numChans; i++) {
@@ -83,59 +85,11 @@ export class DigitalIoComponent {
     //Open checkbox alert
     doCheckbox(event) {
         event.stopPropagation();
-        let okFlag: boolean = false;   
-        let alert = this.alertCtrl.create();
-        alert.setTitle('Select Outputs');
-        
-        for (let i = 0; i < this.gpioChans.length; i++) {
-            if (this.gpioDirections[i] == true) {
-                alert.addInput({
-                    type: 'checkbox',
-                    label: 'Channel: ' + (i + 1),
-                    value: i.toString(),
-                    checked: true
-                });
-            }
-            else {
-                alert.addInput({
-                    type: 'checkbox',
-                    label: 'Channel: ' + (i + 1),
-                    value: i.toString(),
-                    checked: false
-                });
-            }
-            
-        }
-
-        alert.addButton({
-            text: 'Cancel',
-            handler: data => {
-               return true;
-            }
+        let popover = this.popoverCtrl.create(DigitalIoPopover, {
+            digitalComponent: this
         });
-        
-        alert.addButton({
-            text: 'Done',
-            handler: data => {
-                for (let i = 0, j = 0; i < this.gpioDirections.length; i++) {
-                    if (parseInt(data[j]) === i) {
-                        if (this.gpioDirections[i] === false) {
-                            this.gpioDirections[parseInt(data[j])] = true;
-                            this.gpioVals[parseInt(data[j])] = false;
-                        }
-                        j++;
-                    }
-                    else {
-                        if (this.gpioDirections[i] === true) {
-                            this.gpioVals[i] = false;
-                        }
-                        this.gpioDirections[i] = false;
-                    }
-                }
-                return true;
-            }
+        popover.present({
+            ev: event
         });
-
-        alert.present();
     }
 }

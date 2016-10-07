@@ -3,36 +3,34 @@
         <!-------------------------------- TOP BAR --------------------------------->
         <div class="top-bar-container">
             <ion-row>
-                <div class="move-left">
-                    <button ion-button menuToggle class="open-menu-button">
+                <ion-col class="move-left" center text-center>
+                    <button clear ion-button menuToggle class="open-menu-button">
                         <ion-icon name="menu"></ion-icon>
                     </button>
-                </div>
+                </ion-col>
 
-                <ion-col width-30>
+                <ion-col width-30 text-center center>
                     <div class="timeline-chart-wrapper">
                         <timeline-chart (timelineChartLoad)="saveTimelineChart($event)"></timeline-chart>
                     </div>
                 </ion-col>
-                    <div class="inner-ctrls">
-                        <timeline *ngIf="chartReady" [chart]="chart1"></timeline>
-                        <button ion-button icon-right class="text-button-side disable-hover" (click)="exportChart()">
-                            Export
-                            <ion-icon name="download"></ion-icon>
-                        </button>
-                        <button ion-button icon-right class="text-button-side disable-hover" (click)="singleClick()">
-                            Single
-                            <ion-icon name="play"></ion-icon>
-                        </button>
-                        <button ion-button icon-right class="text-button-side disable-hover" (click)="runClick()" *ngIf="!running">
-                            Run
-                            <ion-icon name="repeat"></ion-icon>
-                        </button>
-                        <button ion-button icon-right class="text-button-side disable-hover" (click)="stopClick()" *ngIf="running">
-                            Stop
-                            <ion-icon name="hand"></ion-icon>
-                        </button>
-                    </div>
+                <ion-col text-center center class="buffer-count-container">
+                    <div><timeline [chart]="chart1"></timeline></div>
+                </ion-col>
+                <ion-col class="inner-ctrls" text-right center>
+                    <button ion-button icon-right class="text-button-side disable-hover" (click)="singleClick()">
+                        Single
+                        <ion-icon name="play"></ion-icon>
+                    </button>
+                    <button ion-button icon-right class="text-button-side disable-hover" (click)="runClick()" *ngIf="!running">
+                        Run
+                        <ion-icon name="repeat"></ion-icon>
+                    </button>
+                    <button ion-button icon-right class="text-button-side disable-hover" (click)="stopClick()" *ngIf="running">
+                        Stop
+                        <ion-icon name="hand"></ion-icon>
+                    </button>
+                </ion-col>
             </ion-row>
         </div>
 
@@ -49,7 +47,6 @@
                         <ion-icon name="pulse"></ion-icon>
                     </button>
                 </div>
-                <autoscale [chart]="chart1"></autoscale>
                 <trigger></trigger>
                 <xaxis-controls [chart]="chart1"></xaxis-controls>
                 <yaxis-controls [chart]="chart1"></yaxis-controls>

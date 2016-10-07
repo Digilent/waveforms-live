@@ -20,7 +20,7 @@
 }
 .dc-container .refresh-button
 {
-    margin-top: 5px;
+    margin-top: -10px;
 }
 
 .dc-container .item-input.ng-valid.input-has-value:not(.input-has-focus) .item-inner 
@@ -117,7 +117,12 @@
 .dc-container .flex-container .flex-left
 {
     flex: 1 1;
+    text-align: right;
     //font-family: monospace;
+    ion-label
+    {
+        color: #999;
+    }
 }
 
 .dc-container .flex-container .item {
@@ -185,10 +190,15 @@
     padding-top: 5px;
 }
 
-.dc-container ion-input
+.dc-container .custom-input
 {
-    input 
-    {
-        width: 80px;
-    }
+    width: 60px;
+    margin-right: 8px;
+    margin-top: 8px;
+    background-color: #444444;
+    border: solid #444444 1px;
+    padding-right: 2px;
+    padding-top: 2px;
+    font-size: 16px;
 }
+    

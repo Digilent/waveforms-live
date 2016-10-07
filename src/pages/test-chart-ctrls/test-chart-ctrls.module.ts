@@ -18,22 +18,28 @@ import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
 import { SeriesPopover } from '../../components/series-popover/series-popover.component';
 import { TriggerPopover } from '../../components/trigger-popover/trigger-popover.component';
+import { DigitalIoPopover } from '../../components/digital-io-popover/digital-io-popover.component';
 import { ModalFgenPage } from '../../pages/fgen-modal/fgen-modal';
+import { ChartModalPage } from '../../pages/chart-modal/chart-modal';
 
 import { ChartModule } from 'angular2-highcharts';
-
+ 
 @NgModule({
     imports: [
         SharedModule,
         ChartModule,
         IonicModule.forRoot(TestChartCtrlsPage),
         IonicModule.forRoot(ModalCursorPage),
+        IonicModule.forRoot(ChartModalPage),
         IonicModule.forRoot(MathModalPage),
         IonicModule.forRoot(ModalFgenPage),
         IonicModule.forRoot(SeriesPopover),
-        IonicModule.forRoot(TriggerPopover)
+        IonicModule.forRoot(TriggerPopover),
+        IonicModule.forRoot(DigitalIoPopover)
     ],
     declarations: [
+        DigitalIoPopover,
+        ChartModalPage,
         TestChartCtrlsPage,
         ModalFgenPage,
         ModalCursorPage,

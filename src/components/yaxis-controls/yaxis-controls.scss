@@ -126,34 +126,3 @@
     border: solid black 1px;
 }
 
-/* Digital I/O Alert*/
-ion-alert .alert-wrapper
-{
-    background-color: #535353 !important;
-    color: white;
-}
-
-ion-alert .alert-wrapper .alert-checkbox-group
-{
-    color: white;
-    .alert-checkbox-icon
-    {
-        border: solid black 1px;
-        background-color: #535353;
-        border-radius: 0px;
-        .alert-checkbox-inner
-        {
-            left: 4px;
-        }
-    }
-
-    .alert-checkbox-label
-    {
-        color: white;
-    }
-}
-
-.alert-wrapper .alert-button-group button
-{
-    color: white;
-}

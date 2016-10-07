@@ -291,49 +291,6 @@ export class TestChartCtrlsPage {
         this.activeDevice.instruments.osc.stopStream();
     }
 
-    //Export series as csv with file name 'myData'
-    exportChart() {
-        this.chart1.exportCsv('myData');
-        /*this.activeDevice.multiCommand({
-            trigger: {
-                read: [[1]]
-            },
-            dc: {
-                getVoltages: [[1, 2]]
-            }
-        }).subscribe(
-            (data) => {
-                console.log('hey');
-                console.log(data);
-            },
-            (err) => {
-                console.log('there');
-            },
-            () => {
-                console.log('dude');
-                this.chart1.clearExtraSeries([0]);
-                if (this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1 < 0) {
-                    this.chart1.setCurrentBuffer(this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex]);
-                    for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex].length; i++) {
-                        console.log('starting draw');
-                        this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][i], true);
-                        console.log('finished draw');
-                    }
-                }
-                else {
-                    this.chart1.setCurrentBuffer(this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1]);
-                    for (let i = 0; i < this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1].length; i++) {
-                        let initial = performance.now();
-
-                        this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][i], true);
-                        let final = performance.now();
-                        console.log((final - initial));
-                    }
-                }
-            }
-        );*/
-    }
-
     //Enable cursors and timeline view
     initSettings() {
         setTimeout(() => {

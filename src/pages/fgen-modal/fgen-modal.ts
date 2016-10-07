@@ -36,17 +36,32 @@ export class ModalFgenPage {
     }
 
     fileChange(event) {
-        console.log(document.getElementById('file'));
         if (event.target.files.length === 0) { return }
-        console.log(event);
         let fileReader = new FileReader();
-        fileReader.onload = ((file) => {
-            let myFile: any = file;
-            console.log(myFile.target.result);
-            this.parseCsv(myFile.target.result);
-            alert('File Read as Text: ' + myFile.target.result);
-        });
-        fileReader.readAsText(event.target.files[0]);
+        let fileName = event.target.files[0].name;
+        let fileEnding = fileName.slice(fileName.indexOf('.') + 1);
+        if (fileEnding === 'csv') {
+            fileReader.onload = ((file) => {
+                let myFile: any = file;
+                this.parseCsv(myFile.target.result);
+            });
+            fileReader.readAsText(event.target.files[0]);
+        }
+        else if (fileEnding === 'osjb') {
+            fileReader.onload = ((file) => {
+                let myFile: any = file;
+                this.parseOsjb(myFile.target.result);
+            });
+            fileReader.readAsArrayBuffer(event.target.files[0]);
+        }
+        else {
+            alert('File Type Not Supported');
+        }
+        
+    }
+
+    parseOsjb(fileAsArraybuffer: ArrayBuffer) {
+        console.log('osjb not yet supported');
     }
 
     parseCsv(fileAsText: string) {

@@ -1,0 +1,13 @@
+<div class="digital-pop-container">
+    <div class="pop-header">Select Outputs</div>
+    <ion-list>
+        <ion-item class="channel-item">
+            <button class="digital-pop-button" (click)="setAll()" ion-button item-left>Set All</button>
+            <button class="digital-pop-button" (click)="setNone()" ion-button item-right>Set None</button>
+        </ion-item>
+        <ion-item class="channel-item" *ngFor="let channel of digitalComponent.gpioChans, let i = index;">
+            <span>Ch {{i + 1}}</span>
+            <button item-right (click)="setDirection(i)" class="channel-button" [ngClass]="{'button-on': digitalComponent.gpioDirections[i]}"></button>
+        </ion-item>
+    </ion-list>
+</div>
