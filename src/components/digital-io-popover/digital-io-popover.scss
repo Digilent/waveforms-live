@@ -22,10 +22,17 @@
 
 .digital-pop-container .pop-header
 {
-    font-size: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.digital-pop-container .pop-header-text
+{
     color: white;
+    flex: 1 0 auto;
     text-align: center;
-    padding: 5px 0px 5px 0px;
 }
 
 .digital-pop-container .channel-item
@@ -68,4 +75,18 @@
     color: white;
     border: solid black 1px;
     border-radius: 0px;
+    font-size: 8px;
+    height: 25px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.digital-pop-container .left
+{
+    flex: 0 0 50px;
+}
+
+.digital-pop-container .right
+{
+    flex: 0 0 50px;
 }

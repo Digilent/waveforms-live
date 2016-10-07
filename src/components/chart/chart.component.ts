@@ -90,6 +90,8 @@ export class SilverNeedleChart {
 
     public seriesAnchors: Array<any> = [];
 
+    public oscopeChansActive: boolean[] = [];
+
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
 
@@ -101,6 +103,7 @@ export class SilverNeedleChart {
                 spacingTop: 20,
                 backgroundColor: 'black'
             },
+            colors: ['#7cb5ec', '#fffe00', 'ff3b99', '00c864'],
             title: {
                 text: ''
             },
@@ -363,6 +366,11 @@ export class SilverNeedleChart {
         }
         this.voltsPerDivVals = this.generalVoltsPerDivVals.slice(i);
         this.voltsPerDivOpts = this.generalVoltsPerDivOpts.slice(i);
+
+        for (let i = 0; i < deviceComponent.instruments.osc.numChans; i++) {
+            //Set the first oscope to on
+            this.oscopeChansActive.push(i === 0);
+        }
     }
 
     ngOnDestroy() {
@@ -551,24 +559,26 @@ export class SilverNeedleChart {
             this.chart.series[seriesNum].setData(waveform.y, false, false, false);
         }
         else {
-            this.addYAxis(seriesNum);
+            //this.addYAxis(seriesNum);
             let options = {
                 data: waveform.y,
                 allowPointSelect: true,
                 yAxis: seriesNum
             };
             this.chart.addSeries(options, false, false);
+            console.log('series added');
             if (this.timelineView) {
                 let timelineOptions = {
                     data: waveform.y,
                 };
                 this.timelineChart.addSeries(timelineOptions, false, false);
+                console.log('added timeline series');
             }
         }
         this.chart.series[seriesNum].update({
             pointStart: waveform.t0,
             pointInterval: waveform.dt
-        });
+        }, false);
         
         //Update point interval in timeline as well to show where user view is in timeline
         this.chart.redraw(false);
@@ -594,7 +604,7 @@ export class SilverNeedleChart {
                     this.autoscaleAxis('x', 0);
                 }
                 let i = -1;
-                while((i = this.autoscaleYaxes.indexOf(true, i + 1)) >= 0 && this.chart.series[i] !== undefined) {
+                while ((i = this.autoscaleYaxes.indexOf(true, i + 1)) >= 0 && this.chart.series[i] !== undefined) {
                     this.autoscaleAxis('y', i)
                 }
             }
@@ -1448,7 +1458,11 @@ export class SilverNeedleChart {
         let max = this.base + (this.timeDivision * 5);
         if (this.currentBufferArray[0] !== undefined) {
             this.chart.xAxis[0].setExtremes(min, max, false, false);
-            this.drawWaveform(0, this.currentBufferArray[0], false, autoscale);
+            for (let i = 0; i < this.oscopeChansActive.length; i++) {
+                if (this.oscopeChansActive[i] === true) {
+                    this.drawWaveform(i, this.currentBufferArray[i], false, autoscale);
+                }
+            }
         }
         else {
             this.chart.xAxis[0].setExtremes(min, max, true, false);
@@ -1855,18 +1869,24 @@ export class SilverNeedleChart {
         this.setTimeSettings({
             timePerDiv: this.timeDivision,
             base: this.base
-        }, false); 
+        }, false);
     }
 
     toggleVisibility(seriesNum: number) {
+        this.oscopeChansActive[seriesNum] = !this.oscopeChansActive[seriesNum];
+        if (this.chart.series[seriesNum] === undefined) {
+            return;
+        }
         this.chart.series[seriesNum].setVisible(!this.chart.series[seriesNum].visible);
     }
 
     getSeriesVisibility(seriesNum: number) {
+        if (this.chart.series[seriesNum] === undefined) {return this.oscopeChansActive[seriesNum];}
         return this.chart.series[seriesNum].visible;
     }
 
     getSeriesColor(seriesNum: number) {
+        if (this.chart.series[seriesNum] === undefined) {return '#FFFE00'}
         return this.chart.series[seriesNum].color;
     }
 

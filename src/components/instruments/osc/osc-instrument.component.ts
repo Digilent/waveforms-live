@@ -171,16 +171,15 @@ export class OscInstrumentComponent extends InstrumentComponent {
                             seriesOffset: command.osc[channel][0].actualVOffset
                         });
                         bufferCount++;
-                        this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
-                        if (this.dataBufferFillSize < this.numDataBuffers) {
-                            this.dataBufferFillSize++;
-                            this.activeBuffer = this.dataBufferFillSize.toString();
-                        }
-                        else {
-                            this.activeBuffer = (this.numDataBuffers).toString();
-                        }
                     }
-
+                    this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
+                    if (this.dataBufferFillSize < this.numDataBuffers) {
+                        this.dataBufferFillSize++;
+                        this.activeBuffer = this.dataBufferFillSize.toString();
+                    }
+                    else {
+                        this.activeBuffer = (this.numDataBuffers).toString();
+                    }
                     observer.next(command);
                     //Handle device errors and warnings
                     observer.complete();

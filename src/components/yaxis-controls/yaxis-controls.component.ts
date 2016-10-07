@@ -59,9 +59,9 @@ export class YAxisComponent {
     }
 
     ngOnInit() {
-        for (let i = 0; i < this.chart.numSeries.length; i++) {
-            this.names.push('Series ' + (i + 1));
-            this.showSeriesSettings.push(true);
+        for (let i = 0; i < this.chart.oscopeChansActive.length; i++) {
+            this.names.push('Osc ' + (i + 1));
+            this.showSeriesSettings.push(this.chart.oscopeChansActive[i]);
         }
     }
 

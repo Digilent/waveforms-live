@@ -96,33 +96,21 @@ export class TestChartCtrlsPage {
 
     //Run osc single
     singleClick() {
-        /*let multipliers = [];
-        for (let i = 0; i < this.oscopeChans.length; i++) {
-            if (this.chart1.voltageMultipliers[i] === 'mV') {
-                multipliers[i] = 1;
-            }
-            else {
-                multipliers[i] = 1/1000;
+        let readArray = [[], [], [], [], []];
+        for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+            if (this.chart1.oscopeChansActive[i]) {
+                readArray[0].push(i + 1);
+                readArray[1].push(0);
+                readArray[2].push(1);
+                readArray[3].push(this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000);
+                readArray[4].push(this.activeDevice.instruments.osc.chans[i].bufferSizeMax);
+                //(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[])
             }
         }
-        this.activeDevice.instruments.osc.runSingle(this.oscopeChans, multipliers).subscribe(
-            (data) => {
-                //console.log(data);
-                this.chart1.clearExtraSeries([0, 1]);
-                this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][0]);
-                this.chart1.drawWaveform(1, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex][1]);
-            },
-            (err) => {
-                //console.log(err);
-            },
-            () => {
-                //console.log('binary finished in test chart ctrls');
-            }
-        ); */
         this.activeDevice.multiCommand(
             {
                 osc: {
-                    setParameters: [[1], [0], [1], [this.activeDevice.instruments.osc.chans[0].sampleFreqMax / 1000], [30000]]
+                    setParameters: [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4]]
                 },
                 trigger: {
                     setParameters: [
@@ -138,7 +126,7 @@ export class TestChartCtrlsPage {
                         ],
                         [
                             {
-                                osc: [1],
+                                osc: readArray[0],
                                 //la: [1]
                             }
                         ]
@@ -225,27 +213,36 @@ export class TestChartCtrlsPage {
     }
 
     readOscope() {
-        this.activeDevice.instruments.osc.read([1]).subscribe(
+        let readArray = [];
+        for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+            if (this.chart1.oscopeChansActive[i]) {
+                readArray.push(i + 1);
+            }
+        }
+        this.activeDevice.instruments.osc.read(readArray).subscribe(
             (data) => {
-                this.chart1.clearExtraSeries([0]);
+                let numSeries = [];
+                for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+                    numSeries.push(i);
+                }
+                this.chart1.clearExtraSeries(numSeries);
                 if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1]);
                     for (let i = 0; i < this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex].length; i++) {
                         console.log('starting draw');
-                        this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1][i], true);
+                        this.chart1.drawWaveform(i, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1][i], true);
                         console.log('finished draw');
-                        this.chart1.addSeriesAnchor(0);
+                        this.chart1.addSeriesAnchor(i);
                     }
                 }
                 else {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1]);
                     for (let i = 0; i < this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1].length; i++) {
                         let initial = performance.now();
-
-                        this.chart1.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1][i], true);
+                        this.chart1.drawWaveform(i, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1][i], true);
                         let final = performance.now();
                         console.log((final - initial));
-                        this.chart1.addSeriesAnchor(0);
+                        this.chart1.addSeriesAnchor(i);
                     }
                 }
 

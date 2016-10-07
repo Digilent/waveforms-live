@@ -1,16 +1,16 @@
-import {Component} from '@angular/core';
-import {ModalController, NavParams, ViewController, Platform} from 'ionic-angular';
+import { Component } from '@angular/core';
+import { ModalController, NavParams, ViewController, Platform } from 'ionic-angular';
 
 //Components
-import {TransportComponent} from '../../components/transport/transport.component';
-import {HttpTransportComponent} from '../../components/transport/http-transport.component';
-import {DropDownMenu} from '../../libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu.component';
+import { TransportComponent } from '../../components/transport/transport.component';
+import { HttpTransportComponent } from '../../components/transport/http-transport.component';
+import { DropDownMenu } from '../../libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu.component';
 
 //Services
-import {StorageService} from '../../services/storage/storage.service';
+import { StorageService } from '../../services/storage/storage.service';
 
 //Interfaces
-import {Chart} from '../../components/chart/chart.interface';
+import { Chart } from '../../components/chart/chart.interface';
 
 @Component({
     templateUrl: 'protocol-test-panel.html'
@@ -488,7 +488,18 @@ export class ProtocolTestPanel {
 
             //Parse Response            
             this.rawResponse = event.currentTarget.response;
-            this.responseBody = String.fromCharCode.apply(null, new Int8Array(this.rawResponse));
+            let byteArray = new Int8Array(this.rawResponse);
+            let stringBuffer = '';
+            let start = performance.now();
+            for (let i = 0; i < byteArray.length; i++) {
+                let char = '';
+                char = String.fromCharCode.apply(null, new Int8Array(this.rawResponse.slice(i, i + 1)));
+                stringBuffer += char;
+            }
+            let finish = performance.now();
+            console.log(finish - start);
+            this.responseBody = stringBuffer;
+            //this.responseBody = String.fromCharCode.apply(null, new Int8Array(this.rawResponse));
             this.formatResponse(this.selectedRepsonseBodyFormat);
         }.bind(this));
 
@@ -544,7 +555,7 @@ export class ProtocolTestPanel {
                     console.log('Custom Command Saved into LocalStorage');
                 }
             }
-            
+
         }
         catch (e) {
             console.log(e);
@@ -616,14 +627,9 @@ export class ProtocolTestPanel {
  * Chart Modal
  ****************************************/
 @Component({
-    /*template: `
-    <div class="chart-component-wrapper" style="background-color:silver;display:block;width:100%;height:600px;">
-        <chart [options]="options" (load)="chartLoad($event.context)"></chart>
-    </div>
-  `*/
     template: `
     <div class="chart-component-wrapper" style="background-color:silver;display:block;width:100%;height:600px;">
-        
+        <chart [options]="options" (load)="chartLoad($event.context)"></chart>
     </div>
   `
 })
@@ -750,7 +756,7 @@ export class ChartModal {
             offset += length;
             i++;
         }
-        
+
         this.chart.redraw(false);
     }
 

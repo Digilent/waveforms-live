@@ -21,8 +21,10 @@ export class TimelineChartComponent {
                 spacingBottom: 0,
                 spacingTop: 0,
                 spacingLeft: 0,
-                spacingRight: 0
+                spacingRight: 0,
+                backgroundColor: 'black'
             },
+            colors: ['#7cb5ec', '#fffe00', 'ff3b99', '00c864'],
             title: {
                 text: null
             },
