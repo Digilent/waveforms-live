@@ -129,7 +129,6 @@ export class OscInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (data) => {
                     //Handle device errors and warnings
-                    let bufferCount = 0;
                     let count = 0;
                     let i = 0;
                     let stringBuffer = '';
@@ -162,7 +161,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         let scaledArray = untypedArray.map((voltage) => {
                             return voltage / 1000;
                         });
-                        this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
+                        this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel) - 1] = new WaveformComponent({
                             dt: 1 / (command.osc[channel][0].actualSampleFreq / 1000),
                             t0: 0,
                             y: scaledArray,
@@ -170,7 +169,6 @@ export class OscInstrumentComponent extends InstrumentComponent {
                             triggerPosition: command.osc[channel][0].triggerDelta,
                             seriesOffset: command.osc[channel][0].actualVOffset
                         });
-                        bufferCount++;
                     }
                     this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
                     if (this.dataBufferFillSize < this.numDataBuffers) {

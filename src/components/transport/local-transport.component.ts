@@ -36,6 +36,7 @@ export class LocalTransportComponent extends TransportComponent {
     writeReadHelper(rootUri: string, endpoint: string, sendData: any, dataType: string): Observable<any> {
         let uri = rootUri + endpoint;
         let body = sendData;
+        console.log(body);
         return Observable.create((observer) => {
             this.simulatedDevice.send(body).subscribe(
                 (data) => {

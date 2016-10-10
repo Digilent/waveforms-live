@@ -461,7 +461,7 @@ export class SilverNeedleChart {
                         title: {
                             text: 'Osc ' + (i + 1)
                         }
-                    });
+                    }, true);
             }
             else {
                 this.chart.yAxis[i].update({
@@ -471,7 +471,7 @@ export class SilverNeedleChart {
                     title: {
                         text: null
                     } 
-                });
+                }, true);
             }
         }
     }
@@ -555,6 +555,7 @@ export class SilverNeedleChart {
         if (bounds.min < waveform.t0 || isNaN(bounds.min) || ignoreAutoscale) {bounds.min = waveform.t0}
         if (bounds.max > waveform.dt * waveform.y.length || isNaN(bounds.max) || ignoreAutoscale) {bounds.max = waveform.dt * waveform.y.length}
         waveform = this.decimateData(seriesNum, waveform, bounds);
+        console.log('series number' + seriesNum);
         if (seriesNum < this.chart.series.length) {
             this.chart.series[seriesNum].setData(waveform.y, false, false, false);
         }
@@ -589,7 +590,7 @@ export class SilverNeedleChart {
             this.timelineChart.series[seriesNum].update({
                 pointStart: timelineWaveform.t0,
                 pointInterval: timelineWaveform.dt
-            });
+            }, false);
             this.timelineChart.redraw(false);
             let extremesX = this.timelineChart.xAxis[0].getExtremes();
             let extremesY = this.timelineChart.yAxis[0].getExtremes();
@@ -614,7 +615,8 @@ export class SilverNeedleChart {
     //Remove extra series and axes from the chart
     clearExtraSeries(usedSeries: number[]) {
         this.numSeries = usedSeries;
-        if (this.chart.series.length <= usedSeries.length) {
+        console.log(usedSeries);
+        /*if (this.chart.series.length <= usedSeries.length) {
             return;
         }
         let lengthExists = this.chart.series.length;
@@ -625,7 +627,15 @@ export class SilverNeedleChart {
         if (this.timelineView) {
             for (let i = usedSeries.length; i < lengthExists; i++) {
                 this.timelineChart.series[i].remove(false);
-                this.timelineChart.yAxis[i].remove(false);
+            }
+        }*/
+
+        for (let i = 0; i < this.oscopeChansActive.length; i++) {
+            if (this.oscopeChansActive[i] === false && this.chart.series[i] !== undefined) {
+                this.chart.series[i].setData([], false);
+                if (this.timelineView && this.timelineChart.series[i] !== undefined) {
+                    this.timelineChart.series[i].setData([], false);
+                }
             }
         }
     }
@@ -678,7 +688,7 @@ export class SilverNeedleChart {
                 x: extremes.max,
                 y: this.chart.series[this.activeChannels[1] - 1].yData[this.chart.series[this.activeChannels[1] - 1].yData.length - 1]
             };
-            style = 'dash';
+            style = 'shortdash';
             color = this.chart.series[this.activeChannels[1] - 1].color;
         }
         this.chart.xAxis[0].addPlotLine({
@@ -1405,7 +1415,7 @@ export class SilverNeedleChart {
         let offset = parseFloat(seriesSettings.voltBase);
         let min = offset - (parseFloat(seriesSettings.voltsPerDiv) * 5);
         let max = offset + (parseFloat(seriesSettings.voltsPerDiv) * 5);
-        this.chart.yAxis[seriesSettings.seriesNum].setExtremes(min, max);
+        this.chart.yAxis[seriesSettings.seriesNum].setExtremes(min, max, true, false);
         this.updateCursorLabels();
     }
 
@@ -1562,6 +1572,9 @@ export class SilverNeedleChart {
         }
         else if (axis === 'y') {
             if (this.chart.yAxis[axisIndex].dataMin === null && this.chart.yAxis[axisIndex].dataMax === null) {
+                return;
+            }
+            if (this.oscopeChansActive[axisIndex] === false) {
                 return;
             }
             let voltsPerDiv = (this.chart.yAxis[axisIndex].dataMax - this.chart.yAxis[axisIndex].dataMin) / 10;
@@ -2257,6 +2270,7 @@ export class SilverNeedleChart {
             this.addSeriesAnchor(seriesNum);
             return;
         }
+        else if (this.oscopeChansActive[seriesNum] === false) {return;}
         let offset = this.currentBufferArray[seriesNum].seriesOffset / 1000;
         this.seriesAnchors[seriesNum].translate(this.chart.plotLeft - 12, this.chart.yAxis[seriesNum].toPixels(offset) - 6);
         this.yPositionPixels = this.chart.yAxis[seriesNum].toPixels(offset);

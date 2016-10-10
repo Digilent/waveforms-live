@@ -97,6 +97,8 @@ export class TestChartCtrlsPage {
     //Run osc single
     singleClick() {
         let readArray = [[], [], [], [], []];
+        console.log('activeoscopechans');
+        console.log(this.chart1.oscopeChansActive);
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
                 readArray[0].push(i + 1);
@@ -136,7 +138,8 @@ export class TestChartCtrlsPage {
             }
         ).subscribe(
             (data) => {
-                //console.log(data);
+                console.log('multicommand');
+                console.log(data);
             },
             (err) => {
                 //console.log(err);
@@ -223,7 +226,9 @@ export class TestChartCtrlsPage {
             (data) => {
                 let numSeries = [];
                 for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
-                    numSeries.push(i);
+                    if (this.chart1.oscopeChansActive[i]) {
+                        numSeries.push(i);
+                    }
                 }
                 this.chart1.clearExtraSeries(numSeries);
                 if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {

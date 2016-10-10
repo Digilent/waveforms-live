@@ -160,7 +160,7 @@ export class SimulatedDeviceComponent {
     processBinaryDataAndSend(commandObject: any) {
         let binaryDataContainer = {};
         let binaryOffset = 0;
-
+        console.log(commandObject);
             for (let instrument in this.trigger.targets) {
 
                 for (let channel in commandObject[instrument]) {
@@ -178,11 +178,13 @@ export class SimulatedDeviceComponent {
         let stringSection = binaryIndex + stringCommand + '\r\n';
         let buf = new ArrayBuffer(stringSection.length + binaryOffset);
         let bufView = new Uint8Array(buf);
+        console.log('hey');
         for (let i = 0; i < stringSection.length; i++) {
             bufView[i] = stringSection.charCodeAt(i);
         }
         let binaryInjectorIndex = 0;
         let prevLength = 0;
+        console.log('hey2');
         for (let channel in binaryDataContainer) {
             let unsignedConversion = new Uint8Array(binaryDataContainer[channel].buffer);
             binaryInjectorIndex += prevLength + unsignedConversion.length;

@@ -54,9 +54,11 @@ export class SimulatedOscComponent {
         console.log('read channel');
         let targets = this.simulatedDeviceService.getTriggerTargets();
         let returnInfo = {};
-            if (targets.osc[chan - 1] !== undefined) {
+        console.log(targets);
+            if (targets.osc.indexOf(parseInt(chan)) !== -1) {
                 let awgSettings: any = this.simulatedDeviceService.getAwgSettings(1);
                 let oscSettings = this.simulatedDeviceService.getOscParameters(chan);
+                console.log(chan, awgSettings, oscSettings);
                 if (awgSettings.signalType === 'sine') {
                     returnInfo = this.drawSine(awgSettings, oscSettings);
                 }
