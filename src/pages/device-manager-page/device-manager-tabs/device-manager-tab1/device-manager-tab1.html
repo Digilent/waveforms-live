@@ -61,10 +61,6 @@
                 </div>
                 <p class="connection-notice" *ngIf="connectingToDevice">Attempting to Connect to Device</p>
                 <ion-spinner class="color-spinner" *ngIf="connectingToDevice" name="crescent"></ion-spinner>
-                <button ion-button icon-right clear class="dev-menu-button" (click)="openSimDevicePopover($event)">
-                    Simulate Device
-                    <ion-icon name="arrow-dropdown"></ion-icon>
-                </button>
             </div>
         </div>
         <div>

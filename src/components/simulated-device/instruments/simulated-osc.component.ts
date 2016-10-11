@@ -40,7 +40,6 @@ export class SimulatedOscComponent {
         this.gains[chan] = commandObject.gain;
         this.sampleFreqs[chan] = commandObject.sampleFreq;
         this.bufferSizes[chan] = commandObject.bufferSize;
-        console.log('chan set param: ' + chan);
         this.simulatedDeviceService.setOscParameters(commandObject, chan);
         return {
             "command": "setParameters",
@@ -51,14 +50,11 @@ export class SimulatedOscComponent {
     }
 
     read(chan) {
-        console.log('read channel');
         let targets = this.simulatedDeviceService.getTriggerTargets();
         let returnInfo = {};
-        console.log(targets);
             if (targets.osc.indexOf(parseInt(chan)) !== -1) {
                 let awgSettings: any = this.simulatedDeviceService.getAwgSettings(1);
                 let oscSettings = this.simulatedDeviceService.getOscParameters(chan);
-                console.log(chan, awgSettings, oscSettings);
                 if (awgSettings.signalType === 'sine') {
                     returnInfo = this.drawSine(awgSettings, oscSettings);
                 }

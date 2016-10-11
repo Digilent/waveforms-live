@@ -55,8 +55,16 @@ export class TimelineComponent {
             buffCalc += 8;
         }
         console.log('loading buffer: ' + buffCalc);
-        for (let i = 0; i < this.activeDevice.instruments.osc.dataBuffer[buffCalc].length; i++) {
-            this.chart.drawWaveform(0, this.activeDevice.instruments.osc.dataBuffer[buffCalc][i], true);
+        this.chart.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[buffCalc]);
+        for (let i = 0; i < this.chart.oscopeChansActive.length; i++) {
+            if (this.activeDevice.instruments.osc.dataBuffer[buffCalc][i] !== undefined && this.activeDevice.instruments.osc.dataBuffer[buffCalc][i].y !== undefined) {
+                this.chart.drawWaveform(i, this.activeDevice.instruments.osc.dataBuffer[buffCalc][i], true, false);
+                this.chart.setActiveSeries(i + 1);
+            }
+            else {
+                this.chart.removeSeriesAnchor(i);
+                this.chart.chart.series[i].setData([], true);
+            }
         }
     }
     

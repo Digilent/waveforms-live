@@ -92,6 +92,8 @@ export class SilverNeedleChart {
 
     public oscopeChansActive: boolean[] = [];
 
+    public colorArray: string[] = ['#7cb5ec', '#fffe00', 'ff3b99', '00c864'];
+
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
 
@@ -103,7 +105,7 @@ export class SilverNeedleChart {
                 spacingTop: 20,
                 backgroundColor: 'black'
             },
-            colors: ['#7cb5ec', '#fffe00', 'ff3b99', '00c864'],
+            colors: this.colorArray,
             title: {
                 text: ''
             },
@@ -495,14 +497,6 @@ export class SilverNeedleChart {
     }
 
     decimateData(seriesNum: number, waveform: any, bounds: any) {
-        //bounds are x1 and x2 of chart view window. Timeline will be all data and chart will be data in view
-        //100 points per division
-        /*let timePerDiv = (bounds.max - bounds.min) / 10;
-        console.log(timePerDiv, bounds.max, bounds.min);*/
-        /*if (waveform.dt * 100 <= timePerDiv) {
-            console.log('returning');
-            return waveform.y;
-        }*/
         
         let numPointsInView = Math.round((bounds.max - bounds.min) / waveform.dt);
         if (numPointsInView <= 2000) {
@@ -555,7 +549,6 @@ export class SilverNeedleChart {
         if (bounds.min < waveform.t0 || isNaN(bounds.min) || ignoreAutoscale) {bounds.min = waveform.t0}
         if (bounds.max > waveform.dt * waveform.y.length || isNaN(bounds.max) || ignoreAutoscale) {bounds.max = waveform.dt * waveform.y.length}
         waveform = this.decimateData(seriesNum, waveform, bounds);
-        console.log('series number' + seriesNum);
         if (seriesNum < this.chart.series.length) {
             this.chart.series[seriesNum].setData(waveform.y, false, false, false);
         }
@@ -615,7 +608,6 @@ export class SilverNeedleChart {
     //Remove extra series and axes from the chart
     clearExtraSeries(usedSeries: number[]) {
         this.numSeries = usedSeries;
-        console.log(usedSeries);
         /*if (this.chart.series.length <= usedSeries.length) {
             return;
         }
@@ -635,6 +627,10 @@ export class SilverNeedleChart {
                 this.chart.series[i].setData([], false);
                 if (this.timelineView && this.timelineChart.series[i] !== undefined) {
                     this.timelineChart.series[i].setData([], false);
+                }
+                if (this.seriesAnchors[i] !== undefined) {
+                    this.seriesAnchors[i].destroy();
+                    this.seriesAnchors[i] = undefined;
                 }
             }
         }
@@ -1469,7 +1465,7 @@ export class SilverNeedleChart {
         if (this.currentBufferArray[0] !== undefined) {
             this.chart.xAxis[0].setExtremes(min, max, false, false);
             for (let i = 0; i < this.oscopeChansActive.length; i++) {
-                if (this.oscopeChansActive[i] === true) {
+                if (this.oscopeChansActive[i] === true && this.currentBufferArray[i].y !== undefined) {
                     this.drawWaveform(i, this.currentBufferArray[i], false, autoscale);
                 }
             }
@@ -1575,6 +1571,9 @@ export class SilverNeedleChart {
                 return;
             }
             if (this.oscopeChansActive[axisIndex] === false) {
+                return;
+            }
+            if (this.currentBufferArray[axisIndex].y === undefined) {
                 return;
             }
             let voltsPerDiv = (this.chart.yAxis[axisIndex].dataMax - this.chart.yAxis[axisIndex].dataMin) / 10;
@@ -1890,7 +1889,11 @@ export class SilverNeedleChart {
         if (this.chart.series[seriesNum] === undefined) {
             return;
         }
+        if (this.seriesAnchors[seriesNum] !== undefined && this.oscopeChansActive[seriesNum] === false) {
+            this.removeSeriesAnchor(seriesNum);
+        }
         this.chart.series[seriesNum].setVisible(!this.chart.series[seriesNum].visible);
+        this.updateSeriesAnchor(seriesNum);
     }
 
     getSeriesVisibility(seriesNum: number) {
@@ -1899,7 +1902,7 @@ export class SilverNeedleChart {
     }
 
     getSeriesColor(seriesNum: number) {
-        if (this.chart.series[seriesNum] === undefined) {return '#FFFE00'}
+        if (this.chart.series[seriesNum] === undefined) {return this.colorArray[seriesNum]}
         return this.chart.series[seriesNum].color;
     }
 
@@ -2058,7 +2061,6 @@ export class SilverNeedleChart {
 
         let val = (value * Math.pow(1000, i)).toString();
         let wholeLength = val.indexOf('.');
-        console.log(val, wholeLength);
         if (wholeLength === -1) {wholeLength = 4}
         let fixedNum = 4 - wholeLength;
 
@@ -2213,6 +2215,11 @@ export class SilverNeedleChart {
         };
     }
 
+    removeSeriesAnchor(seriesNum: number) {
+        this.seriesAnchors[seriesNum].destroy();
+        this.seriesAnchors[seriesNum] = undefined;
+    }
+
     addSeriesAnchor(seriesNum: number) {
         //convert offset to V from mV
         let offset = this.currentBufferArray[seriesNum].seriesOffset / 1000;
@@ -2266,6 +2273,7 @@ export class SilverNeedleChart {
     }
 
     updateSeriesAnchor(seriesNum: number) {
+        if (this.oscopeChansActive[seriesNum] === false || this.currentBufferArray[seriesNum] === undefined || this.currentBufferArray[seriesNum].y === undefined) {return;}
         if (this.seriesAnchors[seriesNum] === undefined) {
             this.addSeriesAnchor(seriesNum);
             return;
@@ -2275,5 +2283,4 @@ export class SilverNeedleChart {
         this.seriesAnchors[seriesNum].translate(this.chart.plotLeft - 12, this.chart.yAxis[seriesNum].toPixels(offset) - 6);
         this.yPositionPixels = this.chart.yAxis[seriesNum].toPixels(offset);
     }
-
 }
