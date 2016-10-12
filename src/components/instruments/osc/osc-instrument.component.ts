@@ -128,11 +128,12 @@ export class OscInstrumentComponent extends InstrumentComponent {
         return Observable.create((observer) => {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (data) => {
+                    console.log('response');
                     //Handle device errors and warnings
                     let count = 0;
                     let i = 0;
                     let stringBuffer = '';
-                    while (count < 2) {
+                    while (count < 2 && i < 2000) {
                         let char = '';
                         char += String.fromCharCode.apply(null, new Int8Array(data.slice(i, i + 1)));
                         if (char === '\n') {

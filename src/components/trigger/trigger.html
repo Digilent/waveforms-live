@@ -2,7 +2,7 @@
     <div (dblclick)="toggleTriggerShow()" [ngClass]="{'header-bar-side-closed': !showTriggerSettings}" class="align-center-container header-bar-side">
         <div style="width:25px;height:25px;"></div>
         <div>Trigger</div>
-        <button ion-button class="align-right disable-hover" (click)="openSeriesPopover($event)"><ion-icon name="settings"></ion-icon></button>
+        <button ion-button class="align-right disable-hover" (click)="openTriggerPopover($event)"><ion-icon name="settings"></ion-icon></button>
     </div>
     <div *ngIf="showTriggerSettings" class="controls-container">
         <ion-grid class="ion-grid-no-padding">

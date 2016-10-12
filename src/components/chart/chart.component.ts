@@ -1413,6 +1413,7 @@ export class SilverNeedleChart {
         let max = offset + (parseFloat(seriesSettings.voltsPerDiv) * 5);
         this.chart.yAxis[seriesSettings.seriesNum].setExtremes(min, max, true, false);
         this.updateCursorLabels();
+        this.updateSeriesAnchor(seriesSettings.seriesNum);
     }
 
     //Called when chart changes extremes or position. Moves cursor labels to new cursor position
@@ -2222,15 +2223,18 @@ export class SilverNeedleChart {
 
     addSeriesAnchor(seriesNum: number) {
         //convert offset to V from mV
+        console.log('adding series anchor');
         let offset = this.currentBufferArray[seriesNum].seriesOffset / 1000;
         let color = this.chart.series[seriesNum].color;
         let startingPos = this.chart.yAxis[seriesNum].toPixels(offset);
         let extremes = this.chart.yAxis[seriesNum].getExtremes();
         if (isNaN(startingPos) || offset > extremes.max || offset < extremes.min) {
+            console.log('is nan');
             return;
         } 
         this.yPositionPixels = startingPos;
         if (this.seriesAnchors[seriesNum] !== undefined) {
+            console.log('not undefined');
             this.seriesAnchors[this.activeSeries - 1].attr({
                 x: this.chart.plotLeft - 12,
                 y: startingPos - 6

@@ -50,7 +50,7 @@ export class TriggerComponent {
     }
     
     //Open series popover
-    openSeriesPopover(event) {
+    openTriggerPopover(event) {
         let popover = this.popoverCtrl.create(TriggerPopover, {
             triggerComponent: this,
         });

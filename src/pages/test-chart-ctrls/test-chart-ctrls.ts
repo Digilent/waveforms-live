@@ -256,7 +256,7 @@ export class TestChartCtrlsPage {
                 //this.chart1.drawWaveform(1, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][1]);
             },
             (err) => {
-                //console.log(err);
+                console.log(err);
             },
             () => {
                 //console.log('binary finished in test chart ctrls');
