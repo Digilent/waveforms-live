@@ -2,3 +2,20 @@
 {
     padding: 0px;
 }
+
+.trigger-container
+{
+    background-color: white;
+}
+
+.trigger-container .custom-image-button
+{
+    border: solid black 1px;
+    border-radius: 0px;
+    cursor: pointer;
+}
+
+.trigger-container .custom-image-button:hover
+{
+    border: solid white 1px;
+}

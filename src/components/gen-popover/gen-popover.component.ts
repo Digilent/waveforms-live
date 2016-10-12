@@ -21,7 +21,6 @@ export class GenPopover {
 
     //Close popover and send option string as a NavParam
     close(option: string) {
-        console.log('closing gen pop');
         this.viewCtrl.dismiss({
             option: option
         });

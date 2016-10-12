@@ -1,6 +1,6 @@
-<div *ngFor="let series of chart.oscopeChansActive; let i = index" (click)="setActiveSeries(i)" class="yaxis-component-wrapper">
+<div *ngFor="let series of chart.oscopeChansActive, let i = index;" (click)="setActiveSeries(i)" class="yaxis-component-wrapper">
     <div (dblclick)="toggleSeriesSettings(i)" [ngClass]="{'header-bar-side-closed': !showSeriesSettings[i]}" class="align-center-container header-bar-side">
-            <button ion-button [ngClass]="{seriesHidden: !chart.getSeriesVisibility(i)}" (click)="toggleVisibility(i)" class="align-left disable-hover" [style.background-color]="chart.getSeriesColor(i)"></button>
+            <button ion-button [ngClass]="{seriesHidden: !chart.getSeriesVisibility(i)}" (click)="toggleVisibility(i, $event)" class="align-left disable-hover" [style.background-color]="chart.getSeriesColor(i)"></button>
             <div class="vertical-align">{{names[i]}}</div>
             <button ion-button (click)="openSeriesPopover(i)" class="align-right disable-hover"><ion-icon name="settings" class="font-size-button"></ion-icon></button>
     </div>

@@ -454,7 +454,9 @@ export class SilverNeedleChart {
 
     //Displays the y axis label for the active series and hide the others
     updateYAxisLabels() {
+        console.log('updating labels');
         for (let i = 0; i < this.chart.yAxis.length; i++) {
+            console.log(i, this.activeSeries);
             if (i === this.activeSeries - 1) {
                 this.chart.yAxis[this.activeSeries - 1].update({
                         labels: {
@@ -2223,18 +2225,15 @@ export class SilverNeedleChart {
 
     addSeriesAnchor(seriesNum: number) {
         //convert offset to V from mV
-        console.log('adding series anchor');
         let offset = this.currentBufferArray[seriesNum].seriesOffset / 1000;
         let color = this.chart.series[seriesNum].color;
         let startingPos = this.chart.yAxis[seriesNum].toPixels(offset);
         let extremes = this.chart.yAxis[seriesNum].getExtremes();
         if (isNaN(startingPos) || offset > extremes.max || offset < extremes.min) {
-            console.log('is nan');
             return;
         } 
         this.yPositionPixels = startingPos;
         if (this.seriesAnchors[seriesNum] !== undefined) {
-            console.log('not undefined');
             this.seriesAnchors[this.activeSeries - 1].attr({
                 x: this.chart.plotLeft - 12,
                 y: startingPos - 6

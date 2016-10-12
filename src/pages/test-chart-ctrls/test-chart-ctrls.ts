@@ -20,12 +20,11 @@ import {StorageService} from '../../services/storage/storage.service';
 
 
 @Component({
-    templateUrl: 'test-chart-ctrls.html',/*
-    directives: [SilverNeedleChart, BottomBarComponent, XAxisComponent, YAxisComponent, 
-    TimelineComponent, TimelineChartComponent, AutoscaleComponent, TriggerComponent, FgenComponent]*/
+    templateUrl: 'test-chart-ctrls.html'
 })
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
+    @ViewChild('triggerComponent') triggerComponent: TriggerComponent;
     public app: App;
     public controlsVisible = false;
     public botVisible = false;
@@ -96,6 +95,16 @@ export class TestChartCtrlsPage {
 
     //Run osc single
     singleClick() {
+        console.log(this.triggerComponent);
+        let trigSourceArr = this.triggerComponent.triggerSource.split(' ');
+        if (trigSourceArr[1] === undefined) {
+            trigSourceArr[1] = '1';
+        }
+        console.log(trigSourceArr);
+        this.triggerComponent.lowerThresh
+        this.triggerComponent.upperThresh
+        let trigType = this.triggerComponent.edgeDirection + 'Edge';
+        console.log(trigType);
         let readArray = [[], [], [], [], []];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
@@ -104,7 +113,6 @@ export class TestChartCtrlsPage {
                 readArray[2].push(1);
                 readArray[3].push(this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000);
                 readArray[4].push(this.activeDevice.instruments.osc.chans[i].bufferSizeMax);
-                //(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[])
             }
         }
         this.activeDevice.multiCommand(
@@ -117,6 +125,11 @@ export class TestChartCtrlsPage {
                         [1],
                         [
                             {
+                                /*instrument: trigSourceArr[0],
+                                channel: trigSourceArr[1],
+                                type: trigType,
+                                lowerThreshold: this.triggerComponent.lowerThresh,
+                                upperThreshold: this.triggerComponent.upperThresh*/
                                 instrument: 'osc',
                                 channel: 1,
                                 type: 'risingEdge',
@@ -136,65 +149,14 @@ export class TestChartCtrlsPage {
             }
         ).subscribe(
             (data) => {
-                //console.log(data);
             },
             (err) => {
-                //console.log(err);
             },
             () => {
-                //console.log('single multi done');
                 this.readOscope();
                 //this.readLa();
             }
         );
-
-        /*this.activeDevice.instruments.osc.setParameters([1], [0], [1], [this.activeDevice.instruments.osc.chans[0].sampleFreqMax / 1000], [30000]).subscribe(
-            (data) => {
-                //console.log(data);
-            },
-            (err) => {
-                //console.log(err);
-            },
-            () => {
-                //console.log('binary finished in test chart ctrls');
-            }
-        );
-
-        this.activeDevice.instruments.trigger.setParameters(
-            [1],
-            [{
-                instrument: 'osc',
-                channel: 1,
-                type: 'risingEdge',
-                lowerThreshold: -5,
-                upperThreshold: 0
-            }],
-            [{
-                osc: [1]
-            }]
-        ).subscribe(
-            (data) => {
-                //console.log(data);
-            },
-            (err) => {
-                //console.log(err);
-            },
-            () => {
-                //console.log('binary finished in test chart ctrls');
-            }
-        );
-
-        this.activeDevice.instruments.trigger.single([1]).subscribe(
-            (data) => {
-                //console.log(data);
-            },
-            (err) => {
-                //console.log(err);
-            },
-            () => {
-                //console.log('binary finished in test chart ctrls');
-            }
-        );*/
 
         
     }
@@ -252,14 +214,11 @@ export class TestChartCtrlsPage {
                         }
                     }
                 }
-
-                //this.chart1.drawWaveform(1, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex - 1][1]);
             },
             (err) => {
                 console.log(err);
             },
             () => {
-                //console.log('binary finished in test chart ctrls');
             }
         );
     }
@@ -267,25 +226,6 @@ export class TestChartCtrlsPage {
     //Stream osc buffers
     runClick() {
         console.log('run');
-        /*let multipliers = [];
-        for (let i = 0; i < this.oscopeChans.length; i++) {
-            if (this.chart1.voltageMultipliers[i] === 'mV') {
-                multipliers[i] = 1;
-            }
-            else {
-                multipliers[i] = 1 / 1000;
-            }
-        }
-        this.running = true;
-        this.activeDevice.instruments.osc.streamRunSingle(this.oscopeChans, multipliers).subscribe(
-            (buffer) => {
-                this.chart1.drawWaveform(0, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][0]);
-                this.chart1.drawWaveform(1, this.activeDevice.instruments.trigger.dataBuffer[this.activeDevice.instruments.trigger.dataBufferWriteIndex][1]);
-            },
-            (err) => {
-                console.log('OSC Run Single Failed.');
-            }
-        );*/
     }
 
     //Stop dc stream

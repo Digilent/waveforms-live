@@ -1,26 +1,26 @@
 <div class="trigger-pop-container">
     <ion-item class="trigger-pop-item">
         <div class="custom-ion-label">Trigger</div>
-        <button ion-button clear (click)="showGenPopover($event, 'trigger')">Trigger</button>
+        <button class="trigger-pop-button" ion-button icon-right clear (click)="showGenPopover($event, 'trigger')">{{triggerComponent.triggerType}}<ion-icon name="arrow-dropdown"></ion-icon></button>
     </ion-item>
     <ion-item class="trigger-pop-item">
         <div class="custom-ion-label">Source</div>
-        <button ion-button clear (click)="showGenPopover($event, 'source')">Source</button>
+        <button class="trigger-pop-button" ion-button icon-right clear (click)="showGenPopover($event, 'source')">{{triggerComponent.triggerSource}}<ion-icon name="arrow-dropdown"></ion-icon></button>
     </ion-item>
     <ion-item class="trigger-pop-item">
         <div class="custom-ion-label">Edge</div>
-        <button ion-button clear (click)="showGenPopover($event, 'edge')">Edge</button>
+        <button class="trigger-pop-button" ion-button icon-right clear (click)="showGenPopover($event, 'edge')">{{triggerComponent.edgeDirection}}<ion-icon name="arrow-dropdown"></ion-icon></button>
     </ion-item>
     <ion-item class="trigger-pop-item">
-        <ion-label stacked>Lower Threshold</ion-label>
+        <ion-label stacked>Lower Threshold (mV)</ion-label>
         <ion-input type="number" [(ngModel)]="triggerComponent.lowerThresh"></ion-input>
     </ion-item>
     <ion-item class="trigger-pop-item">
-        <ion-label stacked>Upper Treshold</ion-label>
+        <ion-label stacked>Upper Treshold (mV)</ion-label>
         <ion-input type="number" [(ngModel)]="triggerComponent.upperThresh"></ion-input>
     </ion-item>
     <ion-item class="trigger-pop-item">
-        <ion-label stacked>Delay</ion-label>
+        <ion-label stacked>Delay (ms)</ion-label>
         <ion-input type="number" [(ngModel)]="triggerComponent.delay"></ion-input>
     </ion-item>
 </div>

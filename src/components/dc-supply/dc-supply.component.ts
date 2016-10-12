@@ -188,13 +188,8 @@ export class DcSupplyComponent {
 
     //Validate voltage supplies 
     validateSupply(supplyNum: number) {
-        if ((parseFloat(this.voltages[supplyNum]) < 0 || parseFloat(this.voltages[supplyNum]) > this.maxVoltages[supplyNum]) && this.maxVoltages[supplyNum] > 0) {
+        if ((parseFloat(this.voltages[supplyNum]) < this.activeDevice.instruments.dc.chans[supplyNum].voltageMin || parseFloat(this.voltages[supplyNum]) > this.activeDevice.instruments.dc.chans[supplyNum].voltageMax)) {
             //Incorrect
-            this.correctVoltages[supplyNum] = false;
-            return;
-        }
-        if (this.maxVoltages[supplyNum] < 0 && (parseFloat(this.voltages[supplyNum]) > 0 || parseFloat(this.voltages[supplyNum]) < this.maxVoltages[supplyNum])) {
-            //Supply is negative
             this.correctVoltages[supplyNum] = false;
             return;
         }

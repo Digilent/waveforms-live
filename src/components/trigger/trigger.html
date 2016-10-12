@@ -1,4 +1,4 @@
-<div style="background-color: white;">
+<div class="trigger-container">
     <div (dblclick)="toggleTriggerShow()" [ngClass]="{'header-bar-side-closed': !showTriggerSettings}" class="align-center-container header-bar-side">
         <div style="width:25px;height:25px;"></div>
         <div>Trigger</div>
@@ -7,9 +7,9 @@
     <div *ngIf="showTriggerSettings" class="controls-container">
         <ion-grid class="ion-grid-no-padding">
             <ion-row>
-                <ion-col>
+                <ion-col center text-center>
                     <!--<center><img src="img/tpot.jpg"></center>-->
-                    <div text-center><img src="assets/img/tpot.jpg"></div>
+                    <img class="custom-image-button" (click)="setTrigType()" [src]="imgSrc">
                 </ion-col>
                 <ion-col>
                     <!--<center><button class="text-button-side disable-hover">Force</button></center>-->

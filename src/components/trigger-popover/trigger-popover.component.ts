@@ -36,19 +36,39 @@ export class TriggerPopover {
 
     showGenPopover(event, type: string) {
         let genPopover;
+        let customCallback;
         if (type === 'trigger') {
-            console.log('hey');
+            customCallback = function(option: string) {
+                this.triggerComponent.triggerType = option;
+            }.bind(this);
             genPopover = this.popoverCtrl.create(GenPopover, {
-                dataArray: ['edge', 'dink']
+                dataArray: ['Edge']
             });
         }
         else if (type === 'source') {
-            console.log('hey');
+            let chanArray = [];
+            for (let i = 0; i < this.triggerComponent.activeDevice.instruments.osc.numChans; i++) {
+                chanArray.push('Osc ' + (i + 1));
+            }
+            /*for (let i = 0; i < this.triggerComponent.activeDevice.instruments.la.numChans; i++) {
+                chanArray.push('La ' + (i + 1));
+            }*/
+            chanArray.push('Ext');
+
+            customCallback = function(option: string) {
+                this.triggerComponent.triggerSource = option;
+            }.bind(this);
+
             genPopover = this.popoverCtrl.create(GenPopover, {
-                dataArray: ['OSC 1', 'OSC 2', 'LA 1']
+                dataArray: chanArray
             });
         }
         else if (type === 'edge') {
+            customCallback = function(option: string) {
+                if (option !== this.triggerComponent.edgeDirection) {
+                    this.triggerComponent.setTrigType();
+                }
+            }.bind(this);
             genPopover = this.popoverCtrl.create(GenPopover, {
                 dataArray: ['Rising', 'Falling']
             });
@@ -56,12 +76,16 @@ export class TriggerPopover {
         else {
             console.log('error in show popover');
         }
-        console.log(genPopover);
+
         genPopover.present({
             ev: event
         });
-        genPopover.onDidDismiss(data=> {
+
+        genPopover.onDidDismiss((data) => {
+            if (data === null) {return;}
             console.log(data);
+            let selection = data.option.toLowerCase();
+            customCallback(selection);
         });
     }
 }
