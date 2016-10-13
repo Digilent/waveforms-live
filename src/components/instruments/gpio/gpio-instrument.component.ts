@@ -129,8 +129,6 @@ export class GpioInstrumentComponent extends InstrumentComponent {
 
     //Set the output voltage of the specified DC power supply channel.
     getValues(chans: Array<number>) {
-        //Scale voltages into mV before sending
-        let scaledVoltages = [];
         let command = {
             "gpio": {}
         }

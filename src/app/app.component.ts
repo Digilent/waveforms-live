@@ -3,10 +3,7 @@ import { Platform, MenuController, Nav } from 'ionic-angular';
 import { StatusBar } from 'ionic-native';
 
 //Pages
-import { HomePage } from '../pages/home/home';
-import { TestChartPage } from '../pages/test-chart/test-chart';
 import { TestChartCtrlsPage } from '../pages/test-chart-ctrls/test-chart-ctrls';
-import { TestPage } from '../pages/test-page/test-page';
 import { SettingsPage } from '../pages/settings/settings';
 import { ProtocolTestPanel } from '../pages/protocol-test-panel/protocol-test-panel';
 import { DeviceManagerPage } from '../pages/device-manager-page/device-manager-page';

@@ -61,7 +61,6 @@ export class DeviceManagerService {
 
     connectLocal(deviceName: string): Observable<any> {
         return Observable.create((observer) => {
-            let deviceEnumeration: string;
             if (deviceName === 'OpenScope-MZ') {
                 let XHR = new XMLHttpRequest();
                 // We define what will happen if the data are successfully sent

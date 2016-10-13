@@ -281,6 +281,15 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                                 let scaledArray = untypedArray.map((voltage) => {
                                     return voltage / 1000;
                                 });
+                                this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
+                                    dt: 1 / (command.trigger[channel][0].osc[instrumentChannel].actualSampleFreq / 1000),
+                                    t0: 0,
+                                    y: scaledArray,
+                                    pointOfInterest: command.trigger[channel][0].la[instrumentChannel].pointOfInterest,
+                                    triggerPosition: command.trigger[channel][0].la[instrumentChannel].triggerDelta,
+                                    seriesOffset: command.trigger[channel][0].la[instrumentChannel].actualVOffset
+                                });
+                                bufferCount++;
                             }
                         }
                         this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;

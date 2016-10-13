@@ -65,7 +65,6 @@ export class ModalFgenPage {
     }
 
     parseCsv(fileAsText: string) {
-        let length = fileAsText.length;
         let points = fileAsText.split('\n');
         console.log(points.length);
         let pointData = points[0].split(',');
@@ -285,17 +284,17 @@ export class ModalFgenPage {
 
     //Not yet implemented
     drawNoise() {
-        let waveform: number[] = [];
+        //let waveform: number[] = [];
     }
 
     //Not yet implemented
     drawTrap() {
-        let waveform: number[] = [];
+        //let waveform: number[] = [];
     }
 
     //Not yet implemented
     drawSinPow() {
-        let waveform: number[] = [];
+        //let waveform: number[] = [];
     }
 
     //Draw square wave

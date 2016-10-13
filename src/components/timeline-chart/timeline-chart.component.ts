@@ -1,4 +1,4 @@
-import {Component, Output, Input, EventEmitter, ElementRef, ViewChild} from '@angular/core';
+import {Component, Output, EventEmitter, ElementRef, ViewChild} from '@angular/core';
 
 @Component({
     selector: 'timeline-chart',

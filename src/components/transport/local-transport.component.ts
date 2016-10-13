@@ -6,9 +6,6 @@ import 'rxjs/Rx';
 import {TransportComponent} from './transport.component';
 import {SimulatedDeviceComponent} from '../simulated-device/simulated-device.component';
 
-//Interfaces
-import {MyEventResponse} from './http-transport.interface';
-
 @Component({})
 export class LocalTransportComponent extends TransportComponent {
 
@@ -34,7 +31,6 @@ export class LocalTransportComponent extends TransportComponent {
     }
 
     writeReadHelper(rootUri: string, endpoint: string, sendData: any, dataType: string): Observable<any> {
-        let uri = rootUri + endpoint;
         let body = sendData;
         return Observable.create((observer) => {
             this.simulatedDevice.send(body).subscribe(

@@ -1,9 +1,8 @@
-import {Component, Output, EventEmitter, Input} from '@angular/core';
+import {Component, EventEmitter, Input} from '@angular/core';
 import {NavParams, ViewController, PopoverController} from 'ionic-angular';
 
 //Components
 import {SilverNeedleChart} from '../chart/chart.component';
-import {GenPopover} from '../gen-popover/gen-popover.component';
 import {SeriesPopover} from '../series-popover/series-popover.component';
 
 //Services

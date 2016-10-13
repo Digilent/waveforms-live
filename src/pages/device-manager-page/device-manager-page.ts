@@ -1,8 +1,5 @@
 import {Component} from '@angular/core';
 
-//Pages
-import {TestChartCtrlsPage} from '../test-chart-ctrls/test-chart-ctrls';
-
 //Components
 import {Tab1} from './device-manager-tabs/device-manager-tab1/device-manager-tab1';
 import {Tab2} from './device-manager-tabs/device-manager-tab2/device-manager-tab2';

@@ -1,4 +1,4 @@
-import {Component, Output, Input, EventEmitter, ElementRef, ViewChild} from '@angular/core';
+import {Component, Output, EventEmitter, ElementRef, ViewChild} from '@angular/core';
 import {ModalController} from 'ionic-angular';
 
 //Components
@@ -908,7 +908,6 @@ export class SilverNeedleChart {
 
     //Callback function for mousemove event on a track cursor style
     trackCursorDragListener = function (event) {
-        let offset = 110;  
         let yCor = event.layerY;
         let xCor = event.layerX;
         if (xCor < this.chart.xAxis[0].toPixels(this.chartBoundsX.min)) {
@@ -926,7 +925,6 @@ export class SilverNeedleChart {
         let xVal = this.chart.xAxis[0].translate(xCor - this.chart.plotLeft, true); 
         let pointNum = Math.round((xVal - this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].xData[0]) / this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].options.pointInterval);
         let pointNum1 = pointNum;
-        let pointNum2 = pointNum;
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].x;
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].y;
         if (this.timelineView) {
@@ -940,12 +938,6 @@ export class SilverNeedleChart {
         };
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
         this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
-        /*this.cursorLabel[this.activeCursor - 1].attr({
-            text: 'Series 1: ' + this.chart.series[0].data[pointNum1].y.toFixed(3) + 'V', 
-            x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + offset,
-            y: yCor,
-            zIndex: 99 + this.activeCursor
-        });*/
         this.cursorAnchors[this.activeCursor - 1].attr({
             x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + this.chart.plotLeft - 6,
             y: this.chart.plotTop - 12,
@@ -1014,8 +1006,7 @@ export class SilverNeedleChart {
     }.bind(this);
 
     //Callback function for mousemove event on a time cursor style
-    cursorDragListener = function (event) {
-        let offset = 110;  
+    cursorDragListener = function (event) { 
         let yCor = event.layerY;
         let xCor = event.layerX;
         if (xCor < this.chart.xAxis[0].toPixels(this.chartBoundsX.min)) {
@@ -1048,12 +1039,6 @@ export class SilverNeedleChart {
             y: this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum1].y
         }
         this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
-        /*this.cursorLabel[this.activeCursor - 1].attr({
-            text: 'Series 1: ' + this.chart.series[0].data[pointNum1].y + 'V',
-            x: this.chart.xAxis[0].translate(this.chart.xAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value, false) + offset,
-            y: yCor,
-            zIndex: 99 + this.activeCursor
-        });*/
         this.cursorAnchors[this.activeCursor - 1].attr({
             x: xCor - 6,
             y: this.chart.plotTop - 12,
@@ -1225,11 +1210,6 @@ export class SilverNeedleChart {
             }
             
         }
-
-
-
-        
-        let yDelta = Math.abs(this.cursorPositions[1].y - this.cursorPositions[0].y);
         
     }
 
@@ -1238,7 +1218,6 @@ export class SilverNeedleChart {
         if (this.chart.series.length == 0) {return;}
         fileName = fileName + '.csv';
         let csvContent = 'data:text/csv;charset=utf-8,';
-        let pointsArray = [];
         let maxLength = 0;
         for (let i = 0; i < this.chart.series.length; i++) {
             if (this.chart.series[i].yData.length > maxLength) {

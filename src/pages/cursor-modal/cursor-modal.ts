@@ -1,5 +1,5 @@
 import {NavParams, ViewController, Platform, PopoverController} from 'ionic-angular';
-import {ViewChild, Component} from '@angular/core';
+import {Component} from '@angular/core';
 
 //Components
 import {GenPopover} from '../../components/gen-popover/gen-popover.component';

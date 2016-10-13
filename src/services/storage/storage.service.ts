@@ -1,7 +1,5 @@
 import {Storage} from '@ionic/storage';
 import {Injectable, EventEmitter} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/Rx';
 
 @Injectable()
 export class StorageService {

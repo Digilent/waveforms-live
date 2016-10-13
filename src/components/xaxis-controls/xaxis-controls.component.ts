@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter, Input} from '@angular/core';
+import {Component, EventEmitter, Input} from '@angular/core';
 
 //Components
 import {SilverNeedleChart} from '../chart/chart.component';

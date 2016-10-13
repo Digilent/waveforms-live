@@ -74,7 +74,7 @@ export class SimulatedDeviceComponent {
                     //create property on response object 
                     responseObject[instrument][channel] = [];
                     event[instrument][channel].forEach((element, index, array) => {
-                        let activeIndex = responseObject[instrument][channel].push(this.processCommands(instrument, event[instrument][channel][index], [channel])) - 1;
+                        responseObject[instrument][channel].push(this.processCommands(instrument, event[instrument][channel][index], [channel])) - 1;
                         if (element.command === 'read') {
                             binaryDataFlag = 1;
                         }

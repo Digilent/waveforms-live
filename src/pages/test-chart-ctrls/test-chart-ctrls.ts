@@ -1,17 +1,10 @@
-import {ToastController, App} from 'ionic-angular';
-import {ViewChild, ElementRef, Component, Input} from '@angular/core';
+import {ToastController, App, Platform} from 'ionic-angular';
+import {ViewChild, Component} from '@angular/core';
 
 //Components
 import {SilverNeedleChart} from '../../components/chart/chart.component';
-import {BottomBarComponent} from '../../components/bottom-bar/bottom-bar.component';
-import {XAxisComponent} from '../../components/xaxis-controls/xaxis-controls.component';
-import {YAxisComponent} from '../../components/yaxis-controls/yaxis-controls.component';
-import {TimelineComponent} from '../../components/timeline/timeline.component';
-import {TimelineChartComponent} from '../../components/timeline-chart/timeline-chart.component';
 import {DeviceComponent} from '../../components/device/device.component';
-import {AutoscaleComponent} from '../../components/autoscale/autoscale.component';
 import {TriggerComponent} from '../../components/trigger/trigger.component';
-import {FgenComponent} from '../../components/function-gen/function-gen.component';
 
 
 //Services
@@ -26,6 +19,7 @@ export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
     @ViewChild('triggerComponent') triggerComponent: TriggerComponent;
     public app: App;
+    public platform: Platform;
     public controlsVisible = false;
     public botVisible = false;
     public sideVisible = false;
@@ -39,13 +33,38 @@ export class TestChartCtrlsPage {
 
     public chartReady: boolean = false;
     public toastCtrl: ToastController;
+    public clickBindReference;
 
-    constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController, _app: App) {
+    constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController, _app: App, _platform: Platform) {
         this.toastCtrl = _toastCtrl;
         this.app = _app;
+        this.platform = _platform;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
-        this.storage = _storage;
+        this.storage = _storage;;
+    }
+
+    requestFullscreen() {
+        console.log('hey');
+        console.log(this);
+        let conf = confirm("Fullscreen mode?");
+        let docelem: any = document.documentElement;
+
+        if (conf == true) {
+            if (docelem.requestFullscreen) {
+                docelem.requestFullscreen();
+            }
+            else if (docelem.mozRequestFullScreen) {
+                docelem.mozRequestFullScreen();
+            }
+            else if (docelem.webkitRequestFullScreen) {
+                docelem.webkitRequestFullScreen();
+            }
+            else if (docelem.msRequestFullscreen) {
+                docelem.msRequestFullscreen();
+            }
+        }
+        document.getElementById('instrument-panel-container').removeEventListener('click', this.clickBindReference);
     }
 
     //Alert user with toast if no active device is set
@@ -66,6 +85,10 @@ export class TestChartCtrlsPage {
             this.oscopeChans = [0, 1];
             this.chartReady = true;
             this.chart1.loadDeviceSpecificValues(this.activeDevice);
+        }
+        if (this.platform.is('ios') || this.platform.is('android')) {
+            this.clickBindReference = this.requestFullscreen.bind(this);
+            document.getElementById('instrument-panel-container').addEventListener('click', this.clickBindReference);
         }
     }
 
@@ -122,16 +145,16 @@ export class TestChartCtrlsPage {
                         [1],
                         [
                             {
-                                /*instrument: trigSourceArr[0],
+                                instrument: trigSourceArr[0],
                                 channel: trigSourceArr[1],
                                 type: trigType,
                                 lowerThreshold: this.triggerComponent.lowerThresh,
-                                upperThreshold: this.triggerComponent.upperThresh*/
-                                instrument: 'osc',
+                                upperThreshold: this.triggerComponent.upperThresh
+                                /*instrument: 'osc',
                                 channel: 1,
                                 type: 'risingEdge',
                                 lowerThreshold: -5,
-                                upperThreshold: 0
+                                upperThreshold: 0*/
                             }
                         ],
                         [

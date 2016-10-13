@@ -3,7 +3,6 @@ import {ModalController, PopoverController, ToastController} from 'ionic-angular
 
 //Pages
 import {ModalFgenPage} from '../../pages/fgen-modal/fgen-modal';
-import {TestPage} from '../../pages/test-page/test-page';
 
 //Components
 import {DeviceComponent} from '../../components/device/device.component';

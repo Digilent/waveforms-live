@@ -3,8 +3,6 @@ import { ModalController, NavParams, ViewController, Platform } from 'ionic-angu
 
 //Components
 import { TransportComponent } from '../../components/transport/transport.component';
-import { HttpTransportComponent } from '../../components/transport/http-transport.component';
-import { DropDownMenu } from '../../libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu.component';
 
 //Services
 import { StorageService } from '../../services/storage/storage.service';
@@ -241,7 +239,6 @@ export class ProtocolTestPanel {
         console.log('ProtocolTestPanel Constructor');
         this.modalCtrl = _modalCtrl;
         this.storage = _storage;
-        //this.transport = new HttpTransportComponent('');
         this.selectedHttpMethod = this.httpMethodNames[0];
         this.selectedRepsonseBodyFormat = this.responseBodyFormats[0];
         this.selectedRepsonseBinaryFormat = this.responseBinaryFormats[0];

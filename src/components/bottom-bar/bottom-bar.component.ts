@@ -1,9 +1,5 @@
 import {Component, Output, EventEmitter} from '@angular/core';
 
-//Components
-import {DigitalIoComponent} from '../digital-io/digital-io.component';
-import {DcSupplyComponent} from '../dc-supply/dc-supply.component';
-
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
 

@@ -1,6 +1,4 @@
 import {Component} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/Rx';
 
 //Services
 import {TransportService} from '../../services/transport/transport.service';

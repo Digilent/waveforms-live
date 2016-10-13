@@ -95,7 +95,7 @@ export class SimulatedOscComponent {
         //Build Y point arrays
         let y = [];
         for (let j = 0; j < numSamples; j++) {
-            y[j] = (vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j)) + vOffset;
+            y[j] = (vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j + t0)) + vOffset;
         }
         
         let typedArray = new Int16Array(y);
@@ -130,7 +130,7 @@ export class SimulatedOscComponent {
         let period = 1 / (sigFreq / 1000);
 
         for (let i = 0; i < numSamples; i++) {
-            if ((dt * i) % period < period * (dutyCycle / 100)) {
+            if ((dt * i + t0) % period < period * (dutyCycle / 100)) {
                 y[i] = (vOffset + vpp / 2);
             }
             else {
@@ -170,7 +170,7 @@ export class SimulatedOscComponent {
         let period = 1 / (sigFreq / 1000);
 
         for (let i = 0; i < numSamples; i++) {
-            y[i] = ((4 * (vpp / 2)) / period) * (Math.abs(((i * dt + 3 * period / 4) % period) - period / 2) - period / 4) + vOffset;
+            y[i] = ((4 * (vpp / 2)) / period) * (Math.abs(((i * dt + t0 + 3 * period / 4) % period) - period / 2) - period / 4) + vOffset;
         }
 
         let typedArray = new Int16Array(y);
@@ -206,7 +206,7 @@ export class SimulatedOscComponent {
         let period = 1 / (sigFreq / 1000);
 
         for (let i = 0; i < numSamples; i++) {
-            y[i] = (vpp / period) * ((dt * i) % period) + vOffset;
+            y[i] = (vpp / period) * ((dt * i + t0) % period) + vOffset;
         }
 
         let typedArray = new Int16Array(y);

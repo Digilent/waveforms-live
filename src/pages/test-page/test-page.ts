@@ -5,8 +5,7 @@ import {ViewChild, Component} from '@angular/core';
 import {SilverNeedleChart} from '../../components/chart/chart.component';
 
 @Component({
-    templateUrl: "fgen-modal.html",
-    //directives: [SilverNeedleChart]
+    templateUrl: "fgen-modal.html"
 })
 export class TestPage {
     @ViewChild('chart') chart: SilverNeedleChart;
@@ -160,15 +159,15 @@ export class TestPage {
     }
     
     drawNoise() {
-        let waveform: number[] = [];
+        //let waveform: number[] = [];
     }
     
     drawTrap() {
-        let waveform: number[] = [];
+        //let waveform: number[] = [];
     }
     
     drawSinPow() {
-        let waveform: number[] = [];
+        //let waveform: number[] = [];
     }
     
     drawSquare() {
