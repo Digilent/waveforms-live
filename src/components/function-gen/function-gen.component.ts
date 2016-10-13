@@ -10,7 +10,6 @@ import {GenPopover} from '../../components/gen-popover/gen-popover.component';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
-import {StorageService} from '../../services/storage/storage.service';
 
 //Interfaces
 import {SettingsObject} from '../instruments/awg/awg-instrument.component';
@@ -32,15 +31,12 @@ export class FgenComponent {
     public activeDevice: DeviceComponent;
     public supportedSignalTypes: string[];
     public attemptingPowerOff: boolean = false;
-
-    public storageService: StorageService;
     public storageEventListener: EventEmitter<any>;
     public modalCtrl: ModalController;
     public popoverCtrl: PopoverController;
     public toastCtrl: ToastController;
     
     constructor(_deviceManagerService: DeviceManagerService, 
-                _storageService: StorageService, 
                 _modalCtrl: ModalController,
                 _popoverCtrl: PopoverController,
                 _toastCtrl: ToastController) 
@@ -59,35 +55,6 @@ export class FgenComponent {
         this.dutyCycle = '50';
         this.showWaves = false;
         this.powerOn = false;
-
-        this.storageService = _storageService;
-        this.storageEventListener = this.storageService.saveLoadEventEmitter.subscribe((data) => {
-            if (data === 'save') {
-                this.storageService.saveData('awg', JSON.stringify({
-                    waveType: this.waveType,
-                    frequency: this.frequency,
-                    amplitude: this.amplitude,
-                    offset: this.offset,
-                    dutyCycle: this.dutyCycle
-                }));
-            }
-            else if (data === 'load') {
-                this.storageService.getData('awg').then((data) => {
-                    let dataObject = JSON.parse(data);
-                    console.log(dataObject);
-                    this.waveType = dataObject.waveType;
-                    this.frequency = dataObject.frequency;
-                    this.amplitude = dataObject.amplitude;
-                    this.offset = dataObject.offset;
-                    this.dutyCycle = dataObject.dutyCycle; 
-                });
-            }
-        });
-    }
-
-    //Remove storage event listener to avoid memory leaks
-    ngOnDestroy() {
-        this.storageEventListener.unsubscribe();
     }
     
     //Toggle dropdown

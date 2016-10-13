@@ -6,7 +6,6 @@ import { TriggerPopover } from '../trigger-popover/trigger-popover.component';
 import { DeviceComponent } from '../device/device.component';
 
 //Services
-import { StorageService } from '../../services/storage/storage.service';
 import { DeviceManagerService } from '../../services/device/device-manager.service';
 
 @Component({
@@ -21,38 +20,16 @@ export class TriggerComponent {
     public triggerSource: string = 'osc 1';
     public triggerType: string = 'edge';
     public popoverCtrl: PopoverController;
-    public storageService: StorageService;
     public storageEventListener: EventEmitter<any>;
     public showTriggerSettings: boolean = true;
     public imgSrc: string = 'assets/img/trigger-rising.png';
     public devMngSrv: DeviceManagerService;
     public activeDevice: DeviceComponent;
 
-    constructor(_storageService: StorageService, _popoverCtrl: PopoverController, _devMngSrv: DeviceManagerService) {
+    constructor(_popoverCtrl: PopoverController, _devMngSrv: DeviceManagerService) {
         this.popoverCtrl = _popoverCtrl;
         this.devMngSrv = _devMngSrv;
         this.activeDevice = this.devMngSrv.devices[this.devMngSrv.activeDeviceIndex];
-        this.storageService = _storageService;
-        this.storageEventListener = this.storageService.saveLoadEventEmitter.subscribe((data) => {
-            console.log(data);
-            if (data === 'save') {
-                this.storageService.saveData('trigger', JSON.stringify({
-                    delay: this.delay
-                }));
-            }
-            else if (data === 'load') {
-                this.storageService.getData('trigger').then((data) => {
-                    let dataObject = JSON.parse(data);
-                    console.log(dataObject);
-                    this.delay = dataObject.delay
-                });
-            }
-        });
-    }
-
-    //Remove storage event listener to avoid memory leaks
-    ngOnDestroy() {
-        this.storageEventListener.unsubscribe();
     }
 
     toggleTriggerShow() {

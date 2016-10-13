@@ -15,11 +15,6 @@ export class AutoscaleComponent {
 
     }
 
-    //Remove storage event listener to avoid memory leaks
-    ngOnDestroy() {
-
-    }
-
     toggleVisibility() {
         this.show = !this.show;
     }

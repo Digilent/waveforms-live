@@ -5,9 +5,6 @@ import {NavParams, ViewController, PopoverController} from 'ionic-angular';
 import {SilverNeedleChart} from '../chart/chart.component';
 import {SeriesPopover} from '../series-popover/series-popover.component';
 
-//Services
-import {StorageService} from '../../services/storage/storage.service';
-
 @Component({
     templateUrl: 'yaxis-controls.html',
     selector: 'yaxis-controls'
@@ -15,7 +12,6 @@ import {StorageService} from '../../services/storage/storage.service';
 export class YAxisComponent {
     @Input() chart: SilverNeedleChart;
     public numSeries: number[] = [0, 1];
-    public storageService: StorageService;
     public storageEventListener: EventEmitter<any>;
     public viewCtrl: ViewController;
     public params: NavParams;
@@ -25,36 +21,10 @@ export class YAxisComponent {
     public configHover: boolean = false;
     public timeoutRef: any;
     
-    constructor(_storageService: StorageService, _viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController) {
+    constructor(_viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController) {
         this.popoverCtrl = _popoverCtrl;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
-        this.storageService = _storageService;
-        this.storageEventListener = this.storageService.saveLoadEventEmitter.subscribe((data) => {
-            if (data === 'save') {
-                this.storageService.saveData('yaxis', JSON.stringify({
-                    voltBase: this.chart.voltBase,
-                    voltsPerDiv: this.chart.voltDivision
-                }));
-            }
-            else if (data === 'load') {
-                this.storageService.getData('yaxis').then((data) => {
-                    let dataObject = JSON.parse(data);
-                    dataObject.voltBase.forEach((element, index, array) => {
-                        this.chart.setSeriesSettings({
-                            seriesNum: index,
-                            voltsPerDiv: dataObject.voltsPerDiv[index],
-                            voltBase: dataObject.voltBase[index]
-                        });
-                    });
-                });
-            }
-        });
-    }
-
-    //Remove storage event listener to prevent memory leaks
-    ngOnDestroy() {
-        this.storageEventListener.unsubscribe();
     }
 
     ngOnInit() {

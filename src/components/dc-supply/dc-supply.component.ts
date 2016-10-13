@@ -5,7 +5,6 @@ import {DeviceComponent} from '../../components/device/device.component';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
-import {StorageService} from '../../services/storage/storage.service';
 
 @Component({
   templateUrl: 'dc-supply.html',
@@ -27,8 +26,6 @@ export class DcSupplyComponent {
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
 
-    public storageService: StorageService;
-    public storageEventListener: EventEmitter<any>;
 
     public intervalReference;
 
@@ -36,7 +33,7 @@ export class DcSupplyComponent {
 
     public readVoltages: string[] = [];
     
-    constructor(_deviceManagerService: DeviceManagerService, _storageService: StorageService) {
+    constructor(_deviceManagerService: DeviceManagerService) {
         this.voltageSupplies = [0, 1, 2];
         this.contentHidden = true;
         this.voltages = ['5.00', '5.00', '-5.00'];
@@ -51,18 +48,6 @@ export class DcSupplyComponent {
         if (this.activeDevice.instruments.dc.chans[0].currentIncrement !== 0) {
             this.showCurrent = true;
         }
-        this.storageService = _storageService;
-        this.storageEventListener = this.storageService.saveLoadEventEmitter.subscribe((data) => {
-            console.log(data);
-            if (data === 'save') {
-                this.storageService.saveData('dcSupplyVoltages', JSON.stringify(this.voltages));
-            }
-            else if (data === 'load') {
-                this.storageService.getData('dcSupplyVoltages').then((data) => {
-                    this.voltages = JSON.parse(data);
-                });
-            }
-        });
     }
 
     //If active device exists, populate values
@@ -105,11 +90,6 @@ export class DcSupplyComponent {
         else {
             this.voltageLimitFormats.push('' + minString + '\xA0\xA0:\xA0\xA0' + maxString + ' V');
         }
-    }
-
-    //To avoid memory leaks, called to unsubscribe from storage events
-    ngOnDestroy() {
-        this.storageEventListener.unsubscribe();
     }
 
     //Set dc voltages on OpenScope
