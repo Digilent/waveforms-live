@@ -13,14 +13,14 @@
     </ion-item>
     <ion-item class="trigger-pop-item">
         <ion-label stacked>Lower Threshold (mV)</ion-label>
-        <ion-input type="number" [(ngModel)]="triggerComponent.lowerThresh"></ion-input>
+        <ion-input type="number" step="any" [(ngModel)]="triggerComponent.lowerThresh"></ion-input>
     </ion-item>
     <ion-item class="trigger-pop-item">
         <ion-label stacked>Upper Treshold (mV)</ion-label>
-        <ion-input type="number" [(ngModel)]="triggerComponent.upperThresh"></ion-input>
+        <ion-input type="number" step="any" [(ngModel)]="triggerComponent.upperThresh"></ion-input>
     </ion-item>
     <ion-item class="trigger-pop-item">
         <ion-label stacked>Delay (ms)</ion-label>
-        <ion-input type="number" [(ngModel)]="triggerComponent.delay"></ion-input>
+        <ion-input type="number" step="any" [(ngModel)]="triggerComponent.delay"></ion-input>
     </ion-item>
 </div>

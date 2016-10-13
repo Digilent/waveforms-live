@@ -4,104 +4,13 @@
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>Settings</ion-title>
-        <button class="text-button-main disable-hover" (click)="sqlSave()">Save</button>
-        <button class="text-button-main disable-hover" (click)="sqlLoad()">Load</button>
     </ion-navbar>
 </ion-header>
 
 <ion-content class="settings-body" padding>
-    <img src="img/OpenScope-logo-color-500.png">
-    <h1>Connect to a device:</h1>
-
-    <div class="device-connect-container">
-        <h4>Device on Network</h4>
-        <ion-input type="url" [(ngModel)]="localSimDevUri" (ngModelChange)="onUrlInputChange($event)"></ion-input>
-        <button class="text-button-main disable-hover" (click)=connect(localSimDevUri);>Connect</button>
-    </div>
-
-    <h1> Connected Devices </h1>
-    <ul>
-        <li *ngFor="let device of deviceManangerService.devices, let i = index;">
-            <h4 (click)="showInfo()">{{device.deviceMake}} - {{device.deviceModel}}</h4>
-            <!---------- AWG ---------->
-            <ul *ngIf="showExtraInfo">
-                <li><button (click)=navToAwgTestPage(i);>AWG</button></li>
-                <li>Number of Channels: {{device.instruments.awg.numChans}}</li>
-                <ul>
-                    <li *ngFor="let awgChan of device.instruments.awg.chans, let i = index;">
-                        <b>{{i + 1}}</b>
-                        <ul>
-                            <li>Signal Types: {{awgChan.signalTypes}}</li>
-                            <li>Max Buffer Size: {{awgChan.bufferSizeMax}}</li>
-                            <li>Min Signal Frequency: {{awgChan.signalFreqMin}}</li>
-                            <li>Max Signal Frequency: {{awgChan.signalFreqMax}}</li>
-                            <li>Data Type: {{awgChan.dataType}}</li>
-                            <li>Min Voltage Out: {{awgChan.vOutMin}}</li>
-                            <li>Max Voltage Out: {{awgChan.vOutMax}}</li>
-                            <li>Min Voltage Offset: {{awgChan.vOffsetMin}}</li>
-                            <li>Max Voltage Offset: {{awgChan.vOffsetMax}}</li>
-                            <li>DAC Vpp: {{awgChan.dacVpp}}</li>
-                            <li>Min dt: {{awgChan.dtMin}}</li>
-                            <li>Max dt: {{awgChan.dtMax}}</li>
-                        </ul>
-                    </li>
-                </ul>
-            </ul>
-            <!---------- DC ---------->
-            <ul *ngIf="showExtraInfo">
-                <li><button (click)=navToDcTestPage(i);>DC Supply</button></li>
-                <ul>
-                    <li>Number of Channels: {{device.instruments.dc.numChans}}</li>
-                    <ul>
-                        <li *ngFor="let dcChan of device.instruments.dc.chans, let i = index;">
-                            <b>{{i + 1}}</b>
-                            <ul>
-                                <li>Voltage Min: {{dcChan.voltageMin}}</li>
-                                <li>Voltage Max: {{dcChan.voltageMax}}</li>
-                                <li>Voltage Increment: {{dcChan.voltageIncrement}}</li>
-                                <li>Current Min: {{dcChan.currentMin}}</li>
-                                <li>Current Max: {{dcChan.currentMax}}</li>
-                                <li>Current Increment: {{dcChan.currentIncrement}}</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </ul>
-            </ul>
-            <!---------- LA ---------->
-            <ul *ngIf="showExtraInfo">
-                <li><button (click)=navToLaTestPage(i);>Logic Analyzer</button></li>
-                <ul>
-                    <li>Number of Channels: {{device.instruments.la.numChans}}</li>
-                    <ul>
-                        <li *ngFor="let laChan of device.instruments.la.chans">
-                            <b>{{laChan.name}}</b>
-                        </li>
-                    </ul>
-                </ul>
-            </ul>
-            <!---------- OSC ---------->
-            <ul *ngIf="showExtraInfo">
-                <li><button (click)=navToOscTestPage(i);>O-Scope</button></li>
-                <li>Number of Channels: {{device.instruments.osc.numChans}}</li>
-                <ul>
-                    <li *ngFor="let oscChan of device.instruments.osc.chans, let i = index;">
-                        <b>{{i + 1}}</b>
-                        <ul>
-                            <li>Resolution: {{oscChan.resolution}}</li>
-                            <li>Adc Vpp: {{oscChan.adcVpp}}</li>
-                            <li>Buffer Data Type: {{oscChan.bufferDataType}}</li>
-                            <li>Buffer Size Max: {{oscChan.bufferSizeMax}}</li>
-                            <li>Effective Bits: {{oscChan.effectiveBits}}</li>
-                            <li>Gains: {{oscChan.gains}}</li>
-                            <li>Input Voltage Min: {{oscChan.inputVoltageMin}}</li>
-                            <li>Input Voltage Max: {{oscChan.inputVoltageMax}}</li>
-                            <li>Min dt: {{oscChan.dtMin}}</li>
-                            <li>Max dt: {{oscChan.dtMax}}</li>
-                        </ul>
-                    </li>
-                </ul>
-            </ul>
-        </li>
-    </ul>
+    
+    <button ion-button (click)="changeConsoleLog($event)">Change Console Log</button>
+    <button ion-button (click)="exportLogFile()">Export Log</button>
+    <button ion-button (click)="clearAppLog()">Clear App Log</button>
 
 </ion-content>

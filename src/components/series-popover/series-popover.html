@@ -5,11 +5,11 @@
     </ion-item>
     <ion-item class="item-container">
         <ion-label stacked>V/D</ion-label>
-        <ion-input type="number" [(ngModel)]="chart.voltDivision[seriesNum]" (ngModelChange)="yControls.seriesChanged(seriesNum)"></ion-input>
+        <ion-input type="number" step="any" [(ngModel)]="chart.voltDivision[seriesNum]" (ngModelChange)="yControls.seriesChanged(seriesNum)"></ion-input>
     </ion-item>
     <ion-item class="item-container">
         <ion-label stacked>Offset</ion-label>
-        <ion-input type="number" [(ngModel)]="chart.voltBase[seriesNum]" (ngModelChange)="yControls.seriesChanged(seriesNum)"></ion-input>
+        <ion-input type="number" step="any" [(ngModel)]="chart.voltBase[seriesNum]" (ngModelChange)="yControls.seriesChanged(seriesNum)"></ion-input>
     </ion-item>
     <ion-item class="item-container">
         <button ion-button class="text-button-side" [disabled]="true">AC</button><button ion-button class="text-button-side" [disabled]="true">DC</button>

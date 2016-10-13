@@ -1,103 +1,121 @@
-import {Component} from '@angular/core';
-import {NavController, ToastController} from 'ionic-angular';
+import { Component } from '@angular/core';
+import { PopoverController } from 'ionic-angular';
 
-//Pages
-import {AwgTestPage} from '../../pages/instrument-test-pages/awg-test/awg-test';
-import {DcTestPage} from '../../pages/instrument-test-pages/dc-test/dc-test';
-import {OscTestPage} from '../../pages/instrument-test-pages/osc-test/osc-test';
-
+//Components
+import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Services
-import {DeviceManagerService} from '../../services/device/device-manager.service';
-import {StorageService} from '../../services/storage/storage.service';
+import { StorageService } from '../../services/storage/storage.service';
 
 @Component({
     templateUrl: 'settings.html',
 })
 export class SettingsPage {
-
-    public nav: NavController;
-    public toastCtrl: ToastController;
-
-    public deviceManangerService: DeviceManagerService;   
-    public localSimDevUri = 'http://192.168.1.8:80';
-    public remotesimDevUri = 'https://35oopc6de8.execute-api.us-west-2.amazonaws.com/dev';
     public storageService: StorageService;
-    public showExtraInfo: boolean = false;
+    public popoverCtrl: PopoverController;
+    public defaultConsoleLog;
+    public logArguments;
 
-    constructor(_toastCtrl: ToastController, _nav: NavController, _deviceManagerService: DeviceManagerService, _storageService: StorageService) {
-        this.nav = _nav;
-        this.toastCtrl = _toastCtrl;
-        this.deviceManangerService = _deviceManagerService;
+    constructor(_storageService: StorageService, _popCtrl: PopoverController) {
         this.storageService = _storageService;
+        this.popoverCtrl = _popCtrl;
         console.log('settings constructor');
-        this.storageService.getData('uri').then((uri) => {
-            this.localSimDevUri = uri;
+        this.defaultConsoleLog = window.console.log;
+    }
+
+    changeConsoleLog(event) {
+        console.log(this.defaultConsoleLog, window.console);
+        let popover = this.popoverCtrl.create(GenPopover, {
+            dataArray: ['console', 'local storage', 'both']
+        });
+        popover.onDidDismiss((data) => {
+            if (data === null) { return; }
+            if (data.option === 'console') {
+                console.log('hey');
+                window.console.log = this.defaultConsoleLog;
+            }
+            else if (data.option === 'local storage') {
+                window.console.log = this.localStorageLog.bind(this);
+            }
+            else if (data.option === 'both') {
+                window.console.log = this.bothLog.bind(this);
+            }
+        });
+        popover.present({
+            ev: event
         });
     }
 
-    connect(targetUri: string) {
-        this.deviceManangerService.connect(targetUri).subscribe(
-            (data) => {
-                this.deviceManangerService.addDeviceFromDescriptor(targetUri, data);                
+    localStorageLog() {
+        let appLog;
+        this.logArguments = []
+        for (let i = 0; i < arguments.length; i++) {
+            this.logArguments.push(arguments[i]);
+        }
 
-            },
-            (err) => {
-                let toast = this.toastCtrl.create({
-                    message: 'No response from URL',
-                    duration: 3000,
-                    position: 'bottom'
-                });
-                toast.present();
-            },
-            () => {
-
+        this.storageService.getData('appLog').then(function (data) {
+            if (data === null) {
+                appLog = [];
             }
-        );
+            else {
+                appLog = JSON.parse(data);
+            }
+            appLog.push(this.logArguments);
+            this.storageService.saveData('appLog', JSON.stringify(appLog));
+        }.bind(this));
+        this.defaultConsoleLog.apply(window.console, [{
+            hey: 'test'
+        }]);
     }
 
-    //Test Code
-    enumDc() {
-        /*this.deviceManangerService.devices[0].instruments.dc.enumerate().subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        )*/
+    bothLog() {
+        this.localStorageLog();
+        if (this.defaultConsoleLog.apply) {
+            this.defaultConsoleLog.apply(window.console, arguments);
+        }
+        else {
+            let message = Array.prototype.slice.apply(arguments).join(' ');
+            this.defaultConsoleLog(message);
+        }
     }
 
-    showInfo() {
-        this.showExtraInfo = !this.showExtraInfo;
-    }
-    
-    navToAwgTestPage(deviceIndex: number){
-        this.deviceManangerService.setActiveDevice(deviceIndex);
-        this.nav.push(AwgTestPage);
-    }
-    
-    navToDcTestPage(deviceIndex: number) {
-        this.deviceManangerService.setActiveDevice(deviceIndex);
-        this.nav.push(DcTestPage);
-    }
-    
-    navToOscTestPage(deviceIndex: number){
-        this.deviceManangerService.setActiveDevice(deviceIndex);
-        this.nav.push(OscTestPage);
+    exportLogFile() {
+        this.storageService.getData('appLog').then((data) => {
+            let fileName = 'OpenScopeLogs.txt';
+            let csvContent = 'data:text/csv;charset=utf-8,';
+            if (data === null) {
+                csvContent += 'No Logs Found\n';
+            }
+            else {
+                let appLog = JSON.parse(data);
+                console.log(appLog);
+                for (let log of appLog) {
+                    let logCall = '';
+                    for (let parameter of log) {
+                        console.log(typeof(parameter));
+                        console.log(parameter);
+                        if (typeof(parameter) === 'object') {
+                            logCall += JSON.stringify(parameter) + ' ';
+                        }
+                        else {
+                            logCall += parameter + ' ';
+                        }
+                    }
+                    csvContent += logCall + '\r\n';
+                }
+            }
+            console.log(csvContent);
+
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+        });
     }
 
-    sqlSave() {
-        this.storageService.saveSettings();
-    }
-
-    sqlLoad() {
-        this.storageService.loadSettings();
-    }
-
-    onUrlInputChange(data) {
-        //Store value in local storage to load on next init
-        this.storageService.saveData('uri', data);
+    clearAppLog() {
+        this.storageService.removeDataByKey('appLog');
     }
 }

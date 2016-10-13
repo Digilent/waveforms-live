@@ -32,7 +32,7 @@ export class MyApp {
             { title: 'Instrument Panel', component: TestChartCtrlsPage },
             //{ title: 'Home Page', component: HomePage },
             //{ title: 'Test Page', component: TestPage },
-            //{ title: 'Settings', component: SettingsPage },
+            { title: 'Settings', component: SettingsPage },
             { title: 'Test Panel', component: ProtocolTestPanel },
             { title: 'Device Manager', component: DeviceManagerPage }
         ];

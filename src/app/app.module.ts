@@ -3,7 +3,7 @@ import { IonicApp, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 import { CoreModule } from './core/core.module';
-import { HomeModule } from '../pages/home/home.module';
+import { SettingsModule } from '../pages/settings/settings.module';
 import { InstrumentPanelModule } from '../pages/test-chart-ctrls/test-chart-ctrls.module';
 import { DeviceManagerPageModule } from '../pages/device-manager-page/device-manager-page.module';
 import { ProtocolTestPanelModule } from '../pages/protocol-test-panel/protocol-test-panel.module';
@@ -15,7 +15,7 @@ import { ProtocolTestPanelModule } from '../pages/protocol-test-panel/protocol-t
   imports: [
     ProtocolTestPanelModule,
     CoreModule,
-    HomeModule,
+    SettingsModule,
     InstrumentPanelModule,
     DeviceManagerPageModule,
     IonicModule.forRoot(MyApp)

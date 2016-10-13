@@ -22,19 +22,19 @@
         <ion-list>
             <ion-item class="fgen-settings-container">
                 <ion-label stacked>Frequency (Hz):</ion-label>
-                <ion-input type="number" [disabled]="isDc() || fgenComponent.powerOn" [(ngModel)]="fgenComponent.frequency" (ngModelChange)="drawWave()"></ion-input>
+                <ion-input type="number" step="any" [disabled]="isDc() || fgenComponent.powerOn" [(ngModel)]="fgenComponent.frequency" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
             <ion-item class="fgen-settings-container">
                 <ion-label stacked>Amplitude:</ion-label>
-                <ion-input type="number" [disabled]="isDc() || fgenComponent.powerOn" [(ngModel)]="fgenComponent.amplitude" (ngModelChange)="drawWave()"></ion-input>
+                <ion-input type="number" step="any" [disabled]="isDc() || fgenComponent.powerOn" [(ngModel)]="fgenComponent.amplitude" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
             <ion-item class="fgen-settings-container">
                 <ion-label stacked>DC Offset (V):</ion-label>
-                <ion-input type="number" [disabled]="fgenComponent.powerOn" [(ngModel)]="fgenComponent.offset" (ngModelChange)="drawWave()"></ion-input>
+                <ion-input type="number" step="any" [disabled]="fgenComponent.powerOn" [(ngModel)]="fgenComponent.offset" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
             <ion-item class="fgen-settings-container">
                 <ion-label stacked>Duty Cycle (%):</ion-label>
-                <ion-input [disabled]="!isSquare() || fgenComponent.powerOn" type="number" [(ngModel)]="fgenComponent.dutyCycle" (ngModelChange)="drawWave()"></ion-input>
+                <ion-input [disabled]="!isSquare() || fgenComponent.powerOn" type="number" step="any" [(ngModel)]="fgenComponent.dutyCycle" (ngModelChange)="drawWave()"></ion-input>
             </ion-item>
             <button ion-button class="text-button-main disable-hover" (click)="closeModal();">Close Function Gen Configuration</button>  
         </ion-list>
