@@ -11,6 +11,9 @@ import { SettingsPage } from '../pages/settings/settings';
 import { ProtocolTestPanel } from '../pages/protocol-test-panel/protocol-test-panel';
 import { DeviceManagerPage } from '../pages/device-manager-page/device-manager-page';
 
+//Services
+import { SettingsService } from '../services/settings/settings.service';
+
 @Component({
     templateUrl: 'app.html'
 })
@@ -20,10 +23,12 @@ export class MyApp {
     // make HelloIonicPage the root (or first) page
     rootPage: any = DeviceManagerPage;
     pages: Array<{ title: string, component: any }>;
+    public settingsService: SettingsService;
 
     constructor(
         public platform: Platform,
-        public menu: MenuController
+        public menu: MenuController,
+        _settingsService: SettingsService
     ) {
         this.initializeApp();
 
@@ -36,6 +41,7 @@ export class MyApp {
             { title: 'Test Panel', component: ProtocolTestPanel },
             { title: 'Device Manager', component: DeviceManagerPage }
         ];
+        this.settingsService = _settingsService;
     }
 
     initializeApp() {

@@ -1,6 +1,5 @@
 <ion-content #mycontent>
     <div class="chart-page-container">
-        <!-------------------------------- TOP BAR --------------------------------->
         <div class="top-bar-container">
             <ion-row>
                 <ion-col class="move-left" center text-center>
@@ -19,22 +18,22 @@
                 </ion-col>
                 <ion-col class="inner-ctrls" text-right center>
                     <button ion-button icon-right class="text-button-side disable-hover" (click)="singleClick()">
-                        Single
+                        <span class="collapse-button">Single</span>
                         <ion-icon name="play"></ion-icon>
                     </button>
                     <button ion-button icon-right class="text-button-side disable-hover" (click)="runClick()" *ngIf="!running">
-                        Run
+                        <span class="collapse-button">Run</span>
                         <ion-icon name="repeat"></ion-icon>
                     </button>
                     <button ion-button icon-right class="text-button-side disable-hover" (click)="stopClick()" *ngIf="running">
-                        Stop
+                        <span class="collapse-button">Stop</span>
                         <ion-icon name="hand"></ion-icon>
                     </button>
                 </ion-col>
             </ion-row>
         </div>
 
-        <!-------------------------------- CENTER STAGE --------------------------------->
+        
         <div class="center-container">
             <div class="chart-wrapper">
                 <!-- chart here -->
@@ -58,7 +57,7 @@
         </div>
 
 
-        <!-------------------------------- BOTTOM BAR --------------------------------->
+        
         <div class="bottom-bar-container">
             <bottom-bar (headerClicked)="toggleBotControls();"></bottom-bar>
         </div>

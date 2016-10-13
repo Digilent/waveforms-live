@@ -93,6 +93,8 @@ export class SilverNeedleChart {
     public oscopeChansActive: boolean[] = [];
 
     public colorArray: string[] = ['#7cb5ec', '#fffe00', 'ff3b99', '00c864'];
+    public triggerPlotLine;
+    public triggerAnchor;
 
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
@@ -454,9 +456,7 @@ export class SilverNeedleChart {
 
     //Displays the y axis label for the active series and hide the others
     updateYAxisLabels() {
-        console.log('updating labels');
         for (let i = 0; i < this.chart.yAxis.length; i++) {
-            console.log(i, this.activeSeries);
             if (i === this.activeSeries - 1) {
                 this.chart.yAxis[this.activeSeries - 1].update({
                         labels: {

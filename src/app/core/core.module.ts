@@ -5,13 +5,15 @@ import { CommonModule } from '@angular/common';
 import { StorageService } from '../../services/storage/storage.service';
 import { Storage } from '@ionic/storage';
 import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { SettingsService } from '../../services/settings/settings.service';
 
 @NgModule({
     imports: [],
     providers: [
         Storage,
         StorageService,
-        DeviceManagerService
+        DeviceManagerService,
+        SettingsService
     ]
 })
 export class CoreModule {

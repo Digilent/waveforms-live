@@ -95,16 +95,13 @@ export class TestChartCtrlsPage {
 
     //Run osc single
     singleClick() {
-        console.log(this.triggerComponent);
         let trigSourceArr = this.triggerComponent.triggerSource.split(' ');
         if (trigSourceArr[1] === undefined) {
             trigSourceArr[1] = '1';
         }
-        console.log(trigSourceArr);
         this.triggerComponent.lowerThresh
         this.triggerComponent.upperThresh
         let trigType = this.triggerComponent.edgeDirection + 'Edge';
-        console.log(trigType);
         let readArray = [[], [], [], [], []];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {

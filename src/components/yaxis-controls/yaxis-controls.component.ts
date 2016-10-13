@@ -106,8 +106,6 @@ export class YAxisComponent {
 
     //Set active series on the chart component
     setActiveSeries(i) {
-        console.log(i);
-        console.log('yaxis set active series ' + (i + 1));
         this.chart.setActiveSeries(i + 1);
     }
 

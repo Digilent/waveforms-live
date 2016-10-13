@@ -31,5 +31,9 @@ export class ChartModalPage {
     exportChart() {
         this.chart.exportCsv('myData');
     }
+
+    close() {
+        this.viewCtrl.dismiss();
+    }
     
 }

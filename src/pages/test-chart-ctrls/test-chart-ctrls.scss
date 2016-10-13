@@ -141,3 +141,26 @@
 .scroll-content {
     overflow-y: auto;
 }
+
+//Remove text from collapse buttons also this is cool
+@media screen and (max-width: 500px) {
+    .collapse-button {
+        display: none;
+    }
+    .chart-page-container .top-bar-container .inner-ctrls .text-button-side {
+        margin-top: 0.1rem;
+        margin-right: 0.1rem;
+        margin-bottom: 0.1rem;
+        margin-left: 0.1rem;
+        font-size: 8px;
+        height: 25px;
+        background-color: #535353;
+        border: solid black 1px;
+        border-radius: 0px;
+        min-width: 0px;
+    }
+    .chart-page-container .top-bar-container .inner-ctrls
+    {
+        max-width: 80px;
+    }
+}
