@@ -55,13 +55,6 @@ export class YAxisComponent {
         popover.present({
             ev: event
         });
-        popover.onDidDismiss(data => {
-        });
-    }
-
-    //Toggle chart autoscaling for all axes
-    turnOnAutoscale() {
-        this.chart.toggleAutoscale();
     }
 
     //Called when series settings are changed. Updates chart series settings

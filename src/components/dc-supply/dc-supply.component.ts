@@ -59,7 +59,7 @@ export class DcSupplyComponent {
                 channelNumArray[i] = i + 1;
                 this.voltages[i] = "3.300";
                 this.currents[i] = "1.000";
-                this.readVoltages[i] = "-.--- V";
+                this.readVoltages[i] = "-.---";
                 this.formatExtremes(i);
                 this.dcOn[i] = false;
             }
@@ -111,7 +111,7 @@ export class DcSupplyComponent {
             (data) => {
                 console.log(data);
                 for (let channel in data.dc) {
-                    this.readVoltages[parseInt(channel) - 1] = data.dc[channel][0].voltage.toFixed(3) + ' V';
+                    this.readVoltages[parseInt(channel) - 1] = data.dc[channel][0].voltage.toFixed(3);
                 }
             },
             (err) => {
@@ -139,7 +139,7 @@ export class DcSupplyComponent {
             }, 500);
         }
         else {
-            this.readVoltages[channel] = '-.--- V';
+            this.readVoltages[channel] = '-.---';
             this.setVoltages([channel + 1], [0]);
         }
     }
@@ -179,7 +179,6 @@ export class DcSupplyComponent {
     //Validate current supplies
     validateCurrent(supplyNum: number) {
         if (parseFloat(this.currents[supplyNum]) < 0 || parseFloat(this.currents[supplyNum]) > this.maxCurrents[supplyNum]) {
-            console.log(supplyNum + ' is wrong mosuckra');
             this.correctCurrents[supplyNum] = false;
             return;
         }

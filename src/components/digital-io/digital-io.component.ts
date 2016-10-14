@@ -39,7 +39,6 @@ export class DigitalIoComponent {
     }
     
     emitEvent() {
-        console.log('hey2');
         this.headerClicked.emit(null);
     }
 

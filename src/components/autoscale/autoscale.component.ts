@@ -27,8 +27,4 @@ export class AutoscaleComponent {
         this.chart.autoscaleAllAxes();
     }
 
-    setAutoscaleX(event) {
-        console.log(this.chart.autoscaleYaxes);
-    }
-
 }

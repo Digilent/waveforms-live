@@ -41,7 +41,7 @@ export class TestChartCtrlsPage {
         this.platform = _platform;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
-        this.storage = _storage;;
+        this.storage = _storage;
     }
 
     requestFullscreen() {

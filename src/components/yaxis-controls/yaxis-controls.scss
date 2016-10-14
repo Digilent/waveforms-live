@@ -41,18 +41,18 @@
     border: solid white 1px;
 }
 
-.font-size-button
-{
-    //Instead set font size in button container rather than icon explicity.
-    //font-size: 8px;
-}
-
 .align-center-container .vertical-align
 {
     margin-top: 0.1rem;
     margin-right: 0.1rem;
     margin-bottom: 0.1rem;
     margin-left: 0.1rem;
+    padding-top: 4px;
+}
+
+.header-bar-side .header-bar-title
+{
+    padding-top: 4px;
 }
 
 .icon-only-button-side

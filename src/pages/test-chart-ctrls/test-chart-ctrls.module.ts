@@ -21,6 +21,8 @@ import { TriggerPopover } from '../../components/trigger-popover/trigger-popover
 import { DigitalIoPopover } from '../../components/digital-io-popover/digital-io-popover.component';
 import { ModalFgenPage } from '../../pages/fgen-modal/fgen-modal';
 import { ChartModalPage } from '../../pages/chart-modal/chart-modal';
+import { LaComponent } from '../../components/la-controls/la-controls.component';
+import { LaPopover } from '../../components/la-popover/la-popover.component';
 
 import { ChartModule } from 'angular2-highcharts';
  
@@ -35,9 +37,13 @@ import { ChartModule } from 'angular2-highcharts';
         IonicModule.forRoot(ModalFgenPage),
         IonicModule.forRoot(SeriesPopover),
         IonicModule.forRoot(TriggerPopover),
+        IonicModule.forRoot(LaComponent),
+        IonicModule.forRoot(LaPopover),
         IonicModule.forRoot(DigitalIoPopover)
     ],
     declarations: [
+        LaComponent,
+        LaPopover,
         DigitalIoPopover,
         ChartModalPage,
         TestChartCtrlsPage,

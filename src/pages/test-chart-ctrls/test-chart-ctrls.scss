@@ -144,7 +144,7 @@
 
 //Remove text from collapse buttons also this is cool
 @media screen and (max-width: 500px) {
-    .collapse-button {
+    .chart-page-container .collapse-button {
         display: none;
     }
     .chart-page-container .top-bar-container .inner-ctrls .text-button-side {
@@ -162,5 +162,8 @@
     .chart-page-container .top-bar-container .inner-ctrls
     {
         max-width: 80px;
+    }
+    .chart-page-container [icon-right] ion-icon {
+        padding-left: 1px;
     }
 }

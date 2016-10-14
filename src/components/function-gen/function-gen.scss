@@ -127,3 +127,13 @@ ion-list .item-input.input-has-focus:last-child {
 {
     border-bottom: none;
 }
+
+.fgen-container .item-label-stacked .text-input
+{
+    text-align: left;
+    margin-left: 10px;
+    max-width: 90%;
+    background-color: #3A3A3A;
+    border: solid black 1px;
+    padding: 2px 0px 0px 2px;
+}

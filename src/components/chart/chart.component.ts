@@ -349,27 +349,31 @@ export class SilverNeedleChart {
         else if (this.timelineView === false) {
             this.chartLoad.emit(this.chart);
         }
-        document.getElementById('chart-component-container').addEventListener("wheel", this.scrollEvent.bind(this));
-        this.chart.renderer.image('assets/img/settingsButton.png', 5, 5, 27, 25).attr({
+
+        if (this.deviceDescriptor !== undefined) {
+            document.getElementById('chart-component-container').addEventListener("wheel", this.scrollEvent.bind(this));
+            this.chart.renderer.image('assets/img/settingsButton.png', 5, 5, 27, 25).attr({
                 id: ('settingsButton')
             })
-            .css({
-                'cursor': 'pointer'
-            })
-            .add()
-            .on('click', (event) => {
-                let modal = this.modalCtrl.create(ChartModalPage, {
-                    chartComponent: this
+                .css({
+                    'cursor': 'pointer'
+                })
+                .add()
+                .on('click', (event) => {
+                    let modal = this.modalCtrl.create(ChartModalPage, {
+                        chartComponent: this
+                    });
+                    modal.present();
                 });
-                modal.present();
-            });
 
-            
-        //Load all axes for all possible series (osc and la). No noticeable performance hits
-        for (let i = 0; i < this.deviceDescriptor.instruments.la.numChans + this.deviceDescriptor.instruments.osc.numChans - 1; i++) {
-            this.addYAxis(i);
-            this.addSeries(i);
+
+            //Load all axes for all possible series (osc and la). No noticeable performance hits
+            for (let i = 0; i < this.deviceDescriptor.instruments.la.numChans + this.deviceDescriptor.instruments.osc.numChans - 1; i++) {
+                this.addYAxis(i);
+                this.addSeries(i);
+            }
         }
+        
     }
 
     //Called on timeline chart load

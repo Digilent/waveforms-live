@@ -1,0 +1,8 @@
+<div class="la-pop-container">
+    <ion-list>
+        <ion-item class="la-item" *ngFor="let channel of laComponent.laChans, let i = index;">
+            <span>Ch {{i + 1}}</span>
+            <button ion-button item-right class="la-pop-button" (click)="laComponent.toggleChanDisplay(i)" [ngClass]="{'button-on': laComponent.displayChan[i]}"></button>
+        </ion-item>
+    </ion-list>
+</div> 

@@ -1,0 +1,55 @@
+.la-pop-container
+{
+    background-color: #3A3A3A;
+}
+
+.la-pop-container .la-item
+{
+    background-color: #3A3A3A !important;
+    color: white;
+    .item-inner
+    {
+        border-top: 1px solid #686868;
+        border-bottom: 1px solid black;
+    }
+}
+
+.la-pop-container .item-block:first-child
+{
+    border-top: solid #686868 1px;
+    .item-inner
+    {
+        border-top: none;
+    }
+}
+
+.la-pop-container .item-block:last-child
+{ 
+    border-bottom: none;
+    .item-inner
+    {
+        border-bottom: none;
+    }
+}
+
+.la-pop-container ion-list
+{
+    margin: 0 0 0 0;
+}
+
+.la-pop-container .la-pop-button
+{
+    background-color: #4487BA;
+    border: solid #33658B 2px;
+    width: 25px;
+    font-size: 8px;
+    height: 25px;
+    opacity: 0.2;
+    margin: 2px;
+    padding: none;
+}
+
+.la-pop-container .button-on
+{
+    opacity: 1;
+}

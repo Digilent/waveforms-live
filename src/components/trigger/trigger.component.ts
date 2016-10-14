@@ -1,4 +1,4 @@
-import { Component, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 
 //Components 
@@ -20,7 +20,6 @@ export class TriggerComponent {
     public triggerSource: string = 'osc 1';
     public triggerType: string = 'edge';
     public popoverCtrl: PopoverController;
-    public storageEventListener: EventEmitter<any>;
     public showTriggerSettings: boolean = true;
     public imgSrc: string = 'assets/img/trigger-rising.png';
     public devMngSrv: DeviceManagerService;

@@ -88,6 +88,7 @@
 {
     padding: 1px;
     color: white;
+    font-size: 10px;
 }
 
 .chart-info-container
@@ -97,3 +98,24 @@
     background-color: #535353;
 }
 
+//Remove text from collapse buttons also this is cool
+@media screen and (max-width: 1200px) {
+    .chart-component-wrapper .collapse-button {
+        display: none;
+    }
+    .chart-component-wrapper .text-button-side {
+        margin-top: 0.1rem;
+        margin-right: 0.1rem;
+        margin-bottom: 0.1rem;
+        margin-left: 0.1rem;
+        font-size: 8px;
+        height: 25px;
+        background-color: #535353;
+        border: solid black 1px;
+        border-radius: 0px;
+        min-width: 0px;
+    }
+    .chart-component-wrapper [icon-right] ion-icon {
+        padding-left: 1px;
+    }
+}
