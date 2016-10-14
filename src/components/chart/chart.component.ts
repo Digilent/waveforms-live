@@ -48,7 +48,6 @@ export class SilverNeedleChart {
     public chartBoundsY: ChartBounds = null;
     public inTimelineDrag: boolean = false;
     public activeChannels = [1, 1];
-    public autoscaleAll: boolean = false;
     public mathEnabled: boolean = false;
     public generalVoltsPerDivOpts: string[] = ['1 mV', '2 mV', '5 mv', '10 mV', '20 mV', '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
     public activeVPDIndex: number[] = [9, 9];
@@ -82,9 +81,6 @@ export class SilverNeedleChart {
     public timelineChartInitialized: boolean = false;
 
     public timelineChartEventListener: EventEmitter<any>;
-
-    public autoscaleYaxes: boolean[] = [];
-    public autoscaleXaxis: boolean = false;
 
     public currentBufferArray: WaveformComponent[] = [];
 
@@ -338,6 +334,7 @@ export class SilverNeedleChart {
             this.timelineChartEventListener.unsubscribe();
         }
     }  
+
     //Called once on chart load
     onLoad(chartInstance) {
         //Save a reference to the chart object so we can call methods on it later
@@ -373,8 +370,6 @@ export class SilverNeedleChart {
             this.addYAxis(i);
             this.addSeries(i);
         }
-        console.log(this.chart);
-
     }
 
     //Called on timeline chart load
@@ -533,21 +528,7 @@ export class SilverNeedleChart {
             let extremesX = this.timelineChart.xAxis[0].getExtremes();
             let extremesY = this.timelineChart.yAxis[0].getExtremes();
             this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
-        }
-        /*if (!ignoreAutoscale && initialDraw) {
-            if (this.autoscaleAll) {
-                this.autoscaleAllAxes();
-            }
-            else {
-                if (this.autoscaleXaxis) {
-                    this.autoscaleAxis('x', 0);
-                }
-                let i = -1;
-                while ((i = this.autoscaleYaxes.indexOf(true, i + 1)) >= 0 && this.chart.series[i] !== undefined) {
-                    this.autoscaleAxis('y', i)
-                }
-            }
-        } */  
+        }  
     }
 
     //Remove extra series and axes from the chart
@@ -1506,11 +1487,6 @@ export class SilverNeedleChart {
         }
     }
 
-    //Called to toggle autoscaling all axes on or off
-    toggleAutoscale() {
-        this.autoscaleAll = !this.autoscaleAll;
-    }
-
     //Autoscales single axis
     autoscaleAxis(axis: string, axisIndex: number) {
         if (axis === 'x') {
@@ -1872,16 +1848,6 @@ export class SilverNeedleChart {
     getSeriesColor(seriesNum: number) {
         if (this.chart.series[seriesNum] === undefined) {return this.colorArray[seriesNum]}
         return this.chart.series[seriesNum].color;
-    }
-
-    toggleAxisAutoscale(axis: string, seriesNum: number) {
-        if (axis === 'x') {
-            this.autoscaleXaxis  = !this.autoscaleXaxis;
-        }
-        else if (axis === 'y') {
-            this.autoscaleYaxes[seriesNum] = !this.autoscaleYaxes[seriesNum];
-        }
-        
     }
 
 //---------------------------------- MATH INFO ------------------------------

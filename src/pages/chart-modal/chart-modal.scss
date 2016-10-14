@@ -1,13 +1,15 @@
 .chart-modal-container
 {
-    text-align: center;
-    background: transparent;
+    position: absolute;            
+    top: 50%;      
+    left: 50%;                  
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    width: 100%;
 }
 
 .chart-modal-container .functionality-wrapper
 {
     background-color: #535353;
-    max-width: 300px;
     width: 100%;
-    display: inline-block;
 }

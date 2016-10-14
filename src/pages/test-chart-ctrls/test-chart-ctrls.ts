@@ -45,8 +45,6 @@ export class TestChartCtrlsPage {
     }
 
     requestFullscreen() {
-        console.log('hey');
-        console.log(this);
         let conf = confirm("Fullscreen mode?");
         let docelem: any = document.documentElement;
 
@@ -86,15 +84,15 @@ export class TestChartCtrlsPage {
             this.chartReady = true;
             this.chart1.loadDeviceSpecificValues(this.activeDevice);
         }
+    }
+
+    ionViewDidEnter() {
+        this.app.setTitle('Instrument Panel');
         if (this.platform.is('ios') || this.platform.is('android')) {
             //Have to create bind reference to remove listener since .bind creates new function reference
             this.clickBindReference = this.requestFullscreen.bind(this);
             document.getElementById('instrument-panel-container').addEventListener('click', this.clickBindReference);
         }
-    }
-
-    ionViewDidEnter() {
-        this.app.setTitle('Instrument Panel');
     }
 
     saveTimelineChart(event) {

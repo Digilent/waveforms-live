@@ -7,24 +7,15 @@
             <ion-col text-center>
                 <button ion-button (click)="autoscaleAxis('x', 0)" class="text-button-side disable-hover">x-axis</button>
             </ion-col>
-            <ion-col text-center>
-                <div class="button-container"><button (click)="chart.toggleAxisAutoscale('x', 0)" [ngClass]="{autoscaleActive: chart.autoscaleXaxis}" class="active-toggle disable-hover"></button></div>
-            </ion-col>
         </ion-row>
         <ion-row *ngFor="let channel of chart.numSeries; let i = index">
             <ion-col text-center>
                 <button ion-button (click)="autoscaleAxis('y', i)" class="text-button-side disable-hover">y-axis {{i + 1}}</button>
             </ion-col>
-            <ion-col text-center>
-                <div class="button-container"><button (click)="chart.toggleAxisAutoscale('y', i)" [ngClass]="{autoscaleActive: chart.autoscaleYaxes[i]}" class="active-toggle disable-hover"></button></div>
-            </ion-col>
         </ion-row>
         <ion-row>
             <ion-col text-center>
                 <button ion-button (click)="autoscaleAll()" class="text-button-side disable-hover">All</button>
-            </ion-col>
-            <ion-col text-center>
-                <div class="button-container"><button (click)="chart.toggleAutoscale()" [ngClass]="{autoscaleActive: chart.autoscaleAll}" class="active-toggle disable-hover"></button></div>
             </ion-col>
         </ion-row>
     </div>
