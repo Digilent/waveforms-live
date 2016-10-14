@@ -14,7 +14,7 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 })
 export class TriggerComponent {
     public delay: string = '0';
-    public lowerThresh: string = '-5';
+    public lowerThresh: string = '-30';
     public upperThresh: string = '0';
     public edgeDirection: string = 'rising';
     public triggerSource: string = 'osc 1';

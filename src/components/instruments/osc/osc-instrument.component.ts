@@ -167,7 +167,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                             t0: 0,
                             y: scaledArray,
                             pointOfInterest: command.osc[channel][0].pointOfInterest,
-                            triggerPosition: command.osc[channel][0].triggerDelta,
+                            triggerPosition: command.osc[channel][0].triggerIndex,
                             seriesOffset: command.osc[channel][0].actualVOffset
                         });
                     }

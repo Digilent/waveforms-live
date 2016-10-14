@@ -145,10 +145,10 @@ export class TestChartCtrlsPage {
                         [
                             {
                                 instrument: trigSourceArr[0],
-                                channel: trigSourceArr[1],
+                                channel: parseInt(trigSourceArr[1]),
                                 type: trigType,
-                                lowerThreshold: this.triggerComponent.lowerThresh,
-                                upperThreshold: this.triggerComponent.upperThresh
+                                lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
+                                upperThreshold: parseInt(this.triggerComponent.upperThresh)
                                 /*instrument: 'osc',
                                 channel: 1,
                                 type: 'risingEdge',
