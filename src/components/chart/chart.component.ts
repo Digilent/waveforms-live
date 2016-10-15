@@ -109,7 +109,10 @@ export class SilverNeedleChart {
             },
             colors: this.colorArray,
             title: {
-                text: ''
+                text: '',
+                style: {
+                    color: '#666666'
+                }
             },
             tooltip: {
                 enabled: true,
@@ -2248,7 +2251,7 @@ export class SilverNeedleChart {
 
     addTriggerLine(seriesNum) {
         let trigPosition = this.currentBufferArray[seriesNum].triggerPosition;
-        if (trigPosition < 0) {return;}
+        if (trigPosition < 0 || trigPosition === undefined) {return;}
         let initialValue =  trigPosition * this.currentBufferArray[seriesNum].dt;
         this.triggerPlotLine = this.chart.xAxis[0].addPlotLine({
             value: initialValue,

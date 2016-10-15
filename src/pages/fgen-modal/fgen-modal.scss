@@ -3,18 +3,13 @@
     height: 100%;
     background-color: #535353;
     color: white;
+    overflow: auto;
 }
 .fgen-chart-container .container-test 
 {
     height: 100%;
     padding: 10px;
     //background-color: green;
-}
-
-.settings-underline
-{
-    margin-bottom: 0px;
-    padding-bottom: 1rem;
 }
 
 @media only screen and (min-height: 768px) and (min-width: 768px)

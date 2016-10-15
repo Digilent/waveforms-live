@@ -98,7 +98,7 @@ export class ModalFgenPage {
                 t0: 0,
                 dt: xInterval,
                 pointOfInterest: 0,
-                triggerPosition: 0,
+                triggerPosition: undefined,
                 seriesOffset: 0
             };
             waveformComponentArray[i] = new WaveformComponent(waveform);
@@ -167,7 +167,7 @@ export class ModalFgenPage {
             t0: 0,
             dt: 1,
             pointOfInterest: 0,
-            triggerPosition: 0,
+            triggerPosition: undefined,
             seriesOffset: parseFloat(this.fgenComponent.offset)
         };
         let period = 0;
@@ -190,7 +190,7 @@ export class ModalFgenPage {
             t0: 0,
             dt: 1,
             pointOfInterest: 0,
-            triggerPosition: 0,
+            triggerPosition: undefined,
             seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
@@ -214,7 +214,7 @@ export class ModalFgenPage {
             t0: 0,
             dt: 1,
             pointOfInterest: 0,
-            triggerPosition: 0,
+            triggerPosition: undefined,
             seriesOffset: this.fgenComponent.offset
         };
         waveform.dt = 1;
@@ -232,7 +232,7 @@ export class ModalFgenPage {
             t0: 0,
             dt: 1,
             pointOfInterest: 0,
-            triggerPosition: 0,
+            triggerPosition: undefined,
             seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
@@ -265,7 +265,7 @@ export class ModalFgenPage {
             t0: 0,
             dt: 1,
             pointOfInterest: 0,
-            triggerPosition: 0,
+            triggerPosition: undefined,
             seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
@@ -304,7 +304,7 @@ export class ModalFgenPage {
             t0: 0,
             dt: 1,
             pointOfInterest: 0,
-            triggerPosition: 0,
+            triggerPosition: undefined,
             seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
