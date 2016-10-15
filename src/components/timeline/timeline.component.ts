@@ -62,8 +62,11 @@ export class TimelineComponent {
                 this.chart.setActiveSeries(i + 1);
             }
             else {
-                this.chart.removeSeriesAnchor(i);
+                if (this.chart.seriesAnchors[i] !== undefined) {
+                    this.chart.removeSeriesAnchor(i);
+                }
                 this.chart.chart.series[i].setData([], true);
+                this.chart.timelineChart.series[i].setData([], true);
             }
         }
     }

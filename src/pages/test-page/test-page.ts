@@ -5,7 +5,7 @@ import {ViewChild, Component} from '@angular/core';
 import {SilverNeedleChart} from '../../components/chart/chart.component';
 
 @Component({
-    templateUrl: "fgen-modal.html"
+    templateUrl: "test-page.html"
 })
 export class TestPage {
     @ViewChild('chart') chart: SilverNeedleChart;
