@@ -21,7 +21,26 @@
                         <ion-icon name="ios-glasses-outline"></ion-icon>
                     </button>
                     <ion-col center class="cursor-info-col" id="test-test">
-
+                        <span *ngIf="chart">
+                            <span [style.color]="chart.series[0].color">&#9632;</span>
+                            hey
+                        </span>
+                        <br>
+                        <span *ngIf="chart">
+                            <span [style.color]="chart.series[1].color">&#9632;</span>
+                            hey
+                        </span>
+                    </ion-col>
+                    <ion-col center class="cursor-info-col">
+                        <span *ngIf="chart">
+                            <span [style.color]="chart.series[3].color">&#9632;</span>
+                            hey
+                        </span>
+                        <br>
+                        <span *ngIf="chart">
+                            <span [style.color]="chart.series[4].color">&#9632;</span>
+                            hey
+                        </span>
                     </ion-col>
                 </ion-row>
             </ion-col>

@@ -1,9 +1,9 @@
 <div class="math-modal-wrapper">
     <ion-row>
         <div class="channel-div">
-            <ion-row *ngFor="let chan of mathChannels">
-                <ion-col>
-                    <button ion-button (click)="setActiveSeries(chan)" class="text-button-side disable-hover">{{chan}}</button>
+            <ion-row *ngFor="let chan of mathChannels, let k = index;">
+                <ion-col *ngIf="activeChannels[k]">
+                    <button ion-button (click)="setActiveSeries(chan)" [ngClass]="{'selected-channel': (k+1)==selectedData.channel}" class="text-button-side disable-hover">{{chan}}</button>
                 </ion-col>
             </ion-row>
         </div>

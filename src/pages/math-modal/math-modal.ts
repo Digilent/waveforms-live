@@ -34,6 +34,7 @@ export class MathModalPage {
     public chartMax: number = 0;
     public minIndex: number = 0;
     public maxIndex: number = 0;
+    public activeChannels: boolean[] = [];
 
     constructor(
         _platform: Platform,
@@ -46,13 +47,15 @@ export class MathModalPage {
         this.params = _params;
         this.chartComponent = this.params.get('chartComponent');
         this.chart = this.chartComponent.chart;
-        this.calcSelectedRange();
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
         this.mathChannels = [];
         for (let i = 0; i < this.activeDevice.instruments.osc.chans.length; i++) {
             this.mathChannels.push('Osc ' + (i + 1));
+            this.activeChannels.push(this.chartComponent.currentBufferArray[i] !== undefined && this.chartComponent.currentBufferArray[i].y !== undefined);
         }
+        this.selectedData.channel = this.activeChannels.indexOf(true) + 1;
+        this.calcSelectedRange();
     }
 
     //Close modal and save settings if they are changed

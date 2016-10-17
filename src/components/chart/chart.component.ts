@@ -96,6 +96,8 @@ export class SilverNeedleChart {
     public triggerAnchor: any;
     public deviceDescriptor: DeviceComponent;
 
+    public selectedMathInfo: string[] = [];
+
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
 
@@ -1883,6 +1885,13 @@ export class SilverNeedleChart {
 
     addMathInfo(mathInfo: string, seriesNum: number, maxIndex: number, minIndex: number) {
         console.log(mathInfo);
+        if (this.selectedMathInfo.indexOf(mathInfo) !== -1) {
+            this.selectedMathInfo.splice(this.selectedMathInfo.indexOf(mathInfo), 1);
+        }
+        if (this.selectedMathInfo.length === 4) {
+            return;
+        }
+        this.selectedMathInfo.push(mathInfo);
     }
 
     getMax(seriesNum: number, maxIndex: number, minIndex: number) {
