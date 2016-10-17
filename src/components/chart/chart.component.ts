@@ -2337,10 +2337,21 @@ export class SilverNeedleChart {
     }
 
     applyPointOfInterest(seriesNum: number) {
-        let poi = this.currentBufferArray[seriesNum].pointOfInterest * this.currentBufferArray[seriesNum].dt + 0;
+        let poiIndex = this.currentBufferArray[seriesNum].pointOfInterest;
+        if (poiIndex < 0 || poiIndex === undefined) {
+            return;
+        }
+        let poi = poiIndex * this.currentBufferArray[seriesNum].dt + 0;
+        this.base = poi;
         let min = poi - 5 * this.timeDivision;
         let max = poi + 5 * this.timeDivision;
         console.log(min, max);
         this.chart.xAxis[0].setExtremes(min, max, false, false);
+        if (this.timelineView) {
+            this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
+            let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
+            let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
+            this.updatePlotLines([0, 1], [val1, val2]);
+        }
     }
 }
