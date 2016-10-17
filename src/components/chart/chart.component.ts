@@ -421,8 +421,6 @@ export class SilverNeedleChart {
     timelineChartInit() {
         this.timelineChartInitialized = true;
         this.attachPlotLineEvents();
-        this.autoscaleAxis('x', 0);
-        this.autoscaleAxis('y', 0);
         let extremesX = this.timelineChart.xAxis[0].getExtremes();
         let extremesY = this.timelineChart.yAxis[0].getExtremes();
         this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
@@ -477,7 +475,7 @@ export class SilverNeedleChart {
         for (let i = 0; i < this.seriesAnchors.length; i++) {
             this.updateSeriesAnchor(i);
         }
-        this.updateTriggerAnchor(0);
+        this.updateTriggerAnchor(this.numSeries[0]);
     }
 
     decimateData(seriesNum: number, waveform: any, bounds: any) {
@@ -525,9 +523,11 @@ export class SilverNeedleChart {
 
     setCurrentBuffer(bufferArray: WaveformComponent[]) {
         this.currentBufferArray = bufferArray;
-        this.updateTriggerLine();
-        this.updateTriggerAnchor(0);
-        this.applyPointOfInterest(0)
+        if (this.deviceDescriptor !== undefined) {
+            this.updateTriggerLine();
+            this.updateTriggerAnchor(this.numSeries[0]);
+            this.applyPointOfInterest(this.numSeries[0]);
+        }
     }
 
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
@@ -1297,7 +1297,7 @@ export class SilverNeedleChart {
         let difference = newVal - oldValinNewWindow;
         this.setXExtremes(difference);
         this.updateCursorLabels();
-        this.updateTriggerAnchor(0);
+        this.updateTriggerAnchor(this.numSeries[0]);
         this.xPositionPixels = event.chartX || (event.targetTouches[0].pageX - this.chart.plotLeft);
     }.bind(this);
 
@@ -1410,7 +1410,7 @@ export class SilverNeedleChart {
             this.updatePlotLines([0, 1], [val1, val2]);
         }
         this.updateCursorLabels();
-        this.updateTriggerAnchor(0);
+        this.updateTriggerAnchor(this.numSeries[0]);
     }
 
     //Set series settings based on an object containing the series number, volts per division, and base
@@ -1623,7 +1623,7 @@ export class SilverNeedleChart {
             let difference = oldValinNewWindow - value;
             this.setXExtremes(difference);
             this.updateCursorLabels();
-            this.updateTriggerAnchor(0);
+            this.updateTriggerAnchor(this.numSeries[0]);
             this.xPositionPixels = event.chartX;
             this.timelineChartInner.nativeElement.addEventListener('mousemove', this.timelineWhiteDragListener);
             this.timelineChartInner.nativeElement.addEventListener('touchmove', this.timelineWhiteDragListener);
@@ -1746,7 +1746,7 @@ export class SilverNeedleChart {
         this.base = ((newExtremes.min + newExtremes.max) / 2);
         //this.timeDivision = ((newExtremes.max - newExtremes.min) / 10).toFixed(3);
         this.updateCursorLabels();
-        this.updateTriggerAnchor(0);
+        this.updateTriggerAnchor(this.numSeries[0]);
     }.bind(this);
 
     //Callback for timeline plot mousemove events to pan user view of chart
@@ -1756,7 +1756,7 @@ export class SilverNeedleChart {
         let difference = oldValinNewWindow - newVal;
         this.setXExtremes(difference);
         this.updateCursorLabels();
-        this.updateTriggerAnchor(0);
+        this.updateTriggerAnchor(this.numSeries[0]);
         this.xPositionPixels = event.chartX;
     }.bind(this);
 
@@ -2216,7 +2216,6 @@ export class SilverNeedleChart {
             return;
         }
         let path = ['M', 0, 0, 'L', 5, -9, -5, -9, 'Z'];
-        console.log('adding trig anc');
         this.triggerAnchor = this.chart.renderer.path(path)
             .attr({
                 'stroke-width': 1,
@@ -2226,17 +2225,15 @@ export class SilverNeedleChart {
                 id: ('triggerAnchor')
             })
             .add();
-        console.log('added trig anch');
         this.triggerAnchor.translate(xPixel - 1, this.chart.plotTop - 1);
-        console.log('moved trig anch');
     }
 
     updateTriggerLine() {
         if (this.triggerPlotLine === undefined) {
-            this.addTriggerLine(0);
+            this.addTriggerLine(this.numSeries[0]);
             return;
         }
-        let trigPosition = this.currentBufferArray[0].triggerPosition;
+        let trigPosition = this.currentBufferArray[this.numSeries[0]].triggerPosition;
         if (trigPosition < 0) {
             this.triggerPlotLine.destroy();
             this.timelineTriggerPlotLine.destroy();
@@ -2244,7 +2241,7 @@ export class SilverNeedleChart {
             this.timelineTriggerPlotLine = undefined;
             return;
         }
-        let value = trigPosition * this.currentBufferArray[0].dt;
+        let value = trigPosition * this.currentBufferArray[this.numSeries[0]].dt;
         this.triggerPlotLine.options.value = value;
         this.timelineTriggerPlotLine.options.value = value;
         this.triggerPlotLine.render();

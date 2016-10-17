@@ -145,6 +145,10 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         stringBuffer += char;
                         i++;
                     }
+                    if (i === 2000) {
+                        observer.error('Osc Read Failed. Try Again');
+                        return;
+                    }
                     let binaryIndexStringLength = stringBuffer.indexOf('\r\n');
                     let binaryIndex = parseFloat(stringBuffer.substring(0, binaryIndexStringLength));
                     let command;

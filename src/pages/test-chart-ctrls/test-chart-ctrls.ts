@@ -235,9 +235,15 @@ export class TestChartCtrlsPage {
                         }
                     }
                 }
+                console.log(this.chart1.currentBufferArray);
             },
             (err) => {
                 console.log(err);
+                let toast = this.toastCtrl.create({
+                    message: err,
+                    showCloseButton: true
+                });
+                toast.present();
             },
             () => {
             }
