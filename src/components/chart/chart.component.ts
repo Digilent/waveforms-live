@@ -378,6 +378,8 @@ export class SilverNeedleChart {
                 this.addYAxis(i);
                 this.addSeries(i);
             }
+
+            //Init axes settings
             for (let i = 0; i < this.deviceDescriptor.instruments.osc.numChans; i++) {
                 this.activeVPDIndex[i] = this.voltsPerDivVals.indexOf(0.5);
                 this.setSeriesSettings({
@@ -386,6 +388,12 @@ export class SilverNeedleChart {
                     seriesNum: i
                 });
             }
+
+            this.activeTPDIndex = this.secsPerDivVals.indexOf(0.01);
+            this.setTimeSettings({
+                timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
+                base: 0
+            }, false);
         }
 
     }
@@ -534,14 +542,20 @@ export class SilverNeedleChart {
             pointInterval: waveform.dt
         }, false);
 
+        if (initialDraw) {
+            this.applyPointOfInterest(seriesNum);
+        }
+
+
         this.chart.redraw(false);
         this.updateCursorLabels();
+        this.updateTriggerAnchor(seriesNum);
 
         if (this.timelineView && initialDraw) {
             let timelineWaveform = this.decimateTimeline(seriesNum, waveform);
             this.timelineChart.series[seriesNum].setData(timelineWaveform.y, false, false, false);
             this.timelineChart.series[seriesNum].update({
-                pointStart: timelineWaveform.t0, 
+                pointStart: timelineWaveform.t0,
                 pointInterval: timelineWaveform.dt
             }, false);
             this.timelineChart.redraw(false);
@@ -554,19 +568,6 @@ export class SilverNeedleChart {
     //Remove extra series and axes from the chart
     clearExtraSeries(usedSeries: number[]) {
         this.numSeries = usedSeries;
-        /*if (this.chart.series.length <= usedSeries.length) {
-            return;
-        }
-        let lengthExists = this.chart.series.length;
-        for (let i = usedSeries.length; i < lengthExists; i++) {
-            this.chart.series[i].remove(false);
-            this.chart.yAxis[i].remove(false);
-        }
-        if (this.timelineView) {
-            for (let i = usedSeries.length; i < lengthExists; i++) {
-                this.timelineChart.series[i].remove(false);
-            }
-        }*/
 
         for (let i = 0; i < this.oscopeChansActive.length; i++) {
             if (this.oscopeChansActive[i] === false && this.chart.series[i] !== undefined) {
@@ -2242,7 +2243,7 @@ export class SilverNeedleChart {
             this.timelineTriggerPlotLine = undefined;
             return;
         }
-        let value =  trigPosition * this.currentBufferArray[0].dt;
+        let value = trigPosition * this.currentBufferArray[0].dt;
         this.triggerPlotLine.options.value = value;
         this.timelineTriggerPlotLine.options.value = value;
         this.triggerPlotLine.render();
@@ -2251,8 +2252,8 @@ export class SilverNeedleChart {
 
     addTriggerLine(seriesNum) {
         let trigPosition = this.currentBufferArray[seriesNum].triggerPosition;
-        if (trigPosition < 0 || trigPosition === undefined) {return;}
-        let initialValue =  trigPosition * this.currentBufferArray[seriesNum].dt;
+        if (trigPosition < 0 || trigPosition === undefined) { return; }
+        let initialValue = trigPosition * this.currentBufferArray[seriesNum].dt;
         this.triggerPlotLine = this.chart.xAxis[0].addPlotLine({
             value: initialValue,
             color: 'green',
@@ -2333,5 +2334,13 @@ export class SilverNeedleChart {
         let offset = this.currentBufferArray[seriesNum].seriesOffset / 1000;
         this.seriesAnchors[seriesNum].translate(this.chart.plotLeft - 12, this.chart.yAxis[seriesNum].toPixels(offset) - 6);
         this.yPositionPixels = this.chart.yAxis[seriesNum].toPixels(offset);
+    }
+
+    applyPointOfInterest(seriesNum: number) {
+        let poi = this.currentBufferArray[seriesNum].pointOfInterest * this.currentBufferArray[seriesNum].dt + 0;
+        let min = poi - 5 * this.timeDivision;
+        let max = poi + 5 * this.timeDivision;
+        console.log(min, max);
+        this.chart.xAxis[0].setExtremes(min, max, false, false);
     }
 }
