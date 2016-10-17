@@ -124,7 +124,7 @@ export class TestChartCtrlsPage {
         this.triggerComponent.lowerThresh
         this.triggerComponent.upperThresh
         let trigType = this.triggerComponent.edgeDirection + 'Edge';
-        let readArray = [[], [], [], [], []];
+        let readArray = [[], [], [], [], [], []];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
                 readArray[0].push(i + 1);
@@ -132,12 +132,13 @@ export class TestChartCtrlsPage {
                 readArray[2].push(1);
                 readArray[3].push(this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000);
                 readArray[4].push(this.activeDevice.instruments.osc.chans[i].bufferSizeMax);
+                readArray[5].push(parseFloat(this.triggerComponent.delay))
             }
         }
         this.activeDevice.multiCommand(
             {
                 osc: {
-                    setParameters: [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4]]
+                    setParameters: [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]]
                 },
                 trigger: {
                     setParameters: [
@@ -202,6 +203,7 @@ export class TestChartCtrlsPage {
         }
         this.activeDevice.instruments.osc.read(readArray).subscribe(
             (data) => {
+                console.log(data);
                 let numSeries = [];
                 for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
                     if (this.chart1.oscopeChansActive[i]) {

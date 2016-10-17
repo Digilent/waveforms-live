@@ -42,7 +42,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
     }
 
-    setParametersJson(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[]) {
+    setParametersJson(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[], delays: number[]) {
         let command = {
             "osc": {}
         }
@@ -54,10 +54,12 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         "offset": offsets[index] * 1000,
                         "gain": gains[index],
                         "sampleFreq": sampleFreqs[index] * 1000,
-                        "bufferSize": bufferSizes[index]
+                        "bufferSize": bufferSizes[index],
+                        "triggerDelay": Math.round(delays[index] * 1000000000)
                     }
                 ]
         });
+        console.log(command);
         return command;
     }
 
@@ -66,7 +68,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
     }
 
     //Tell OpenScope to run once and return a buffer
-    setParameters(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[]): Observable<any> {
+    setParameters(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[], delays: number[]): Observable<any> {
         if (chans.length == 0) {
             return Observable.create((observer) => {
                 observer.complete();
@@ -84,7 +86,8 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         "offset": offsets[index] * 1000,
                         "gain": gains[index],
                         "sampleFreq": sampleFreqs[index] * 1000,
-                        "bufferSize": bufferSizes[index]
+                        "bufferSize": bufferSizes[index],
+                        "triggerDelay": delays[index] * 1000000000
                     }
                 ]
         });

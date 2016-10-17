@@ -527,6 +527,7 @@ export class SilverNeedleChart {
         this.currentBufferArray = bufferArray;
         this.updateTriggerLine();
         this.updateTriggerAnchor(0);
+        this.applyPointOfInterest(0)
     }
 
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
@@ -542,9 +543,9 @@ export class SilverNeedleChart {
             pointInterval: waveform.dt
         }, false);
 
-        if (initialDraw) {
+        /*if (initialDraw) {
             this.applyPointOfInterest(seriesNum);
-        }
+        }*/
 
 
         this.chart.redraw(false);
@@ -729,7 +730,7 @@ export class SilverNeedleChart {
         else {
             initialValue = extremes.max;
             this.activeChannels[1] = parseInt(this.cursor2Chan.slice(-1));
-            style = 'dash';
+            style = 'shortdash';
             color = this.chart.series[this.activeChannels[1] - 1].color;
         }
         this.cursorRefs[this.numYCursors + 2] = this.chart.yAxis[0].addPlotLine({
@@ -1357,7 +1358,7 @@ export class SilverNeedleChart {
                     x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i].options.value),
                 });*/
                 this.cursorAnchors[i].attr({
-                    x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i].options.value) - 6
+                    x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i + 1].options.value) - 6
                 });
                 //}
             }
@@ -2345,7 +2346,6 @@ export class SilverNeedleChart {
         this.base = poi;
         let min = poi - 5 * this.timeDivision;
         let max = poi + 5 * this.timeDivision;
-        console.log(min, max);
         this.chart.xAxis[0].setExtremes(min, max, false, false);
         if (this.timelineView) {
             this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);

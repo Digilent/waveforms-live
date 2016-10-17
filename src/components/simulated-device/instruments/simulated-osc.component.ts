@@ -19,6 +19,7 @@ export class SimulatedOscComponent {
     public gains: number[] = [1, 1, 1];
     public sampleFreqs: number[] = [0, 0, 0, 0, 0, 0, 0];
     public bufferSizes: number[] = [0, 0, 0, 0, 0, 0, 0];
+    public delays: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
     public defaultAwgSettings: Object = {
         signalType: 'sine',
@@ -40,10 +41,12 @@ export class SimulatedOscComponent {
         this.gains[chan] = commandObject.gain;
         this.sampleFreqs[chan] = commandObject.sampleFreq;
         this.bufferSizes[chan] = commandObject.bufferSize;
+        this.delays[chan] = commandObject.triggerDelay;
         this.simulatedDeviceService.setOscParameters(commandObject, chan);
         return {
             "command": "setParameters",
-            "actualOffset": 3100,
+            "actualOffset": commandObject.offset,
+            "actualSampleFreq": commandObject.sampleFreq,
             "statusCode": 0,
             "wait": 0
         };
