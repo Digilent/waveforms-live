@@ -59,27 +59,27 @@ export class SimulatedOscComponent {
                 let awgSettings: any = this.simulatedDeviceService.getAwgSettings(1);
                 let oscSettings = this.simulatedDeviceService.getOscParameters(chan);
                 if (awgSettings.signalType === 'sine') {
-                    returnInfo = this.drawSine(awgSettings, oscSettings);
+                    returnInfo = this.drawSine(awgSettings, oscSettings, chan);
                 }
                 else if (awgSettings.signalType === 'triangle') {
-                    returnInfo = this.drawTriangle(awgSettings, oscSettings);
+                    returnInfo = this.drawTriangle(awgSettings, oscSettings, chan);
                 }
                 else if (awgSettings.signalType === 'sawtooth') {
-                    returnInfo = this.drawSawtooth(awgSettings, oscSettings);
+                    returnInfo = this.drawSawtooth(awgSettings, oscSettings, chan);
                 }
                 else if (awgSettings.signalType === 'square') {
-                    returnInfo = this.drawSquare(awgSettings, oscSettings);
+                    returnInfo = this.drawSquare(awgSettings, oscSettings, chan);
                 }
                 else {
                     console.log('drawing default wave');
-                    returnInfo = this.drawSine(this.defaultAwgSettings, this.defaultOscSettings);
+                    returnInfo = this.drawSine(this.defaultAwgSettings, this.defaultOscSettings, chan);
                 }
 
             }
         return returnInfo;
     }
 
-    drawSine(awgSettings, oscSettings) {
+    drawSine(awgSettings, oscSettings, chan) {
 
         //---------- Simulate Signal ----------
         //Set default values
@@ -93,12 +93,15 @@ export class SimulatedOscComponent {
         //Calculate dt - time between data points
         let dt = 1000 / sampleRate;
 
+        let phase = ((parseInt(chan) - 1) * (90)) * (Math.PI / 180); //in radians
+        console.log(phase);
+
         //Clock time in seconds.  Rolls ever every hour.
 
         //Build Y point arrays
         let y = [];
         for (let j = 0; j < numSamples; j++) {
-            y[j] = (vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j + t0)) + vOffset;
+            y[j] = (vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j + t0 + phase)) + vOffset;
         }
         
         let typedArray = new Int16Array(y);
@@ -117,7 +120,7 @@ export class SimulatedOscComponent {
             actualGain: 1
         };
     }
-    drawSquare(awgSettings, oscSettings) {
+    drawSquare(awgSettings, oscSettings, chan) {
         //Set default values
         let numSamples = oscSettings.bufferSize; //ten thousand points 
         let sigFreq = awgSettings.signalFreq; //in mHz
@@ -132,8 +135,10 @@ export class SimulatedOscComponent {
         let y = [];
         let period = 1 / (sigFreq / 1000);
 
+        let phase = (parseInt(chan) - 1) * (period / 4);
+
         for (let i = 0; i < numSamples; i++) {
-            if ((dt * i + t0) % period < period * (dutyCycle / 100)) {
+            if ((dt * i + t0 + phase) % period < period * (dutyCycle / 100)) {
                 y[i] = (vOffset + vpp / 2);
             }
             else {
@@ -159,7 +164,7 @@ export class SimulatedOscComponent {
         };  
     }
 
-    drawTriangle(awgSettings, oscSettings) {
+    drawTriangle(awgSettings, oscSettings, chan) {
         let numSamples = oscSettings.bufferSize; //ten thousand points 
         let sigFreq = awgSettings.signalFreq; //in mHz
         let sampleRate = oscSettings.sampleFreq; //30 points per period
@@ -171,9 +176,10 @@ export class SimulatedOscComponent {
         let dt = 1000 / sampleRate;
         let y = [];
         let period = 1 / (sigFreq / 1000);
+        let phase = (parseInt(chan) - 1) * (period / 4);
 
         for (let i = 0; i < numSamples; i++) {
-            y[i] = ((4 * (vpp / 2)) / period) * (Math.abs(((i * dt + t0 + 3 * period / 4) % period) - period / 2) - period / 4) + vOffset;
+            y[i] = ((4 * (vpp / 2)) / period) * (Math.abs(((i * dt + t0 + phase + 3 * period / 4) % period) - period / 2) - period / 4) + vOffset;
         }
 
         let typedArray = new Int16Array(y);
@@ -195,7 +201,7 @@ export class SimulatedOscComponent {
 
     }
 
-    drawSawtooth(awgSettings, oscSettings) {
+    drawSawtooth(awgSettings, oscSettings, chan) {
         let numSamples = oscSettings.bufferSize; //ten thousand points 
         let sigFreq = awgSettings.signalFreq; //in mHz
         let sampleRate = oscSettings.sampleFreq; //30 points per period
@@ -207,9 +213,10 @@ export class SimulatedOscComponent {
         let dt = 1000 / sampleRate;
         let y = [];
         let period = 1 / (sigFreq / 1000);
+        let phase = (parseInt(chan) - 1) * (period / 4);
 
         for (let i = 0; i < numSamples; i++) {
-            y[i] = (vpp / period) * ((dt * i + t0) % period) + vOffset;
+            y[i] = (vpp / period) * ((dt * i + t0 + phase) % period) + vOffset;
         }
 
         let typedArray = new Int16Array(y);

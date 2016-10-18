@@ -16,37 +16,40 @@
         <ion-row class="chart-info">
             <ion-col center *ngIf="mathEnabled" class="info-col">
                 <ion-row center class="cursor-container">
-                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openMathModal()">
+                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openMathModal()" [disabled]="currentBufferArray.length === 0">
                         <span class="collapse-button">Math</span>
                         <ion-icon name="ios-glasses-outline"></ion-icon>
                     </button>
+                    <button ion-button class="icon-only-button-side disable-hover" (click)="updateMath()">
+                        <ion-icon name="refresh"></ion-icon>
+                    </button>
                     <ion-col center class="cursor-info-col" id="test-test">
-                        <span *ngIf="chart">
-                            <span [style.color]="chart.series[0].color">&#9632;</span>
-                            hey
+                        <span *ngIf="selectedMathInfo[0]">
+                            <span [style.color]="chart.series[selectedMathInfo[0].channel].color">&#9632;</span>
+                            {{selectedMathInfo[0].measurement}}: {{selectedMathInfo[0].value}}
                         </span>
                         <br>
-                        <span *ngIf="chart">
-                            <span [style.color]="chart.series[1].color">&#9632;</span>
-                            hey
+                        <span *ngIf="selectedMathInfo[1]">
+                            <span [style.color]="chart.series[selectedMathInfo[1].channel].color">&#9632;</span>
+                            {{selectedMathInfo[1].measurement}}: {{selectedMathInfo[1].value}}
                         </span>
                     </ion-col>
                     <ion-col center class="cursor-info-col">
-                        <span *ngIf="chart">
-                            <span [style.color]="chart.series[3].color">&#9632;</span>
-                            hey
+                        <span *ngIf="selectedMathInfo[2]">
+                            <span [style.color]="chart.series[selectedMathInfo[2].channel].color">&#9632;</span>
+                            {{selectedMathInfo[2].measurement}}: {{selectedMathInfo[2].value}}
                         </span>
                         <br>
-                        <span *ngIf="chart">
-                            <span [style.color]="chart.series[4].color">&#9632;</span>
-                            hey
+                        <span *ngIf="selectedMathInfo[3]">
+                            <span [style.color]="chart.series[selectedMathInfo[3].channel].color">&#9632;</span>
+                            {{selectedMathInfo[3].measurement}}: {{selectedMathInfo[3].value}}
                         </span>
                     </ion-col>
                 </ion-row>
             </ion-col>
             <ion-col *ngIf="cursorsEnabled" class="info-col">
                 <ion-row center class="cursor-container">
-                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openCursorModal()">
+                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openCursorModal()" [disabled]="currentBufferArray.length === 0">
                         <span class="collapse-button">Cursors</span>
                         <ion-icon name="md-create"></ion-icon>
                     </button>

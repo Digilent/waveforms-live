@@ -96,7 +96,7 @@ export class SilverNeedleChart {
     public triggerAnchor: any;
     public deviceDescriptor: DeviceComponent;
 
-    public selectedMathInfo: string[] = [];
+    public selectedMathInfo: any = [];
 
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
@@ -1216,7 +1216,7 @@ export class SilverNeedleChart {
 
     openMathModal() {
         console.log(this.currentBufferArray);
-        if (this.currentBufferArray === undefined) { return; }
+        if (this.currentBufferArray.length === 0) { return; }
         let modal = this.modalCtrl.create(MathModalPage, {
             chartComponent: this
         });
@@ -1886,14 +1886,113 @@ export class SilverNeedleChart {
     //---------------------------------- MATH INFO ------------------------------
 
     addMathInfo(mathInfo: string, seriesNum: number, maxIndex: number, minIndex: number) {
-        console.log(mathInfo);
-        if (this.selectedMathInfo.indexOf(mathInfo) !== -1) {
-            this.selectedMathInfo.splice(this.selectedMathInfo.indexOf(mathInfo), 1);
+        console.log(mathInfo, seriesNum);
+
+        for (let i = 0; i < this.selectedMathInfo.length; i++) {
+            if (this.selectedMathInfo[i].measurement === mathInfo && this.selectedMathInfo[i].channel === seriesNum) {
+                this.selectedMathInfo.splice(i, 1);
+                return;
+            }
         }
         if (this.selectedMathInfo.length === 4) {
-            return;
+            this.selectedMathInfo.shift();
         }
-        this.selectedMathInfo.push(mathInfo);
+        this.selectedMathInfo.push({
+            measurement: mathInfo,
+            channel: seriesNum,
+            value: 'err'
+        });
+        this.updateMath();
+    }
+
+    updateMath() {
+        let extremes = this.chart.xAxis[0].getExtremes();
+        let chartMin = extremes.min;
+        let chartMax = extremes.max;
+        if (extremes.dataMin > chartMin) {
+            chartMin = extremes.dataMin;
+        }
+        if (extremes.dataMax < chartMax) {
+            chartMax = extremes.dataMax;
+        }
+        for (let i = 0; i < this.selectedMathInfo.length; i++) {
+            if (this.currentBufferArray[this.selectedMathInfo[i].channel] === undefined || this.currentBufferArray[this.selectedMathInfo[i].channel].y === undefined) {
+                this.selectedMathInfo[i].value = '----';
+                continue;
+            }
+            let seriesNum = this.selectedMathInfo[i].channel;
+            let minIndex = Math.round((chartMin - this.chart.series[seriesNum].xData[0]) / this.chart.series[seriesNum].options.pointInterval);
+            let maxIndex = Math.round((chartMax - this.chart.series[seriesNum].xData[0]) / this.chart.series[seriesNum].options.pointInterval);
+            this.selectedMathInfo[i].value = this.updateMathByName(this.selectedMathInfo[i], maxIndex, minIndex);
+        }
+    
+    }
+
+    updateMathByName(selectedMathInfoObj: any, maxIndex: number, minIndex: number) {
+        switch (selectedMathInfoObj.measurement) {
+            case 'Frequency': 
+                return this.getFrequency(selectedMathInfoObj.channel, maxIndex, minIndex);
+                
+            case 'Pos Pulse Width':
+                return 'Pos Pulse Width'
+                
+            case 'Pos Duty Cycle':
+                return 'Pos Duty Cycle'
+                
+            case 'Period':
+                return this.getPeriod(selectedMathInfoObj.channel, maxIndex, minIndex);
+
+            case 'Neg Pulse Width':
+                return 'Neg Pulse Width'
+                
+            case 'Neg Duty Cycle':
+                return 'Neg Duty Cycle'
+                
+            case 'Rise Rate':
+                return 'Rise Rate'
+                
+            case 'Rise Time':
+                return 'Rise Time'
+                
+            case 'Amplitude':
+                return this.getAmplitude(selectedMathInfoObj.channel, maxIndex, minIndex);
+                
+            case 'High':
+                return 'High'
+                
+            case 'Low':
+                return 'Low'
+                
+            case 'Peak to Peak':
+                return this.getPeakToPeak(selectedMathInfoObj.channel, maxIndex, minIndex);
+                
+            case 'Maximum':
+                return this.getMax(selectedMathInfoObj.channel, maxIndex, minIndex);
+                
+            case 'Minimum':
+                return this.getMin(selectedMathInfoObj.channel, maxIndex, minIndex);
+                
+            case 'Mean':
+                return this.getMean(selectedMathInfoObj.channel, maxIndex, minIndex);
+                
+            case 'RMS':
+                return this.getRMS(selectedMathInfoObj.channel, maxIndex, minIndex);
+                
+            case 'Overshoot':
+                return 'Overshoot'
+                
+            case 'Cycle Mean':
+                return 'Cycle Mean'
+                
+            case 'Cycle RMS':
+                return 'Cycle RMS'
+                
+            case 'Undershoot':
+                return 'Undershoot'
+                
+            default:
+                return 'default'
+        }
     }
 
     getMax(seriesNum: number, maxIndex: number, minIndex: number) {

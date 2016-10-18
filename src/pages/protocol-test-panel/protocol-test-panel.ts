@@ -537,7 +537,6 @@ export class ProtocolTestPanel {
         this.storage.saveData('uri', this.uri);
         this.storage.saveData('sendHeaders', JSON.stringify(this.sendHeaders));
         this.storage.saveData('responseHeaders', JSON.stringify(this.responseHeaders));
-        let responseRawBinary;
         try {
             let byteArray = new Int8Array(this.rawResponse);
             let stringBuffer = '';
