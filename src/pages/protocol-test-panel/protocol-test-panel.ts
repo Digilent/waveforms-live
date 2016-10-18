@@ -537,12 +537,27 @@ export class ProtocolTestPanel {
         this.storage.saveData('uri', this.uri);
         this.storage.saveData('sendHeaders', JSON.stringify(this.sendHeaders));
         this.storage.saveData('responseHeaders', JSON.stringify(this.responseHeaders));
-        this.storage.saveData('responseRawBinary', btoa(String.fromCharCode.apply(null, new Uint8Array(this.responseRawBinary))));
+        let responseRawBinary;
+        try {
+            let byteArray = new Int8Array(this.rawResponse);
+            let stringBuffer = '';
+            for (let i = 0; i < byteArray.length; i++) {
+                let char = '';
+                char = String.fromCharCode.apply(null, new Int8Array(this.rawResponse.slice(i, i + 1)));
+                stringBuffer += char;
+            }
+            this.storage.saveData('responseRawBinary', stringBuffer);
+        }
+        catch(e) {
+            console.log(e);
+            console.log('Error Saving Raw Binary Response');
+        }
         this.storage.saveData('responseBody', this.responseBody);
         this.attemptCommandSave();
     }
 
     attemptCommandSave() {
+        console.log('attempting command save');
         try {
             let sendBodyObject = JSON.parse(this.sendBody);
             for (let instrument in this.activeCommand) {

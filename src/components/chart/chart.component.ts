@@ -1215,6 +1215,8 @@ export class SilverNeedleChart {
     }
 
     openMathModal() {
+        console.log(this.currentBufferArray);
+        if (this.currentBufferArray === undefined) { return; }
         let modal = this.modalCtrl.create(MathModalPage, {
             chartComponent: this
         });
