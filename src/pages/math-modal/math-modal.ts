@@ -59,7 +59,7 @@ export class MathModalPage {
     }
 
     //Close modal and save settings if they are changed
-    closeModal(save: boolean) {
+    closeModal() {
         this.viewCtrl.dismiss();
     }
 

@@ -1,10 +1,9 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 
 //Services
 import {SimulatedDeviceService} from '../../../services/simulated-device/simulated-device.service';
 
-@Component({
-})
+@Injectable()
 
 export class SimulatedAwgComponent {
     public simulatedDeviceService: SimulatedDeviceService;

@@ -1,11 +1,10 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 
 //Services
 import {TransportService} from '../../services/transport/transport.service';
 
 
-@Component({
-})
+@Injectable()
 export abstract class InstrumentComponent {
 
     protected transport: TransportService;

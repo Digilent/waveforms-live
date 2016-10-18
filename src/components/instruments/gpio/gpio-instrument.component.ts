@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -8,8 +8,7 @@ import {InstrumentComponent} from '../instrument.component';
 //Services
 import {TransportService} from '../../../services/transport/transport.service';
 
-@Component({
-})
+@Injectable()
 export class GpioInstrumentComponent extends InstrumentComponent {
 
     public numChans: number;

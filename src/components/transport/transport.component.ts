@@ -1,9 +1,8 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
-@Component({
-})
+@Injectable()
 export abstract class TransportComponent {
 
     protected rootUri: string;

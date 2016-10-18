@@ -27,6 +27,7 @@ export class Tab1 {
     public showDevMenu: boolean = false;
     public connectingToDevice: boolean = false;
     public selectedSimulatedDevice: string = 'Select a Device';
+    public deviceBridgeAddress = 'http://';
 
     public devices = [];
 

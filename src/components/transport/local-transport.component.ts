@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -6,7 +6,7 @@ import 'rxjs/Rx';
 import {TransportComponent} from './transport.component';
 import {SimulatedDeviceComponent} from '../simulated-device/simulated-device.component';
 
-@Component({})
+@Injectable()
 export class LocalTransportComponent extends TransportComponent {
 
     public streamState: {

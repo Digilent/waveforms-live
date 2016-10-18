@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -9,8 +9,7 @@ import {DcChannelComponent} from './dc-channel.component';
 //Services
 import {TransportService} from '../../../services/transport/transport.service';
 
-@Component({
-})
+@Injectable()
 export class DcInstrumentComponent extends InstrumentComponent {
 
     public chans: DcChannelComponent[] = [];

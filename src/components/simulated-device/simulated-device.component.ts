@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -13,9 +13,7 @@ import {SimulatedGpioComponent} from './instruments/simulated-gpio.component';
 //Services
 import {SimulatedDeviceService} from '../../services/simulated-device/simulated-device.service';
 
-@Component({
-
-})
+@Injectable()
 export class SimulatedDeviceComponent {
 
     public streamState: {

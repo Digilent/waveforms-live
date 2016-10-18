@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -8,7 +8,7 @@ import {TransportComponent} from './transport.component';
 //Interfaces
 import {MyEventResponse} from './http-transport.interface';
 
-@Component({})
+@Injectable()
 export class HttpTransportComponent extends TransportComponent {
 
     public streamState: {

@@ -14,12 +14,12 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 export class DropDownMenu {
 
-    private showEnabled: boolean = false;
-    private selectedIndex: number = 0;
+    public showEnabled: boolean = false;
+    public selectedIndex: number = 0;
     public selectedValue: string = '';
-    private bodyEventFired: boolean = false;
+    public bodyEventFired: boolean = false;
 
-    private boundCloseListener = this.closeListener.bind(this);
+    public boundCloseListener = this.closeListener.bind(this);
 
     @Input() itemNames: Array<string> = [];
     @Output() valueChange = new EventEmitter();

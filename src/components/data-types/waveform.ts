@@ -1,7 +1,6 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 
-@Component({
-})
+@Injectable()
 export class WaveformComponent {
 
     public t0: number;

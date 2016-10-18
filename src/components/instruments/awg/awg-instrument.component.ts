@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -12,8 +12,7 @@ import {TransportService} from '../../../services/transport/transport.service';
 //Interfaces
 import {SettingsObject} from './awg-instrument.component';
 
-@Component({
-})
+@Injectable()
 export class AwgInstrumentComponent extends InstrumentComponent {
 
     public numChans: number;

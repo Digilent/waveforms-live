@@ -32,7 +32,7 @@ export class XAxisComponent {
     }
 
     //Toggle Series visibility
-    toggleSeriesSettings(seriesNum: number) {
+    toggleSeriesSettings() {
         this.showTimeSettings = !this.showTimeSettings;
     }
 }

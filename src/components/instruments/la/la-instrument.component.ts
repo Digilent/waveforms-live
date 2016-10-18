@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 
@@ -10,8 +10,7 @@ import {WaveformComponent} from '../../data-types/waveform';
 //Services
 import {TransportService} from '../../../services/transport/transport.service';
 
-@Component({
-})
+@Injectable()
 export class LaInstrumentComponent extends InstrumentComponent {
 
     public numChans: number;
