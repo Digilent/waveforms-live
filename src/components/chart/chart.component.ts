@@ -581,8 +581,8 @@ export class SilverNeedleChart {
     removeCursors() {
         this.chart.xAxis[0].removePlotLine('cursor0');
         this.chart.xAxis[0].removePlotLine('cursor1');
-        this.chart.yAxis[0].removePlotLine('cursor2');
-        this.chart.yAxis[0].removePlotLine('cursor3');
+        this.chart.yAxis[this.activeChannels[0] - 1].removePlotLine('cursor2');
+        this.chart.yAxis[this.activeChannels[1] - 1].removePlotLine('cursor3');
         if (this.timelineView) {
             this.timelineChart.xAxis[0].removePlotLine('timelineCursor0');
             this.timelineChart.xAxis[0].removePlotLine('timelineCursor1');
