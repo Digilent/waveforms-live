@@ -39,8 +39,8 @@ export class SilverNeedleChart {
     public activeSeries: number = 1;
     public numYCursors: number = 0;
     public cursorType: string = 'disabled';
-    public cursor1Chan: string = 'O1';
-    public cursor2Chan: string = 'O1';
+    public cursor1Chan: string = 'Osc 1';
+    public cursor2Chan: string = 'Osc 1';
     public cursorsEnabled: boolean = false;
     public cursorRefs: any[] = [];
     public timelineCursorRefs: any[] = [];
@@ -215,7 +215,7 @@ export class SilverNeedleChart {
                     let max = this.chart.yAxis[0].max;
                     let delta = (max - min) / (numTicks - 1);
                     for (var i = 0; i < numTicks; i++) {
-                        ticks[i] = (min + i * delta).toFixed(3);
+                        ticks[i] = (min + i * delta);
                     }
                     return ticks;
                 },
@@ -287,17 +287,8 @@ export class SilverNeedleChart {
                     let min = this.chart.xAxis[0].min;
                     let max = this.chart.xAxis[0].max;
                     let delta = (max - min) / (numTicks - 1);
-                    let mult = 3;
-                    if (delta < .001) {
-                        let exp = delta.toExponential(3);
-                        let real1 = exp.slice(exp.indexOf('e') - exp.length + 1);
-                        mult = -1 * Number(real1) + 3;
-                        if (mult > 20) {
-                            mult = 20;
-                        }
-                    }
                     for (var i = 0; i < numTicks; i++) {
-                        ticks[i] = (min + i * delta).toFixed(mult);
+                        ticks[i] = (min + i * delta);
                     }
                     return ticks;
                 },
@@ -641,7 +632,7 @@ export class SilverNeedleChart {
             value: initialValue,
             color: color,
             dashStyle: style,
-            width: 3,
+            width: 1,
             zIndex: 100 + this.numXCursors,
             id: 'cursor' + this.numXCursors,
         });
@@ -650,7 +641,7 @@ export class SilverNeedleChart {
                 value: initialValue,
                 color: color,
                 dashStyle: style,
-                width: 3,
+                width: 1,
                 zIndex: 100 + this.numXCursors,
                 id: 'timelineCursor' + this.numXCursors
             });
@@ -680,14 +671,17 @@ export class SilverNeedleChart {
             .on('touchend', (event) => {
                 this.activeCursor = -1;
             });
-        this.cursorAnchors[this.numXCursors] = this.chart.renderer.rect(this.chart.xAxis[0].toPixels(initialValue) - 5, this.chart.plotTop - 12, 10, 10, 1)
+
+        let path = ['M', 0, 0, 'L', 5, -9, -5, -9, 'Z'];
+        this.cursorAnchors[this.numXCursors] = this.chart.renderer.path(path)
             .attr({
-                'stroke-width': 2,
-                stroke: 'black',
-                fill: 'yellow',
+                'stroke-width': 1,
+                stroke: color,
+                fill: 'black',
                 zIndex: 3,
                 id: ('cursorAnchor' + this.numXCursors.toString())
             })
+            .add()
             .css({
                 'cursor': 'pointer'
             })
@@ -712,7 +706,7 @@ export class SilverNeedleChart {
             .on('touchend', (event) => {
                 this.activeCursor = -1;
             });
-
+        this.cursorAnchors[this.numXCursors].translate(this.chart.xAxis[0].toPixels(initialValue) - 1, this.chart.plotTop - 1);
         this.numXCursors++;
     }
 
@@ -740,7 +734,7 @@ export class SilverNeedleChart {
             value: initialValue,
             color: color,
             dashStyle: style,
-            width: 3,
+            width: 1,
             zIndex: 102 + this.numYCursors,
             id: 'cursor' + (this.numYCursors + 2)
         });
@@ -751,42 +745,46 @@ export class SilverNeedleChart {
                     value: initialValue,
                     color: color,
                     dashStyle: style,
-                    width: 3,
+                    width: 1,
                     zIndex: 100 + this.numXCursors,
                     id: 'timelineCursor' + (this.numYCursors + 2)
                 });
             }
             //this.cursorLabel[this.numYCursors + 2] = this.chart.renderer.text('Cursor ' + (this.numYCursors + 2), 100, 500).add();
-            this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.rect(this.chart.plotLeft - 12, this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].toPixels(initialValue) - 6, 10, 10, 1)
-                .attr({
-                    'stroke-width': 2,
-                    stroke: 'black',
-                    fill: 'yellow',
-                    zIndex: 3,
-                    id: ('cursorAnchor' + (this.numYCursors + 2).toString())
-                })
-                .css({
-                    'cursor': 'pointer'
-                })
-                .add()
-                .on('mousedown', (event) => {
-                    this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
-                    this.chartBoundsX = this.chart.xAxis[0].getExtremes();
-                    this.chartBoundsY = this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].getExtremes();
-                    this.yCursorStartDrag(this.numYCursors, event.clientY);
-                })
-                .on('touchstart', (event) => {
-                    this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
-                    this.chartBoundsX = this.chart.xAxis[0].getExtremes();
-                    this.chartBoundsY = this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].getExtremes();
-                    this.yCursorStartDrag(this.numYCursors, event.clientY);
-                })
-                .on('mouseup', (event) => {
-                    this.activeCursor = -1;
-                })
-                .on('touchend', (event) => {
-                    this.activeCursor = -1;
-                });
+
+        let path = ['M', 0, 0, 'L', 9, 5, 0, 10, 'Z'];
+        this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.path(path)
+            .attr({
+                'stroke-width': 1,
+                stroke: color,
+                fill: 'black',
+                zIndex: 3,
+                id: ('cursorAnchor' + (this.numYCursors + 2).toString())
+            })
+            .css({
+                'cursor': 'pointer'
+            })
+            .add()
+            .on('mousedown', (event) => {
+                this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
+                this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+                this.chartBoundsY = this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].getExtremes();
+                this.yCursorStartDrag(this.numYCursors, event.clientY);
+            })
+            .on('touchstart', (event) => {
+                this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
+                this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+                this.chartBoundsY = this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].getExtremes();
+                this.yCursorStartDrag(this.numYCursors, event.clientY);
+            })
+            .on('mouseup', (event) => {
+                this.activeCursor = -1;
+            })
+            .on('touchend', (event) => {
+                this.activeCursor = -1;
+            });
+
+            this.cursorAnchors[this.numYCursors + 2].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].toPixels(initialValue) - 6);
         }
         console.log(this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].plotLinesAndBands, this.numYCursors);
         let lineNum = this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].plotLinesAndBands.length - 1;
@@ -875,29 +873,21 @@ export class SilverNeedleChart {
         }
         let xVal = this.chart.xAxis[0].translate(xCor - this.chart.plotLeft, true);
         let pointNum = Math.round((xVal - this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].xData[0]) / this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].options.pointInterval);
-        this.cursorRefs[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum].x;
-        this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum].y;
+        this.cursorRefs[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].xData[pointNum];
+        let lineNum = this.chart.yAxis[this.activeChannels[this.activeCursor - 1] - 1].plotLinesAndBands.length - 1;
+        this.chart.yAxis[this.activeChannels[this.activeCursor - 1] - 1].plotLinesAndBands[lineNum * (this.activeCursor - 1)].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].yData[pointNum];
         if (this.timelineView) {
-            this.timelineCursorRefs[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum].x;
+            this.timelineCursorRefs[this.activeCursor - 1].options.value = this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].xData[pointNum];
             this.timelineCursorRefs[this.activeCursor - 1].render();
         }
 
         this.cursorPositions[this.activeCursor - 1] = {
-            x: parseFloat(this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum].x),
-            y: this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum].y
+            x: parseFloat(this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].xData[pointNum]),
+            y: this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].yData[pointNum]
         };
         this.cursorRefs[this.activeCursor - 1].render();
-        this.chart.yAxis[0].plotLinesAndBands[this.activeCursor - 1].render();
-        this.cursorAnchors[this.activeCursor - 1].attr({
-            x: xCor - 6,
-            y: this.chart.plotTop - 12,
-            width: 10,
-            height: 10,
-            'stroke-width': 2,
-            stroke: 'black',
-            fill: 'yellow',
-            zIndex: 3,
-        });
+        this.chart.yAxis[this.activeChannels[this.activeCursor - 1] - 1].plotLinesAndBands[lineNum * (this.activeCursor - 1)].render();
+        this.cursorAnchors[this.activeCursor - 1].translate(xCor - 1, this.chart.plotTop - 1);
     }.bind(this);
 
     //Callback function for mousemove event on a voltage cursor style
@@ -946,16 +936,7 @@ export class SilverNeedleChart {
             y: yCor - 10,
             zIndex: 99 + this.activeCursor
         });*/
-        this.cursorAnchors[this.activeCursor - 1].attr({
-            x: this.chart.plotLeft - 12,
-            y: yCor - 6,
-            width: 10,
-            height: 10,
-            'stroke-width': 2,
-            stroke: 'black',
-            fill: 'yellow',
-            zIndex: 3,
-        });
+        this.cursorAnchors[this.activeCursor - 1].translate(this.chart.plotLeft - 12, yCor - 5);
     }.bind(this);
 
     //Callback function for mousemove event on a time cursor style
@@ -987,16 +968,8 @@ export class SilverNeedleChart {
             y: this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum].y
         }
         this.cursorRefs[this.activeCursor - 1].render();
-        this.cursorAnchors[this.activeCursor - 1].attr({
-            x: xCor - 6,
-            y: this.chart.plotTop - 12,
-            width: 10,
-            height: 10,
-            'stroke-width': 2,
-            stroke: 'black',
-            fill: 'yellow',
-            zIndex: 3,
-        });
+        
+        this.cursorAnchors[this.activeCursor - 1].translate(xCor - 1, this.chart.plotTop - 1);
     }.bind(this);
 
     setTitle(newTitle: string) {
@@ -1198,7 +1171,8 @@ export class SilverNeedleChart {
         let modal = this.modalCtrl.create(ModalCursorPage, {
             cursorType: this.cursorType,
             cursor1Chan: this.cursor1Chan,
-            cursor2Chan: this.cursor2Chan
+            cursor2Chan: this.cursor2Chan,
+            chartComponent: this
         });
         modal.onDidDismiss(data => {
             if (data.save) {
@@ -1361,9 +1335,8 @@ export class SilverNeedleChart {
                 /*this.cursorLabel[i].attr({
                     x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i].options.value),
                 });*/
-                this.cursorAnchors[i].attr({
-                    x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i + 1].options.value) - 6
-                });
+                
+                this.cursorAnchors[i].translate(this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i + 1].options.value) - 1, this.chart.plotTop - 1);
                 //}
             }
         }
@@ -1376,10 +1349,8 @@ export class SilverNeedleChart {
                     y: this.chart.yAxis[0].toPixels(this.chart.yAxis[0].plotLinesAndBands[i - 2].options.value),
                 });*/
                 let lineNum = this.chart.yAxis[this.activeChannels[i - 2] - 1].plotLinesAndBands.length - 1;
-                this.cursorAnchors[i].attr({
-                    y: this.chart.yAxis[this.activeChannels[i - 2] - 1].toPixels(this.chart.yAxis[this.activeChannels[i - 2] - 1].plotLinesAndBands[lineNum * (i - 2)].options.value) - 6,
-                    x: this.chart.plotLeft - 12
-                });
+
+                this.cursorAnchors[i].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeChannels[i - 2] - 1].toPixels(this.chart.yAxis[this.activeChannels[i - 2] - 1].plotLinesAndBands[lineNum * (i - 2)].options.value) - 6);
                 //}
             }
         }
