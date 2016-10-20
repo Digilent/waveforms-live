@@ -117,6 +117,7 @@ export class TestChartCtrlsPage {
 
     //Run osc single
     singleClick() {
+        console.log('single clicked');
         let trigSourceArr = this.triggerComponent.triggerSource.split(' ');
         if (trigSourceArr[1] === undefined) {
             trigSourceArr[1] = '1';
@@ -127,13 +128,19 @@ export class TestChartCtrlsPage {
         let readArray = [[], [], [], [], [], []];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
+                let range = this.chart1.voltsPerDivVals[this.chart1.activeVPDIndex[i]] * 10;
+                let j = 0;
+                while (range * this.activeDevice.instruments.osc.chans[i].gains[j] > this.activeDevice.instruments.osc.chans[i].adcVpp / 1000) {
+                    j++;
+                }
                 readArray[0].push(i + 1);
                 readArray[1].push(0);
-                readArray[2].push(1);
+                readArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
                 readArray[3].push(this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000);
                 readArray[4].push(this.activeDevice.instruments.osc.chans[i].bufferSizeMax);
-                readArray[5].push(parseFloat(this.triggerComponent.delay))
+                readArray[5].push(parseFloat(this.triggerComponent.delay));
             }
+            console.log(readArray[2]);
         }
         this.activeDevice.multiCommand(
             {
@@ -169,6 +176,7 @@ export class TestChartCtrlsPage {
             }
         ).subscribe(
             (data) => {
+                console.log(data);
             },
             (err) => {
             },

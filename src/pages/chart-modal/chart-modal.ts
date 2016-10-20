@@ -50,6 +50,7 @@ export class ChartModalPage {
             let color = event.target.value;
             if (this.colorPickType === 'chart-background') {
                 console.log('chart-background');
+                console.log(this.chart.cursorRefs);
                 this.chart.chart.chartBackground.attr({
                     fill: event.target.value
                 });
@@ -73,6 +74,7 @@ export class ChartModalPage {
                         }
                     }
                 }, true);
+                console.log(this.chart.cursorRefs);
                 this.chart.chart.xAxis[0].update({
                     labels: {
                         style: {
@@ -85,6 +87,8 @@ export class ChartModalPage {
                         }
                     }
                 }, true);
+                console.log(this.chart.cursorRefs);
+                console.log(this.chart.chart);
                 this.currentColors[1] = color;
             }
             else if (this.colorPickType === 'grid') {
@@ -118,9 +122,6 @@ export class ChartModalPage {
             fill: chartBackgroundColor
         });
         this.currentColors[0] = chartBackgroundColor;
-
-
-        console.log('font');
         this.chart.chart.yAxis[0].update({
             labels: {
                 style: {
@@ -146,9 +147,6 @@ export class ChartModalPage {
             }
         }, true);
         this.currentColors[1] = everyOtherColor;
-
-
-        console.log('grid');
         this.chart.chart.yAxis[0].update({
             gridLineColor: everyOtherColor
         }, true);
@@ -159,7 +157,6 @@ export class ChartModalPage {
             lineColor: everyOtherColor
         }, true);
         this.currentColors[2] = everyOtherColor;
-
     }
 
 }

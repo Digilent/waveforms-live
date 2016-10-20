@@ -58,6 +58,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
     }
 
     setParametersParse(chan, command) {
+        console.log(command);
         return 'set Parameters channel ' + chan + ' is done!';
     }
 
@@ -116,6 +117,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
     }
 
     singleParse(chan, command) {
+        console.log(command);
         return 'run channel ' + chan + ' is done';
     }
 

@@ -2324,6 +2324,7 @@ export class SilverNeedleChart {
             return;
         }
         let value = trigPosition * this.currentBufferArray[this.numSeries[0]].dt;
+        console.log(this.triggerPlotLine);
         this.triggerPlotLine.options.value = value;
         this.timelineTriggerPlotLine.options.value = value;
         this.triggerPlotLine.render();

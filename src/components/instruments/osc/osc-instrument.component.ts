@@ -63,6 +63,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
     }
 
     setParametersParse(chan, responseObject) {
+        console.log(responseObject);
         return 'Channel ' + chan + ' ' + responseObject.command + ' successful';
     }
 
@@ -145,6 +146,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         i++;
                     }
                     if (i === 2000) {
+                        console.log(stringBuffer);
                         observer.error('Osc Read Failed. Try Again');
                         return;
                     }
