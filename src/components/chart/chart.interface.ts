@@ -9,7 +9,11 @@ export interface Chart {
     addSeries(options: Object, redraw: boolean, animation: boolean),
     renderer: any,
     setTitle(titleObject: Object),
-    addAxis(options: Object, isX: boolean, redraw: boolean, animation: boolean)
+    addAxis(options: Object, isX: boolean, redraw: boolean, animation: boolean),
+    update(options: any, redraw?: boolean),
+    chart: any,
+    chartBackground: any,
+    options: any
 }
 
 export interface ChartBounds {
