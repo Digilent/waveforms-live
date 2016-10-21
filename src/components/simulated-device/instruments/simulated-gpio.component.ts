@@ -22,42 +22,35 @@ export class SimulatedGpioComponent {
         this.prevChannel = parseInt(_chan);
     }
 
-    getValue(_chan) {
+    read(_chan) {
+        console.log('hey');
         this.counterVal(_chan);
         return {
-            command: 'getValue',
+            command: 'read',
             value: this.values[_chan],
+            direction: this.directions[_chan],
             statusCode: 0,
             wait: 100
         }
     }
 
-    setValue(_chan, _value) {
+    write(_chan, _value) {
         console.log('setting ' + _chan + ' to ' + _value);
         this.values[_chan] = _value;
         return {
-            command: 'setValue',
+            command: 'write',
             statusCode: 0,
-            wait: 0
+            wait: 500
         };
     }
 
-    getDirection(_chan) {
-        return {
-            command: 'getDirection',
-            direction: this.values[_chan],
-            statusCode: 0,
-            wait: 100
-        }
-    }
-
-    setDirection(_chan, _direction) {
+    setParameters(_chan, _direction) {
         console.log('setting ' + _chan + ' to ' + _direction);
         this.values[_chan] = _direction;
         return {
-            command: 'setDirection',
+            command: 'setParameters',
             statusCode: 0,
-            wait: 0
+            wait: 100
         };
     }
 

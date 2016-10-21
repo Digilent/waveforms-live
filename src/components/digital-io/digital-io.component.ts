@@ -48,7 +48,7 @@ export class DigitalIoComponent {
         if (this.gpioVals[channel] === true) {
             value = 1;
         }
-        this.activeDev.instruments.gpio.setValues([channel + 1], [value]).subscribe(
+        this.activeDev.instruments.gpio.write([channel + 1], [value]).subscribe(
             (data) => {
                 console.log(data);
             },
@@ -68,7 +68,7 @@ export class DigitalIoComponent {
                 inputChans.push(i + 1);
             }
         }
-        this.activeDev.instruments.gpio.getValues(inputChans).subscribe(
+        this.activeDev.instruments.gpio.read(inputChans).subscribe(
             (data) => {
                 for (let channel in data.gpio) {
                     this.gpioVals[parseInt(channel) - 1] = data.gpio[channel][0].value === 1 ? true : false;

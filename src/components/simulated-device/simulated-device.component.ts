@@ -73,7 +73,7 @@ export class SimulatedDeviceComponent {
                     responseObject[instrument][channel] = [];
                     event[instrument][channel].forEach((element, index, array) => {
                         responseObject[instrument][channel].push(this.processCommands(instrument, event[instrument][channel][index], [channel])) - 1;
-                        if (element.command === 'read') {
+                        if (element.command === 'read' && instrument !== 'gpio') {
                             binaryDataFlag = 1;
                         }
                     });
@@ -120,14 +120,12 @@ export class SimulatedDeviceComponent {
                 return this.dc.getVoltage(params[0]);
             
             //---------- GPIO ----------        
-            case 'gpiosetValue':
-                return this.gpio.setValue(params[0], commandObject.value);
-            case 'gpiogetValue':
-                return this.gpio.getValue(params[0]);
-            case 'gpiosetDirection':
-                return this.gpio.setDirection(params[0], commandObject.value);
-            case 'gpiogetDirection':
-                return this.gpio.getDirection(params[0]);
+            case 'gpiowrite':
+                return this.gpio.write(params[0], commandObject.value);
+            case 'gpioread':
+                return this.gpio.read(params[0]);
+            case 'gpiosetParameters':
+                return this.gpio.setParameters(params[0], commandObject.direction);
 
             //-------- TRIGGER --------
             case 'triggersetParameters':
