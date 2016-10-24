@@ -24,7 +24,7 @@ export class GpioInstrumentComponent extends InstrumentComponent {
         this.sourceCurrentMax = _gpioInstrumentDescriptor.sourceCurrentMax;
     }
 
-    setParameters(chans: Array<number>, directions: boolean[]): Observable<any> {
+    setParameters(chans: Array<number>, directions: string[]): Observable<any> {
         let command = {
             "gpio": {}
         }
@@ -37,12 +37,13 @@ export class GpioInstrumentComponent extends InstrumentComponent {
                 }
             ]
         });
+        console.log(command);
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-
+                    console.log(data);
                     //Return voltages and complete observer
                     observer.next(data);
                     observer.complete();
@@ -110,6 +111,7 @@ export class GpioInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    console.log(data);
                     observer.next(data);
                     observer.complete();
 

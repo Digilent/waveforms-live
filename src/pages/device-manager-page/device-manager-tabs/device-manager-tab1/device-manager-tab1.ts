@@ -123,6 +123,9 @@ export class Tab1 {
         this.connectingToDevice = true;
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
+                console.log('SWAG SWAG');
+                console.log(success);
+                console.log(success.device[0]);
                 this.connectingToDevice = false;
                 this.devices.unshift(
                     {
@@ -169,6 +172,8 @@ export class Tab1 {
                 this.connectingToDevice = true;
                 this.deviceManagerService.connectLocal(this.selectedSimulatedDevice).subscribe(
                     (success) => {
+                        console.log('WHUWHU');
+                        console.log(success);
                         this.connectingToDevice = false;
                         this.devices.unshift(
                             {

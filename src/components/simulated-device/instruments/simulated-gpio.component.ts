@@ -23,7 +23,6 @@ export class SimulatedGpioComponent {
     }
 
     read(_chan) {
-        console.log('hey');
         this.counterVal(_chan);
         return {
             command: 'read',

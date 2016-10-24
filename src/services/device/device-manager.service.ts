@@ -46,6 +46,7 @@ export class DeviceManagerService {
                     catch (error) {
                         observer.error(error);
                     }
+                    console.log(response);
                     
                     observer.next(response);
                     observer.complete();
@@ -65,6 +66,7 @@ export class DeviceManagerService {
                 let XHR = new XMLHttpRequest();
                 // We define what will happen if the data are successfully sent
                 XHR.addEventListener("load", function (event: MyEventResponse) {
+                    console.log(event.currentTarget.response);
                     this.transport.setLocalTransport(event.currentTarget.response);
                     let command = {
                         'device': [
@@ -76,6 +78,7 @@ export class DeviceManagerService {
                     this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                         (deviceDescriptor) => {
                             let response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(deviceDescriptor.slice(0))));
+                            console.log(response);
                             observer.next(response);
                             observer.complete();
                         },

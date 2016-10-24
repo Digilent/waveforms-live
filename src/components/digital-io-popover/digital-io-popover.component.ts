@@ -27,23 +27,65 @@ export class DigitalIoPopover {
 
     setDirection(channel: number) {
         this.digitalComponent.gpioDirections[channel] = !this.digitalComponent.gpioDirections[channel];
+        let stringDirection = this.digitalComponent.gpioDirections[channel] === true ? 'output' : 'input';
+        this.digitalComponent.activeDev.instruments.gpio.setParameters([channel + 1], [stringDirection]).subscribe(
+            (data) => {
+                console.log('set direction');
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {
+                
+            }
+        );
     }
 
     setAll() {
+        let chanArray = [];
+        let valArray = [];
         for (let i = 0; i < this.digitalComponent.gpioChans.length; i++) {
             if (this.digitalComponent.gpioDirections[i] === false) {
                 this.digitalComponent.gpioDirections[i] = true;
                 this.digitalComponent.gpioVals[i] = false;
             }
+            chanArray.push(i + 1);
+            valArray.push(this.digitalComponent.gpioDirections[i] === true ? 'output' : 'input');
         }
+        this.digitalComponent.activeDev.instruments.gpio.setParameters(chanArray, valArray).subscribe(
+            (data) => {
+                console.log('set direction');
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {
+                
+            }
+        );
     }
 
     setNone() {
+        let chanArray = [];
+        let valArray = [];
         for (let i = 0; i < this.digitalComponent.gpioChans.length; i++) {
             this.digitalComponent.gpioDirections[i] = false;
             if (this.digitalComponent.gpioVals[i] === true) {
                 this.digitalComponent.gpioVals[i] = false;
             }
+            chanArray.push(i + 1);
+            valArray.push(this.digitalComponent.gpioDirections[i] === true ? 'output' : 'input');
         }
+        this.digitalComponent.activeDev.instruments.gpio.setParameters(chanArray, valArray).subscribe(
+            (data) => {
+                console.log('set direction');
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {
+                
+            }
+        );
     }
 }
