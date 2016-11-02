@@ -24,6 +24,7 @@ export class TriggerComponent {
     public imgSrc: string = 'assets/img/trigger-rising.png';
     public devMngSrv: DeviceManagerService;
     public activeDevice: DeviceComponent;
+    public level: string = '0';
 
     constructor(_popoverCtrl: PopoverController, _devMngSrv: DeviceManagerService) {
         this.popoverCtrl = _popoverCtrl;
@@ -33,6 +34,10 @@ export class TriggerComponent {
 
     toggleTriggerShow() {
         this.showTriggerSettings = !this.showTriggerSettings;
+    }
+
+    setupLevel() {
+        console.log('hey');
     }
 
     //Open series popover

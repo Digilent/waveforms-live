@@ -41,26 +41,26 @@
             </div>
             <div class="controls-wrapper">
                 <!-- controls here -->
-                <div class="fgen-button-container">
+                <!--<div class="fgen-button-container">
                     <button ion-button class="icon-only-button-side disable-hover fgen-button" (click)="toggleControls()">
                         <ion-icon name="pulse"></ion-icon>
                     </button>
-                </div>
+                </div>-->
                 <xaxis-controls [chart]="chart1"></xaxis-controls>
-                <yaxis-controls [chart]="chart1"></yaxis-controls>
                 <trigger #triggerComponent></trigger>
-                <la-controls *ngIf="activeDevice.rootUri === 'local'"></la-controls>
+                <yaxis-controls [chart]="chart1"></yaxis-controls>
+                <fgen></fgen>
+                <dc-supply ></dc-supply>
             </div>
-            <div class="fgen-wrapper" [ngClass]="{'show-fgen': controlsVisible}">
-                <!-- fgen here -->
+            <!--<div class="fgen-wrapper" [ngClass]="{'show-fgen': controlsVisible}">
                 <fgen [hidden]="!controlsVisible"></fgen>
-            </div>
+            </div>-->
         </div>
 
 
         
-        <div class="bottom-bar-container">
+        <!--<div class="bottom-bar-container">
             <bottom-bar (headerClicked)="toggleBotControls();"></bottom-bar>
-        </div>
+        </div>-->
     </div>
 </ion-content>

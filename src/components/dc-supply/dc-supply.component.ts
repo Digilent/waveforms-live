@@ -32,6 +32,7 @@ export class DcSupplyComponent {
     public showCurrent: boolean = false;
 
     public readVoltages: string[] = [];
+    public showDcSettings: boolean = true;
     
     constructor(_deviceManagerService: DeviceManagerService) {
         this.voltageSupplies = [0, 1, 2];
@@ -48,6 +49,10 @@ export class DcSupplyComponent {
         if (this.activeDevice.instruments.dc.chans[0].currentIncrement !== 0) {
             this.showCurrent = true;
         }
+    }
+
+    toggleDcSettings() {
+        this.showDcSettings = !this.showDcSettings;
     }
 
     //If active device exists, populate values

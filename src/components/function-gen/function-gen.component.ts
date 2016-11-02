@@ -35,6 +35,7 @@ export class FgenComponent {
     public modalCtrl: ModalController;
     public popoverCtrl: PopoverController;
     public toastCtrl: ToastController;
+    public showSettings: boolean = true;
     
     constructor(_deviceManagerService: DeviceManagerService, 
                 _modalCtrl: ModalController,
@@ -61,6 +62,10 @@ export class FgenComponent {
     toggleWave(waveType: string) {
         this.showWaves = !this.showWaves;
         this.waveType = waveType;
+    }
+
+    toggleAwgSettings() {
+        this.showSettings = !this.showSettings;
     }
     
     //Toggle power to awg

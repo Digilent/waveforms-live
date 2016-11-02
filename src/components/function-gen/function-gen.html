@@ -1,41 +1,50 @@
 <div class=fgen-container>
-    <div class="align-center-container header-bar-side awg-header">
-        <div style="width:28.08px;height:25px;"></div>
-        <div>AWG</div>
+    <div (dblclick)="toggleAwgSettings(i)" class="align-center-container header-bar-side awg-header">
+        <div style="width:35.08px;height:25px;"></div>
+        <div class="header-bar-title">AWG</div>
         <button ion-button class="align-right disable-hover" (click)="openFgen(5)"><ion-icon name="settings"></ion-icon></button>
     </div>
-    <div class="power-button-divider">
-        <div class="power-button-container">
-            <div class="dummy-power-underline" [ngClass]="{'power-underline': powerOn}">
-                <button ion-button clear (click)="togglePower()" class="powerOff" [ngClass]="{powerOn: powerOn}">
-                    <ion-icon name="power"></ion-icon>
-                </button>
+    <div *ngIf="showSettings">
+        <div class="power-button-divider">
+            <div class="power-button-container">
+                <div class="dummy-power-underline" [ngClass]="{'power-underline': powerOn}">
+                    <button ion-button clear (click)="togglePower()" class="powerOff" [ngClass]="{powerOn: powerOn}">
+                        <ion-icon name="power"></ion-icon>
+                    </button>
+                </div>
             </div>
         </div>
+        <ion-row>
+            <ion-col class="input-label" center>
+                Frequency (Hz):
+            </ion-col>
+            <ion-col class="input-col">
+                <input class="text-input" type="number" step="any" [disabled]="powerOn" [(ngModel)]="frequency" />
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col class="input-label" center>
+                Amplitude (Vpp):
+            </ion-col>
+            <ion-col class="input-col">
+                <input class="text-input" type="number" step="any" [disabled]="powerOn" [(ngModel)]="amplitude" />
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col class="input-label" center>
+                DC Offset (V):
+            </ion-col>
+            <ion-col class="input-col">
+                <input class="text-input" type="number" step="any" [disabled]="powerOn" [(ngModel)]="offset" />
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col class="input-label" center>
+                Duty Cycle (%):
+            </ion-col>
+            <ion-col class="input-col">
+                <input class="text-input" [disabled]="!isSquare() || powerOn" type="number" step="any" [(ngModel)]="dutyCycle" />
+            </ion-col>
+        </ion-row>
     </div>
-    
-    <ion-list class="list-controls">
-        <div class="ion-item-outline">
-            <div class="custom-ion-item">
-                <ion-label stacked class="custom-ion-label">Wave Type:</ion-label>
-                <button ion-button class="text-button-side disable-hover button-label" [disabled]="powerOn" (click)="openPopover($event)">{{waveType}}</button>
-            </div>
-        </div>
-        <ion-item class="list-item">
-            <ion-label stacked>Frequency (Hz):</ion-label>
-            <ion-input type="number" step="any" [disabled]="powerOn" [(ngModel)]="frequency"></ion-input>
-        </ion-item>
-        <ion-item class="list-item">
-            <ion-label stacked>Amplitude (Vpp):</ion-label>
-            <ion-input type="number" step="any" [disabled]="powerOn" [(ngModel)]="amplitude"></ion-input>
-        </ion-item>
-        <ion-item class="list-item">
-            <ion-label stacked>DC Offset (V):</ion-label>
-            <ion-input type="number" step="any" [disabled]="powerOn" [(ngModel)]="offset"></ion-input>
-        </ion-item>
-        <ion-item class="list-item">
-            <ion-label stacked>Duty Cycle (%):</ion-label>
-            <ion-input [disabled]="!isSquare() || powerOn" type="number" step="any" [(ngModel)]="dutyCycle"></ion-input>
-        </ion-item>
-    </ion-list>
 </div> 

@@ -1,0 +1,21 @@
+/*.xaxis-component-wrapper .xaxis-flex
+{
+    max-width: 140px;
+}*/
+
+.xaxis-component-wrapper .xaxis-left
+{
+    text-align: right;
+    padding: 0px;
+}
+
+.xaxis-component-wrapper .xaxis-right
+{
+    text-align: left;
+    padding: 0px;
+}
+
+.xaxis-component-wrapper .xaxis-center
+{
+    min-width: 80px;
+}

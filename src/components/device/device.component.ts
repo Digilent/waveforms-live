@@ -159,6 +159,7 @@ export class DeviceComponent {
                         //JSON
                         //console.log('JSON');
                         try {
+                            console.log(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
                             multiCommandResponse = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
                         }
                         catch (e) {

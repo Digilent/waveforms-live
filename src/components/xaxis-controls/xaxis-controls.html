@@ -5,23 +5,22 @@
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
     <ion-row *ngIf="showTimeSettings" class="controls-container">
-        <ion-col>
-            <div>
-                <div class="yaxis-control-wrapper">
-                    <div class="align-center"><button ion-button (click)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivOpts.length-1" class="icon-only-button-side disable-hover"><ion-icon name="arrow-up"></ion-icon></button></div>
-                    <div class="align-center">{{chart.secsPerDivOpts[chart.activeTPDIndex]}}/div</div>
-                    <div class="align-center"><button ion-button (click)="chart.decrementTPD()" [disabled]="chart.activeTPDIndex == 0" class="icon-only-button-side disable-hover"><ion-icon name="arrow-down"></ion-icon></button></div>
-                </div>
-            </div>
-        </ion-col>
-        <ion-col>
-            <div>
-                <div class="yaxis-control-wrapper">
-                    <div class="align-center"><button ion-button (click)="chart.incrementBase()" class="icon-only-button-side disable-hover"><ion-icon name="arrow-up"></ion-icon></button></div>
-                    <div class="align-center">Base</div>
-                    <div class="align-center"><button ion-button (click)="chart.decrementBase()" class="icon-only-button-side disable-hover"><ion-icon name="arrow-down"></ion-icon></button></div>
-                </div>
-            </div>
+        <ion-col text-center>
+            <ion-row class="xaxis-flex" center text-center>
+                <ion-col class="xaxis-left">
+                    <button ion-button (click)="chart.decrementTPD()" [disabled]="chart.activeTPDIndex == 0" class="icon-only-button-side disable-hover">
+                        <ion-icon name="arrow-down"></ion-icon>
+                    </button>
+                </ion-col>
+                <ion-col class="xaxis-center" center text-center>
+                    {{chart.secsPerDivOpts[chart.activeTPDIndex]}}/div
+                </ion-col>
+                <ion-col class="xaxis-right">
+                    <button ion-button (click)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivOpts.length-1" class="icon-only-button-side disable-hover">
+                        <ion-icon name="arrow-up"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
         </ion-col>
     </ion-row>
 </div>

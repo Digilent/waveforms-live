@@ -135,6 +135,7 @@ export class TestChartCtrlsPage {
                 }
                 readArray[0].push(i + 1);
                 readArray[1].push(0);
+                //readArray[2].push(1);
                 readArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
                 readArray[3].push(this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000);
                 readArray[4].push(this.activeDevice.instruments.osc.chans[i].bufferSizeMax);

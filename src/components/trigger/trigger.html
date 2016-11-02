@@ -7,13 +7,27 @@
     <div *ngIf="showTriggerSettings" class="controls-container">
         <ion-grid class="ion-grid-no-padding">
             <ion-row>
-                <ion-col center text-center>
-                    <!--<center><img src="img/tpot.jpg"></center>-->
+                <ion-col center>
                     <img class="custom-image-button" (click)="setTrigType()" [src]="imgSrc">
                 </ion-col>
                 <ion-col>
-                    <!--<center><button class="text-button-side disable-hover">Force</button></center>-->
-                    <div text-center><button ion-button class="text-button-side disable-hover">Force</button></div>
+                    <div><button ion-button class="text-button-side disable-hover">Force</button></div>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col center>
+                    Source:
+                </ion-col>
+                <ion-col center>
+                    hey
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col center>
+                    Level:
+                </ion-col>
+                <ion-col>
+                    <input class="custom-input" (focusout)="setupLevel()" type="number" step="any" [(ngModel)]="level" />
                 </ion-col>
             </ion-row>
         </ion-grid>
