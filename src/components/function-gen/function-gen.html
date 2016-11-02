@@ -1,7 +1,7 @@
 <div class=fgen-container>
-    <div (dblclick)="toggleAwgSettings(i)" class="align-center-container header-bar-side awg-header">
-        <div style="width:35.08px;height:25px;"></div>
-        <div class="header-bar-title">AWG</div>
+    <div (dblclick)="toggleAwgSettings()" class="align-center-container header-bar-side awg-header">
+        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSettings}" (click)="toggleAwgSettings()" src="assets/img/arrow-right.png">
+        <div class="header-bar-title">Wavegen</div>
         <button ion-button class="align-right disable-hover" (click)="openFgen(5)"><ion-icon name="settings"></ion-icon></button>
     </div>
     <div *ngIf="showSettings">
@@ -14,36 +14,81 @@
                 </div>
             </div>
         </div>
+        <div class="wavetype-images-container" text-center>
+            <div class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sine'}">
+                <img src="assets/img/sine.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}" (click)="toggleWave('sine')">
+            </div>
+            <div class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='triangle'}">
+                <img src="assets/img/triangle.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}" (click)="toggleWave('triangle')">
+            </div>
+            <div class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sawtooth'}">
+                <img src="assets/img/sawtooth.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}" (click)="toggleWave('sawtooth')">
+            </div>
+            <div class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='square'}">
+                <img src="assets/img/square.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}" (click)="toggleWave('square')">
+            </div>
+            <div class="wavetype-image image-end" [ngClass]="{'selected-wavetype': waveType==='dc'}">
+                <img src="assets/img/dc.png" [ngClass]="{'dim-image': powerOn&&waveType!=='dc'}" (click)="toggleWave('dc')">
+            </div>
+        </div>
         <ion-row>
             <ion-col class="input-label" center>
-                Frequency (Hz):
+                Frequency
             </ion-col>
             <ion-col class="input-col">
-                <input class="text-input" type="number" step="any" [disabled]="powerOn" [(ngModel)]="frequency" />
+                <div class="label-flex">
+                    <div class="label-left">
+                        <input class="text-input" type="number" step="any" [disabled]="powerOn || waveType==='dc'" [(ngModel)]="frequency" />
+                    </div>
+                    <div class="label-right">
+                        <span>Hz</span>
+                    </div>
+                </div>
             </ion-col>
         </ion-row>
         <ion-row>
             <ion-col class="input-label" center>
-                Amplitude (Vpp):
+                Amplitude
             </ion-col>
             <ion-col class="input-col">
-                <input class="text-input" type="number" step="any" [disabled]="powerOn" [(ngModel)]="amplitude" />
+                <div class="label-flex">
+                    <div class="label-left">
+                        <input class="text-input" type="number" step="any" [disabled]="powerOn || waveType==='dc'" [(ngModel)]="amplitude" />
+                    </div>
+                    <div class="label-right">
+                        <span>Vpp</span>
+                    </div>
+                </div>
             </ion-col>
         </ion-row>
         <ion-row>
             <ion-col class="input-label" center>
-                DC Offset (V):
+                DC Offset
             </ion-col>
             <ion-col class="input-col">
-                <input class="text-input" type="number" step="any" [disabled]="powerOn" [(ngModel)]="offset" />
+                <div class="label-flex">
+                    <div class="label-left">
+                        <input class="text-input" type="number" step="any" [disabled]="powerOn" [(ngModel)]="offset" />
+                    </div>
+                    <div class="label-right">
+                        <span>V</span>
+                    </div>
+                </div>
             </ion-col>
         </ion-row>
         <ion-row>
             <ion-col class="input-label" center>
-                Duty Cycle (%):
+                Duty Cycle
             </ion-col>
             <ion-col class="input-col">
-                <input class="text-input" [disabled]="!isSquare() || powerOn" type="number" step="any" [(ngModel)]="dutyCycle" />
+                <div class="label-flex">
+                    <div class="label-left">
+                        <input class="text-input" [disabled]="!isSquare() || powerOn" type="number" step="any" [(ngModel)]="dutyCycle" />
+                    </div>
+                    <div class="label-right">
+                        <span>%</span>
+                    </div>
+                </div>
             </ion-col>
         </ion-row>
     </div>

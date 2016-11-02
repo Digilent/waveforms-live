@@ -110,6 +110,11 @@
     border-radius: 0px;
     margin: 2px 0px 2px 0px;
     padding: 2px 0px 2px 0px;
+    .button-inner {
+        justify-content: space-between;
+        padding-left: 4px;
+        padding-right: 5px;
+    }
 }
 
 .first-tab-container .device-card-item .add-device-label

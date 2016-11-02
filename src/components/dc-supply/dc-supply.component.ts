@@ -1,16 +1,17 @@
-import {Component, Output, EventEmitter, Input} from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { ToastController } from 'ionic-angular';
 
 //Components
-import {DeviceComponent} from '../../components/device/device.component';
+import { DeviceComponent } from '../../components/device/device.component';
 
 //Services
-import {DeviceManagerService} from '../../services/device/device-manager.service';
+import { DeviceManagerService } from '../../services/device/device-manager.service';
 
 @Component({
-  templateUrl: 'dc-supply.html',
-  selector: 'dc-supply'
+    templateUrl: 'dc-supply.html',
+    selector: 'dc-supply'
 })
-export class DcSupplyComponent { 
+export class DcSupplyComponent {
     @Output() headerClicked: EventEmitter<any> = new EventEmitter();
     @Input() contentHidden: boolean;
     public voltageSupplies: any[];
@@ -33,8 +34,10 @@ export class DcSupplyComponent {
 
     public readVoltages: string[] = [];
     public showDcSettings: boolean = true;
-    
-    constructor(_deviceManagerService: DeviceManagerService) {
+    public toastCtrl: ToastController;
+
+    constructor(_deviceManagerService: DeviceManagerService, _toastCtrl: ToastController) {
+        this.toastCtrl = _toastCtrl;
         this.voltageSupplies = [0, 1, 2];
         this.contentHidden = true;
         this.voltages = ['5.00', '5.00', '-5.00'];
@@ -106,7 +109,7 @@ export class DcSupplyComponent {
             (err) => {
                 console.log(err);
             },
-            () => {}
+            () => { }
         );
     }
 
@@ -127,7 +130,7 @@ export class DcSupplyComponent {
             }
         )
     }
-    
+
     //Toggle voltages on/off
     togglePower(channel: number) {
         for (let i = 0; i < this.voltageSupplies.length; i++) {
@@ -155,12 +158,22 @@ export class DcSupplyComponent {
 
     inputLeave(channel: number) {
         this.voltages[channel] = parseFloat(this.voltages[channel]).toFixed(3);
-        if (this.dcOn[channel]) {
+        if (this.validateSupply(channel)) {
             this.setVoltages([channel + 1], [parseFloat(this.voltages[channel])]);
             setTimeout(() => {
                 this.getVoltages([channel + 1]);
             }, 500);
         }
+        else {
+            this.voltages[channel] = '0.000';
+            let toast = this.toastCtrl.create({
+                message: 'Invalid Value. Supply Range: ' + this.voltageLimitFormats[channel],
+                showCloseButton: true,
+                position: 'bottom'
+            });
+            toast.present();
+        }
+
     }
 
     hideBar() {
@@ -173,12 +186,14 @@ export class DcSupplyComponent {
 
     //Validate voltage supplies 
     validateSupply(supplyNum: number) {
-        if ((parseFloat(this.voltages[supplyNum]) < this.activeDevice.instruments.dc.chans[supplyNum].voltageMin || parseFloat(this.voltages[supplyNum]) > this.activeDevice.instruments.dc.chans[supplyNum].voltageMax)) {
+        console.log(this.voltages[supplyNum], this.activeDevice.instruments.dc.chans[supplyNum]);
+        if ((parseFloat(this.voltages[supplyNum]) < this.activeDevice.instruments.dc.chans[supplyNum].voltageMin / 1000 || parseFloat(this.voltages[supplyNum]) > this.activeDevice.instruments.dc.chans[supplyNum].voltageMax / 1000)) {
             //Incorrect
             this.correctVoltages[supplyNum] = false;
-            return;
+            return false;
         }
         this.correctVoltages[supplyNum] = true;
+        return true;
     }
 
     //Validate current supplies

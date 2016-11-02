@@ -141,6 +141,66 @@ ion-list .item-input.input-has-focus:last-child {
 .fgen-container .input-label
  {
      color: white;
-     min-width: 115px;
+     max-width: 80px;
+     min-width: 80px;
      padding-right: 0px;
  }
+
+ .fgen-container .label-flex
+{
+    display: flex;
+    flex-direction: row;
+}
+
+.fgen-container .label-left
+{
+    flex: 1 1 10px;
+    align-self: center;
+    max-width: 84px;
+}
+
+.fgen-container .label-right
+{
+    color: white;
+    flex: 0 0 10px;
+    align-self: center;
+    margin-left: 5px;
+}
+
+.fgen-container .selected-wavetype
+{
+    background-color: #4487BA;
+}
+
+.fgen-container .wavetype-image
+{
+    cursor: pointer;
+    display: inline-block;
+    border-left: solid black 1px;
+    border-top: solid black 1px;
+    border-bottom: solid black 1px;
+    width: 35px;
+}
+
+.fgen-container .image-end
+{
+    border-right: solid black 1px;
+}
+
+.fgen-container img {
+    vertical-align: middle;
+    height: 22px;
+}
+
+.fgen-container .wavetype-images-container
+{
+    //Have to do this to remove default margin on image LOL
+    font-size: 0;
+    padding-bottom: 5px;
+}
+
+.fgen-container .dim-image
+{
+    opacity: 0.4;
+    cursor: default;
+}

@@ -25,7 +25,6 @@ export class FgenComponent {
     public amplitude: string;
     public offset: string;
     public dutyCycle: string;
-    public showWaves: boolean;
     public powerOn: boolean;
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
@@ -54,13 +53,14 @@ export class FgenComponent {
         this.amplitude = '3';
         this.offset = '0';
         this.dutyCycle = '50';
-        this.showWaves = false;
         this.powerOn = false;
     }
     
     //Toggle dropdown
     toggleWave(waveType: string) {
-        this.showWaves = !this.showWaves;
+        if (this.powerOn) {
+            return;
+        }
         this.waveType = waveType;
     }
 

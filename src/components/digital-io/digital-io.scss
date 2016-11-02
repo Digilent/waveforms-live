@@ -1,14 +1,15 @@
 .digi-container
 {
-    background-color: #444444; 
+    background-color: #535353;
+    border-top: solid #686868 1px;
+    border-bottom: solid black 1px; 
 }
 
 .digi-container .title
 {
     padding: 1px 0px 1px 0px;
-    border-top: solid black 1px;
     text-align: center;
-    background-color: #444444;
+    background-color: #535353;
     font-size: 100%;
     color: white;
     cursor: pointer;
@@ -36,9 +37,8 @@
 {
     background-color: #4487BA;
     border: solid #33658B 2px;
-    width: 25px;
-    font-size: 8px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
     opacity: 0.1;
     margin: 2px;
     padding: none;
@@ -51,8 +51,9 @@
 
 .digi-container .digi-col
 {
-     max-width: 41px;
+     max-width: 50px;
      min-width: 41px;
+     padding: 0px 0px 0px 0px;
 }
 
 .digi-container .align-center-container
@@ -63,7 +64,7 @@
 
 .digi-container .header-bar
 {
-    background-color:#444444;
+    background-color:#535353;
     color: white;
 }
 
@@ -79,5 +80,35 @@
 
 .digi-container .dummy-border
 {
-    border: solid #444444 1px;
+    border: solid #535353 1px;
+}
+
+.digi-container .mode-select
+{
+    color: white;
+    border-left: solid black 1px;
+    border-top: solid black 1px;
+    border-bottom: solid black 1px;
+    background-color: #535353;
+    display: inline-block;
+    padding: 2px 8px 2px 8px;
+    text-align: center;
+    min-width: 75px;
+    cursor: pointer;
+}
+
+.digi-container .mode-left
+{
+    border-right: solid black 1px;
+}
+
+.digi-container .mode-selected
+{
+    background-color: #4487BA;
+}
+
+.digi-container .mode-row ion-col
+{
+    padding-left: 0px;
+    padding-right: 0px;
 }

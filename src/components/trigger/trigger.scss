@@ -10,14 +10,26 @@
 
 .trigger-container .custom-image-button
 {
-    border: solid black 1px;
+    border-left: solid black 1px;
+    border-top: solid black 1px;
+    border-bottom: solid black 1px;
     border-radius: 0px;
     cursor: pointer;
+    vertical-align: middle;
+    background-color: #535353;
 }
 
-.trigger-container .custom-image-button:hover
+.trigger-container .off-button
 {
-    border: solid white 1px;
+    border: solid black 1px;
+    height: 27px;
+    width: 26px;
+    background-color: #535353;
+    border-radius: 0px;
+    color: white;
+    font-size: 8px;
+    margin: 0px;
+    box-shadow: none;
 }
 
 .trigger-container .custom-input
@@ -29,4 +41,71 @@
     border: solid black 1px;
     padding: 2px 0px 2px 2px;
     margin: 0px;
+}
+
+.trigger-container .source-button
+{
+    background-color: #3A3A3A;
+    width: 100%;
+    border: solid black 1px;
+    border-radius: 0px;
+    margin: 2px 0px 2px 0px;
+    padding: 2px 0px 2px 0px;
+    height: 22px;
+    font-size: 1.2rem;
+
+    .button-inner {
+        justify-content: space-between;
+        padding-left: 2px;
+        padding-right: 5px;
+    }
+}
+
+.trigger-container .input-label
+ {
+     color: white;
+     max-width: 80px;
+     min-width: 80px;
+     padding-right: 0px;
+ }
+
+ .trigger-container .label-flex
+{
+    display: flex;
+    flex-direction: row;
+}
+ 
+.trigger-container .label-left
+{
+    flex: 1 1 10px;
+    align-self: center;
+    max-width: 84px;
+}
+
+.trigger-container .label-right
+{
+    color: white;
+    flex: 0 0 10px;
+    align-self: center;
+    margin-left: 5px;
+}
+
+.trigger-container .input-col
+{
+    padding-left: 0px;
+}
+
+.trigger-container
+{
+    border-bottom: solid black 1px;
+}
+
+.trigger-container .trigger-image-container
+{
+    font-size: 0;
+}
+
+.trigger-container .selected-mode
+{
+    background-color: #4487BA;
 }

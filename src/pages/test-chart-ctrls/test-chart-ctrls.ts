@@ -1,15 +1,15 @@
-import {ToastController, App, Platform} from 'ionic-angular';
-import {ViewChild, Component} from '@angular/core';
+import { ToastController, App, Platform } from 'ionic-angular';
+import { ViewChild, Component } from '@angular/core';
 
 //Components
-import {SilverNeedleChart} from '../../components/chart/chart.component';
-import {DeviceComponent} from '../../components/device/device.component';
-import {TriggerComponent} from '../../components/trigger/trigger.component';
+import { SilverNeedleChart } from '../../components/chart/chart.component';
+import { DeviceComponent } from '../../components/device/device.component';
+import { TriggerComponent } from '../../components/trigger/trigger.component';
 
 
 //Services
-import {DeviceManagerService} from '../../services/device/device-manager.service';
-import {StorageService} from '../../services/storage/storage.service';
+import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { StorageService } from '../../services/storage/storage.service';
 
 
 @Component({
@@ -24,7 +24,7 @@ export class TestChartCtrlsPage {
     public botVisible = false;
     public sideVisible = false;
     public running: boolean = false;
-    
+
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
     public storage: StorageService;
@@ -122,9 +122,13 @@ export class TestChartCtrlsPage {
         if (trigSourceArr[1] === undefined) {
             trigSourceArr[1] = '1';
         }
-        this.triggerComponent.lowerThresh
-        this.triggerComponent.upperThresh
-        let trigType = this.triggerComponent.edgeDirection + 'Edge';
+        let trigType;
+        switch (this.triggerComponent.edgeDirection) {
+            case 'rising': trigType = 'risingEdge'; break;
+            case 'falling': trigType = 'fallingEdge'; break;
+            default: trigType = 'risingEdge';
+        }
+        //TODO add force trigger to multi if trigger off
         let readArray = [[], [], [], [], [], []];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
@@ -185,9 +189,9 @@ export class TestChartCtrlsPage {
                 this.readOscope();
                 //this.readLa();
             }
-        );
+            );
 
-        
+
     }
 
     readLa() {
@@ -198,8 +202,8 @@ export class TestChartCtrlsPage {
             },
             (err) => {
 
-            }, 
-            () => {}
+            },
+            () => { }
         );
     }
 

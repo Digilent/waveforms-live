@@ -1,6 +1,6 @@
 <div class="xaxis-component-wrapper">
-    <div (dblclick)="toggleSeriesSettings()" [ngClass]="{'header-bar-side-closed': !showTimeSettings}" class="header-bar-side align-center-container" center text-center>
-        <div style="width:25px;height:25px;"></div>
+    <div (dblclick)="toggleSeriesSettings()" class="header-bar-side align-center-container" center text-center>
+        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showTimeSettings}" (click)="toggleSeriesSettings()" src="assets/img/arrow-right.png">
         <span class="header-bar-title">Time Settings</span>
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
@@ -13,7 +13,7 @@
                     </button>
                 </ion-col>
                 <ion-col class="xaxis-center" center text-center>
-                    {{chart.secsPerDivOpts[chart.activeTPDIndex]}}/div
+                    {{chart.secsPerDivOpts[chart.activeTPDIndex]}}/
                 </ion-col>
                 <ion-col class="xaxis-right">
                     <button ion-button (click)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivOpts.length-1" class="icon-only-button-side disable-hover">

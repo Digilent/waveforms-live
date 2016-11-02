@@ -1,35 +1,55 @@
 <div class="trigger-container">
-    <div (dblclick)="toggleTriggerShow()" [ngClass]="{'header-bar-side-closed': !showTriggerSettings}" class="align-center-container header-bar-side">
-        <div style="width:25px;height:25px;"></div>
-        <div class="header-bar-title">Trigger</div>
-        <button ion-button class="align-right disable-hover" (click)="openTriggerPopover($event)"><ion-icon name="settings"></ion-icon></button>
-    </div>
-    <div *ngIf="showTriggerSettings" class="controls-container">
-        <ion-grid class="ion-grid-no-padding">
-            <ion-row>
-                <ion-col center>
-                    <img class="custom-image-button" (click)="setTrigType()" [src]="imgSrc">
-                </ion-col>
-                <ion-col>
-                    <div><button ion-button class="text-button-side disable-hover">Force</button></div>
-                </ion-col>
-            </ion-row>
-            <ion-row>
-                <ion-col center>
-                    Source:
-                </ion-col>
-                <ion-col center>
-                    hey
-                </ion-col>
-            </ion-row>
-            <ion-row>
-                <ion-col center>
-                    Level:
-                </ion-col>
-                <ion-col>
-                    <input class="custom-input" (focusout)="setupLevel()" type="number" step="any" [(ngModel)]="level" />
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-    </div>
+	<div (dblclick)="toggleTriggerShow()" class="align-center-container header-bar-side">
+		<img class="custom-dropdown-img" [ngClass]="{rotateOn: showTriggerSettings}" (click)="toggleTriggerShow()" src="assets/img/arrow-right.png">
+		<div class="header-bar-title">Trigger</div>
+		<button ion-button class="align-right disable-hover" (click)="openTriggerPopover($event)"><ion-icon name="settings"></ion-icon></button>
+	</div>
+	<div *ngIf="showTriggerSettings" class="controls-container">
+		<ion-grid class="ion-grid-no-padding">
+			<ion-row>
+				<ion-col center>
+					<div class="trigger-image-container">
+						<img class="custom-image-button" (click)="setTrigType('rising')" src="assets/img/trigger-rising.png" [ngClass]="{'selected-mode':edgeDirection==='rising'}">
+						<img class="custom-image-button" (click)="setTrigType('falling')" src="assets/img/trigger-falling.png" [ngClass]="{'selected-mode':edgeDirection==='falling'}">
+						<button ion-button class="off-button disable-hover" (click)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}">Off</button>
+					</div>
+				</ion-col>
+				<ion-col>
+					<div><button ion-button class="text-button-side disable-hover">Force</button></div>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col center class="input-label">
+					Source
+				</ion-col>
+				<ion-col class="input-col">
+                    <div class="label-flex">
+                        <div class="label-left">
+                            <button ion-button icon-right class="source-button disable-hover" (click)="openGenPopover($event)">
+                                {{triggerSource}}
+                                <ion-icon name="arrow-dropdown"></ion-icon>
+                            </button>
+                        </div>
+                        <div class="label-right">
+                        </div>
+                    </div>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col center class="input-label">
+					Level
+				</ion-col>
+				<ion-col class="input-col">
+                    <div class="label-flex">
+                        <div class="label-left">
+                            <input class="custom-input" (focusout)="setupLevel()" type="number" step="any" [(ngModel)]="level" />
+                        </div>
+                        <div class="label-right">
+                            <span>V</span>
+                        </div>
+                    </div>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+	</div>
 </div>

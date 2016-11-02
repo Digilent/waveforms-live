@@ -3,6 +3,7 @@ import { PopoverController } from 'ionic-angular';
 
 //Components 
 import { TriggerPopover } from '../trigger-popover/trigger-popover.component';
+import { GenPopover } from '../gen-popover/gen-popover.component';
 import { DeviceComponent } from '../device/device.component';
 
 //Services
@@ -21,7 +22,6 @@ export class TriggerComponent {
     public triggerType: string = 'edge';
     public popoverCtrl: PopoverController;
     public showTriggerSettings: boolean = true;
-    public imgSrc: string = 'assets/img/trigger-rising.png';
     public devMngSrv: DeviceManagerService;
     public activeDevice: DeviceComponent;
     public level: string = '0';
@@ -34,6 +34,32 @@ export class TriggerComponent {
 
     toggleTriggerShow() {
         this.showTriggerSettings = !this.showTriggerSettings;
+    }
+
+    openGenPopover(event) {
+            let chanArray = [];
+            for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
+                chanArray.push('Osc ' + (i + 1));
+            }
+            /*for (let i = 0; i < this.triggerComponent.activeDevice.instruments.la.numChans; i++) {
+                chanArray.push('La ' + (i + 1));
+            }*/
+            chanArray.push('Ext');
+
+            let genPopover = this.popoverCtrl.create(GenPopover, {
+                dataArray: chanArray
+            });
+
+        genPopover.present({
+            ev: event
+        });
+
+        genPopover.onDidDismiss((data) => {
+            if (data === null) { return; }
+            console.log(data);
+            let selection = data.option.toLowerCase();
+            this.triggerSource = selection;
+        });
     }
 
     setupLevel() {
@@ -52,14 +78,8 @@ export class TriggerComponent {
         });
     }
 
-    setTrigType() {
-        if (this.edgeDirection === 'rising') {
-            this.edgeDirection = 'falling';
-        }
-        else {
-            this.edgeDirection = 'rising';
-        }
-        this.imgSrc = this.edgeDirection === 'rising' ? 'assets/img/trigger-rising.png' : 'assets/img/trigger-falling.png'
+    setTrigType(type: string) {
+        this.edgeDirection = type;
     }
 
 }

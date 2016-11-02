@@ -1,20 +1,27 @@
 <div class="dc-container">
 	<div (dblclick)="toggleDcSettings()" class="header-bar-side align-center-container" center text-center>
-        <div style="width:25px;height:25px;"></div>
+        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showDcSettings}" (click)="toggleDcSettings()" src="assets/img/arrow-right.png">
         <span class="header-bar-title">DC Power Supply</span>
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
-
-    <div class="flex-container" *ngFor="let supply of voltageSupplies; let i = index">
-        <div class="flex-left">
-            {{i + 1}}:
-        </div>
-        <div class="flex-right">
-            <input class="custom-input" (focusout)="inputLeave(i)" type="number" step="any" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)"
-                [ngClass]="{wrongPower: !correctVoltages[i]}" />
-        </div>
-        <div class="unit">
-            V
+    <div class="dc-content-container">
+        <div *ngIf="showDcSettings">
+            <ion-row *ngFor="let supply of voltageSupplies; let i = index">
+                <ion-col class="input-label" center>
+                    Ch {{i + 1}}
+                </ion-col>
+                <ion-col class="input-col">
+                    <div class="label-flex">
+                        <div class="label-left">
+                            <input class="custom-input" (focusout)="inputLeave(i)" type="number" step="any" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)"
+                                [ngClass]="{wrongPower: !correctVoltages[i]}" />
+                        </div>
+                        <div class="label-right">
+                            <span>V</span>
+                        </div>
+                    </div>
+                </ion-col>
+            </ion-row>
         </div>
     </div>
 </div>

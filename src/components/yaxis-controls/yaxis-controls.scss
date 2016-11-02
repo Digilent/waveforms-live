@@ -1,3 +1,24 @@
+.yaxis-component-container .osc-title
+{
+    color: white;
+    height: 31px;
+}
+
+.yaxis-component-container .osc-title .title-span
+{
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
+    padding-top: 4px;
+}
+
+.yaxis-component-container
+{
+    border-top: solid #686868 1px;
+    border-bottom: solid black 1px;
+}
+
 .align-center
 {
     text-align: center;
@@ -108,7 +129,6 @@
     color: white;
     font-weight: 300;
     background-color: #535353;
-    border-bottom: solid black 1px;
 }
 
 .seriesHidden
@@ -127,3 +147,42 @@
     border: solid black 1px;
 }
 
+.custom-dropdown-img
+{
+    cursor: pointer;
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.5rem;
+    background-color: transparent;
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+    -webkit-transition: all 0.2s ease-in;
+    -moz-transition: all 0.2s ease-in;
+    -o-transition: all 0.2s ease-in;
+    transition: all 0.2s ease-in;
+}
+
+.rotateOn {
+    -webkit-transform: rotate(90deg)!important;
+    -moz-transform: rotate(90deg)!important;
+    -ms-transform: rotate(90deg)!important;
+    transform: rotate(90deg)!important;
+    -webkit-transition: all 0.2s ease-in;
+    -moz-transition: all 0.2s ease-in;
+    -o-transition: all 0.2s ease-in;
+    transition: all 0.2s ease-in;
+}
+
+.yaxis-component-container .vpd-val-col
+{
+    min-width: 80px;
+}
+
+.yaxis-component-container .vpd-button-col
+{
+    padding-left: 0px;
+    padding-right: 0px;
+}
