@@ -118,7 +118,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
 
     singleParse(chan, command) {
         console.log(command);
-        return 'run channel ' + chan + ' is done';
+        return 'single channel ' + chan + ' is done';
     }
 
     single(chans: number[]): Observable<any> {
@@ -136,7 +136,65 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
             command.trigger[chans[index]] =
                 [
                     {
-                        "command": "run"
+                        "command": "single"
+                    }
+                ]
+        });
+        return Observable.create((observer) => {
+            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    //Handle device errors and warnings
+                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    observer.next(data);
+                    //Handle device errors and warnings
+                    observer.complete();
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            )
+        });
+    }
+
+    forceTriggerJson(chans: number[]) {
+        let command = {
+            "trigger": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.trigger[chans[index]] =
+                [
+                    {
+                        "command": "forceTrigger"
+                    }
+                ]
+        });
+        return command;
+    }
+
+    forceTriggerParse(chan, command) {
+        console.log(command);
+        return 'force trigger done';
+    }
+
+    forceTrigger(chans: number[]): Observable<any> {
+        //If no channels are active no need to talk to hardware
+        if (chans.length == 0) {
+            return Observable.create((observer) => {
+                observer.complete();
+            });
+        }
+
+        let command = {
+            "trigger": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.trigger[chans[index]] =
+                [
+                    {
+                        "command": "forceTrigger"
                     }
                 ]
         });

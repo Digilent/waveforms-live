@@ -128,7 +128,6 @@ export class TestChartCtrlsPage {
             case 'falling': trigType = 'fallingEdge'; break;
             default: trigType = 'risingEdge';
         }
-        //TODO add force trigger to multi if trigger off
         let readArray = [[], [], [], [], [], []];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
@@ -147,39 +146,37 @@ export class TestChartCtrlsPage {
             }
             console.log(readArray[2]);
         }
-        this.activeDevice.multiCommand(
-            {
-                osc: {
-                    setParameters: [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]]
-                },
-                trigger: {
-                    setParameters: [
-                        [1],
-                        [
-                            {
-                                instrument: trigSourceArr[0],
-                                channel: parseInt(trigSourceArr[1]),
-                                type: trigType,
-                                lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
-                                upperThreshold: parseInt(this.triggerComponent.upperThresh)
-                                /*instrument: 'osc',
-                                channel: 1,
-                                type: 'risingEdge',
-                                lowerThreshold: -5,
-                                upperThreshold: 0*/
-                            }
-                        ],
-                        [
-                            {
-                                osc: readArray[0],
-                                //la: [1]
-                            }
-                        ]
+        let singleCommand = {
+            osc: {
+                setParameters: [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]]
+            },
+            trigger: {
+                setParameters: [
+                    [1],
+                    [
+                        {
+                            instrument: trigSourceArr[0],
+                            channel: parseInt(trigSourceArr[1]),
+                            type: trigType,
+                            lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
+                            upperThreshold: parseInt(this.triggerComponent.upperThresh)
+                        }
                     ],
-                    single: [[1]]
-                }
+                    [
+                        {
+                            osc: readArray[0],
+                            //la: [1]
+                        }
+                    ]
+                ],
+                single: [[1]]
             }
-        ).subscribe(
+        }
+        if (this.triggerComponent.edgeDirection === 'off') {
+            singleCommand.trigger['forceTrigger'] = [[1]];
+            console.log(singleCommand);
+        }
+        this.activeDevice.multiCommand(singleCommand).subscribe(
             (data) => {
                 console.log(data);
             },

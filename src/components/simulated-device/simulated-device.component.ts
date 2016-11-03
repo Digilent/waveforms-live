@@ -132,6 +132,8 @@ export class SimulatedDeviceComponent {
                 return this.trigger.setParameters(params[0], commandObject.source, commandObject.targets);
             case 'triggersingle':
                 return this.trigger.single();
+            case 'triggerforceTrigger':
+                return this.trigger.forceTrigger();
 
             //---------- OSC ----------            
             case 'oscsetParameters':

@@ -41,8 +41,10 @@ export class SimulatedTriggerComponent {
 
     forceTrigger() {
         return {
-            "command": "forceTrigger",
-            "statusCode": 0
+            "command":"forceTrigger",
+            "statusCode":0,
+            "acqCount": 27,
+            "wait": -1
         };
     }
 

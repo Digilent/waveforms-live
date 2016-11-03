@@ -20,6 +20,7 @@ export class YAxisComponent {
     public showSeriesSettings: boolean[] = [];
     public configHover: boolean = false;
     public timeoutRef: any;
+    public showOscSettings: boolean = true;
     
     constructor(_viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController) {
         this.popoverCtrl = _popoverCtrl;
@@ -34,8 +35,27 @@ export class YAxisComponent {
         }
     }
 
+    getSeriesColor(seriesNum: number) {
+        if (this.chart.chart.series[seriesNum].visible) {
+            return this.chart.getSeriesColor(seriesNum);
+        }
+        return '#535353';
+    }
+
+    getSeriesFontColor(seriesNum: number) {
+        if (this.chart.chart.series[seriesNum].visible) {
+            return '#535353';
+        }
+        return 'white';
+    }
+
+    toggleOscSettings() {
+        this.showOscSettings = !this.showOscSettings;
+    }
+
     //Toggle Series visibility
     toggleSeriesSettings(seriesNum: number) {
+        console.log('toggle series settings' + seriesNum);
         this.showSeriesSettings[seriesNum] = !this.showSeriesSettings[seriesNum];
     }
 

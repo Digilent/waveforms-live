@@ -69,6 +69,9 @@ export class SimulatedOscComponent {
                 else if (awgSettings.signalType === 'square') {
                     returnInfo = this.drawSquare(awgSettings, oscSettings, chan);
                 }
+                else if (awgSettings.signalType === 'dc') {
+                    returnInfo = this.drawDc(awgSettings, oscSettings, chan);
+                }
                 else {
                     console.log('drawing default wave');
                     returnInfo = this.drawSine(this.defaultAwgSettings, this.defaultOscSettings, chan);
@@ -235,6 +238,36 @@ export class SimulatedOscComponent {
             actualGain: 1
         };
 
+    }
+
+    drawDc(awgSettings, oscSettings, chan) {
+        let numSamples = oscSettings.bufferSize; //ten thousand points
+        let sampleRate = oscSettings.sampleFreq; //30 points per period
+        let vOffset = awgSettings.vOffset; //in mV
+
+        //Calculate dt - time between data points
+        let dt = 1000 / sampleRate;
+        let y = [];
+
+        for (let i = 0; i < numSamples; i++) {
+            y[i] = vOffset;
+        }
+
+        let typedArray = new Int16Array(y);
+
+        return {
+            command: "read",
+            statusCode: 0,
+            binaryLength: 2 * typedArray.length,
+            binaryOffset: null,
+            acqCount: 3,
+            actualSampleFreq: 1000 / dt,
+            y: typedArray,
+            pointOfInterest: 16320,
+            triggerIndex: 16320,
+            actualVOffset: vOffset,
+            actualGain: 1
+        };
     }
 
 }
