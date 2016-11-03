@@ -5,7 +5,7 @@
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
     <div *ngIf="showOscSettings">
-        <div *ngFor="let series of chart.oscopeChansActive, let i = index;" (click)="setActiveSeries(i)" class="yaxis-component-wrapper">
+        <div *ngFor="let series of chart.deviceDescriptor.instruments.osc.chans, let i = index;" (click)="setActiveSeries(i)" class="yaxis-component-wrapper">
             <div (dblclick)="toggleSeriesSettings(i)" class="align-center-container header-bar-side">
                 <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSeriesSettings[i]}" (click)="toggleSeriesSettings(i)" src="assets/img/arrow-right.png">
                 <div class="vertical-align">{{names[i]}}</div>
