@@ -90,7 +90,7 @@ export class SilverNeedleChart {
 
     public oscopeChansActive: boolean[] = [];
 
-    public colorArray: string[] = ['#7cb5ec', '#fffe00', 'ff3b99', '00c864'];
+    public colorArray: string[] = ['orange', '#4487BA', 'ff3b99', '00c864'];
     public triggerPlotLine: any;
     public timelineTriggerPlotLine: any;
     public triggerAnchor: any;

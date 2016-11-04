@@ -39,7 +39,7 @@
     width: 100%;
     background-color: #3A3A3A;
     border: solid black 1px;
-    padding: 2px 0px 2px 2px;
+    padding: 2px 0px 2px 4px;
     margin: 0px;
 }
 
@@ -53,10 +53,11 @@
     padding: 2px 0px 2px 0px;
     height: 22px;
     font-size: 1.2rem;
+    box-shadow: none;
 
     .button-inner {
         justify-content: space-between;
-        padding-left: 2px;
+        padding-left: 4px;
         padding-right: 5px;
     }
 }
@@ -64,20 +65,21 @@
 .trigger-container .input-label
  {
      color: white;
-     max-width: 80px;
      min-width: 80px;
      padding-right: 0px;
+     padding-left: 15px;
  }
 
  .trigger-container .label-flex
 {
     display: flex;
     flex-direction: row;
+    min-width: 114px;
 }
  
 .trigger-container .label-left
 {
-    flex: 1 1 10px;
+    flex: 0 0 84px;
     align-self: center;
     max-width: 84px;
 }
@@ -108,4 +110,9 @@
 .trigger-container .selected-mode
 {
     background-color: #4487BA;
+}
+
+.trigger-container .button-row
+{
+    padding-left: 15px;
 }

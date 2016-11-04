@@ -37,9 +37,9 @@
 {
     background-color: #4487BA;
     border: solid #33658B 2px;
-    width: 20px;
-    height: 20px;
-    opacity: 0.1;
+    width: 25px;
+    height: 25px;
+    opacity: 0.2;
     margin: 2px;
     padding: none;
 }
@@ -111,4 +111,37 @@
 {
     padding-left: 0px;
     padding-right: 0px;
+}
+
+.digi-container .bottom-buttons
+{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.digi-container .bottom-button
+{
+    border-right: none;
+    margin: 0px;
+}
+
+.digi-container .bottom-button-right
+{
+    border-right: solid black 1px;
+}
+
+.digi-container .button-indicator
+{
+    color: white;
+    font-size: 12px;
+}
+
+.digi-container .la-mode
+{
+    background-color: green;
+}
+
+.digi-container .direction-mode
+{
+    background-color: orange;
 }

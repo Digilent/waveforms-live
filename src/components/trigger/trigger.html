@@ -1,13 +1,14 @@
 <div class="trigger-container">
 	<div (dblclick)="toggleTriggerShow()" class="align-center-container header-bar-side">
 		<img class="custom-dropdown-img" [ngClass]="{rotateOn: showTriggerSettings}" (click)="toggleTriggerShow()" src="assets/img/arrow-right.png">
-		<div class="header-bar-title">Trigger</div>
-		<button ion-button class="align-right disable-hover" (click)="openTriggerPopover($event)"><ion-icon name="settings"></ion-icon></button>
+		<div class="header-bar-title instrument-header">Trigger</div>
+		<!--<button ion-button class="align-right disable-hover" (click)="openTriggerPopover($event)"><ion-icon name="settings"></ion-icon></button>-->
+		<div style="width:26px;height:26px;display:inline-block;"></div>
 	</div>
 	<div *ngIf="showTriggerSettings" class="controls-container">
 		<ion-grid class="ion-grid-no-padding">
-			<ion-row>
-				<ion-col center>
+			<ion-row class="button-row">
+				<ion-col center text-center>
 					<div class="trigger-image-container">
 						<img class="custom-image-button" (click)="setTrigType('rising')" src="assets/img/trigger-rising.png" [ngClass]="{'selected-mode':edgeDirection==='rising'}">
 						<img class="custom-image-button" (click)="setTrigType('falling')" src="assets/img/trigger-falling.png" [ngClass]="{'selected-mode':edgeDirection==='falling'}">

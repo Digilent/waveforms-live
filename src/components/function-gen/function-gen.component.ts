@@ -35,6 +35,7 @@ export class FgenComponent {
     public popoverCtrl: PopoverController;
     public toastCtrl: ToastController;
     public showSettings: boolean = true;
+    public showChanSettings: boolean[] = [true];
     
     constructor(_deviceManagerService: DeviceManagerService, 
                 _modalCtrl: ModalController,
@@ -47,6 +48,9 @@ export class FgenComponent {
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.supportedSignalTypes = this.activeDevice.instruments.awg.chans[0].signalTypes;
+        for (let i = 0; i < this.activeDevice.instruments.awg.numChans - 1; i++) {
+            this.showChanSettings.push(false);
+        }
         this.showDutyCycle = false;
         this.waveType = 'sine';
         this.frequency = '1000';
@@ -62,6 +66,10 @@ export class FgenComponent {
             return;
         }
         this.waveType = waveType;
+    }
+
+    toggleChanSettings(channel: number) {
+        this.showChanSettings[channel] = !this.showChanSettings[channel];
     }
 
     toggleAwgSettings() {

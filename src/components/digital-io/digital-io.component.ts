@@ -21,6 +21,7 @@ export class DigitalIoComponent {
     public activeDev: DeviceComponent;
     public gpioChans: number[] = [];
     public laChans: number[] = [];
+    public laActiveChans: boolean[] = [];
     public gpioVals: boolean[] = [];
     public popoverCtrl: PopoverController;
     public gpioDirections: boolean[] = [];
@@ -41,6 +42,7 @@ export class DigitalIoComponent {
         }
         for (let i = 0; i < this.activeDev.instruments.la.numChans; i++) {
             this.laChans.push(i + 1);
+            this.laActiveChans.push(false);
         }
         this.contentHidden = true;
         
@@ -58,7 +60,7 @@ export class DigitalIoComponent {
         this.directionMode = !this.directionMode;
         if (this.directionMode) {
             let toast = this.toastCtrl.create({
-                message: 'Click A Channel To Set Output',
+                message: 'Click A Channel To Set It As An Output',
                 duration: 2000,
                 position: 'bottom'
             });
@@ -68,9 +70,30 @@ export class DigitalIoComponent {
 
     toggleChanDirection(channel: number) {
         this.gpioDirections[channel] = !this.gpioDirections[channel];
+        let direction = this.gpioDirections[channel] === true ? 'output' : 'input';
+        this.activeDev.instruments.gpio.setParameters([channel + 1], [direction]).subscribe(
+            (data) => {
+
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {}
+        );
+        this.laActiveChans[channel] = false;
     }
 
     setMode(mode: string) {
+        if (mode === 'analyzer') {
+            let toast = this.toastCtrl.create({
+                message: 'Analyzer currently unsupported',
+                showCloseButton: true,
+                position: 'bottom'
+            });
+            toast.present();
+            this.selectedMode = 'io';
+            return;
+        }
         this.selectedMode = mode;
     }
 
@@ -92,11 +115,27 @@ export class DigitalIoComponent {
         
     }
 
+    toggleLaChan(channel: number) {
+        this.laActiveChans[channel] = !this.laActiveChans[channel];
+        this.gpioDirections[channel] = false;
+        this.gpioVals[channel] = false;
+    }
+
+    getButtonState(channel: number) {
+        if (this.laActiveChans[channel]) {
+            return 'A';
+        }
+        else if (this.gpioDirections[channel]) {
+            return 'O';
+        }
+        return 'I';
+    }
+
     readAllIo(event) {
         event.stopPropagation();
         let inputChans = [];
         for (let i = 0; i < this.gpioChans.length; i++) {
-            if (this.gpioDirections[i] !== true) {
+            if (this.gpioDirections[i] !== true && this.laActiveChans[i] !== true) {
                 inputChans.push(i + 1);
             }
         }

@@ -22,7 +22,7 @@
 
 .align-center-container .align-left
 {
-    margin-top: 0.1rem;
+    margin-top: 2px;
     margin-right: 0.5rem;
     margin-bottom: 0.1rem;
     margin-left: 0.1rem;
@@ -31,7 +31,8 @@
     max-width: 25px;
     background-color: #535353;
     border-radius: 0px;
-    color: #535353;
+    color: white;
+    box-shadow: none;
 }
 
 .align-center-container .align-right
@@ -45,6 +46,7 @@
     background-color: #535353;
     border: solid black 1px;
     border-radius: 0px;
+    box-shadow: none;
 }
 
 .align-center-container .align-right:hover
@@ -77,6 +79,7 @@
     background-color: #535353;
     border: solid black 1px;
     border-radius: 0px;
+    box-shadow: none;
 }
 
 .icon-only-button-side:hover
@@ -86,17 +89,20 @@
 
 .text-button-side
 {
+    //padding top to fix vertical align
+    padding-top: 2px;
     margin-top: 0.1rem;
     margin-right: 0.1rem;
     margin-bottom: 0.1rem;
     margin-left: 0.1rem;
-    font-size: 8px;
+    font-size: 10px;
     height: 25px;
     font-weight: 400;
-    min-width: 75px;
+    min-width: 87px;
     background-color: #535353;
     border: solid black 1px;
     border-radius: 0px;
+    box-shadow: none;
 }
 
 .text-button-side:hover
@@ -180,4 +186,10 @@
 .yaxis-component-wrapper
 {
     margin-left: 8px;
+}
+
+.instrument-header
+{
+    color: #4487BA;
+    font-weight: bold;
 }

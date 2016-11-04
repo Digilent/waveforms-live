@@ -34,6 +34,27 @@ export class TestChartCtrlsPage {
     public chartReady: boolean = false;
     public toastCtrl: ToastController;
     public clickBindReference;
+    public readAttemptCount: number = 0;
+    public previousOscSettings: any[] = [{
+        offset: null,
+        gain: null,
+        sampleFreqMax: null,
+        bufferSizeMax: null,
+        delay: null
+    }, {
+        offset: null,
+        gain: null,
+        sampleFreqMax: null,
+        bufferSizeMax: null,
+        delay: null
+    }];
+    public previousTrigSettings: any = {
+        instrument: null,
+        channel: null,
+        type: null,
+        lowerThreshold: null,
+        upperThreshold: null
+    };
 
     constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController, _app: App, _platform: Platform) {
         this.toastCtrl = _toastCtrl;
@@ -118,6 +139,9 @@ export class TestChartCtrlsPage {
     //Run osc single
     singleClick() {
         console.log('single clicked');
+        let setTrigParams = false;
+        let setOscParams = false;
+
         let trigSourceArr = this.triggerComponent.triggerSource.split(' ');
         if (trigSourceArr[1] === undefined) {
             trigSourceArr[1] = '1';
@@ -128,6 +152,12 @@ export class TestChartCtrlsPage {
             case 'falling': trigType = 'fallingEdge'; break;
             default: trigType = 'risingEdge';
         }
+        if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[1]) ||
+            this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== parseInt(this.triggerComponent.lowerThresh) ||
+            this.previousTrigSettings.upperThreshold !== parseInt(this.triggerComponent.upperThresh)) {
+            setTrigParams = true;
+        }
+
         let readArray = [[], [], [], [], [], []];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
@@ -136,46 +166,65 @@ export class TestChartCtrlsPage {
                 while (range * this.activeDevice.instruments.osc.chans[i].gains[j] > this.activeDevice.instruments.osc.chans[i].adcVpp / 1000) {
                     j++;
                 }
+
+                if (this.previousOscSettings[i].offset !== 0 || this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
+                    this.previousOscSettings[i].sampleFreqMax !== this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000 ||
+                    this.previousOscSettings[i].bufferSizeMax !== this.activeDevice.instruments.osc.chans[i].bufferSizeMax ||
+                    this.previousOscSettings[i].delay !== parseFloat(this.triggerComponent.delay)) {
+                    setOscParams = true;
+                    setTrigParams = true;
+                }
+
                 readArray[0].push(i + 1);
                 readArray[1].push(0);
-                //readArray[2].push(1);
                 readArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
                 readArray[3].push(this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000);
                 readArray[4].push(this.activeDevice.instruments.osc.chans[i].bufferSizeMax);
                 readArray[5].push(parseFloat(this.triggerComponent.delay));
+                this.previousOscSettings[i] = {
+                    offset: 0,
+                    gain: this.activeDevice.instruments.osc.chans[i].gains[j],
+                    sampleFreqMax: this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000,
+                    bufferSizeMax: this.activeDevice.instruments.osc.chans[i].bufferSizeMax,
+                    delay: parseFloat(this.triggerComponent.delay)
+                }
             }
-            console.log(readArray[2]);
         }
-        let singleCommand = {
-            osc: {
-                setParameters: [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]]
-            },
-            trigger: {
-                setParameters: [
-                    [1],
-                    [
-                        {
-                            instrument: trigSourceArr[0],
-                            channel: parseInt(trigSourceArr[1]),
-                            type: trigType,
-                            lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
-                            upperThreshold: parseInt(this.triggerComponent.upperThresh)
-                        }
-                    ],
-                    [
-                        {
-                            osc: readArray[0],
-                            //la: [1]
-                        }
-                    ]
+        let singleCommand = {}
+        
+        if (setOscParams) {
+            singleCommand['osc'] = {};
+            singleCommand['osc']['setParameters'] = [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]];
+        }
+        singleCommand['trigger'] = {};
+        if (setTrigParams) {
+            singleCommand['trigger']['setParameters'] = [
+                [1],
+                [
+                    {
+                        instrument: trigSourceArr[0],
+                        channel: parseInt(trigSourceArr[1]),
+                        type: trigType,
+                        lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
+                        upperThreshold: parseInt(this.triggerComponent.upperThresh)
+                    }
                 ],
-                single: [[1]]
-            }
+                [
+                    {
+                        osc: readArray[0],
+                        //la: [1]
+                    }
+                ]
+            ];
         }
+        singleCommand['trigger']['single'] = [[1]];
         if (this.triggerComponent.edgeDirection === 'off') {
-            singleCommand.trigger['forceTrigger'] = [[1]];
+            singleCommand['trigger']['forceTrigger'] = [[1]];
             console.log(singleCommand);
         }
+
+        console.log(singleCommand);
+
         this.activeDevice.multiCommand(singleCommand).subscribe(
             (data) => {
                 console.log(data);
@@ -186,7 +235,15 @@ export class TestChartCtrlsPage {
                 this.readOscope();
                 //this.readLa();
             }
-            );
+        );
+
+        this.previousTrigSettings = {
+            instrument: trigSourceArr[0],
+            channel: parseInt(trigSourceArr[1]),
+            type: trigType,
+            lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
+            upperThreshold: parseInt(this.triggerComponent.upperThresh)
+        };
 
 
     }
@@ -214,6 +271,7 @@ export class TestChartCtrlsPage {
         this.activeDevice.instruments.osc.read(readArray).subscribe(
             (data) => {
                 console.log(data);
+                this.readAttemptCount = 0;
                 let numSeries = [];
                 for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
                     if (this.chart1.oscopeChansActive[i]) {
@@ -248,12 +306,19 @@ export class TestChartCtrlsPage {
                 console.log(this.chart1.currentBufferArray);
             },
             (err) => {
-                console.log(err);
-                let toast = this.toastCtrl.create({
-                    message: err,
-                    showCloseButton: true
-                });
-                toast.present();
+                if (this.readAttemptCount > 5) {
+                    console.log(err);
+                    let toast = this.toastCtrl.create({
+                        message: err,
+                        showCloseButton: true
+                    });
+                    toast.present();
+                }
+                else {
+                    console.log('attempting read again');
+                    this.readAttemptCount++;
+                    this.readOscope();
+                }
             },
             () => {
             }

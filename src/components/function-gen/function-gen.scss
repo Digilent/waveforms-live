@@ -55,6 +55,13 @@
     width: 25px;
     height: 25px;
     font-size: 12px;
+    margin-right: 0.5rem;
+    margin-top:2px;
+}
+
+.fgen-container .awg-chan-container
+{
+    margin-left: 8px;
 }
 
 .fgen-container .powerOn
@@ -134,29 +141,31 @@ ion-list .item-input.input-has-focus:last-child {
     width: 100%;
     background-color: #3A3A3A;
     border: solid black 1px;
-    padding: 2px 0px 2px 2px;
+    padding: 2px 0px 2px 4px;
     margin: 0px 0px 0px 0px;
 }
 
 .fgen-container .input-label
  {
      color: white;
-     max-width: 80px;
      min-width: 80px;
      padding-right: 0px;
+     padding-left: 15px;
  }
 
  .fgen-container .label-flex
 {
     display: flex;
     flex-direction: row;
+    min-width: 114px;
 }
 
 .fgen-container .label-left
 {
-    flex: 1 1 10px;
+    flex: 0 0 84px;
     align-self: center;
     max-width: 84px;
+    min-width: 84px;
 }
 
 .fgen-container .label-right
@@ -189,7 +198,6 @@ ion-list .item-input.input-has-focus:last-child {
 
 .fgen-container img {
     vertical-align: middle;
-    height: 22px;
 }
 
 .fgen-container .wavetype-images-container

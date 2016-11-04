@@ -28,10 +28,10 @@
 
 .chart-page-container .top-bar-container .inner-ctrls
 {
-    padding-right: 2px;
+    padding-right: 5px;
     background-color: #535353;
     z-index: 5;
-    max-width: 165px;
+    max-width: 219px;
     padding-left: 5px;
 }
 
@@ -64,8 +64,8 @@
 .chart-page-container .center-container .controls-wrapper
 {
     width: 20%;
-    max-width: 200px;
-    min-width: 180px;
+    max-width: 225px;
+    min-width: 215px;
     flex: 0 1 20%;
     overflow: auto;
     
@@ -160,7 +160,7 @@
     }
     .chart-page-container .top-bar-container .inner-ctrls
     {
-        max-width: 80px;
+        max-width: 110px;
     }
     .chart-page-container [icon-right] ion-icon {
         padding-left: 1px;

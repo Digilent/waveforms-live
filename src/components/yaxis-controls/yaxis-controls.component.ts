@@ -30,7 +30,7 @@ export class YAxisComponent {
 
     ngOnInit() {
         for (let i = 0; i < this.chart.oscopeChansActive.length; i++) {
-            this.names.push('Osc ' + (i + 1));
+            this.names.push('Ch ' + (i + 1));
             this.showSeriesSettings.push(this.chart.oscopeChansActive[i]);
         }
     }
@@ -40,13 +40,6 @@ export class YAxisComponent {
             return this.chart.getSeriesColor(seriesNum);
         }
         return '#535353';
-    }
-
-    getSeriesFontColor(seriesNum: number) {
-        if (this.chart.chart.series[seriesNum].visible) {
-            return '#535353';
-        }
-        return 'white';
     }
 
     toggleOscSettings() {

@@ -2,17 +2,18 @@
     <div class="title" (click)="emitEvent()">
         <div (dblclick)="toggleDigiSettings()" class="align-center-container header-bar">
             <img class="custom-dropdown-img" [ngClass]="{rotateOn: showDigiContent}" (click)="toggleDigiSettings()" src="assets/img/arrow-right.png">
-            <div class="title-container">Digital</div>
-            <button ion-button class="align-right disable-hover" (click)="doCheckbox($event)"><ion-icon name="settings"></ion-icon></button>
+            <div class="title-container instrument-header">Digital</div>
+            <!--<button ion-button class="align-right disable-hover" (click)="doCheckbox($event)"><ion-icon name="settings"></ion-icon></button>-->
+            <div style="width:26px;height:26px;display:inline-block;"></div>
         </div>
     </div>
     <div *ngIf="showDigiContent">
         <ion-row class="mode-row">
             <ion-col text-right>
-                <div class="mode-select" (click)="setMode('analyzer')" [ngClass]="{'mode-selected':selectedMode==='analyzer'}">Analyzer</div>
+                <button ion-button class="text-button-side disable-hover bottom-button" (click)="setMode('analyzer')" [ngClass]="{'mode-selected la-mode':selectedMode==='analyzer'}">Analyzer</button>
             </ion-col>
             <ion-col text-left>
-                <div class="mode-select mode-left" (click)="setMode('io')" [ngClass]="{'mode-selected':selectedMode==='io'}">I/O</div>
+                <button ion-button class="text-button-side disable-hover bottom-button bottom-button-right" (click)="setMode('io')" [ngClass]="{'mode-selected':selectedMode==='io'}">I/O</button>
             </ion-col>
         </ion-row>
         <div *ngIf="selectedMode==='io'&&!directionMode">
@@ -20,16 +21,20 @@
                 <ion-col *ngFor="let channel of gpioChans, let i = index;" class="digi-col" text-center>
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
-                        <div class="dummy-border" [ngClass]="{'button-output': gpioDirections[i]}"><button (click)="toggleChannel(i)" class="channel-button" [disabled]="!gpioDirections[i]" [ngClass]="{'button-on': gpioVals[i]}"></button></div>
+                        <div class="dummy-border" [ngClass]="{'button-output': gpioDirections[i]}">
+                            <button (click)="toggleChannel(i)" class="channel-button" [disabled]="!gpioDirections[i]" [ngClass]="{'button-on': gpioVals[i]}">
+                                <span class="button-indicator">{{getButtonState(i)}}</span>
+                            </button>
+                        </div>
                     </div>
                 </ion-col>
             </ion-row>
             <ion-row>
-                <ion-col text-center>
-                    <button ion-button class="icon-only-button-side disable-hover" (click)="readAllIo($event)"><ion-icon name="refresh"></ion-icon></button>
+                <ion-col text-right class="bottom-buttons">
+                    <button ion-button class="text-button-side disable-hover bottom-button" (click)="readAllIo($event)"><ion-icon name="refresh"></ion-icon></button>
                 </ion-col>
-                <ion-col text-center>
-                    <button ion-button class="text-button-side disable-hover" (click)="toggleDirectionMode()">Direction</button>
+                <ion-col text-left class="bottom-buttons">
+                    <button ion-button class="text-button-side disable-hover bottom-button bottom-button-right" (click)="toggleDirectionMode()">Direction</button>
                 </ion-col>
             </ion-row>
         </div>
@@ -38,16 +43,20 @@
                 <ion-col *ngFor="let channel of gpioChans, let i = index;" class="digi-col" text-center>
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
-                        <div class="dummy-border"><button (click)="toggleChanDirection(i)" class="channel-button" [ngClass]="{'button-on': gpioDirections[i]}"></button></div>
+                        <div class="dummy-border">
+                            <button (click)="toggleChanDirection(i)" class="channel-button direction-mode" [ngClass]="{'button-on': gpioDirections[i]}">
+                                <span class="button-indicator">{{getButtonState(i)}}</span>
+                            </button>
+                        </div>
                     </div>
                 </ion-col>
             </ion-row>
             <ion-row>
-                <ion-col text-center>
-                    <button ion-button class="icon-only-button-side disable-hover" (click)="readAllIo($event)"><ion-icon name="refresh"></ion-icon></button>
+                <ion-col text-right class="bottom-buttons">
+                    <button ion-button class="text-button-side disable-hover bottom-button" (click)="readAllIo($event)"><ion-icon name="refresh"></ion-icon></button>
                 </ion-col>
-                <ion-col text-center>
-                    <button ion-button class="text-button-side disable-hover" (click)="toggleDirectionMode()" [ngClass]="{'mode-selected':directionMode}">Direction</button>
+                <ion-col text-left class="bottom-buttons">
+                    <button ion-button class="text-button-side disable-hover bottom-button bottom-button-right" (click)="toggleDirectionMode()" [ngClass]="{'mode-selected direction-mode':directionMode}">Direction</button>
                 </ion-col>
             </ion-row>
         </div>
@@ -56,7 +65,11 @@
                 <ion-col *ngFor="let channel of laChans, let i = index;" class="digi-col" text-center>
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
-                        <div class="dummy-border" [ngClass]="{'button-output': gpioDirections[i]}"><button (click)="toggleChannel(i)" class="channel-button" [disabled]="!gpioDirections[i]" [ngClass]="{'button-on': gpioVals[i]}"></button></div>
+                        <div class="dummy-border">
+                            <button (click)="toggleLaChan(i)" class="channel-button la-mode" [ngClass]="{'button-on': laActiveChans[i]}">
+                                <span class="button-indicator">{{getButtonState(i)}}</span>
+                            </button>
+                        </div>
                     </div>
                 </ion-col>
             </ion-row>
