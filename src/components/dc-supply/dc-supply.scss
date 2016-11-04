@@ -172,7 +172,7 @@
 
 .dc-container .custom-input
 {
-    color: white;
+    color: #CCCCCC;
     text-align: left;
     width: 100%;
     background-color: #3A3A3A;
@@ -188,10 +188,11 @@
 
 .dc-container .input-label
  {
-     color: white;
+     color: #CCCCCC;
      min-width: 80px;
      padding-right: 0px;
      padding-left: 15px;
+     padding-top: 0px;
  }
 
  .dc-container .label-flex
@@ -211,7 +212,7 @@
 
 .dc-container .label-right
 {
-    color: white;
+    color: #CCCCCC;
     flex: 0 0 10px;
     align-self: center;
     margin-left: 5px;
@@ -220,4 +221,5 @@
 .dc-container .input-col
 {
     padding-left: 0px;
+    padding-top: 0px;
 }

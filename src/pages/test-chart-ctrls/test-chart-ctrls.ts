@@ -24,6 +24,7 @@ export class TestChartCtrlsPage {
     public botVisible = false;
     public sideVisible = false;
     public running: boolean = false;
+    public triggerStatus: string = 'Idle';
 
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
@@ -139,12 +140,13 @@ export class TestChartCtrlsPage {
     //Run osc single
     singleClick() {
         console.log('single clicked');
+        this.triggerStatus = 'Armed';
         let setTrigParams = false;
         let setOscParams = false;
 
         let trigSourceArr = this.triggerComponent.triggerSource.split(' ');
-        if (trigSourceArr[1] === undefined) {
-            trigSourceArr[1] = '1';
+        if (trigSourceArr[2] === undefined) {
+            trigSourceArr[2] = '1';
         }
         let trigType;
         switch (this.triggerComponent.edgeDirection) {
@@ -152,7 +154,7 @@ export class TestChartCtrlsPage {
             case 'falling': trigType = 'fallingEdge'; break;
             default: trigType = 'risingEdge';
         }
-        if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[1]) ||
+        if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[2]) ||
             this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== parseInt(this.triggerComponent.lowerThresh) ||
             this.previousTrigSettings.upperThreshold !== parseInt(this.triggerComponent.upperThresh)) {
             setTrigParams = true;
@@ -202,8 +204,8 @@ export class TestChartCtrlsPage {
                 [1],
                 [
                     {
-                        instrument: trigSourceArr[0],
-                        channel: parseInt(trigSourceArr[1]),
+                        instrument: trigSourceArr[0].toLowerCase(),
+                        channel: parseInt(trigSourceArr[2]),
                         type: trigType,
                         lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
                         upperThreshold: parseInt(this.triggerComponent.upperThresh)
@@ -230,6 +232,8 @@ export class TestChartCtrlsPage {
                 console.log(data);
             },
             (err) => {
+                console.log(err);
+                this.triggerStatus = 'Idle';
             },
             () => {
                 this.readOscope();
@@ -239,7 +243,7 @@ export class TestChartCtrlsPage {
 
         this.previousTrigSettings = {
             instrument: trigSourceArr[0],
-            channel: parseInt(trigSourceArr[1]),
+            channel: parseInt(trigSourceArr[2]),
             type: trigType,
             lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
             upperThreshold: parseInt(this.triggerComponent.upperThresh)
@@ -271,6 +275,7 @@ export class TestChartCtrlsPage {
         this.activeDevice.instruments.osc.read(readArray).subscribe(
             (data) => {
                 console.log(data);
+
                 this.readAttemptCount = 0;
                 let numSeries = [];
                 for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
@@ -304,6 +309,7 @@ export class TestChartCtrlsPage {
                     }
                 }
                 console.log(this.chart1.currentBufferArray);
+                this.triggerStatus = 'Idle';
             },
             (err) => {
                 if (this.readAttemptCount > 5) {
@@ -313,6 +319,7 @@ export class TestChartCtrlsPage {
                         showCloseButton: true
                     });
                     toast.present();
+                    this.triggerStatus = 'Idle';
                 }
                 else {
                     console.log('attempting read again');
@@ -327,7 +334,12 @@ export class TestChartCtrlsPage {
 
     //Stream osc buffers
     runClick() {
-        console.log('run');
+        let toast = this.toastCtrl.create({
+            message: 'Run Not Implemented',
+            duration: 3000,
+            position: 'bottom'
+        });
+        toast.present();
     }
 
     //Stop dc stream

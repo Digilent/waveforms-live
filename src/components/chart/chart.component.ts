@@ -1875,6 +1875,9 @@ export class SilverNeedleChart {
             value: 'err'
         });
         this.updateMath();
+        setTimeout(() => {
+            this.redrawChart();
+        }, 200);
     }
 
     updateMath() {

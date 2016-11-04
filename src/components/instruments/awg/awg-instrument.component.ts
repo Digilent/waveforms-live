@@ -123,6 +123,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    console.log(data);
                     observer.next(data);
                     observer.complete();
 
@@ -154,7 +155,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-
+                    console.log(data);
                     observer.next(data);
                     observer.complete();
                 },
@@ -185,7 +186,8 @@ export class AwgInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    if (data.awg["1"] === undefined || data.awg["1"][0].statusCode > 0) {
+                    if (data.awg === undefined || data.awg["1"] === undefined || data.awg["1"][0].statusCode > 0) {
+                        console.log(data);
                         observer.error(data);
                     }
                     else {

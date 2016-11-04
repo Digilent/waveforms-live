@@ -8,14 +8,14 @@
 	<div *ngIf="showTriggerSettings" class="controls-container">
 		<ion-grid class="ion-grid-no-padding">
 			<ion-row class="button-row">
-				<ion-col center text-center>
+				<ion-col center text-center class="interact-button-col">
 					<div class="trigger-image-container">
 						<img class="custom-image-button" (click)="setTrigType('rising')" src="assets/img/trigger-rising.png" [ngClass]="{'selected-mode':edgeDirection==='rising'}">
 						<img class="custom-image-button" (click)="setTrigType('falling')" src="assets/img/trigger-falling.png" [ngClass]="{'selected-mode':edgeDirection==='falling'}">
 						<button ion-button class="off-button disable-hover" (click)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}">Off</button>
 					</div>
 				</ion-col>
-				<ion-col>
+				<ion-col center text-center class="interact-button-col">
 					<div><button ion-button class="text-button-side disable-hover">Force</button></div>
 				</ion-col>
 			</ion-row>
@@ -23,7 +23,7 @@
 				<ion-col center class="input-label">
 					Source
 				</ion-col>
-				<ion-col class="input-col">
+				<ion-col class="input-col" center>
                     <div class="label-flex">
                         <div class="label-left">
                             <button ion-button icon-right class="source-button disable-hover" (click)="openGenPopover($event)">
@@ -40,7 +40,7 @@
 				<ion-col center class="input-label">
 					Level
 				</ion-col>
-				<ion-col class="input-col">
+				<ion-col center class="input-col">
                     <div class="label-flex">
                         <div class="label-left">
                             <input class="custom-input" (focusout)="setupLevel()" type="number" step="any" [(ngModel)]="level" />

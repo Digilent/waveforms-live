@@ -38,6 +38,7 @@ export class SimulatedAwgComponent {
     }
 
     run(chan) {
+        this.simulatedDeviceService.setTriggerArmed(true);
         return {
             statusCode: 0,
             wait: 0
@@ -45,6 +46,8 @@ export class SimulatedAwgComponent {
     }
 
     stop(chan) {
+        console.log('stop');
+        this.simulatedDeviceService.setTriggerArmed(false);
         return {
             statusCode: 0,
             wait: 0

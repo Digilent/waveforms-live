@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
 //Services
-import {SimulatedDeviceService} from '../../../services/simulated-device/simulated-device.service';
+import { SimulatedDeviceService } from '../../../services/simulated-device/simulated-device.service';
 
 @Injectable()
 export class SimulatedOscComponent {
@@ -54,9 +54,13 @@ export class SimulatedOscComponent {
     read(chan) {
         let targets = this.simulatedDeviceService.getTriggerTargets();
         let returnInfo = {};
-            if (targets.osc.indexOf(parseInt(chan)) !== -1) {
-                let awgSettings: any = this.simulatedDeviceService.getAwgSettings(1);
-                let oscSettings = this.simulatedDeviceService.getOscParameters(chan);
+        if (targets.osc.indexOf(parseInt(chan)) !== -1) {
+            let awgSettings: any = this.simulatedDeviceService.getAwgSettings(1);
+            let oscSettings = this.simulatedDeviceService.getOscParameters(chan);
+            if (!this.simulatedDeviceService.getTriggerArmed()) {
+                returnInfo = this.drawDefault();
+            }
+            else {
                 if (awgSettings.signalType === 'sine') {
                     returnInfo = this.drawSine(awgSettings, oscSettings, chan);
                 }
@@ -74,18 +78,51 @@ export class SimulatedOscComponent {
                 }
                 else {
                     console.log('drawing default wave');
-                    returnInfo = this.drawSine(this.defaultAwgSettings, this.defaultOscSettings, chan);
+                    returnInfo = this.drawDefault();
                 }
-
             }
+        }
         return returnInfo;
+    }
+
+    drawDefault() {
+        let numSamples = 32640;
+        let sampleRate = 6250000000; //30 points per period
+        let vOffset = 0; //in mV
+
+        //Calculate dt - time between data points
+        let dt = 1000 / sampleRate;
+
+        //Clock time in seconds.  Rolls ever every hour.
+
+        //Build Y point arrays
+        let y = [];
+        for (let j = 0; j < numSamples; j++) {
+            y[j] = 0;
+        }
+
+        let typedArray = new Int16Array(y);
+
+        return {
+            command: "read",
+            statusCode: 0,
+            binaryLength: 2 * typedArray.length,
+            binaryOffset: null,
+            acqCount: 3,
+            actualSampleFreq: 1000 / dt,
+            y: typedArray,
+            pointOfInterest: 16320,
+            triggerIndex: 16320,
+            actualVOffset: vOffset,
+            actualGain: 1
+        };
     }
 
     drawSine(awgSettings, oscSettings, chan) {
 
         //---------- Simulate Signal ----------
         //Set default values
-        let numSamples = oscSettings.bufferSize; //ten thousand points 
+        let numSamples = oscSettings.bufferSize;
         let sigFreq = awgSettings.signalFreq; //in mHz
         let sampleRate = oscSettings.sampleFreq; //30 points per period
         let t0 = 0;
@@ -105,7 +142,7 @@ export class SimulatedOscComponent {
         for (let j = 0; j < numSamples; j++) {
             y[j] = (vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j + t0 + phase)) + vOffset;
         }
-        
+
         let typedArray = new Int16Array(y);
         //length is 2x the array length because 2 bytes per entry
         return {
@@ -147,9 +184,9 @@ export class SimulatedOscComponent {
                 y[i] = (vOffset - vpp / 2);
             }
         }
-        
+
         let typedArray = new Int16Array(y);
-        
+
         //length is 2x the array length because 2 bytes per entry
         return {
             command: "read",
@@ -163,7 +200,7 @@ export class SimulatedOscComponent {
             triggerIndex: 16320,
             actualVOffset: vOffset,
             actualGain: 1
-        };  
+        };
     }
 
     drawTriangle(awgSettings, oscSettings, chan) {
@@ -185,7 +222,7 @@ export class SimulatedOscComponent {
         }
 
         let typedArray = new Int16Array(y);
-        
+
         //length is 2x the array length because 2 bytes per entry
         return {
             command: "read",
@@ -222,7 +259,7 @@ export class SimulatedOscComponent {
         }
 
         let typedArray = new Int16Array(y);
-        
+
         //length is 2x the array length because 2 bytes per entry
         return {
             command: "read",

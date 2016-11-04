@@ -31,7 +31,7 @@
     padding-right: 5px;
     background-color: #535353;
     z-index: 5;
-    max-width: 219px;
+    max-width: 225px;
     padding-left: 5px;
 }
 
@@ -64,8 +64,8 @@
 .chart-page-container .center-container .controls-wrapper
 {
     width: 20%;
-    max-width: 225px;
-    min-width: 215px;
+    max-width: 232px;
+    min-width: 232px;
     flex: 0 1 20%;
     overflow: auto;
     
@@ -136,6 +136,24 @@
     background-color: #686868;
 }
 
+.chart-page-container .collapse-button
+{
+    padding-right: 4px;
+}
+
+.chart-page-container .main-button
+{
+    color: #3A3A3A;
+    background-color: #EEEEEE;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.chart-page-container .trigger-indicator
+{
+    color: #CCCCCC;
+}
+
 //Disables scroll for all pages
 .scroll-content {
     overflow-y: auto;
@@ -153,7 +171,6 @@
         margin-left: 0.1rem;
         font-size: 8px;
         height: 25px;
-        background-color: #535353;
         border: solid black 1px;
         border-radius: 0px;
         min-width: 0px;

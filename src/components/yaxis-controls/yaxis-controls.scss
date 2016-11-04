@@ -22,17 +22,21 @@
 
 .align-center-container .align-left
 {
-    margin-top: 2px;
-    margin-right: 0.5rem;
-    margin-bottom: 0.1rem;
-    margin-left: 0.1rem;
-    height: 25px;
-    font-size: 1.2rem;
-    max-width: 25px;
     background-color: #535353;
+    color: #CCCCCC;
     border-radius: 0px;
-    color: white;
-    box-shadow: none;
+    margin: 0px;
+    border: solid #535353 1px;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    margin-right: 0.5rem;
+    margin-top:2px;
+}
+
+.align-center-container .align-left:hover
+{
+    border: solid white 1px;
 }
 
 .align-center-container .align-right
@@ -89,8 +93,6 @@
 
 .text-button-side
 {
-    //padding top to fix vertical align
-    padding-top: 2px;
     margin-top: 0.1rem;
     margin-right: 0.1rem;
     margin-bottom: 0.1rem;
@@ -103,11 +105,17 @@
     border: solid black 1px;
     border-radius: 0px;
     box-shadow: none;
+    color: #CCCCCC;
 }
 
 .text-button-side:hover
 {
     border: solid white 1px;
+}
+
+.set-darkgrey-font
+{
+    color: #CCCCCC;
 }
 
 .header-bar-side
@@ -116,7 +124,7 @@
     border-top: solid #686868 1px;
     padding-top: 1px; 
     padding-bottom: 1px;
-    color: white;
+    color: #CCCCCC;
 }
 
 .controls-container
@@ -179,8 +187,7 @@
 
 .yaxis-component-container .vpd-button-col
 {
-    padding-left: 0px;
-    padding-right: 0px;
+    padding: 0px;
 }
 
 .yaxis-component-wrapper
@@ -190,6 +197,17 @@
 
 .instrument-header
 {
-    color: #4487BA;
+    color: white;
     font-weight: bold;
+}
+
+.yaxis-component-container .button-info-container
+{
+    padding-bottom: 5px;
+}
+
+
+.yaxis-component-container .series-on
+{
+    color: white;
 }

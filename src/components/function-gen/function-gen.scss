@@ -24,7 +24,7 @@
 
 .fgen-container .custom-ion-label
 {
-    color: #999;
+    color: #CCCCCC;
     font-size: 1.2rem;
     margin-top: 8px;
 }
@@ -37,6 +37,7 @@
 .fgen-container .input-col
 {
     padding-left: 0px;
+    padding-top: 0px;
 }
 
 .show 
@@ -48,7 +49,7 @@
 .fgen-container .powerOff
 {
     background-color: #535353;
-    color: #A1A1A1;
+    color: #CCCCCC;
     border-radius: 0px;
     margin: 0px;
     border:solid #535353 1px;
@@ -136,7 +137,7 @@ ion-list .item-input.input-has-focus:last-child {
 
 .fgen-container .text-input
 {
-    color: white;
+    color: #CCCCCC;
     text-align: left;
     width: 100%;
     background-color: #3A3A3A;
@@ -147,10 +148,11 @@ ion-list .item-input.input-has-focus:last-child {
 
 .fgen-container .input-label
  {
-     color: white;
+     color: #CCCCCC;
      min-width: 80px;
      padding-right: 0px;
      padding-left: 15px;
+     padding-top: 0px;
  }
 
  .fgen-container .label-flex
@@ -166,11 +168,12 @@ ion-list .item-input.input-has-focus:last-child {
     align-self: center;
     max-width: 84px;
     min-width: 84px;
+    color: #CCCCCC
 }
 
 .fgen-container .label-right
 {
-    color: white;
+    color: #CCCCCC;
     flex: 0 0 10px;
     align-self: center;
     margin-left: 5px;

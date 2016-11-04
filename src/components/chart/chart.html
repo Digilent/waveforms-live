@@ -47,7 +47,7 @@
                     </ion-col>
                 </ion-row>
             </ion-col>
-            <ion-col *ngIf="cursorsEnabled" class="info-col">
+            <ion-col *ngIf="cursorsEnabled" center class="info-col">
                 <ion-row center class="cursor-container">
                     <button ion-button icon-right class="text-button-side disable-hover" (click)="openCursorModal()" [disabled]="currentBufferArray.length === 0">
                         <span class="collapse-button">Cursors</span>

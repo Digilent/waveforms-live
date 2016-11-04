@@ -18,7 +18,7 @@ export class TriggerComponent {
     public lowerThresh: string = '-30';
     public upperThresh: string = '0';
     public edgeDirection: string = 'rising';
-    public triggerSource: string = 'osc 1';
+    public triggerSource: string = 'Osc Ch 1';
     public triggerType: string = 'edge';
     public popoverCtrl: PopoverController;
     public showTriggerSettings: boolean = true;
@@ -39,7 +39,7 @@ export class TriggerComponent {
     openGenPopover(event) {
             let chanArray = [];
             for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
-                chanArray.push('Osc ' + (i + 1));
+                chanArray.push('Osc Ch ' + (i + 1));
             }
             /*for (let i = 0; i < this.triggerComponent.activeDevice.instruments.la.numChans; i++) {
                 chanArray.push('La ' + (i + 1));
@@ -57,13 +57,14 @@ export class TriggerComponent {
         genPopover.onDidDismiss((data) => {
             if (data === null) { return; }
             console.log(data);
-            let selection = data.option.toLowerCase();
-            this.triggerSource = selection;
+            this.triggerSource = data.option;
         });
     }
 
     setupLevel() {
-        console.log('hey');
+        this.upperThresh = (parseFloat(this.level) * 1000).toString();
+        this.lowerThresh = (parseFloat(this.upperThresh) - 30).toString();
+        console.log(this.upperThresh, this.lowerThresh);
     }
 
     //Open series popover

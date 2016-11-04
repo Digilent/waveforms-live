@@ -9,32 +9,32 @@
             <div (dblclick)="toggleSeriesSettings(i)" class="align-center-container header-bar-side">
                 <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSeriesSettings[i]}" (click)="toggleSeriesSettings(i)" src="assets/img/arrow-right.png">
                 <div class="vertical-align">{{names[i]}}</div>
-                <button ion-button clear (click)="toggleVisibility(i, $event)" class="align-left disable-hover" [style.background-color]="getSeriesColor(i)">
+                <button ion-button clear (click)="toggleVisibility(i, $event)" class="align-left disable-hover" [style.background-color]="getSeriesColor(i)" [ngClass]="{'series-on': chart.oscopeChansActive[i]}">
                     <ion-icon name="power"></ion-icon>
                 </button>
             </div>
-            <div *ngIf="showSeriesSettings[i]" >
+            <div *ngIf="showSeriesSettings[i]" class="button-info-container">
                 <ion-row class="controls-container">
 
-                    <ion-col text-right class="vpd-button-col">
+                    <ion-col text-right center class="vpd-button-col">
                         <button ion-button [disabled]="chart.activeVPDIndex[i] == 0" (click)="chart.decrementVPD(i)" class="icon-only-button-side disable-hover"><ion-icon name="remove"></ion-icon></button>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <div>{{chart.voltsPerDivOpts[chart.activeVPDIndex[i]]}}/</div>
+                        <div class="set-darkgrey-font">{{chart.voltsPerDivOpts[chart.activeVPDIndex[i]]}}/</div>
                     </ion-col>
-                    <ion-col text-left class="vpd-button-col">
+                    <ion-col text-left center class="vpd-button-col">
                         <button ion-button [disabled]="chart.activeVPDIndex[i] == chart.voltsPerDivOpts.length-1" (click)="chart.incrementVPD(i)" class="icon-only-button-side disable-hover"><ion-icon name="add"></ion-icon></button>
                     </ion-col>
                 </ion-row>
 
                 <ion-row class="controls-container">
-                    <ion-col text-right class="vpd-button-col">
+                    <ion-col text-right center class="vpd-button-col">
                         <button ion-button (click)="chart.decrementOffset(i)" class="icon-only-button-side disable-hover"><ion-icon name="remove"></ion-icon></button>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <div>Offset</div>
+                        <div class="set-darkgrey-font">Offset</div>
                     </ion-col>
-                    <ion-col text-left class="vpd-button-col">
+                    <ion-col text-left center class="vpd-button-col">
                         <button ion-button (click)="chart.incrementOffset(i)" class="icon-only-button-side disable-hover"><ion-icon name="add"></ion-icon></button>
                     </ion-col>
                 </ion-row>

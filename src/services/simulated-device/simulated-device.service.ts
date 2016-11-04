@@ -20,6 +20,15 @@ export class SimulatedDeviceService {
 
     /*Trigger Parameters*/
     public targets: any;
+    public triggerArmed: boolean;
+
+    setTriggerArmed(triggerArmed: boolean) {
+        this.triggerArmed = triggerArmed;
+    }
+
+    getTriggerArmed(): boolean {
+        return this.triggerArmed;
+    }
 
     setAwgSettings(settings: any, channel: number) {
         this.signalTypes[channel] = settings.signalType;
