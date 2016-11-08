@@ -39,6 +39,7 @@ export class MyApp {
             { title: 'Device Manager', component: DeviceManagerPage }
         ];
         this.settingsService = _settingsService;
+        this.settingsService.changeConsoleLog('both');
     }
 
     initializeApp() {

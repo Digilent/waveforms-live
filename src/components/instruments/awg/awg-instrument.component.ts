@@ -1,16 +1,16 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-import {InstrumentComponent} from '../instrument.component';
-import {AwgChannelComponent} from './awg-channel.component';
+import { InstrumentComponent } from '../instrument.component';
+import { AwgChannelComponent } from './awg-channel.component';
 
 //Services
-import {TransportService} from '../../../services/transport/transport.service';
+import { TransportService } from '../../../services/transport/transport.service';
 
 //Interfaces
-import {SettingsObject} from './awg-instrument.component';
+import { SettingsObject } from './awg-instrument.component';
 
 @Injectable()
 export class AwgInstrumentComponent extends InstrumentComponent {
@@ -30,7 +30,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         for (let channel in _awgInstrumentDescriptor) {
             if (channel !== 'numChans') {
                 this.chans.push(new AwgChannelComponent(_awgInstrumentDescriptor[channel]));
-            }   
+            }
         }
     }
 
@@ -122,8 +122,24 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    console.log(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    let data;
+                    try {
+                        data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    }
+                    catch (e) {
+                        console.log(e);
+                        console.log('Error parsing JSON response');
+                        observer.error(e);
+                        return;
+                    }
                     console.log(data);
+                    if ((data.awg !== undefined && data.awg['1'][0].statusCode > 0) || data.statusCode !== undefined) {
+                        console.log('statuscode error');
+                        observer.error('Error Setting AWG Parameters. Status Code');
+                        return;
+                    }
+                    console.log('no status code error');
                     observer.next(data);
                     observer.complete();
 
@@ -154,8 +170,23 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    let data;
+                    try {
+                        data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    }
+                    catch (e) {
+                        console.log(e);
+                        console.log('Error parsing run response');
+                        observer.error(e);
+                        return;
+                    }
                     console.log(data);
+                    if ((data.awg !== undefined && data.awg['1'][0].statusCode > 0) || data.statusCode !== undefined) {
+                        console.log('statuscode error');
+                        observer.error('Error running AWG. Status Code');
+                        return;
+                    }
+                    console.log('no status code error');
                     observer.next(data);
                     observer.complete();
                 },

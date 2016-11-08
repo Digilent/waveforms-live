@@ -32,6 +32,10 @@ export class ProtocolTestPanel {
     public dcCommands: Array<string> = ['DC', 'getVoltage', 'setVoltage'];
     public oscCommands: Array<string> = ['OSC', 'read', 'setParameters'];
     public triggerCommands: Array<string> = ['Trigger', 'forceTrigger', 'read', 'run', 'single', 'setParameters', 'stop'];
+    public gpioCommands: string[] = ['GPIO', 'setParameters', 'read', 'write'];
+    public customCommands: string[] = ['CUSTOM', 'one', 'two', 'three', 'four', 'five'];
+
+    public activeCustomCommandNumber: string = 'one';
 
     public sendBody: string = '';
 
@@ -129,6 +133,60 @@ export class ProtocolTestPanel {
                         {
                             "command": "setVoltage",
                             "voltage": 3300
+                        }
+                    ]
+                }
+            }
+        },
+        "custom": {
+            "one": {
+                "custom": 1
+            },
+            "two": {
+                "custom": 2
+            },
+            "three": {
+                "custom": 3
+            },
+            "four": {
+                "custom": 4
+            },
+            "five": {
+                "custom": 5
+            }
+        },
+        "gpio": {
+            "setParameters": {
+                "gpio": {
+                    "1": [
+                        {
+                            "command": "setParameters",
+                            "direction": "input"
+                        }
+                    ],
+                    "2": [
+                        {
+                            "command": "setParameters",
+                            "direction": "output"
+                        }
+                    ]
+                }
+            },
+            "read": {
+                "gpio": {
+                    "1": [
+                        {
+                            "command": "read"
+                        }
+                    ]
+                }
+            },
+            "write": {
+                "gpio": {
+                    "2": [
+                        {
+                            "command": "write",
+                            "value": 1
                         }
                     ]
                 }
@@ -461,6 +519,61 @@ export class ProtocolTestPanel {
         }
     }
 
+    //Callback called when a GPIO command template is selected
+    onGpioCommandChange(data) {
+        switch (data.value) {
+            case "setParameters":
+                this.sendBody = JSON.stringify(this.commands.gpio.setParameters);
+                this.activeCommand = this.commands.gpio.setParameters;
+                break;
+            case "read":
+                this.sendBody = JSON.stringify(this.commands.gpio.read);
+                this.activeCommand = this.commands.gpio.read;
+                break;
+            case "write":
+                this.sendBody = JSON.stringify(this.commands.gpio.write);
+                this.activeCommand = this.commands.gpio.write;
+                break;
+            default:
+                this.sendBody = "";
+                break;
+        }
+    }
+
+    //Callback called when a custom command template is selected
+    onCustomCommandChange(data) {
+        switch (data.value) {
+            case "one":
+                this.sendBody = JSON.stringify(this.commands.custom.one);
+                this.activeCommand = this.commands.custom.one;
+                this.activeCustomCommandNumber = 'one';
+                break;
+            case "two":
+                this.sendBody = JSON.stringify(this.commands.custom.two);
+                this.activeCommand = this.commands.custom.two;
+                this.activeCustomCommandNumber = 'two';
+                break;
+            case "three":
+                this.sendBody = JSON.stringify(this.commands.custom.three);
+                this.activeCommand = this.commands.custom.three;
+                this.activeCustomCommandNumber = 'three';
+                break;
+            case "four":
+                this.sendBody = JSON.stringify(this.commands.custom.four);
+                this.activeCommand = this.commands.custom.four;
+                this.activeCustomCommandNumber = 'four';
+                break;
+            case "five":
+                this.sendBody = JSON.stringify(this.commands.custom.five);
+                this.activeCommand = this.commands.custom.five;
+                this.activeCustomCommandNumber = 'five';
+                break;
+            default:
+                this.sendBody = "";
+                break;
+        }
+    }
+
     //Send the specified header/body to the specified URL
     send() {
         //Clear Previous Response
@@ -547,7 +660,7 @@ export class ProtocolTestPanel {
             }
             this.storage.saveData('responseRawBinary', stringBuffer);
         }
-        catch(e) {
+        catch (e) {
             console.log(e);
             console.log('Error Saving Raw Binary Response');
         }
@@ -557,20 +670,33 @@ export class ProtocolTestPanel {
 
     attemptCommandSave() {
         console.log('attempting command save');
-        try {
-            let sendBodyObject = JSON.parse(this.sendBody);
-            for (let instrument in this.activeCommand) {
-                for (let channel in this.activeCommand[instrument]) {
-                    this.commands[instrument][this.activeCommand[instrument][channel][0].command] = sendBodyObject;
-                    this.storage.saveData('commands', JSON.stringify(this.commands));
-                    console.log('Custom Command Saved into LocalStorage');
-                }
+        console.log(this.activeCommand);
+        if (this.activeCommand['custom'] !== undefined) {
+            try {
+                let sendBodyObject = JSON.parse(this.sendBody);
+                this.commands.custom[this.activeCustomCommandNumber] = sendBodyObject;
             }
-
+            catch (e) {
+                console.log(e);
+                console.log('error saving commands');
+            }
         }
-        catch (e) {
-            console.log(e);
-            console.log('error saving commands');
+        else {
+            try {
+                let sendBodyObject = JSON.parse(this.sendBody);
+                for (let instrument in this.activeCommand) {
+                    for (let channel in this.activeCommand[instrument]) {
+                        this.commands[instrument][this.activeCommand[instrument][channel][0].command] = sendBodyObject;
+                        this.storage.saveData('commands', JSON.stringify(this.commands));
+                        console.log('Custom Command Saved into LocalStorage');
+                    }
+                }
+
+            }
+            catch (e) {
+                console.log(e);
+                console.log('error saving commands');
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PopoverController } from 'ionic-angular';
+import { PopoverController, ToastController } from 'ionic-angular';
 
 //Components 
 import { TriggerPopover } from '../trigger-popover/trigger-popover.component';
@@ -14,6 +14,7 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
     selector: 'trigger'
 })
 export class TriggerComponent {
+    public toastCtrl: ToastController;
     public delay: string = '0';
     public lowerThresh: string = '-30';
     public upperThresh: string = '0';
@@ -26,8 +27,9 @@ export class TriggerComponent {
     public activeDevice: DeviceComponent;
     public level: string = '0';
 
-    constructor(_popoverCtrl: PopoverController, _devMngSrv: DeviceManagerService) {
+    constructor(_popoverCtrl: PopoverController, _devMngSrv: DeviceManagerService, _toastCtrl: ToastController) {
         this.popoverCtrl = _popoverCtrl;
+        this.toastCtrl = _toastCtrl;
         this.devMngSrv = _devMngSrv;
         this.activeDevice = this.devMngSrv.devices[this.devMngSrv.activeDeviceIndex];
     }
@@ -37,18 +39,18 @@ export class TriggerComponent {
     }
 
     openGenPopover(event) {
-            let chanArray = [];
-            for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
-                chanArray.push('Osc Ch ' + (i + 1));
-            }
-            /*for (let i = 0; i < this.triggerComponent.activeDevice.instruments.la.numChans; i++) {
-                chanArray.push('La ' + (i + 1));
-            }*/
-            chanArray.push('Ext');
+        let chanArray = [];
+        for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
+            chanArray.push('Osc Ch ' + (i + 1));
+        }
+        /*for (let i = 0; i < this.triggerComponent.activeDevice.instruments.la.numChans; i++) {
+            chanArray.push('La ' + (i + 1));
+        }*/
+        chanArray.push('Ext');
 
-            let genPopover = this.popoverCtrl.create(GenPopover, {
-                dataArray: chanArray
-            });
+        let genPopover = this.popoverCtrl.create(GenPopover, {
+            dataArray: chanArray
+        });
 
         genPopover.present({
             ev: event
@@ -61,7 +63,28 @@ export class TriggerComponent {
         });
     }
 
+    forceTrigger() {
+        this.activeDevice.instruments.trigger.forceTrigger([1]).subscribe(
+            (data) => {
+                console.log(data);
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => { }
+        );
+    }
+
     setupLevel() {
+        if (parseFloat(this.level) * 1000 > this.activeDevice.instruments.osc.chans[0].inputVoltageMax ||
+            parseFloat(this.level) * 1000 - 30 < this.activeDevice.instruments.osc.chans[0].inputVoltageMin) {
+                let toast = this.toastCtrl.create({
+                    message: 'Selected Level Value Is Not In Osc Input Voltage Range And May Not Trigger',
+                    showCloseButton: true,
+                    position: 'bottom'
+                });
+                toast.present();
+        }
         this.upperThresh = (parseFloat(this.level) * 1000).toString();
         this.lowerThresh = (parseFloat(this.upperThresh) - 30).toString();
         console.log(this.upperThresh, this.lowerThresh);

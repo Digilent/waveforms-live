@@ -1,24 +1,24 @@
-import {Component, EventEmitter} from '@angular/core';
-import {ModalController, PopoverController, ToastController} from 'ionic-angular';
+import { Component, EventEmitter } from '@angular/core';
+import { ModalController, PopoverController, ToastController } from 'ionic-angular';
 
 //Pages
-import {ModalFgenPage} from '../../pages/fgen-modal/fgen-modal';
+import { ModalFgenPage } from '../../pages/fgen-modal/fgen-modal';
 
 //Components
-import {DeviceComponent} from '../../components/device/device.component';
-import {GenPopover} from '../../components/gen-popover/gen-popover.component';
+import { DeviceComponent } from '../../components/device/device.component';
+import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Services
-import {DeviceManagerService} from '../../services/device/device-manager.service';
+import { DeviceManagerService } from '../../services/device/device-manager.service';
 
 //Interfaces
-import {SettingsObject} from '../instruments/awg/awg-instrument.component';
+import { SettingsObject } from '../instruments/awg/awg-instrument.component';
 
 @Component({
-  templateUrl: 'function-gen.html',
-  selector: 'fgen'
+    templateUrl: 'function-gen.html',
+    selector: 'fgen'
 })
-export class FgenComponent { 
+export class FgenComponent {
     public showDutyCycle: boolean;
     public waveType: string;
     public frequency: string;
@@ -36,12 +36,11 @@ export class FgenComponent {
     public toastCtrl: ToastController;
     public showSettings: boolean = true;
     public showChanSettings: boolean[] = [true];
-    
-    constructor(_deviceManagerService: DeviceManagerService, 
-                _modalCtrl: ModalController,
-                _popoverCtrl: PopoverController,
-                _toastCtrl: ToastController) 
-    {
+
+    constructor(_deviceManagerService: DeviceManagerService,
+        _modalCtrl: ModalController,
+        _popoverCtrl: PopoverController,
+        _toastCtrl: ToastController) {
         this.modalCtrl = _modalCtrl;
         this.popoverCtrl = _popoverCtrl;
         this.toastCtrl = _toastCtrl;
@@ -59,7 +58,7 @@ export class FgenComponent {
         this.dutyCycle = '50';
         this.powerOn = false;
     }
-    
+
     //Toggle dropdown
     toggleWave(waveType: string) {
         if (this.powerOn) {
@@ -75,7 +74,7 @@ export class FgenComponent {
     toggleAwgSettings() {
         this.showSettings = !this.showSettings;
     }
-    
+
     //Toggle power to awg
     togglePower() {
         let chans = [];
@@ -136,6 +135,13 @@ export class FgenComponent {
             },
             (err) => {
                 console.log('AWG Set Regular Failed');
+                this.stop(chans);
+                let toast = this.toastCtrl.create({
+                    message: 'Error Setting AWG Parameters. Please Try Again. If Problem Persists, Reset The Device',
+                    showCloseButton: true,
+                    position: 'bottom'
+                });
+                toast.present();
             },
             () => {
 
@@ -191,7 +197,7 @@ export class FgenComponent {
     //Open function generator / awg modal
     openFgen(num) {
         let modal = this.modalCtrl.create(ModalFgenPage, {
-            value: num, 
+            value: num,
             waveType: this.waveType,
             frequency: this.frequency,
             amplitude: this.amplitude,
@@ -204,16 +210,16 @@ export class FgenComponent {
 
     openPopover(event) {
         let genPopover = this.popoverCtrl.create(GenPopover, {
-                dataArray: this.supportedSignalTypes
-            });
+            dataArray: this.supportedSignalTypes
+        });
         genPopover.present({
             ev: event
         });
-        genPopover.onDidDismiss(data=> {
+        genPopover.onDidDismiss(data => {
             this.toggleWave(data.option);
         });
     }
-    
+
     //Determines if active wave type is a square wave
     isSquare() {
         if (this.waveType === 'square') {
@@ -221,5 +227,5 @@ export class FgenComponent {
         }
         return false;
     }
-    
+
 }

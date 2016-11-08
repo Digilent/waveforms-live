@@ -791,7 +791,6 @@ export class SilverNeedleChart {
 
             this.cursorAnchors[this.numYCursors + 2].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].toPixels(initialValue) - 6);
         }
-        console.log(this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].plotLinesAndBands, this.numYCursors);
         let lineNum = this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].plotLinesAndBands.length - 1;
         this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].plotLinesAndBands[lineNum].svgElem.element.id = 'cursor' + (this.numYCursors + 2);
         this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].plotLinesAndBands[lineNum].svgElem.css({
@@ -923,12 +922,9 @@ export class SilverNeedleChart {
             yCor = this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].toPixels(this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].min);
         }
         let lineNum = this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].plotLinesAndBands.length - 1;
-        console.log(lineNum * (this.activeCursor - 3));
         this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].plotLinesAndBands[lineNum * (this.activeCursor - 3)].options.value = yVal;
         if (this.timelineView) {
-            console.log('timeline');
             this.timelineChart.yAxis[0].plotLinesAndBands[this.activeCursor - 3].options.value = yVal;
-            console.log('after timeline');
             this.timelineChart.yAxis[0].plotLinesAndBands[this.activeCursor - 3].render();
         }
         this.cursorPositions[this.activeCursor - 3] = {
@@ -2332,7 +2328,6 @@ export class SilverNeedleChart {
             return;
         }
         let value = trigPosition * this.currentBufferArray[this.numSeries[0]].dt;
-        console.log(this.triggerPlotLine);
         this.triggerPlotLine.options.value = value;
         this.timelineTriggerPlotLine.options.value = value;
         this.triggerPlotLine.render();
