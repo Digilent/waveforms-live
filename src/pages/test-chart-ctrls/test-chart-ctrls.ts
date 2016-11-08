@@ -220,12 +220,9 @@ export class TestChartCtrlsPage {
             ];
         }
         singleCommand['trigger']['single'] = [[1]];
-        if (this.triggerComponent.edgeDirection === 'off') {
+        /*if (this.triggerComponent.edgeDirection === 'off') {
             singleCommand['trigger']['forceTrigger'] = [[1]];
-            console.log(singleCommand);
-        }
-
-        console.log(singleCommand);
+        }*/
 
         this.activeDevice.multiCommand(singleCommand).subscribe(
             (data) => {
@@ -274,7 +271,6 @@ export class TestChartCtrlsPage {
         }
         this.activeDevice.instruments.osc.read(readArray).subscribe(
             (data) => {
-                console.log(data);
 
                 this.readAttemptCount = 0;
                 let numSeries = [];
@@ -308,7 +304,6 @@ export class TestChartCtrlsPage {
                         }
                     }
                 }
-                console.log(this.chart1.currentBufferArray);
                 this.triggerStatus = 'Idle';
             },
             (err) => {

@@ -9,7 +9,7 @@ export class SettingsService {
     public storageService: StorageService;
     public defaultConsoleLog;
     public logArguments;
-    public logLength: number = 100;
+    public logLength: number = 50;
 
     constructor(_storageService: StorageService) {
         console.log('settings service constructor');

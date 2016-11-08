@@ -64,7 +64,7 @@ export class TriggerComponent {
     }
 
     forceTrigger() {
-        this.activeDevice.instruments.trigger.forceTrigger([1]).subscribe(
+        /*this.activeDevice.instruments.trigger.forceTrigger([1]).subscribe(
             (data) => {
                 console.log(data);
             },
@@ -72,7 +72,13 @@ export class TriggerComponent {
                 console.log(err);
             },
             () => { }
-        );
+        );*/
+        let toast = this.toastCtrl.create({
+            message: 'Force Trigger Not Yet Implemented',
+            showCloseButton: true,
+            position: 'bottom'
+        });
+        toast.present();
     }
 
     setupLevel() {
