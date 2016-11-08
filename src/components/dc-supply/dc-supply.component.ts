@@ -65,7 +65,7 @@ export class DcSupplyComponent {
             this.voltages = [];
             for (let i = 0; i < this.activeDevice.instruments.dc.numChans; i++) {
                 channelNumArray[i] = i + 1;
-                this.voltages[i] = "3.300";
+                this.voltages[i] = "0.000";
                 this.currents[i] = "1.000";
                 this.readVoltages[i] = "-.---";
                 this.formatExtremes(i);
@@ -119,7 +119,7 @@ export class DcSupplyComponent {
             (data) => {
                 console.log(data);
                 for (let channel in data.dc) {
-                    this.readVoltages[parseInt(channel) - 1] = data.dc[channel][0].voltage.toFixed(3);
+                    this.voltages[parseInt(channel) - 1] = data.dc[channel][0].voltage.toFixed(3);
                 }
             },
             (err) => {
@@ -162,10 +162,10 @@ export class DcSupplyComponent {
             this.setVoltages([channel + 1], [parseFloat(this.voltages[channel])]);
             setTimeout(() => {
                 this.getVoltages([channel + 1]);
-            }, 500);
+            }, 750);
         }
         else {
-            this.voltages[channel] = '0.000';
+            this.getVoltages([channel + 1]);
             let toast = this.toastCtrl.create({
                 message: 'Invalid Value. Supply Range: ' + this.voltageLimitFormats[channel],
                 showCloseButton: true,
@@ -186,7 +186,6 @@ export class DcSupplyComponent {
 
     //Validate voltage supplies 
     validateSupply(supplyNum: number) {
-        console.log(this.voltages[supplyNum], this.activeDevice.instruments.dc.chans[supplyNum]);
         if ((parseFloat(this.voltages[supplyNum]) < this.activeDevice.instruments.dc.chans[supplyNum].voltageMin / 1000 || parseFloat(this.voltages[supplyNum]) > this.activeDevice.instruments.dc.chans[supplyNum].voltageMax / 1000)) {
             //Incorrect
             this.correctVoltages[supplyNum] = false;

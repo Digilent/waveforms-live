@@ -302,6 +302,11 @@ export class SilverNeedleChart {
         };
     }
 
+    pinchEvent(event) {
+        console.log(event);
+        alert('hey');
+    }
+
     scrollEvent(event) {
         if (event.deltaY > 0) {
             this.incrementTPD(0);

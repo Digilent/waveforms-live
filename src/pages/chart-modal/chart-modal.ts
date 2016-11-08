@@ -28,7 +28,7 @@ export class ChartModalPage {
         this.viewCtrl = _viewCtrl;
         this.params = _params;
         this.chart = this.params.get('chartComponent');
-        this.currentColors[0] = this.chart.chart.options.chart.backgroundColor;
+        this.currentColors[0] = this.chart.chart.chartBackground.element.attributes.fill.value;
         this.currentColors[1] = this.chart.chart.options.yAxis[0].title.style.color;
         this.currentColors[2] = this.chart.chart.options.yAxis[0].gridLineColor
     }

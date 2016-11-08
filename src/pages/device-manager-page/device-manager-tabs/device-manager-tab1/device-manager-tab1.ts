@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { PopoverController, ToastController, NavController, ModalController } from 'ionic-angular';
+import { PopoverController, App, ToastController, NavController, ModalController } from 'ionic-angular';
 
 //Pages
 import { TestChartCtrlsPage } from '../../../../pages/test-chart-ctrls/test-chart-ctrls';
@@ -17,6 +17,7 @@ import { StorageService } from '../../../../services/storage/storage.service';
 })
 export class Tab1 {
     @Output() navToInstrumentPage: EventEmitter<any> = new EventEmitter;
+    public app: App;
     public popoverCtrl: PopoverController;
     public toastCtrl: ToastController;
     public modalCtrl: ModalController;
@@ -36,8 +37,10 @@ export class Tab1 {
         _toastCtrl: ToastController,
         _storage: StorageService,
         _navCtrl: NavController,
-        _modalCtrl: ModalController) {
+        _modalCtrl: ModalController,
+        _app: App) {
         console.log('tab1 constructor');
+        this.app = _app;
         this.popoverCtrl = _popoverCtrl;
         this.toastCtrl = _toastCtrl;
         this.navCtrl = _navCtrl;
@@ -50,6 +53,10 @@ export class Tab1 {
                 this.devices = JSON.parse(data);
             }
         });
+    }
+
+    ionViewDidEnter() {
+        this.app.setTitle('Saved Devices');
     }
 
     ngOnDestroy() {
