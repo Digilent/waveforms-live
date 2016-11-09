@@ -1,0 +1,22 @@
+<ion-header>
+    <ion-navbar>
+        <button menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Flot</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content class="flot-body">
+
+    <div class="flot-container-container">
+		<div id="flotContainer"></div>
+		<div class="button-container">
+			<button ion-button (click)="doot('right')">gogogogo</button>
+			<button ion-button (click)="cursors()">cursors</button>
+			<button ion-button (click)="navigation()">navigation</button>
+			<input class="hidden-file-input" type="file" id="file" name="file" (change)="fileChange($event)" />
+		</div>
+	</div>
+
+</ion-content>

@@ -8,6 +8,8 @@ import { InstrumentPanelModule } from '../pages/test-chart-ctrls/test-chart-ctrl
 import { DeviceManagerPageModule } from '../pages/device-manager-page/device-manager-page.module';
 import { ProtocolTestPanelModule } from '../pages/protocol-test-panel/protocol-test-panel.module';
 
+import { FlotModule } from '../pages/flot/flot.module';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -18,6 +20,7 @@ import { ProtocolTestPanelModule } from '../pages/protocol-test-panel/protocol-t
     SettingsModule,
     InstrumentPanelModule,
     DeviceManagerPageModule,
+    FlotModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
