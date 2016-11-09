@@ -16,8 +16,11 @@ export class FlotPage implements AfterViewInit {
     public count: number = 0;
     public plot: any;
     public mousemoveEventRef = this.chartMouseMove.bind(this);
+    public verticalPanRef = this.verticalPan.bind(this);
     public xPositionPixels;
+    public yPositionPixels;
     public base = 7;
+    public voltBase = 0;
 
     constructor(public el: ElementRef) {
         this.options = {
@@ -50,55 +53,51 @@ export class FlotPage implements AfterViewInit {
         console.log('custom mousedown event');
         console.log(event);
         this.xPositionPixels = event.clientX;
-        $('#flotContainer').bind('mousemove', this.mousemoveEventRef);
+        this.yPositionPixels = event.clientY;
+        if (event.shiftKey) {
+            $('#flotContainer').bind('mousemove', this.verticalPanRef);
+        }
+        else {
+            $('#flotContainer').bind('mousemove', this.mousemoveEventRef);
+        }
     }
 
     chartMouseUp(event) {
         console.log(event);
         $('#flotContainer').unbind('mousemove', this.mousemoveEventRef);
+        $('#flotContainer').unbind('mousemove', this.verticalPanRef);
     }
 
     chartMouseMove(event) {
         let getAxes = this.plot.getAxes();
-        /*let newVal = this.chart.xAxis[0].toValue(event.chartX) || this.chart.xAxis[0].toValue(event.targetTouches[0].pageX - this.chart.plotLeft);
-        let oldValinNewWindow = this.chart.xAxis[0].toValue(this.xPositionPixels);
-        let difference = newVal - oldValinNewWindow;
-        this.setXExtremes(difference);
-        this.updateCursorLabels();
-        this.updateTriggerAnchor(this.numSeries[0]);
-        this.xPositionPixels = event.chartX || (event.targetTouches[0].pageX - this.chart.plotLeft);*/
-
-        /*let newPos = this.base - positionChange;
-        let min = newPos - this.timeDivision * 5;
-        let max = newPos + this.timeDivision * 5;
-        this.chart.xAxis[0].setExtremes(min, max, true, false);
-        this.base = newPos;
-        if (this.timelineView) {
-            this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
-            let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
-            let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
-            this.updatePlotLines([0, 1], [val1, val2]);
-        }*/
-
-        //let newVal = getAxes.xaxis.p2c(3.07);
-        //c2p takes pixel and converts to value
-        //p2c takes value and converts to pixel
         let newVal = getAxes.xaxis.c2p(event.clientX);
         let oldValinNewWindow = getAxes.xaxis.c2p(this.xPositionPixels);
         let difference = newVal - oldValinNewWindow;
-
         let newPos = this.base - difference;
         let min = newPos - 1 * 5;
         let max = newPos + 1 * 5;
-
         getAxes.xaxis.options.min = min;
         getAxes.xaxis.options.max = max;
         this.plot.setupGrid();
         this.plot.draw();
         this.base = newPos;
-
         this.xPositionPixels = event.clientX;
-        console.log(event);
+    }
+
+    verticalPan(event) {
+        let getAxes = this.plot.getAxes();
+        let newVal = getAxes.yaxis.c2p(event.clientY);
+        let oldValinNewWindow = getAxes.yaxis.c2p(this.yPositionPixels);
+        let difference = newVal - oldValinNewWindow;
+        let newPos = this.voltBase - difference;
+        let min = newPos - 0.5 * 5;
+        let max = newPos + 0.5 * 5;
+        getAxes.yaxis.options.min = min;
+        getAxes.yaxis.options.max = max;
+        this.plot.setupGrid();
+        this.plot.draw();
+        this.voltBase = newPos;
+        this.yPositionPixels = event.clientY;
     }
 
     doot() {
@@ -264,7 +263,7 @@ export class FlotPage implements AfterViewInit {
         console.log(this.plot);
         $('#flotContainer').bind('mousedown', this.chartMouseDown.bind(this));
         $('#flotContainer').bind('mouseup', this.chartMouseUp.bind(this));
-        
+
         updateChart();
     }
 
@@ -489,7 +488,6 @@ export class FlotPage implements AfterViewInit {
     }
 
     tickGenerator(axis) {
-        console.log(axis);
         let min = axis.min;
         let max = axis.max;
         let interval = (max - min) / 10;
@@ -497,7 +495,6 @@ export class FlotPage implements AfterViewInit {
         for (let i = 0; i < 11; i++) {
             ticks.push(i * interval + min);
         }
-        console.log(ticks);
         return ticks;
     }
 
