@@ -90,7 +90,7 @@ export class TestChartCtrlsPage {
     //Alert user with toast if no active device is set
     ngOnInit() {
         this.chart1.enableCursors();
-        this.chart1.enableTimelineView();
+        //this.chart1.enableTimelineView();
         this.chart1.enableMath();
         if (this.deviceManagerService.activeDeviceIndex === undefined) {
             console.log('in if');
@@ -193,7 +193,7 @@ export class TestChartCtrlsPage {
             }
         }
         let singleCommand = {}
-        
+
         if (setOscParams) {
             singleCommand['osc'] = {};
             singleCommand['osc']['setParameters'] = [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]];
@@ -282,7 +282,7 @@ export class TestChartCtrlsPage {
                 this.chart1.clearExtraSeries(numSeries);
                 if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1]);
-                    for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+                    /*for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
                         if (this.chart1.oscopeChansActive[i] === true) {
                             let initial = performance.now();
                             this.chart1.drawWaveform(i, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1][i], true);
@@ -290,11 +290,11 @@ export class TestChartCtrlsPage {
                             console.log(final - initial);
                             this.chart1.updateSeriesAnchor(i);
                         }
-                    }
+                    }*/
                 }
                 else {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1]);
-                    for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+                    /*for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
                         if (this.chart1.oscopeChansActive[i] === true) {
                             let initial = performance.now();
                             this.chart1.drawWaveform(i, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1][i], true);
@@ -302,8 +302,12 @@ export class TestChartCtrlsPage {
                             console.log((final - initial));
                             this.chart1.updateSeriesAnchor(i);
                         }
-                    }
+                    }*/
                 }
+                let start = performance.now();
+                this.chart1.flotDrawWaveform(true, true);
+                let finish = performance.now();
+                console.log('decimate and draw: ' + (finish - start));
                 this.triggerStatus = 'Idle';
             },
             (err) => {

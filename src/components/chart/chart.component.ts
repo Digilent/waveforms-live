@@ -14,6 +14,9 @@ import { ChartModalPage } from '../../pages/chart-modal/chart-modal';
 //Interfaces
 import { Chart, ChartBounds, CursorPositions } from './chart.interface';
 
+declare var $: any;
+declare var mathFunctions: any;
+
 @Component({
     selector: 'silverNeedleChart',
     templateUrl: 'chart.html'
@@ -100,220 +103,201 @@ export class SilverNeedleChart {
 
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
+    }
 
-        this.options = {
-            chart: {
-                type: 'line',
-                zoomType: '',
-                animation: false,
-                spacingTop: 20,
-                backgroundColor: 'black'
-            },
-            colors: this.colorArray,
-            title: {
-                text: '',
-                style: {
+    ngAfterViewInit() {
+
+        let plotArea = $('#flotContainer');
+        plotArea.css({
+            width: '100%',
+            height: '100%'
+        });
+        this.createChart();
+
+    }
+
+    createChart() {
+        let yAxesOptions = this.generateYAxesOptions();
+        this.chart = $.plot("#flotContainer", [
+            {
+                data: [[]]
+            }
+        ], {
+                series: {
+                    lines: {
+                        show: true
+                    }
+                },
+                legend: {
+                    show: false
+                },
+                grid: {
+                    hoverable: true,
+                    clickable: true,
+                    autoHighlight: false,
+                    borderWidth: 0,
+                    backgroundColor: 'black',
+                    labelMargin: 10,
+                    margin: {
+                        top: 15,
+                        left: 10,
+                        right: 25,
+                        bottom: 10
+                    }
+                },
+                colors: this.colorArray,
+                axisLabels: {
+                    show: true
+                },
+                zoomPan: {
+                    enabled: true,
+                    startingIndex: 21
+                },
+                cursorMoveOnPan: true,
+                /*yaxis: {
+                    min: -1.2,
+                    max: 1.2,
+                    ticks: this.tickGenerator,
+                    tickFormatter: this.yTickFormatter,
+                    tickColor: '#666666',
+                    font: {
+                        color: '#666666'
+                    }
+                },*/
+                yaxes: yAxesOptions,
+                xaxis: {
+                    min: -1,
+                    max: 1,
+                    ticks: this.tickGenerator,
+                    tickFormatter: this.xTickFormatter,
+                    tickColor: '#666666',
+                    font: {
+                        color: '#666666'
+                    }
+                }
+            });
+
+        this.chart.setVoltsPerDivArray(this.voltsPerDivVals);
+
+        $("#flotContainer").bind("panEvent", (event, panData) => {
+            console.log(panData);
+            if (panData.axis === 'xaxis') {
+                this.base = panData.mid;
+            }
+            else {
+                this.voltBase[panData.axisNum - 1] = panData.mid;
+            }
+        });
+        $("#flotContainer").bind("mouseWheelRedraw", (event, wheelData) => {
+            console.log(wheelData);
+            if (wheelData.axis === 'xaxis') {
+                this.activeTPDIndex = wheelData.perDivArrayIndex;
+                this.timeDivision = this.secsPerDivVals[this.activeTPDIndex];
+            }
+            else {
+                this.activeVPDIndex[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
+                this.voltDivision[wheelData.axisNum - 1] = this.voltsPerDivVals[this.activeVPDIndex[wheelData.axisNum - 1]];
+            }
+        });
+        console.log(this.chart);
+        //updateChart();
+        this.onLoad(this.chart);
+    }
+
+    generateYAxesOptions() {
+        let yAxisOptionsArray = [];
+        for (let i = 0; i < this.deviceDescriptor.instruments.la.numChans + this.deviceDescriptor.instruments.osc.numChans; i++) {
+            let axisOptions = {
+                position: 'left',
+                axisLabel: 'Ch ' + (i + 1),
+                axisLabelColour: '#666666',
+                axisLabelUseCanvas: true,
+                show: i === 0,
+                min: -1,
+                max: 1,
+                ticks: this.tickGenerator,
+                tickFormatter: this.yTickFormatter,
+                tickColor: '#666666',
+                font: {
                     color: '#666666'
                 }
-            },
-            tooltip: {
-                enabled: true,
-                formatter: function () {
-                    let timePerDiv = Math.abs(this.series.xAxis.max - this.series.xAxis.min) / 10;
-                    if (parseFloat(this.value) == 0) {
-                        return 0 + 's';
-                    }
-                    let i = 0;
-                    let unit = '';
-                    while (timePerDiv < 1) {
-                        i++;
-                        timePerDiv = timePerDiv * 1000;
-                    }
-                    this.x = (parseFloat(this.x) * Math.pow(1000, i)).toFixed(0);
-                    if (i == 0) {
-                        unit = ' s';
-                    }
-                    else if (i == 1) {
-                        unit = ' ms';
-                    }
-                    else if (i == 2) {
-                        unit = ' us';
-                    }
-                    else if (i == 3) {
-                        unit = ' ns';
-                    }
-                    else if (i == 4) {
-                        unit = ' ps';
-                    }
-                    this.x = this.x + unit;
-                    let vPerDiv = Math.abs(this.series.yAxis.max - this.series.yAxis.min) / 10;
-                    i = 0;
-                    while (vPerDiv < 1) {
-                        i++;
-                        vPerDiv = vPerDiv * 1000;
-                    }
-                    this.y = (parseFloat(this.y) * Math.pow(1000, i)).toFixed(0);
-                    if (i == 0) {
-                        unit = ' V';
-                    }
-                    else if (i == 1) {
-                        unit = ' mV';
-                    }
-                    else if (i == 2) {
-                        unit = ' uV';
-                    }
-                    else if (i == 3) {
-                        unit = ' nV';
-                    }
-                    this.y = this.y + unit;
-                    return '<b>' + this.x + '</b> <b> ('
-                        + this.y + ')</b>';
-                }
-            },
-            legend: {
-                enabled: false
-            },
-            series: [{
-                data: []
-            }],
-            yAxis: [{
-                gridLineWidth: 1,
-                gridLineColor: '#666666',
-                offset: 0,
-                labels: {
-                    style: {
-                        color: '#666666'
-                    },
-                    formatter: function () {
-                        let vPerDiv = Math.abs(this.chart.yAxis[0].max - this.chart.yAxis[0].min) / 10;
-                        let i = 0;
-                        let unit = '';
-                        while (vPerDiv < 1) {
-                            i++;
-                            vPerDiv = vPerDiv * 1000;
-                        }
-                        this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
-                        if (i == 0) {
-                            unit = ' V';
-                        }
-                        else if (i == 1) {
-                            unit = ' mV';
-                        }
-                        else if (i == 2) {
-                            unit = ' uV';
-                        }
-                        else if (i == 3) {
-                            unit = ' nV';
-                        }
-                        return this.value + unit;
-                    }
-                },
-                tickPositioner: function () {
-                    let numTicks = 11;
-                    let ticks = [];
-                    let min = this.chart.yAxis[0].min;
-                    let max = this.chart.yAxis[0].max;
-                    let delta = (max - min) / (numTicks - 1);
-                    for (var i = 0; i < numTicks; i++) {
-                        ticks[i] = (min + i * delta);
-                    }
-                    return ticks;
-                },
-                title: {
-                    text: 'Osc 1',
-                    style: {
-                        color: '#666666'
-                    },
-                }
-            }],
-            plotOptions: {
-                series: {
-                    pointInterval: 2,
-                    pointStart: 0,
-                    stickyTracking: false
-                }
-            },
-            credits: {
-                enabled: false
-            },
-            xAxis: {
-                minRange: 0.000000001,
-                labels: {
-                    style: {
-                        color: '#666666'
-                    },
-                    formatter: function () {
-                        let timePerDiv = Math.abs(this.chart.xAxis[0].max - this.chart.xAxis[0].min) / 10;
-                        if (parseFloat(this.value) == 0) {
-                            return 0 + ' s';
-                        }
-                        let i = 0;
-                        let unit = '';
-                        while (timePerDiv < 1) {
-                            i++;
-                            timePerDiv = timePerDiv * 1000;
-                        }
-                        this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
-                        if (i == 0) {
-                            unit = ' s';
-                        }
-                        else if (i == 1) {
-                            unit = ' ms';
-                        }
-                        else if (i == 2) {
-                            unit = ' us';
-                        }
-                        else if (i == 3) {
-                            unit = ' ns';
-                        }
-                        else if (i == 4) {
-                            unit = ' ps';
-                        }
-                        return this.value + unit;
-                    }
-                },
-                lineColor: '#666666',
-                startOnTick: true,
-                endOnTick: true,
-                tickColor: '#666666',
-                minorTickColor: '#666666',
-                gridLineWidth: 1,
-                gridLineColor: '#666666',
-                minorGridLineWidth: 0,
-
-                tickPositioner: function () {
-                    let numTicks = 11;
-                    let ticks = [];
-                    let min = this.chart.xAxis[0].min;
-                    let max = this.chart.xAxis[0].max;
-                    let delta = (max - min) / (numTicks - 1);
-                    for (var i = 0; i < numTicks; i++) {
-                        ticks[i] = (min + i * delta);
-                    }
-                    return ticks;
-                },
-
-                minorTickInterval: 'auto',
-                minorTickLength: 10,
-                minorTickWidth: 1,
-                minorTickPosition: 'inside',
-
             }
-        };
+            yAxisOptionsArray.push(axisOptions);
+        }
+        return yAxisOptionsArray;
+    }
+
+    tickGenerator(axis) {
+        let min = axis.min;
+        let max = axis.max;
+        let interval = (max - min) / 10;
+        let ticks = [];
+        for (let i = 0; i < 11; i++) {
+            ticks.push(i * interval + min);
+        }
+        return ticks;
+    }
+
+    yTickFormatter(val, axis) {
+        let vPerDiv = Math.abs(axis.max - axis.min) / 10;
+        let i = 0;
+        let unit = '';
+        while (vPerDiv < 1) {
+            i++;
+            vPerDiv = vPerDiv * 1000;
+        }
+        val = (parseFloat(val) * Math.pow(1000, i)).toFixed(0);
+        if (i == 0) {
+            unit = ' V';
+        }
+        else if (i == 1) {
+            unit = ' mV';
+        }
+        else if (i == 2) {
+            unit = ' uV';
+        }
+        else if (i == 3) {
+            unit = ' nV';
+        }
+        return (val + unit);
+    }
+
+    xTickFormatter(val, axis) {
+        let timePerDiv = Math.abs(axis.max - axis.min) / 10;
+        if (parseFloat(val) == 0) {
+            return 0 + ' s';
+        }
+        let i = 0;
+        let unit = '';
+        while (timePerDiv < 1) {
+            i++;
+            timePerDiv = timePerDiv * 1000;
+        }
+        val = (parseFloat(val) * Math.pow(1000, i));
+        let numDigits = val.toFixed(0).length;
+        let fixedDigits = numDigits < 4 ? 4 - numDigits : 0;
+        val = val.toFixed(fixedDigits);
+        if (i == 0) {
+            unit = ' s';
+        }
+        else if (i == 1) {
+            unit = ' ms';
+        }
+        else if (i == 2) {
+            unit = ' us';
+        }
+        else if (i == 3) {
+            unit = ' ns';
+        }
+        else if (i == 4) {
+            unit = ' ps';
+        }
+        return val + unit;
     }
 
     pinchEvent(event) {
         console.log(event);
         alert('hey');
-    }
-
-    scrollEvent(event) {
-        if (event.deltaY > 0) {
-            this.incrementTPD(0);
-        }
-        else if (event.deltaY < 0) {
-            this.decrementTPD(0);
-        }
     }
 
     loadDeviceSpecificValues(deviceComponent: DeviceComponent) {
@@ -355,7 +339,7 @@ export class SilverNeedleChart {
         }
 
         if (this.deviceDescriptor !== undefined) {
-            document.getElementById('chart-component-container').addEventListener("wheel", this.scrollEvent.bind(this));
+            /*document.getElementById('chart-component-container').addEventListener("wheel", this.scrollEvent.bind(this));
             this.chart.renderer.image('assets/img/settingsButton.png', 5, 5, 27, 25).attr({
                 id: ('settingsButton')
             })
@@ -368,14 +352,14 @@ export class SilverNeedleChart {
                         chartComponent: this
                     });
                     modal.present();
-                });
+                });*/
 
 
             //Load all axes for all possible series (osc and la). No noticeable performance hits
-            for (let i = 0; i < this.deviceDescriptor.instruments.la.numChans + this.deviceDescriptor.instruments.osc.numChans - 1; i++) {
-                this.addYAxis(i);
-                this.addSeries(i);
-            }
+            /*for (let i = 0; i < this.deviceDescriptor.instruments.la.numChans + this.deviceDescriptor.instruments.osc.numChans - 1; i++) {
+                //this.addYAxis(i);
+                //this.addSeries(i);
+            }*/
 
             //Init axes settings
             for (let i = 0; i < this.deviceDescriptor.instruments.osc.numChans; i++) {
@@ -387,10 +371,13 @@ export class SilverNeedleChart {
                 });
             }
 
+            this.chart.setActiveYIndices(this.activeVPDIndex);
+
             this.activeTPDIndex = this.secsPerDivVals.indexOf(0.01);
+            this.chart.setActiveXIndex(this.activeTPDIndex);
             this.setTimeSettings({
                 timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
-                base: 0
+                base: this.base
             }, false);
         }
 
@@ -398,7 +385,7 @@ export class SilverNeedleChart {
 
     //Called on timeline chart load
     onTimelineLoad(chartInstance) {
-        this.timelineChart = chartInstance.chart;
+        /*this.timelineChart = chartInstance.chart;
         this.timelineChartComponent = chartInstance;
         this.timelineChartInner = chartInstance.timelineChartInner;
         this.timelineChartReady = true;
@@ -413,11 +400,11 @@ export class SilverNeedleChart {
             else if (data.type === 'mouseup') {
                 this.clearMouse();
             }
-        });
+        });*/
     }
 
     timelineChartInit() {
-        this.timelineChartInitialized = true;
+        /*this.timelineChartInitialized = true;
         this.attachPlotLineEvents();
         let extremesX = this.timelineChart.xAxis[0].getExtremes();
         let extremesY = this.timelineChart.yAxis[0].getExtremes();
@@ -426,7 +413,7 @@ export class SilverNeedleChart {
         let left = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(this.chartBoundsX.min) - 5);
         let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(this.chartBoundsX.max) + 5);
         this.updatePlotBands([2, 3], [[extremesX.min, this.chartBoundsX.min], [this.chartBoundsX.max, extremesX.max]]);
-        this.updatePlotLines([0, 1], [left, right]);
+        this.updatePlotLines([0, 1], [left, right]);*/
     }
 
     //Called when a point is selected. Sets active series and updates y axis labels
@@ -459,7 +446,7 @@ export class SilverNeedleChart {
 
     //Reflows chart to fit container and updates cursor labels if they exist
     redrawChart() {
-        if (this.chart != undefined && this.timelineChart != undefined) {
+        /*if (this.chart != undefined && this.timelineChart != undefined) {
             this.chart.reflow();
             this.timelineChart.reflow();
             console.log('redrawChart()');
@@ -473,7 +460,7 @@ export class SilverNeedleChart {
         for (let i = 0; i < this.seriesAnchors.length; i++) {
             this.updateSeriesAnchor(i);
         }
-        this.updateTriggerAnchor(this.numSeries[0]);
+        this.updateTriggerAnchor(this.numSeries[0]);*/
     }
 
     decimateData(seriesNum: number, waveform: any, bounds: any) {
@@ -495,6 +482,31 @@ export class SilverNeedleChart {
         newWaveform.y = newPoints;
         newWaveform.dt = waveform.dt * iterator;
         newWaveform.t0 = waveform.t0;
+        return newWaveform;
+    }
+
+    flotDecimateData(seriesNum: number, bounds: any) {
+        let waveform = this.currentBufferArray[seriesNum];
+        let numPointsInView = Math.round((bounds.max - bounds.min) / waveform.dt);
+        if (numPointsInView <= 2000) {
+            return this.currentBufferArray[seriesNum];
+        }
+        let iterator = Math.floor(numPointsInView / 2000);
+        let newPoints = [];
+        let newData = [];
+        for (let i = 0; i < waveform.y.length; i = iterator + i) {
+            newPoints.push(waveform.y[i]);
+            newData.push([waveform.data[i][0], waveform.data[i][1]]);
+        }
+        let newWaveform: WaveformComponent = {
+            y: newPoints,
+            dt: waveform.dt * iterator,
+            t0: waveform.t0,
+            data: newData,
+            pointOfInterest: waveform.pointOfInterest,
+            triggerPosition: waveform.triggerPosition,
+            seriesOffset: waveform.seriesOffset
+        };
         return newWaveform;
     }
 
@@ -521,11 +533,34 @@ export class SilverNeedleChart {
 
     setCurrentBuffer(bufferArray: WaveformComponent[]) {
         this.currentBufferArray = bufferArray;
-        if (this.deviceDescriptor !== undefined) {
+        console.log(bufferArray);
+        /*if (this.deviceDescriptor !== undefined) {
             this.updateTriggerLine();
             this.updateTriggerAnchor(this.numSeries[0]);
             this.applyPointOfInterest(this.numSeries[0]);
+        }*/
+    }
+
+    flotDrawWaveform(initialDraw: boolean, ignoreAutoscale?: boolean) {
+        let dataObjects: any[] = [];
+        for (let i = 0; i < this.numSeries.length; i++) {
+            let axesInfo = this.chart.getAxes();
+            let bounds = {
+                min: axesInfo.xaxis.min,
+                max: axesInfo.xaxis.max
+            };
+            if (bounds.min < this.currentBufferArray[this.numSeries[i]].t0 || isNaN(bounds.min) || ignoreAutoscale) { bounds.min = this.currentBufferArray[this.numSeries[i]].t0 }
+            if (bounds.max > this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length || isNaN(bounds.max) || ignoreAutoscale) { bounds.max = this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length }
+            dataObjects.push(
+                {
+                    data: this.flotDecimateData(this.numSeries[i], bounds).data,
+                    yaxis: this.numSeries[i] + 1,
+                    label: 'Series' + this.numSeries[i].toString()
+                }
+            );
         }
+        this.chart.setData(dataObjects);
+        this.chart.draw();
     }
 
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
@@ -536,19 +571,19 @@ export class SilverNeedleChart {
         waveform = this.decimateData(seriesNum, waveform, bounds);
         this.chart.series[seriesNum].setData(waveform.y, false, false, false);
 
-        this.chart.series[seriesNum].update({
+        /*this.chart.series[seriesNum].update({
             pointStart: waveform.t0,
             pointInterval: waveform.dt
-        }, false);
+        }, false);*/
 
         /*if (initialDraw) {
             this.applyPointOfInterest(seriesNum);
         }*/
 
 
-        this.chart.redraw(false);
+        /*this.chart.redraw(false);
         this.updateCursorLabels();
-        this.updateTriggerAnchor(seriesNum);
+        this.updateTriggerAnchor(seriesNum);*/
 
         if (this.timelineView && initialDraw) {
             let timelineWaveform = this.decimateTimeline(seriesNum, waveform);
@@ -568,7 +603,7 @@ export class SilverNeedleChart {
     clearExtraSeries(usedSeries: number[]) {
         this.numSeries = usedSeries;
 
-        for (let i = 0; i < this.oscopeChansActive.length; i++) {
+        /*for (let i = 0; i < this.oscopeChansActive.length; i++) {
             if (this.oscopeChansActive[i] === false && this.chart.series[i] !== undefined) {
                 this.chart.series[i].setData([], false);
                 if (this.timelineView && this.timelineChart.series[i] !== undefined) {
@@ -579,7 +614,7 @@ export class SilverNeedleChart {
                     this.seriesAnchors[i] = undefined;
                 }
             }
-        }
+        }*/
     }
 
     //Remove cursors from the chart including their labels
@@ -678,7 +713,7 @@ export class SilverNeedleChart {
             });
 
         let path = ['M', 0, 0, 'L', 5, -9, -5, -9, 'Z'];
-        this.cursorAnchors[this.numXCursors] = this.chart.renderer.path(path)
+        /*this.cursorAnchors[this.numXCursors] = this.chart.renderer.path(path)
             .attr({
                 'stroke-width': 1,
                 stroke: color,
@@ -712,7 +747,7 @@ export class SilverNeedleChart {
                 this.activeCursor = -1;
             });
         this.cursorAnchors[this.numXCursors].translate(this.chart.xAxis[0].toPixels(initialValue) - 1, this.chart.plotTop - 1);
-        this.numXCursors++;
+        this.numXCursors++;*/
     }
 
     //Add y cursor to the chart and set css properties and event listeners
@@ -757,39 +792,39 @@ export class SilverNeedleChart {
             }
             //this.cursorLabel[this.numYCursors + 2] = this.chart.renderer.text('Cursor ' + (this.numYCursors + 2), 100, 500).add();
 
-        let path = ['M', 0, 0, 'L', 9, 5, 0, 10, 'Z'];
-        this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.path(path)
-            .attr({
-                'stroke-width': 1,
-                stroke: color,
-                fill: 'black',
-                zIndex: 3,
-                id: ('cursorAnchor' + (this.numYCursors + 2).toString())
-            })
-            .css({
-                'cursor': 'pointer'
-            })
-            .add()
-            .on('mousedown', (event) => {
-                this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
-                this.chartBoundsX = this.chart.xAxis[0].getExtremes();
-                this.chartBoundsY = this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].getExtremes();
-                this.yCursorStartDrag(this.numYCursors, event.clientY);
-            })
-            .on('touchstart', (event) => {
-                this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
-                this.chartBoundsX = this.chart.xAxis[0].getExtremes();
-                this.chartBoundsY = this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].getExtremes();
-                this.yCursorStartDrag(this.numYCursors, event.clientY);
-            })
-            .on('mouseup', (event) => {
-                this.activeCursor = -1;
-            })
-            .on('touchend', (event) => {
-                this.activeCursor = -1;
-            });
+            let path = ['M', 0, 0, 'L', 9, 5, 0, 10, 'Z'];
+            /*this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.path(path)
+                .attr({
+                    'stroke-width': 1,
+                    stroke: color,
+                    fill: 'black',
+                    zIndex: 3,
+                    id: ('cursorAnchor' + (this.numYCursors + 2).toString())
+                })
+                .css({
+                    'cursor': 'pointer'
+                })
+                .add()
+                .on('mousedown', (event) => {
+                    this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
+                    this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+                    this.chartBoundsY = this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].getExtremes();
+                    this.yCursorStartDrag(this.numYCursors, event.clientY);
+                })
+                .on('touchstart', (event) => {
+                    this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
+                    this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+                    this.chartBoundsY = this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].getExtremes();
+                    this.yCursorStartDrag(this.numYCursors, event.clientY);
+                })
+                .on('mouseup', (event) => {
+                    this.activeCursor = -1;
+                })
+                .on('touchend', (event) => {
+                    this.activeCursor = -1;
+                });
 
-            this.cursorAnchors[this.numYCursors + 2].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].toPixels(initialValue) - 6);
+            this.cursorAnchors[this.numYCursors + 2].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].toPixels(initialValue) - 6);*/
         }
         let lineNum = this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].plotLinesAndBands.length - 1;
         this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].plotLinesAndBands[lineNum].svgElem.element.id = 'cursor' + (this.numYCursors + 2);
@@ -969,7 +1004,7 @@ export class SilverNeedleChart {
             y: this.chart.series[this.activeChannels[this.activeCursor - 1] - 1].data[pointNum].y
         }
         this.cursorRefs[this.activeCursor - 1].render();
-        
+
         this.cursorAnchors[this.activeCursor - 1].translate(xCor - 1, this.chart.plotTop - 1);
     }.bind(this);
 
@@ -1232,7 +1267,7 @@ export class SilverNeedleChart {
 
     //Called on chart mousedown. Sets either vertical or horizontal pan listener
     onChartClick(event) {
-        this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.panListener);
+        /*this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.panListener);
         //check cursors enabled to see if the chart is 'interactive'. Added to remove pan from fgen config modal
         if (event.target.localName === 'rect' && this.oscopeChartInner !== undefined && event.target.id === '' && this.cursorsEnabled) {
             this.canPan = true;
@@ -1246,11 +1281,11 @@ export class SilverNeedleChart {
                 this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.panListener);
                 this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.panListener);
             }
-        }
+        }*/
     }
 
     //Called on chart mouseup. Removes pan listeners
-    clearMouse() {
+    /*clearMouse() {
         this.canPan = false;
         if (this.oscopeChartInner !== undefined) {
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.panListener);
@@ -1266,10 +1301,10 @@ export class SilverNeedleChart {
                 this.inTimelineDrag = false;
             }
         }
-    }
+    }*/
 
     //Callback function for panning
-    panListener = function (event) {
+    /*panListener = function (event) {
         let newVal = this.chart.xAxis[0].toValue(event.chartX) || this.chart.xAxis[0].toValue(event.targetTouches[0].pageX - this.chart.plotLeft);
         let oldValinNewWindow = this.chart.xAxis[0].toValue(this.xPositionPixels);
         let difference = newVal - oldValinNewWindow;
@@ -1277,10 +1312,10 @@ export class SilverNeedleChart {
         this.updateCursorLabels();
         this.updateTriggerAnchor(this.numSeries[0]);
         this.xPositionPixels = event.chartX || (event.targetTouches[0].pageX - this.chart.plotLeft);
-    }.bind(this);
+    }.bind(this);*/
 
     //Callback function for vertical panning of a series
-    verticalOffsetListener = function (event) {
+    /*verticalOffsetListener = function (event) {
 
         let newVal = parseFloat(this.chart.yAxis[this.activeSeries - 1].toValue(event.chartY));
         let oldValinNewWindow = parseFloat(this.chart.yAxis[this.activeSeries - 1].toValue(this.yPositionPixels));
@@ -1295,11 +1330,11 @@ export class SilverNeedleChart {
         this.yPositionPixels = event.chartY;
 
         this.seriesAnchors[this.activeSeries - 1].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeSeries - 1].toPixels(this.currentBufferArray[this.activeSeries - 1].seriesOffset / 1000) - 6);
-    }.bind(this);
+    }.bind(this);*/
 
     //Sets x extremes based on position change from previos position
     setXExtremes(positionChange: number) {
-        let newPos = this.base - positionChange;
+        /*let newPos = this.base - positionChange;
         let min = newPos - this.timeDivision * 5;
         let max = newPos + this.timeDivision * 5;
         this.chart.xAxis[0].setExtremes(min, max, true, false);
@@ -1309,22 +1344,22 @@ export class SilverNeedleChart {
             let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
             let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
             this.updatePlotLines([0, 1], [val1, val2]);
-        }
+        }*/
     }
 
     //Sets y extremes based on an object containing a voltBase, voltsPerDivision, and a series number
     setYExtremes(seriesSettings: any) {
-        let offset = parseFloat(seriesSettings.voltBase);
+        /*let offset = parseFloat(seriesSettings.voltBase);
         let min = offset - (parseFloat(seriesSettings.voltsPerDiv) * 5);
         let max = offset + (parseFloat(seriesSettings.voltsPerDiv) * 5);
         this.chart.yAxis[seriesSettings.seriesNum].setExtremes(min, max, true, false);
         this.updateCursorLabels();
-        this.updateSeriesAnchor(seriesSettings.seriesNum);
+        this.updateSeriesAnchor(seriesSettings.seriesNum);*/
     }
 
     //Called when chart changes extremes or position. Moves cursor labels to new cursor position
     updateCursorLabels() {
-        if (this.cursorType === 'disabled') {
+        /*if (this.cursorType === 'disabled') {
             return;
         }
 
@@ -1334,8 +1369,8 @@ export class SilverNeedleChart {
                 //if (typeof(this.cursorLabel[i]) === 'object') {
                 /*this.cursorLabel[i].attr({
                     x: this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i].options.value),
-                });*/
-                
+                });
+
                 this.cursorAnchors[i].translate(this.chart.xAxis[0].toPixels(this.chart.xAxis[0].plotLinesAndBands[i + 1].options.value) - 1, this.chart.plotTop - 1);
                 //}
             }
@@ -1347,7 +1382,7 @@ export class SilverNeedleChart {
                 //if (typeof(this.cursorLabel[i]) === 'object') {
                 /*this.cursorLabel[i].attr({
                     y: this.chart.yAxis[0].toPixels(this.chart.yAxis[0].plotLinesAndBands[i - 2].options.value),
-                });*/
+                });
                 let lineNum = this.chart.yAxis[this.activeChannels[i - 2] - 1].plotLinesAndBands.length - 1;
 
                 this.cursorAnchors[i].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeChannels[i - 2] - 1].toPixels(this.chart.yAxis[this.activeChannels[i - 2] - 1].plotLinesAndBands[lineNum * (i - 2)].options.value) - 6);
@@ -1357,7 +1392,7 @@ export class SilverNeedleChart {
 
         else {
             console.log('error updating cursor labels');
-        }
+        }*/
 
     }
 
@@ -1365,9 +1400,12 @@ export class SilverNeedleChart {
     setTimeSettings(timeObj: any, autoscale: boolean) {
         this.timeDivision = parseFloat(timeObj.timePerDiv);
         this.base = parseFloat(timeObj.base);
-        let min = this.base - (this.timeDivision * 5);
-        let max = this.base + (this.timeDivision * 5);
-        if (this.currentBufferArray[0] !== undefined) {
+        let getAxes = this.chart.getAxes();
+        getAxes.xaxis.options.min = this.base - 5 * this.timeDivision;
+        getAxes.xaxis.options.max = this.base + 5 * this.timeDivision;
+        this.chart.setupGrid();
+        this.chart.draw();
+        /*if (this.currentBufferArray[0] !== undefined) {
             this.chart.xAxis[0].setExtremes(min, max, false, false);
             for (let i = 0; i < this.oscopeChansActive.length; i++) {
                 if (this.oscopeChansActive[i] === true && this.currentBufferArray[i].y !== undefined) {
@@ -1377,107 +1415,42 @@ export class SilverNeedleChart {
         }
         else {
             this.chart.xAxis[0].setExtremes(min, max, true, false);
-        }
+        }*/
 
-        if (this.timelineView) {
+        /*if (this.timelineView) {
             this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
             let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
             let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
             this.updatePlotLines([0, 1], [val1, val2]);
-        }
-        this.updateCursorLabels();
-        this.updateTriggerAnchor(this.numSeries[0]);
+        }*/
+        /*this.updateCursorLabels();
+        this.updateTriggerAnchor(this.numSeries[0]);*/
     }
 
     //Set series settings based on an object containing the series number, volts per division, and base
     setSeriesSettings(seriesSettings: any) {
+        console.log('seriesNum' + seriesSettings.seriesNum);
         this.voltDivision[seriesSettings.seriesNum] = seriesSettings.voltsPerDiv;
         this.voltBase[seriesSettings.seriesNum] = seriesSettings.voltBase;
-        this.setYExtremes(seriesSettings);
+        //this.setYExtremes(seriesSettings);
+        let getAxes = this.chart.getAxes();
+        let yIndexer = 'y' + (seriesSettings.seriesNum === 0 ? '' : (seriesSettings.seriesNum + 1).toString()) + 'axis';
+        console.log(this.voltBase);
+        getAxes[yIndexer].options.min = this.voltBase[seriesSettings.seriesNum] - 5 * this.voltDivision[seriesSettings.seriesNum];
+        getAxes[yIndexer].options.max = this.voltBase[seriesSettings.seriesNum] + 5 * this.voltDivision[seriesSettings.seriesNum];
+        this.chart.setupGrid();
+        this.chart.draw();
     }
 
     //Set active series and update labels
     setActiveSeries(seriesNum: number) {
-        this.updateYAxisLabels(seriesNum);
+        /*this.updateYAxisLabels(seriesNum);
         this.activeSeries = seriesNum;
         this.updateCursorLabels();
         this.updateTriggerAnchor(seriesNum);
         for (let i = 0; i < this.seriesAnchors.length; i++) {
             this.updateSeriesAnchor(i);
-        }
-    }
-
-    addSeries(seriesNum: number) {
-        if (this.chart.series.length !== seriesNum) { return; }
-        let options = {
-            data: [],
-            allowPointSelect: true,
-            yAxis: seriesNum,
-            visible: false
-        };
-        let timelineOptions = {
-            data: []
-        };
-        this.chart.addSeries(options, false, false);
-        if (this.timelineView) {
-            this.timelineChart.addSeries(timelineOptions, false, false);
-        }
-    }
-
-    //Add y axis to chart and initialize with correct settings
-    addYAxis(axisNum: number) {
-        if (this.chart.yAxis.length !== axisNum) {
-            return;
-        }
-        let options = {
-            gridLineWidth: 1,
-            gridLineColor: '#666666',
-            offset: 0,
-            labels: {
-                style: {
-                    color: '#666666'
-                },
-                enabled: false,
-                formatter: function () {
-                    let vPerDiv = Math.abs(this.chart.yAxis[axisNum].max - this.chart.yAxis[axisNum].min) / 10;
-                    let i = 0;
-                    let unit = '';
-                    while (vPerDiv < 1) {
-                        i++;
-                        vPerDiv = vPerDiv * 1000;
-                    }
-                    this.value = (parseFloat(this.value) * Math.pow(1000, i)).toFixed(0);
-                    if (i == 0) {
-                        unit = ' V';
-                    }
-                    else if (i == 1) {
-                        unit = ' mV';
-                    }
-                    else if (i == 2) {
-                        unit = ' uV';
-                    }
-                    else if (i == 3) {
-                        unit = ' nV';
-                    }
-                    return this.value + unit;
-                }
-            },
-            tickPositioner: function () {
-                let numTicks = 11;
-                let ticks = [];
-                let min = this.chart.yAxis[axisNum].min;
-                let max = this.chart.yAxis[axisNum].max;
-                let delta = (max - min) / (numTicks - 1);
-                for (var i = 0; i < numTicks; i++) {
-                    ticks[i] = (min + i * delta).toFixed(3);
-                }
-                return ticks;
-            },
-            title: {
-                text: null
-            }
-        };
-        this.chart.addAxis(options, false, false, false);
+        }*/
     }
 
     //Autoscale all axes on chart
@@ -1758,6 +1731,7 @@ export class SilverNeedleChart {
             return;
         }
         this.activeVPDIndex[seriesNum]--;
+        this.chart.setActiveYIndices(this.activeVPDIndex);
         this.setSeriesSettings({
             voltsPerDiv: this.voltsPerDivVals[this.activeVPDIndex[seriesNum]],
             voltBase: this.voltBase[seriesNum],
@@ -1770,6 +1744,7 @@ export class SilverNeedleChart {
             return;
         }
         this.activeVPDIndex[seriesNum]++;
+        this.chart.setActiveYIndices(this.activeVPDIndex);
         this.setSeriesSettings({
             voltsPerDiv: this.voltsPerDivVals[this.activeVPDIndex[seriesNum]],
             voltBase: this.voltBase[seriesNum],
@@ -1778,6 +1753,7 @@ export class SilverNeedleChart {
     }
 
     incrementOffset(seriesNum) {
+        console.log('increment offset' + seriesNum);
         this.voltBase[seriesNum] = this.voltBase[seriesNum] + this.voltDivision[seriesNum];
         this.setSeriesSettings({
             voltsPerDiv: this.voltDivision[seriesNum],
@@ -1800,6 +1776,7 @@ export class SilverNeedleChart {
             return;
         }
         this.activeTPDIndex--;
+        this.chart.setActiveXIndex(this.activeTPDIndex);
         this.setTimeSettings({
             timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
             base: this.base
@@ -1811,6 +1788,7 @@ export class SilverNeedleChart {
             return;
         }
         this.activeTPDIndex++;
+        this.chart.setActiveXIndex(this.activeTPDIndex);
         this.setTimeSettings({
             timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
             base: this.base
@@ -1835,14 +1813,14 @@ export class SilverNeedleChart {
 
     toggleVisibility(seriesNum: number) {
         this.oscopeChansActive[seriesNum] = !this.oscopeChansActive[seriesNum];
-        if (this.chart.series[seriesNum] === undefined) {
+        /*if (this.chart.series[seriesNum] === undefined) {
             return;
         }
         if (this.seriesAnchors[seriesNum] !== undefined && this.oscopeChansActive[seriesNum] === false) {
             this.removeSeriesAnchor(seriesNum);
         }
         this.chart.series[seriesNum].setVisible(!this.chart.series[seriesNum].visible);
-        this.updateSeriesAnchor(seriesNum);
+        this.updateSeriesAnchor(seriesNum);*/
     }
 
     getSeriesVisibility(seriesNum: number) {
@@ -1900,71 +1878,71 @@ export class SilverNeedleChart {
             let maxIndex = Math.round((chartMax - this.chart.series[seriesNum].xData[0]) / this.chart.series[seriesNum].options.pointInterval);
             this.selectedMathInfo[i].value = this.updateMathByName(this.selectedMathInfo[i], maxIndex, minIndex);
         }
-    
+
     }
 
     updateMathByName(selectedMathInfoObj: any, maxIndex: number, minIndex: number) {
         switch (selectedMathInfoObj.measurement) {
-            case 'Frequency': 
+            case 'Frequency':
                 return this.getFrequency(selectedMathInfoObj.channel, maxIndex, minIndex);
-                
+
             case 'Pos Pulse Width':
                 return 'Pos Pulse Width'
-                
+
             case 'Pos Duty Cycle':
                 return 'Pos Duty Cycle'
-                
+
             case 'Period':
                 return this.getPeriod(selectedMathInfoObj.channel, maxIndex, minIndex);
 
             case 'Neg Pulse Width':
                 return 'Neg Pulse Width'
-                
+
             case 'Neg Duty Cycle':
                 return 'Neg Duty Cycle'
-                
+
             case 'Rise Rate':
                 return 'Rise Rate'
-                
+
             case 'Rise Time':
                 return 'Rise Time'
-                
+
             case 'Amplitude':
                 return this.getAmplitude(selectedMathInfoObj.channel, maxIndex, minIndex);
-                
+
             case 'High':
                 return 'High'
-                
+
             case 'Low':
                 return 'Low'
-                
+
             case 'Peak to Peak':
                 return this.getPeakToPeak(selectedMathInfoObj.channel, maxIndex, minIndex);
-                
+
             case 'Maximum':
                 return this.getMax(selectedMathInfoObj.channel, maxIndex, minIndex);
-                
+
             case 'Minimum':
                 return this.getMin(selectedMathInfoObj.channel, maxIndex, minIndex);
-                
+
             case 'Mean':
                 return this.getMean(selectedMathInfoObj.channel, maxIndex, minIndex);
-                
+
             case 'RMS':
                 return this.getRMS(selectedMathInfoObj.channel, maxIndex, minIndex);
-                
+
             case 'Overshoot':
                 return 'Overshoot'
-                
+
             case 'Cycle Mean':
                 return 'Cycle Mean'
-                
+
             case 'Cycle RMS':
                 return 'Cycle RMS'
-                
+
             case 'Undershoot':
                 return 'Undershoot'
-                
+
             default:
                 return 'default'
         }
@@ -2175,8 +2153,8 @@ export class SilverNeedleChart {
         for (let i = 0; i < points.length - 1; i++) {
             sum += (points[i + 1] - points[i]);
         }
-
-        let freqRange = 1 / (sum / (points.length - 1));
+        let toInverse = sum / (points.length - 1);
+        let freqRange = 1 / toInverse;
         let i = 0;
         let unit = '';
         while (freqRange > 1) {
@@ -2197,7 +2175,7 @@ export class SilverNeedleChart {
             unit = ' GHz';
         }
 
-        let val = ((1 / (sum / (points.length - 1))) / Math.pow(1000, i)).toString();
+        let val = ((1 / (toInverse)) / Math.pow(1000, i)).toString();
         let wholeLength = val.indexOf('.');
         if (wholeLength === -1) { wholeLength = 4 }
         let fixedNum = 4 - wholeLength;
@@ -2301,7 +2279,7 @@ export class SilverNeedleChart {
             return;
         }
         let path = ['M', 0, 0, 'L', 5, -9, -5, -9, 'Z'];
-        this.triggerAnchor = this.chart.renderer.path(path)
+        /*this.triggerAnchor = this.chart.renderer.path(path)
             .attr({
                 'stroke-width': 1,
                 stroke: 'black',
@@ -2310,7 +2288,7 @@ export class SilverNeedleChart {
                 id: ('triggerAnchor')
             })
             .add();
-        this.triggerAnchor.translate(xPixel - 1, this.chart.plotTop - 1);
+        this.triggerAnchor.translate(xPixel - 1, this.chart.plotTop - 1);*/
     }
 
     updateTriggerLine() {
@@ -2374,7 +2352,7 @@ export class SilverNeedleChart {
         }
         //TODO try to set attr after render to fix performance problems.
         let path = ['M', 0, 0, 'L', 9, 5, 0, 10, 'Z'];
-        this.seriesAnchors[seriesNum] = this.chart.renderer.path(path)
+        /*this.seriesAnchors[seriesNum] = this.chart.renderer.path(path)
             .attr({
                 'stroke-width': 1,
                 stroke: 'black',
@@ -2403,7 +2381,7 @@ export class SilverNeedleChart {
             .on('touchend', (event) => {
                 this.clearMouse();
             });
-        this.seriesAnchors[seriesNum].translate(this.chart.plotLeft - 12, startingPos - 6);
+        this.seriesAnchors[seriesNum].translate(this.chart.plotLeft - 12, startingPos - 6);*/
 
     }
 

@@ -6,6 +6,7 @@ export class WaveformComponent {
     public t0: number;
     public dt: number;
     public y: Array<number>;
+    public data: Array<number[]>;
     public pointOfInterest: number = 0;
     public triggerPosition: number = 0;
     public seriesOffset: number = 0;
@@ -23,6 +24,7 @@ export class WaveformComponent {
             this.t0 = wfDescOrT0.t0;
             this.dt = wfDescOrT0.dt;
             this.y = wfDescOrT0.y;
+            this.data = wfDescOrT0.data;
             this.pointOfInterest = wfDescOrT0.pointOfInterest;
             this.triggerPosition = wfDescOrT0.triggerPosition;
             this.seriesOffset = wfDescOrT0.seriesOffset;

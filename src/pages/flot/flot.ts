@@ -1,5 +1,6 @@
 import { Component, ElementRef, AfterViewInit } from '@angular/core';
 declare var $: any;
+declare var mathFunctions: any;
 
 @Component({
     templateUrl: 'flot.html'
@@ -98,7 +99,8 @@ export class FlotPage implements AfterViewInit {
         this.plot = $.plot("#flotContainer", [
             {
                 data: sin,
-                label: "sin(x)"
+                label: "sin(x)",
+                yaxis: 1
             },
             {
                 data: cos,
@@ -257,7 +259,7 @@ export class FlotPage implements AfterViewInit {
             mode: 'x',
             color: 'red',
             showIntersections: false,
-            showLabel: true,
+            showLabel: false,
             symbol: 'none',
             position: {
                 x: 70,
@@ -269,7 +271,7 @@ export class FlotPage implements AfterViewInit {
             mode: 'x',
             color: 'red',
             showIntersections: false,
-            showLabel: true,
+            showLabel: false,
             symbol: 'none',
             position: {
                 x: 130,
@@ -318,13 +320,7 @@ export class FlotPage implements AfterViewInit {
     }
 
     getDaAxes() {
-        let getAxes = this.plot.getAxes();
-        console.log(getAxes);
-        getAxes.y2axis.show = false;
-        console.log(getAxes.y2axis.show);
-        this.plot.setupGrid();
-        this.plot.draw();
-        console.log(this.plot.getAxes());
+        console.log(mathFunctions.monkeyFunction());
     }
 
     navigation() {

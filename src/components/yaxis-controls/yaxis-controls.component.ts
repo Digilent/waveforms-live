@@ -36,8 +36,15 @@ export class YAxisComponent {
     }
 
     getSeriesColor(seriesNum: number) {
-        if (this.chart.chart.series[seriesNum].visible) {
-            return this.chart.getSeriesColor(seriesNum);
+        if (this.chart.chart === undefined) {
+            return '#535353';
+        }
+        let series = this.chart.chart.getData();
+        if (series[seriesNum] === undefined) {
+            return '#535353';
+        }
+        if (series[seriesNum].lines.show) {
+            return series[seriesNum].color;
         }
         return '#535353';
     }

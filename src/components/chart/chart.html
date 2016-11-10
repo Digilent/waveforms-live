@@ -1,15 +1,7 @@
 <div #oscopeChartInner class="chart-component-wrapper">
     <div class="chart-container-container" id="chart-component-container">
-        <div (pinch)="pinchEvent($event)" class="chart-component-container-div" [ngClass]="{pan: canPan, 
-                'chart-component-container-div-cursor-timeline': isCursorTimeline(),
-                'chart-component-container-div-cursor-only': isCursorOnly(),
-                'chart-component-container-div-timeline-only': isTimelineOnly(),
-                'chart-component-container-div-vanilla': isVanilla()}">
-            <chart [options]="options" (load)="onLoad($event.context)" (touchstart)="onChartClick($event)" (touchend)="clearMouse()" (mousedown)="onChartClick($event)" (mouseup)="clearMouse()">
-                <series>
-                    <point (click)="onPointSelect($event)"></point>
-                </series>
-            </chart>
+        <div (pinch)="pinchEvent($event)" class="chart-component-container-div" [ngClass]="{pan: canPan}">
+            <div id="flotContainer"></div>
         </div>
     </div>
     <div>

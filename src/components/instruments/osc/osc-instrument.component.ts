@@ -170,10 +170,16 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         let scaledArray = untypedArray.map((voltage) => {
                             return voltage / 1000;
                         });
+                        let dt = 1 / (command.osc[channel][0].actualSampleFreq / 1000);
+                        let pointContainer = [];
+                        for (let i = 0; i < scaledArray.length; i++) {
+                            pointContainer.push([i * dt, scaledArray[i]]);
+                        }
                         this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel) - 1] = new WaveformComponent({
                             dt: 1 / (command.osc[channel][0].actualSampleFreq / 1000),
                             t0: 0,
                             y: scaledArray,
+                            data: pointContainer,
                             pointOfInterest: command.osc[channel][0].pointOfInterest,
                             triggerPosition: command.osc[channel][0].triggerIndex,
                             seriesOffset: command.osc[channel][0].actualVOffset
