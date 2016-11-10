@@ -137,7 +137,7 @@
                 getAxes.yaxis.options.max = max;
                 plot.setupGrid();
                 plot.draw();
-                previousYPosition = event.clientY;
+                previousYPosition = e.clientY;
             }
 
             function horPanChart(e) {
@@ -155,7 +155,7 @@
                 getAxes.xaxis.options.max = max;
                 plot.setupGrid();
                 plot.draw();
-                previousXPosition = event.clientX;
+                previousXPosition = e.clientX;
             }
 
             /**************************************************************
@@ -164,6 +164,7 @@
             plot.hooks.bindEvents.push(function (plot, eventHolder) {
                 eventHolder.mousedown(chartMouseDown);
                 eventHolder.mouseup(chartMouseUp);
+                eventHolder.mouseout(chartMouseUp);
                 eventHolder.mousewheel(mouseWheel);
             });
 
@@ -173,6 +174,7 @@
             plot.hooks.shutdown.push(function (plot, eventHolder) {
                 eventHolder.unbind('mousedown', chartMouseDown);
                 eventHolder.unbind('mouseup', chartMouseUp);
+                eventHolder.unbind('mouseout', chartMouseUp);
                 eventHolder.unbind('mousewheel', mouseWheel);
                 eventHolder.unbind('panEvent');
             });

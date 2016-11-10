@@ -260,8 +260,8 @@ export class FlotPage implements AfterViewInit {
             showLabel: true,
             symbol: 'none',
             position: {
-                relativeX: 0.5,
-                relativeY: 0.5
+                x: 70,
+                y: 0
             }
         }
         let options2 = {
@@ -272,8 +272,8 @@ export class FlotPage implements AfterViewInit {
             showLabel: true,
             symbol: 'none',
             position: {
-                relativeX: 0.75,
-                relativeY: 0.5
+                x: 130,
+                y: 0
             }
         }
         this.plot.addCursor(options1);
