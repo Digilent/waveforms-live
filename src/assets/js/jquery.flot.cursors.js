@@ -11,7 +11,8 @@ Licensed under the MIT license.
     'use strict';
 
     var options = {
-        cursors: []
+        cursors: [],
+        cursorMoveOnPan: false
     };
 
     var constants = {
@@ -21,6 +22,8 @@ Licensed under the MIT license.
         textHeight: 10, // to do: compute it somehow. Canvas doesn't give us a way to know it
         labelPadding: 10
     };
+
+    var listenForPan;
 
     // The possible locations for a cursor label
     var cursorLabelLocationEnum = Object.freeze({
@@ -67,10 +70,24 @@ Licensed under the MIT license.
         }
 
         plot.hooks.processOptions.push(function (plot) {
+            listenForPan = plot.getOptions().cursorMoveOnPan;
+            console.log(listenForPan);
+            if (listenForPan) {
+                bindPanHandler();
+            }
             plot.getOptions().cursors.forEach(function (options) {
                 plot.addCursor(options);
             });
         });
+
+        function bindPanHandler() {
+            console.log('binding pan handler');
+            plot.getPlaceholder().bind("panEvent", panHandler);
+        }
+
+        function panHandler(e) {
+            console.log('pan handler');
+        }
 
         plot.getCursors = function () {
             return cursors;
@@ -412,6 +429,7 @@ Licensed under the MIT license.
             eventHolder.unbind('mouseout', onMouseOut);
             eventHolder.unbind('mousemove', onMouseMove);
             eventHolder.unbind('cursorupdates');
+            plot.getPlaceholder().unbind('panEvent', panHandler);
             plot.getPlaceholder().css('cursor', 'default');
         });
     }

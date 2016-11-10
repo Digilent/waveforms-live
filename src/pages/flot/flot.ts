@@ -15,12 +15,14 @@ export class FlotPage implements AfterViewInit {
     public dataset2: any;
     public count: number = 0;
     public plot: any;
-    public mousemoveEventRef = this.chartMouseMove.bind(this);
-    public verticalPanRef = this.verticalPan.bind(this);
+    /*public mousemoveEventRef = this.chartMouseMove.bind(this);
+    public verticalPanRef = this.verticalPan.bind(this);*/
+    public cursorUpdatesRef = this.cursorUpdates.bind(this);
     public xPositionPixels;
     public yPositionPixels;
-    public base = 7;
+    public base = 100;
     public voltBase = 0;
+    public drawSecondAxis: boolean = true;
 
     constructor(public el: ElementRef) {
         this.options = {
@@ -47,57 +49,6 @@ export class FlotPage implements AfterViewInit {
             this.plot = $.plot(plotArea, this.dataset, this.options);
             this.chosenInitialized = true;
         }
-    }
-
-    chartMouseDown(event) {
-        console.log('custom mousedown event');
-        console.log(event);
-        this.xPositionPixels = event.clientX;
-        this.yPositionPixels = event.clientY;
-        if (event.shiftKey) {
-            $('#flotContainer').bind('mousemove', this.verticalPanRef);
-        }
-        else {
-            $('#flotContainer').bind('mousemove', this.mousemoveEventRef);
-        }
-    }
-
-    chartMouseUp(event) {
-        console.log(event);
-        $('#flotContainer').unbind('mousemove', this.mousemoveEventRef);
-        $('#flotContainer').unbind('mousemove', this.verticalPanRef);
-    }
-
-    chartMouseMove(event) {
-        let getAxes = this.plot.getAxes();
-        let newVal = getAxes.xaxis.c2p(event.clientX);
-        let oldValinNewWindow = getAxes.xaxis.c2p(this.xPositionPixels);
-        let difference = newVal - oldValinNewWindow;
-        let newPos = this.base - difference;
-        let min = newPos - 1 * 5;
-        let max = newPos + 1 * 5;
-        getAxes.xaxis.options.min = min;
-        getAxes.xaxis.options.max = max;
-        this.plot.setupGrid();
-        this.plot.draw();
-        this.base = newPos;
-        this.xPositionPixels = event.clientX;
-    }
-
-    verticalPan(event) {
-        let getAxes = this.plot.getAxes();
-        let newVal = getAxes.yaxis.c2p(event.clientY);
-        let oldValinNewWindow = getAxes.yaxis.c2p(this.yPositionPixels);
-        let difference = newVal - oldValinNewWindow;
-        let newPos = this.voltBase - difference;
-        let min = newPos - 0.5 * 5;
-        let max = newPos + 0.5 * 5;
-        getAxes.yaxis.options.min = min;
-        getAxes.yaxis.options.max = max;
-        this.plot.setupGrid();
-        this.plot.draw();
-        this.voltBase = newPos;
-        this.yPositionPixels = event.clientY;
     }
 
     doot() {
@@ -136,31 +87,12 @@ export class FlotPage implements AfterViewInit {
             sin = [];
             cos = [];
             offset += 0.025;
-            for (var i = 0; i < 14; i += 0.1) {
+            for (var i = 0; i < 200; i += 0.1) {
                 sin.push([i, Math.sin(i + offset)]);
                 cos.push([i, Math.cos(i + offset)]);
             }
+            console.log(sin.length, cos.length);
         }
-
-        let updateChart = function updateChart() {
-            //setTimeout(updateChart, 16);
-            updateData();
-
-            this.plot.setData([
-                {
-                    data: sin,
-                    label: "sin(x)"
-                },
-                {
-                    data: cos,
-                    label: "cos(x)"
-                }
-            ]);
-
-            this.plot.setupGrid();
-            this.plot.draw();
-
-        }.bind(this)
 
         updateData();
         this.plot = $.plot("#flotContainer", [
@@ -170,6 +102,7 @@ export class FlotPage implements AfterViewInit {
             },
             {
                 data: cos,
+                yaxis: 2,
                 label: "cos(x)"
             }
         ], {
@@ -178,7 +111,7 @@ export class FlotPage implements AfterViewInit {
                         show: true
                     }
                 },
-                cursors: [
+                /*cursors: [
                     {
                         name: 'Red cursor',
                         mode: 'x',
@@ -218,7 +151,7 @@ export class FlotPage implements AfterViewInit {
                             relativeY: 0.25
                         }
                     }
-                ],
+                ],*/
                 legend: {
                     show: false
                 },
@@ -237,7 +170,15 @@ export class FlotPage implements AfterViewInit {
                     }
                 },
                 colors: ['orange', '#4487BA', 'ff3b99', '00c864'],
-                yaxis: {
+                axisLabels: {
+                    show: true
+                },
+                zoomPan: {
+                    enabled: true,
+                    startingIndex: 21
+                },
+                cursorMoveOnPan: true,
+                /*yaxis: {
                     min: -1.2,
                     max: 1.2,
                     ticks: this.tickGenerator,
@@ -246,7 +187,35 @@ export class FlotPage implements AfterViewInit {
                     font: {
                         color: '#666666'
                     }
-                },
+                },*/
+                yaxes: [{
+                    position: 'left',
+                    axisLabel: 'test1',
+                    axisLabelColour: '#666666',
+                    axisLabelUseCanvas: true,
+                    min: -1.2,
+                    max: 1.2,
+                    ticks: this.tickGenerator,
+                    tickFormatter: this.yTickFormatter,
+                    tickColor: '#666666',
+                    font: {
+                        color: '#666666'
+                    }
+                }, {
+                    position: 'left',
+                    axisLabel: 'test2',
+                    show: this.drawSecondAxis,
+                    axisLabelColour: '#666666',
+                    axisLabelUseCanvas: true,
+                    min: -1.2,
+                    max: 1.2,
+                    ticks: this.tickGenerator,
+                    tickFormatter: this.yTickFormatter,
+                    tickColor: '#666666',
+                    font: {
+                        color: '#666666'
+                    }
+                }],
                 xaxis: {
                     ticks: this.tickGenerator,
                     tickFormatter: this.xTickFormatter,
@@ -257,14 +226,105 @@ export class FlotPage implements AfterViewInit {
                 }
             });
 
-        $("#flotContainer").bind("cursorupdates", function (event, cursordata) {
+        $("#flotContainer").bind("panEvent", function (event, cursordata) {
             console.log(cursordata);
         });
         console.log(this.plot);
-        $('#flotContainer').bind('mousedown', this.chartMouseDown.bind(this));
-        $('#flotContainer').bind('mouseup', this.chartMouseUp.bind(this));
+        this.drawSecondAxis = !this.drawSecondAxis;
+        //updateChart();
+    }
 
-        updateChart();
+    cursorUpdates() {
+
+    }
+
+    removeCursors() {
+        $("#flotContainer").unbind("cursorupdates", function (event, cursordata) {
+            console.log(cursordata);
+        });
+        let cursors = this.plot.getCursors();
+        console.log(cursors);
+        let length = cursors.length;
+        for (let i = 0; i < length; i++) {
+            //cursor array shifts itself so always remove first entry in array
+            this.plot.removeCursor(cursors[0]);
+        }
+    }
+
+    addTimeCursors() {
+        let options1 = {
+            name: 'cursor1',
+            mode: 'x',
+            color: 'red',
+            showIntersections: false,
+            showLabel: true,
+            symbol: 'none',
+            position: {
+                relativeX: 0.5,
+                relativeY: 0.5
+            }
+        }
+        let options2 = {
+            name: 'cursor2',
+            mode: 'x',
+            color: 'red',
+            showIntersections: false,
+            showLabel: true,
+            symbol: 'none',
+            position: {
+                relativeX: 0.75,
+                relativeY: 0.5
+            }
+        }
+        this.plot.addCursor(options1);
+        this.plot.addCursor(options2);
+    }
+
+    addTrackCursors() {
+        let options = {
+            name: 'Blue cursor',
+            mode: 'xy',
+            color: 'blue',
+            showIntersections: true,
+            snapToPlot: 1,
+            symbol: 'diamond',
+            position: {
+                relativeX: 0.5,
+                relativeY: 0.5
+            }
+        }
+        this.plot.addCursor(options);
+        this.plot.addCursor(options);
+    }
+
+    addVoltageCursors() {
+        let options = {
+            name: 'Green cursor',
+            mode: 'y',
+            color: 'green',
+            showIntersections: true,
+            symbol: 'cross',
+            showValuesRelativeToSeries: 0,
+            showLabel: true,
+            fontSize: '10px',
+            fontStyle: 'italic',
+            position: {
+                relativeX: 0.25,
+                relativeY: 0.25
+            }
+        }
+        this.plot.addCursor(options);
+        this.plot.addCursor(options);
+    }
+
+    getDaAxes() {
+        let getAxes = this.plot.getAxes();
+        console.log(getAxes);
+        getAxes.y2axis.show = false;
+        console.log(getAxes.y2axis.show);
+        this.plot.setupGrid();
+        this.plot.draw();
+        console.log(this.plot.getAxes());
     }
 
     navigation() {
