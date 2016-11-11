@@ -180,7 +180,6 @@ export class SilverNeedleChart {
         this.chart.setVoltsPerDivArray(this.voltsPerDivVals);
 
         $("#flotContainer").bind("panEvent", (event, panData) => {
-            console.log(panData);
             if (panData.axis === 'xaxis') {
                 this.base = panData.mid;
             }
@@ -188,8 +187,14 @@ export class SilverNeedleChart {
                 this.voltBase[panData.axisNum - 1] = panData.mid;
             }
         });
+        $("#flotContainer").bind("cursorupdates", (event, cursorData) => {
+            if (cursorData[0] === undefined) { return; }
+            for (let i = 0; i < 2; i++) {
+                this.cursorPositions[i].x = cursorData[i].x;
+                this.cursorPositions[i].y = cursorData[i].y;
+            }
+        });
         $("#flotContainer").bind("mouseWheelRedraw", (event, wheelData) => {
-            console.log(wheelData);
             if (wheelData.axis === 'xaxis') {
                 this.activeTPDIndex = wheelData.perDivArrayIndex;
                 this.timeDivision = this.secsPerDivVals[this.activeTPDIndex];
@@ -199,7 +204,6 @@ export class SilverNeedleChart {
                 this.voltDivision[wheelData.axisNum - 1] = this.voltsPerDivVals[this.activeVPDIndex[wheelData.axisNum - 1]];
             }
         });
-        console.log(this.chart);
         //updateChart();
         this.onLoad(this.chart);
     }
@@ -619,7 +623,7 @@ export class SilverNeedleChart {
 
     //Remove cursors from the chart including their labels
     removeCursors() {
-        this.chart.xAxis[0].removePlotLine('cursor0');
+        /*this.chart.xAxis[0].removePlotLine('cursor0');
         this.chart.xAxis[0].removePlotLine('cursor1');
         this.chart.yAxis[this.activeChannels[0] - 1].removePlotLine('cursor2');
         this.chart.yAxis[this.activeChannels[1] - 1].removePlotLine('cursor3');
@@ -636,6 +640,13 @@ export class SilverNeedleChart {
                 this.cursorAnchors[i] = 'empty';
                 //this.cursorLabel[i] = 'empty';
             }
+        }*/
+        let cursors = this.chart.getCursors();
+        console.log(cursors);
+        let length = cursors.length;
+        for (let i = 0; i < length; i++) {
+            //cursor array shifts itself so always remove first entry in array
+            this.chart.removeCursor(cursors[0]);
         }
         this.numXCursors = 0;
         this.numYCursors = 0;
@@ -643,7 +654,7 @@ export class SilverNeedleChart {
     }
 
     //Add x cursor to the chart and set css properties and event listeners
-    addXCursor() {
+    /*addXCursor() {
         let extremes = this.chart.xAxis[0].getExtremes();
         let initialValue: number;
         let style: string = null;
@@ -680,7 +691,7 @@ export class SilverNeedleChart {
             this.timelineCursorRefs[this.numXCursors] = this.timelineChart.xAxis[0].addPlotLine({
                 value: initialValue,
                 color: color,
-                dashStyle: style,
+                dashStyle: style, 
                 width: 1,
                 zIndex: 100 + this.numXCursors,
                 id: 'timelineCursor' + this.numXCursors
@@ -712,46 +723,46 @@ export class SilverNeedleChart {
                 this.activeCursor = -1;
             });
 
-        let path = ['M', 0, 0, 'L', 5, -9, -5, -9, 'Z'];
-        /*this.cursorAnchors[this.numXCursors] = this.chart.renderer.path(path)
-            .attr({
-                'stroke-width': 1,
-                stroke: color,
-                fill: 'black',
-                zIndex: 3,
-                id: ('cursorAnchor' + this.numXCursors.toString())
-            })
-            .add()
-            .css({
-                'cursor': 'pointer'
-            })
-            .add()
-            .on('mousedown', (event) => {
-                this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
-                this.chartBoundsX = this.chart.xAxis[0].getExtremes();
-                this.chartBoundsY = this.chart.yAxis[0].getExtremes();
-                this.xCursorDragStartPos = event.clientX;
-                this.xCursorStartDrag(this.numXCursors, event.clientX);
-            })
-            .on('touchstart', (event) => {
-                this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
-                this.chartBoundsX = this.chart.xAxis[0].getExtremes();
-                this.chartBoundsY = this.chart.yAxis[0].getExtremes();
-                this.xCursorDragStartPos = event.clientX;
-                this.xCursorStartDrag(this.numXCursors, event.clientX);
-            })
-            .on('mouseup', (event) => {
-                this.activeCursor = -1;
-            })
-            .on('touchend', (event) => {
-                this.activeCursor = -1;
-            });
-        this.cursorAnchors[this.numXCursors].translate(this.chart.xAxis[0].toPixels(initialValue) - 1, this.chart.plotTop - 1);
-        this.numXCursors++;*/
-    }
+        let path = ['M', 0, 0, 'L', 5, -9, -5, -9, 'Z'];*/
+    /*this.cursorAnchors[this.numXCursors] = this.chart.renderer.path(path)
+        .attr({
+            'stroke-width': 1,
+            stroke: color,
+            fill: 'black',
+            zIndex: 3,
+            id: ('cursorAnchor' + this.numXCursors.toString())
+        })
+        .add()
+        .css({
+            'cursor': 'pointer'
+        })
+        .add()
+        .on('mousedown', (event) => {
+            this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
+            this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+            this.chartBoundsY = this.chart.yAxis[0].getExtremes();
+            this.xCursorDragStartPos = event.clientX;
+            this.xCursorStartDrag(this.numXCursors, event.clientX);
+        })
+        .on('touchstart', (event) => {
+            this.activeCursor = parseInt(event.target.id.slice(-1)) + 1;
+            this.chartBoundsX = this.chart.xAxis[0].getExtremes();
+            this.chartBoundsY = this.chart.yAxis[0].getExtremes();
+            this.xCursorDragStartPos = event.clientX;
+            this.xCursorStartDrag(this.numXCursors, event.clientX);
+        })
+        .on('mouseup', (event) => {
+            this.activeCursor = -1;
+        })
+        .on('touchend', (event) => {
+            this.activeCursor = -1;
+        });
+    this.cursorAnchors[this.numXCursors].translate(this.chart.xAxis[0].toPixels(initialValue) - 1, this.chart.plotTop - 1);
+    this.numXCursors++;*/
+    //}
 
     //Add y cursor to the chart and set css properties and event listeners
-    addYCursor() {
+    /*addYCursor() {
         let initialValue: number;
         let extremes;
         let style: string = null;
@@ -793,7 +804,7 @@ export class SilverNeedleChart {
             //this.cursorLabel[this.numYCursors + 2] = this.chart.renderer.text('Cursor ' + (this.numYCursors + 2), 100, 500).add();
 
             let path = ['M', 0, 0, 'L', 9, 5, 0, 10, 'Z'];
-            /*this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.path(path)
+            this.cursorAnchors[this.numYCursors + 2] = this.chart.renderer.path(path)
                 .attr({
                     'stroke-width': 1,
                     stroke: color,
@@ -824,7 +835,7 @@ export class SilverNeedleChart {
                     this.activeCursor = -1;
                 });
 
-            this.cursorAnchors[this.numYCursors + 2].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].toPixels(initialValue) - 6);*/
+            this.cursorAnchors[this.numYCursors + 2].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].toPixels(initialValue) - 6);
         }
         let lineNum = this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].plotLinesAndBands.length - 1;
         this.chart.yAxis[this.activeChannels[this.numYCursors] - 1].plotLinesAndBands[lineNum].svgElem.element.id = 'cursor' + (this.numYCursors + 2);
@@ -852,10 +863,10 @@ export class SilverNeedleChart {
             });
 
         this.numYCursors++;
-    }
+    }*/
 
     //Called on x cursor mousedown. Add correct mousemove listener and mouseup listener
-    xCursorStartDrag(cursorId, xStartPos) {
+    /*xCursorStartDrag(cursorId, xStartPos) {
         if (this.cursorType === 'track') {
             this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.trackCursorDragListener);
             this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.trackCursorDragListener);
@@ -866,18 +877,18 @@ export class SilverNeedleChart {
         }
         this.oscopeChartInner.nativeElement.addEventListener('mouseup', this.xCursorStopDrag.bind(this));
         this.oscopeChartInner.nativeElement.addEventListener('touchend', this.xCursorStopDrag.bind(this));
-    }
+    }*/
 
     //Called on y cursor mousedown. Add mousemove and mouseup listeners
-    yCursorStartDrag(cursorId, xStartPos) {
+    /*yCursorStartDrag(cursorId, xStartPos) {
         this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.yCursorDragListener);
         this.oscopeChartInner.nativeElement.addEventListener('mouseup', this.yCursorStopDrag.bind(this));
         this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.yCursorDragListener);
         this.oscopeChartInner.nativeElement.addEventListener('touchend', this.yCursorStopDrag.bind(this));
-    }
+    }*/
 
     //Called on x cursor mouseup. Remove correct mousemove event listener
-    xCursorStopDrag() {
+    /*xCursorStopDrag() {
         if (this.cursorType === 'track') {
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.trackCursorDragListener);
             this.oscopeChartInner.nativeElement.removeEventListener('touchmove', this.trackCursorDragListener);
@@ -886,16 +897,16 @@ export class SilverNeedleChart {
             this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.cursorDragListener);
             this.oscopeChartInner.nativeElement.removeEventListener('touchmove', this.cursorDragListener);
         }
-    }
+    }*/
 
     //Called on y cursor mouseup. Remove mousemove event listener
-    yCursorStopDrag() {
+    /*yCursorStopDrag() {
         this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.yCursorDragListener);
         this.oscopeChartInner.nativeElement.removeEventListener('touchmove', this.yCursorDragListener);
-    }
+    }*/
 
     //Callback function for mousemove event on a track cursor style
-    trackCursorDragListener = function (event) {
+    /*trackCursorDragListener = function (event) {
         let yCor = event.layerY;
         let xCor = event.layerX;
         if (xCor < this.chart.xAxis[0].toPixels(this.chartBoundsX.min)) {
@@ -927,10 +938,10 @@ export class SilverNeedleChart {
         this.cursorRefs[this.activeCursor - 1].render();
         this.chart.yAxis[this.activeChannels[this.activeCursor - 1] - 1].plotLinesAndBands[lineNum * (this.activeCursor - 1)].render();
         this.cursorAnchors[this.activeCursor - 1].translate(xCor - 1, this.chart.plotTop - 1);
-    }.bind(this);
+    }.bind(this);*/
 
     //Callback function for mousemove event on a voltage cursor style
-    yCursorDragListener = function (event) {
+    /*yCursorDragListener = function (event) {
         //SOME WEIRD Y PIXEL OFFSET SO NEED TO CORRECT BY CALCULATING YDELTA AND ADDING THAT TO YVAL CALCULATION
         let yDelta = event.layerY - (this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].toPixels(parseFloat(this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].toValue(event.chartY - this.chart.plotTop))));
         let yVal = parseFloat(this.chart.yAxis[this.activeChannels[this.activeCursor - 3] - 1].toValue(event.chartY - this.chart.plotTop + yDelta)).toFixed(3);
@@ -971,12 +982,12 @@ export class SilverNeedleChart {
             x: xCor,
             y: yCor - 10,
             zIndex: 99 + this.activeCursor
-        });*/
+        });
         this.cursorAnchors[this.activeCursor - 1].translate(this.chart.plotLeft - 12, yCor - 5);
-    }.bind(this);
+    }.bind(this);*/
 
     //Callback function for mousemove event on a time cursor style
-    cursorDragListener = function (event) {
+    /*cursorDragListener = function (event) {
         let yCor = event.layerY;
         let xCor = event.layerX;
         if (xCor < this.chart.xAxis[0].toPixels(this.chartBoundsX.min)) {
@@ -1006,18 +1017,19 @@ export class SilverNeedleChart {
         this.cursorRefs[this.activeCursor - 1].render();
 
         this.cursorAnchors[this.activeCursor - 1].translate(xCor - 1, this.chart.plotTop - 1);
-    }.bind(this);
+    }.bind(this);*/
 
     setTitle(newTitle: string) {
-        this.chart.setTitle({
+        /*this.chart.setTitle({
             text: newTitle
-        });
+        });*/
     }
 
     //Get cursor position differences and return an array of data
     getCursorInfo(cursorInfo: string) {
         if (cursorInfo === 'xDelta') {
-            let timePerDiv = Math.abs(this.chart.xAxis[0].max - this.chart.xAxis[0].min) / 10;
+            let getAxes = this.chart.getAxes();
+            let timePerDiv = Math.abs(getAxes.xaxis.max - getAxes.xaxis.min) / 10;
             let i = 0;
             let unit = '';
             while (timePerDiv < 1) {
@@ -1044,7 +1056,10 @@ export class SilverNeedleChart {
             return xDelta;
         }
         else if (cursorInfo === 'yDelta') {
-            let vPerDiv = Math.abs(this.chart.yAxis[this.activeChannels[1] - 1].max - this.chart.yAxis[this.activeChannels[0] - 1].min) / 10;
+            let getAxes = this.chart.getAxes();
+            let yIndexer1 = 'y' + (this.activeChannels[1] - 1 === 0 ? '' : this.activeChannels[1].toString()) + 'axis';
+            let yIndexer0 = 'y' + (this.activeChannels[0] - 1 === 0 ? '' : this.activeChannels[0].toString()) + 'axis';
+            let vPerDiv = Math.abs(getAxes[yIndexer1].max - getAxes[yIndexer0].min) / 10;
             let i = 0;
             let unit = '';
             while (vPerDiv < 1) {
@@ -1096,7 +1111,8 @@ export class SilverNeedleChart {
         else if (cursorInfo === 'cursorPosition0' || cursorInfo === 'cursorPosition1') {
             let index = cursorInfo.slice(-1);
             if (this.cursorPositions[index].x !== undefined) {
-                let timePerDiv = Math.abs(this.chart.xAxis[0].max - this.chart.xAxis[0].min) / 10;
+                let getAxes = this.chart.getAxes();
+                let timePerDiv = Math.abs(getAxes.xaxis.max - getAxes.xaxis.min) / 10;
                 let i = 0;
                 let unit = '';
                 while (timePerDiv < 1) {
@@ -1120,7 +1136,10 @@ export class SilverNeedleChart {
                 }
 
                 let cursorPosition = (this.cursorPositions[index].x * Math.pow(1000, i)).toFixed(0) + unit;
-                let vPerDiv = Math.abs(this.chart.yAxis[this.activeChannels[index] - 1].max - this.chart.yAxis[this.activeChannels[index] - 1].min) / 10;
+
+                let yIndexer = 'y' + ((this.activeChannels[index] - 1) === 0 ? '' : this.activeChannels[index].toString()) + 'axis';
+
+                let vPerDiv = Math.abs(getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
                 i = 0;
                 while (vPerDiv < 1) {
                     i++;
@@ -1144,7 +1163,9 @@ export class SilverNeedleChart {
             else {
                 let i = 0;
                 let unit = '';
-                let vPerDiv = Math.abs(this.chart.yAxis[this.activeChannels[index] - 1].max - this.chart.yAxis[this.activeChannels[index] - 1].min) / 10;
+                let getAxes = this.chart.getAxes();
+                let yIndexer = 'y' + (this.activeChannels[index] - 1 === 0 ? '' : this.activeChannels[index].toString()) + 'axis';
+                let vPerDiv = Math.abs(getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
                 i = 0;
                 while (vPerDiv < 1) {
                     i++;
@@ -1217,9 +1238,9 @@ export class SilverNeedleChart {
                 this.cursor2Chan = data.cursor2Chan;
                 this.handleCursors();
             }
-            setTimeout(() => {
+            /*setTimeout(() => {
                 this.chart.reflow();
-            }, 50);
+            }, 50);*/
         });
         modal.present();
     }
@@ -1237,26 +1258,70 @@ export class SilverNeedleChart {
 
     //Adds correct cursors from selection
     handleCursors() {
+        this.activeChannels[0] = parseInt(this.cursor1Chan.slice(-1));
+        this.activeChannels[1] = parseInt(this.cursor2Chan.slice(-1));
         this.removeCursors();
         if (this.cursorType === 'time') {
-            this.addXCursor();
-            this.addXCursor();
-        }
-        else if (this.cursorType === 'disabled') {
-
+            for (let i = 0; i < 2; i++) {
+                let series = this.chart.getData();
+                let color = series[this.activeChannels[i] - 1].color
+                let options = {
+                    name: 'cursor' + (i + 1),
+                    mode: 'x',
+                    color: color,
+                    snapToPlot: (this.activeChannels[i] - 1),
+                    showIntersections: false,
+                    showLabel: false,
+                    symbol: 'none',
+                    position: {
+                        relativeX: 0.25 + i * 0.5,
+                        relativeY: 0.25 + i * 0.5
+                    },
+                    dashes: 10 + 10 * i
+                }
+                this.chart.addCursor(options);
+            }
         }
         else if (this.cursorType === 'track') {
-            this.addXCursor();
-            this.addXCursor();
-            this.addYCursor();
-            this.addYCursor();
+            for (let i = 0; i < 2; i++) {
+                let series = this.chart.getData();
+                let color = series[this.activeChannels[i] - 1].color
+                let options = {
+                    name: 'cursor' + (i + 1),
+                    mode: 'xy',
+                    color: color,
+                    showIntersections: false,
+                    showLabel: false,
+                    symbol: 'none',
+                    snapToPlot: (this.activeChannels[i] - 1),
+                    position: {
+                        relativeX: 0.25 + i * 0.5,
+                        relativeY: 0.25 + i * 0.5
+                    },
+                    dashes: 10 + 10 * i
+                }
+                this.chart.addCursor(options);
+            }
         }
         else if (this.cursorType === 'voltage') {
-            this.addYCursor();
-            this.addYCursor();
-        }
-        else {
-            console.log('error in handle cursors()');
+            for (let i = 0; i < 2; i++) {
+                let series = this.chart.getData();
+                let color = series[this.activeChannels[i] - 1].color
+                let options = {
+                    name: 'cursor' + (i + 1),
+                    mode: 'y',
+                    color: color,
+                    showIntersections: false,
+                    showLabel: false,
+                    symbol: 'none',
+                    position: {
+                        relativeX: 0.25 + i * 0.5,
+                        relativeY: 0.25 + i * 0.5
+                    },
+                    dashes: 10 + 10 * i
+                }
+                this.chart.addCursor(options);
+            }
         }
     }
 

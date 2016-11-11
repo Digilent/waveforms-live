@@ -41,7 +41,10 @@ export interface Chart {
     getSecsPerDivArray(): number[],
     setSecsPerDivArray(secsPerDivArray: number[]),
     getVoltsPerDivArray(): number[],
-    setVoltsPerDivArray(voltsPerDivArray: number[])
+    setVoltsPerDivArray(voltsPerDivArray: number[]),
+    addCursor(cursorSettings: any),
+    getCursors(),
+    removeCursor(cursorObjectToRemove: any)
 }
 
 export interface ChartBounds {

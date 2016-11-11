@@ -112,7 +112,6 @@
             * Event Functions
             **************************************************************/
             function chartMouseDown(e) {
-                plot.getPlaceholder().trigger('panEvent', ['mousedown']);
 
                 previousXPosition = e.clientX;
                 previousYPosition = e.clientY;
@@ -125,7 +124,6 @@
                     panType = 'horizontal';
                     plot.getPlaceholder().bind('mousemove', horPanChart);
                 }
-                console.log(panType);
             }
 
             function chartMouseUp(e) {
