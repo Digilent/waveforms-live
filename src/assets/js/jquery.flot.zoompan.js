@@ -48,15 +48,15 @@
             if (options.zoomPan.enabled) {
                 console.log('zoom pan plugin enabled');
 
-                //Setup Chart
-                setupChart(plot);
-
                 //Read values. Options will be default defined above unless specified by developer
                 selectedYAxis = options.zoomPan.selectedYAxis;
                 secsPerDivisionValues = options.zoomPan.secsPerDivisionValues;
                 voltsPerDivisionValues = options.zoomPan.voltsPerDivisionValues;
                 startingXIndex = options.zoomPan.startingXIndex;
                 startingYIndexArray = options.zoomPan.startingYIndexArray;
+
+                //Setup Chart
+                setupChart(plot);
             }
         });
 

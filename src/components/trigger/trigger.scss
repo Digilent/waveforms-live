@@ -10,20 +10,17 @@
 
 .trigger-container .custom-image-button
 {
-    border-left: solid black 1px;
-    border-top: solid black 1px;
-    border-bottom: solid black 1px;
-    border-radius: 0px;
-    cursor: pointer;
-    vertical-align: middle;
-    background-color: #535353;
+    display: block;
 }
 
 .trigger-container .off-button
 {
-    border: solid black 1px;
+    border-left: solid black 1px;
+    border-top: solid black 1px;
+    border-bottom: solid black 1px;
     height: 27px;
-    width: 26px;
+    width: 27px;
+    padding: 0px;
     background-color: #535353;
     border-radius: 0px;
     color: #CCCCCC;
@@ -31,6 +28,11 @@
     margin: 0px;
     box-shadow: none;
     font-weight: 400;
+}
+
+.trigger-container .off-button-right
+{
+    border-right: solid black 1px;
 }
 
 .trigger-container .custom-input
@@ -43,6 +45,13 @@
     padding: 2px 0px 2px 4px;
     margin: 0px;
     border-radius: 0px;
+}
+
+.trigger-container .image-container-div
+{
+    display: inline-block;
+    width: 26px;
+    height: 26px;
 }
 
 .trigger-container .source-button

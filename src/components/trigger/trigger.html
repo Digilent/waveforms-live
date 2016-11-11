@@ -10,9 +10,16 @@
 			<ion-row class="button-row">
 				<ion-col center text-center class="interact-button-col">
 					<div class="trigger-image-container">
-						<img class="custom-image-button" (click)="setTrigType('rising')" src="assets/img/trigger-rising.png" [ngClass]="{'selected-mode':edgeDirection==='rising'}">
-						<img class="custom-image-button" (click)="setTrigType('falling')" src="assets/img/trigger-falling.png" [ngClass]="{'selected-mode':edgeDirection==='falling'}">
-						<button ion-button class="off-button disable-hover" (click)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}">Off</button>
+						<button ion-button class="off-button disable-hover"(click)="setTrigType('rising')"  [ngClass]="{'selected-mode':edgeDirection==='rising'}">
+							<img class="custom-image-button" src="assets/img/trigger-rising.png">
+						</button>
+						<button ion-button class="off-button disable-hover" (click)="setTrigType('falling')" [ngClass]="{'selected-mode':edgeDirection==='falling'}">
+							<img class="custom-image-button" src="assets/img/trigger-falling.png">
+						</button>
+						
+						<button ion-button class="off-button disable-hover off-button-right" (click)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}">
+							Off
+						</button>
 					</div>
 				</ion-col>
 				<ion-col center text-center class="interact-button-col">

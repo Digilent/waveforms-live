@@ -9,7 +9,13 @@
 .chart-component-wrapper
 {
     display: flex;
+    display: -webkit-flex;
+    display: -ms-flex;
+
     flex-direction: column;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column; 
+
     height: 100%;
 }
 
@@ -18,7 +24,10 @@
     position: relative;
     //height: 100%;
     width: 100%;
+
     flex: 1 1 80%;
+    -webkit-flex: 1 1 80%;
+    -ms-flex: 1 1 80%;
 }
 
 .chart-component-wrapper .chart-component-container-div
@@ -71,6 +80,9 @@
 .chart-info-container
 {
     flex: 0 0 26px;
+    -webkit-flex: 0 0 26px;
+    -ms-flex: 0 0 26px;
+
     width: 100%;
     background-color: #535353;
 }

@@ -2,8 +2,14 @@
 .chart-page-container
 {
     //background-color: #535353;
+    display: -webkit-flex;     
+    display: -ms-flexbox;     
     display: flex;
+
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
     flex-direction: column;
+
     height: 100%;
 }
 
@@ -12,8 +18,11 @@
 .chart-page-container .top-bar-container
 {
     flex: 0 1 auto;
-    background-color: #535353;
+    -webkit-flex: 0 1 auto;
+    -ms-flex: 0 1 auto;
 
+
+    background-color: #535353;
     border-bottom: solid black 1px;
 }
 
@@ -46,10 +55,19 @@
 .chart-page-container .center-container
 {
     flex: 1 1 auto;
+    -webkit-flex: 1 1 auto;
+    -ms-flex: 1 1 auto;
+
+
     height: 100%;
     background-color: #535353;
 
+    display: -webkit-flex;     
+    display: -ms-flexbox;     
     display: flex;
+
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
     flex-direction: row;
     overflow: none;
 }
@@ -59,14 +77,19 @@
     //display: block;
     height: 100%;
     flex: 1 10 50%;
+    -webkit-flex: 1 10 50%;
+    -ms-flex: 1 10 50%;
 }
 
 .chart-page-container .center-container .controls-wrapper
 {
+    flex: 0 1 20%;
+    -webkit-flex: 0 1 20%;
+    -ms-flex: 0 1 20%;
+
     width: 20%;
     max-width: 232px;
     min-width: 232px;
-    flex: 0 1 20%;
     overflow: auto;
     height: 100%;
     
@@ -77,8 +100,11 @@
 
 .chart-page-container .center-container .show-fgen
 {
-    min-width: 200px;
     flex: 1 0 200px;
+    -webkit-flex: 1 0 200px;
+    -ms-flex: 1 0 200px;
+
+    min-width: 200px;
     overflow: auto;
 
     background-color: #444444;
@@ -98,6 +124,9 @@
 .chart-page-container .center-container .fgen-wrapper
 {
     flex: 0 1 0px;
+    -webkit-flex: 0 1 0px;
+    -ms-flex: 0 1 0px;
+
     width: 0px;
 }
 
