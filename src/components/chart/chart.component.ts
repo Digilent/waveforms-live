@@ -101,6 +101,8 @@ export class SilverNeedleChart {
 
     public selectedMathInfo: any = [];
 
+    public seriesDataContainer: any = [];
+
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
     }
@@ -113,7 +115,39 @@ export class SilverNeedleChart {
             height: '100%'
         });
         this.createChart();
+    }
 
+    createTimelineChart(dataObjectArray: any) {
+        this.timelineChart = $.plot("#timelineContainer", dataObjectArray, {
+                series: {
+                    lines: {
+                        show: true
+                    }
+                },
+                legend: {
+                    show: false
+                },
+                grid: {
+                    hoverable: true,
+                    clickable: true,
+                    autoHighlight: false,
+                    borderWidth: 0,
+                    backgroundColor: 'black',
+                    margin: {
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0
+                    }
+                },
+                colors: this.colorArray,
+                yaxis: {
+                    ticks: []
+                },
+                xaxis: {
+                    ticks: []
+                }
+            });
     }
 
     createChart() {
@@ -226,6 +260,11 @@ export class SilverNeedleChart {
                     color: '#666666'
                 }
             }
+            let dataObject = {
+                data: [[]],
+                yaxis: i + 1
+            };
+            this.seriesDataContainer.push(dataObject);
             yAxisOptionsArray.push(axisOptions);
         }
         return yAxisOptionsArray;
@@ -558,13 +597,20 @@ export class SilverNeedleChart {
             dataObjects.push(
                 {
                     data: this.flotDecimateData(this.numSeries[i], bounds).data,
-                    yaxis: this.numSeries[i] + 1,
+                    yaxis: 1,
                     label: 'Series' + this.numSeries[i].toString()
                 }
             );
+            this.seriesDataContainer[this.numSeries[i]].data = this.flotDecimateData(this.numSeries[i], bounds).data;
         }
-        this.chart.setData(dataObjects);
+        this.chart.setData(this.seriesDataContainer);
         this.chart.draw();
+
+        console.log(this.chart.getData());
+
+        if (this.timelineView && initialDraw) {
+            this.createTimelineChart(dataObjects);
+        }
     }
 
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
@@ -1585,6 +1631,7 @@ export class SilverNeedleChart {
     //Enables timeline view. Called when chart is initialized
     enableTimelineView() {
         this.timelineView = true;
+        this.createTimelineChart([{data:[[]]}]);
     }
 
     enableMath() {

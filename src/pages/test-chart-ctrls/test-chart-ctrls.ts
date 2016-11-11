@@ -90,7 +90,7 @@ export class TestChartCtrlsPage {
     //Alert user with toast if no active device is set
     ngOnInit() {
         this.chart1.enableCursors();
-        //this.chart1.enableTimelineView();
+        this.chart1.enableTimelineView();
         this.chart1.enableMath();
         if (this.deviceManagerService.activeDeviceIndex === undefined) {
             console.log('in if');
