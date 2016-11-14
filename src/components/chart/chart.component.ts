@@ -102,6 +102,7 @@ export class SilverNeedleChart {
     public selectedMathInfo: any = [];
 
     public seriesDataContainer: any = [];
+    public yAxisOptionsContainer: any = [];
 
     constructor(_modalCtrl: ModalController) {
         this.modalCtrl = _modalCtrl;
@@ -151,12 +152,8 @@ export class SilverNeedleChart {
     }
 
     createChart() {
-        let yAxesOptions = this.generateYAxesOptions();
-        this.chart = $.plot("#flotContainer", [
-            {
-                data: [[]]
-            }
-        ], {
+        let yAxesOptions = this.generateChartOptions();
+        this.chart = $.plot("#flotContainer", this.seriesDataContainer, {
                 series: {
                     lines: {
                         show: true
@@ -242,8 +239,7 @@ export class SilverNeedleChart {
         this.onLoad(this.chart);
     }
 
-    generateYAxesOptions() {
-        let yAxisOptionsArray = [];
+    generateChartOptions() {
         for (let i = 0; i < this.deviceDescriptor.instruments.la.numChans + this.deviceDescriptor.instruments.osc.numChans; i++) {
             let axisOptions = {
                 position: 'left',
@@ -262,12 +258,15 @@ export class SilverNeedleChart {
             }
             let dataObject = {
                 data: [[]],
-                yaxis: i + 1
+                yaxis: i + 1,
+                lines: {
+                    show: (i === 0)
+                }
             };
             this.seriesDataContainer.push(dataObject);
-            yAxisOptionsArray.push(axisOptions);
+            this.yAxisOptionsContainer.push(axisOptions);
         }
-        return yAxisOptionsArray;
+        return this.yAxisOptionsContainer;
     }
 
     tickGenerator(axis) {
@@ -362,7 +361,7 @@ export class SilverNeedleChart {
 
     ngOnDestroy() {
         if (this.timelineView) {
-            this.timelineChartEventListener.unsubscribe();
+            //this.timelineChartEventListener.unsubscribe();
         }
     }
 
@@ -461,30 +460,25 @@ export class SilverNeedleChart {
 
     //Called when a point is selected. Sets active series and updates y axis labels
     onPointSelect(event) {
-        this.updateYAxisLabels(event.context.series.index + 1);
-        this.activeSeries = event.context.series.index + 1;
+        /*this.updateYAxisLabels(event.context.series.index + 1);
+        this.activeSeries = event.context.series.index + 1;*/
     }
 
     //Displays the y axis label for the active series and hide the others
     updateYAxisLabels(newActiveSeries: number) {
         //If LA is set as active series don't do anything
-        if (newActiveSeries > this.oscopeChansActive.length) { return; }
-        this.chart.yAxis[this.activeSeries - 1].update({
-            labels: {
-                enabled: false
-            },
-            title: {
-                text: null
-            }
-        }, false);
-        this.chart.yAxis[newActiveSeries - 1].update({
-            labels: {
-                enabled: true
-            },
-            title: {
-                text: 'Osc ' + (newActiveSeries)
-            }
-        }, true);
+        if (newActiveSeries > this.oscopeChansActive.length || newActiveSeries === this.activeSeries) { return; }
+
+        let yIndexer1 = 'y' + ((newActiveSeries - 1 === 0) ? '' : newActiveSeries.toString()) + 'axis';
+        let yIndexer0 = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
+
+        let axes = this.chart.getAxes();
+        console.log(axes);
+        axes[yIndexer0].options.show = false;
+        axes[yIndexer1].options.show = true;
+
+        this.chart.setupGrid();
+        this.chart.draw();
     }
 
     //Reflows chart to fit container and updates cursor labels if they exist
@@ -1555,8 +1549,10 @@ export class SilverNeedleChart {
 
     //Set active series and update labels
     setActiveSeries(seriesNum: number) {
-        /*this.updateYAxisLabels(seriesNum);
+        console.log('setActiveSeries');
+        this.updateYAxisLabels(seriesNum);
         this.activeSeries = seriesNum;
+        /*this.activeSeries = seriesNum;
         this.updateCursorLabels();
         this.updateTriggerAnchor(seriesNum);
         for (let i = 0; i < this.seriesAnchors.length; i++) {
@@ -1925,14 +1921,9 @@ export class SilverNeedleChart {
 
     toggleVisibility(seriesNum: number) {
         this.oscopeChansActive[seriesNum] = !this.oscopeChansActive[seriesNum];
-        /*if (this.chart.series[seriesNum] === undefined) {
-            return;
-        }
-        if (this.seriesAnchors[seriesNum] !== undefined && this.oscopeChansActive[seriesNum] === false) {
-            this.removeSeriesAnchor(seriesNum);
-        }
-        this.chart.series[seriesNum].setVisible(!this.chart.series[seriesNum].visible);
-        this.updateSeriesAnchor(seriesNum);*/
+        this.seriesDataContainer[seriesNum].lines.show = !this.seriesDataContainer[seriesNum].lines.show;
+        this.chart.setData(this.seriesDataContainer);
+        this.chart.draw();
     }
 
     getSeriesVisibility(seriesNum: number) {

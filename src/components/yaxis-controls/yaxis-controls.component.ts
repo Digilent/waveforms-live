@@ -40,9 +40,6 @@ export class YAxisComponent {
             return '#535353';
         }
         let series = this.chart.chart.getData();
-        if (series[seriesNum] === undefined) {
-            return '#535353';
-        }
         if (series[seriesNum].lines.show) {
             return series[seriesNum].color;
         }
@@ -53,7 +50,6 @@ export class YAxisComponent {
         this.showOscSettings = !this.showOscSettings;
     }
 
-    //Toggle Series visibility
     toggleSeriesSettings(seriesNum: number) {
         console.log('toggle series settings' + seriesNum);
         this.showSeriesSettings[seriesNum] = !this.showSeriesSettings[seriesNum];
@@ -89,10 +85,5 @@ export class YAxisComponent {
     //Set active series on the chart component
     setActiveSeries(i) {
         this.chart.setActiveSeries(i + 1);
-    }
-
-    //Autoscale a specific y axis
-    autoscaleY(i) {
-        this.chart.autoscaleAxis('y', i);
     }
 }
