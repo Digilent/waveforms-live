@@ -137,6 +137,15 @@ export class TestChartCtrlsPage {
     //Run osc single
     singleClick() {
         console.log('single clicked');
+        if (this.chart1.oscopeChansActive.indexOf(true) === -1 ) {
+            let toast = this.toastCtrl.create({
+                message: 'Err: No Channels Active. Please Activate a Channel and Run Again',
+                showCloseButton: true,
+                position: 'bottom'
+            });
+            toast.present();
+            return;
+        }
         this.triggerStatus = 'Armed';
         let setTrigParams = false;
         let setOscParams = false;

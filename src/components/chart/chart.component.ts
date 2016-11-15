@@ -688,9 +688,6 @@ export class SilverNeedleChart {
             this.timelineChart.setupGrid();
             this.timelineChart.draw();
         }
-        let duhCursors = this.timelineChart.getCursors();
-        console.log(this.timelineChart.getCanvas());
-        console.log(duhCursors);
     }
 
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
