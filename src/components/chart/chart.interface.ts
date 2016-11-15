@@ -54,11 +54,6 @@ export interface Chart {
     updateTimelineCurtains(minMaxContainer: any)
 }
 
-export interface ChartBounds {
-    min: number,
-    max: number
-}
-
 export interface CursorPositions {
     x: number,
     y: number

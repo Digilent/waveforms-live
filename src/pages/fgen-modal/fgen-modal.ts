@@ -140,7 +140,6 @@ export class ModalFgenPage {
         this.chart.setTitle('AWG Configuration');
         this.chart.clearExtraSeries([0]);
         this.drawWave();
-        this.chart.redrawChart();
     }
 
     //When a different tab is selected, draw new wavetype

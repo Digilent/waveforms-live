@@ -43,40 +43,12 @@ export class ChartModalPage {
         this.chart.exportCsv('myData');
     }
 
-    //This is required since updating the axis changes the references
-    reattachReferences() {
-        this.chart.triggerPlotLine = this.chart.chart.xAxis[0].plotLinesAndBands[0];
-        for (let i = 0; i < this.chart.numXCursors; i++) {
-            this.chart.cursorRefs[i] = this.chart.chart.xAxis[0].plotLinesAndBands[i + 1];
-        }
-        for (let i = 0; i < this.chart.numYCursors; i++) {
-            let lineNum = this.chart.chart.yAxis[this.chart.activeChannels[i]].plotLinesAndBands.length - 1;
-            this.chart.cursorRefs[i + 2] = this.chart.chart.yAxis[this.chart.activeChannels[i]].plotLinesAndBands[lineNum * i];
-        }
-        if (this.chart.timelineView) {
-            let length = this.chart.timelineChart.xAxis[0].plotLinesAndBands.length;
-            if (this.chart.cursorType === 'time' || this.chart.cursorType === 'track') {
-                for (let i = 0; i < 2; i++) {
-                    this.chart.timelineCursorRefs[i] = this.chart.timelineChart.xAxis[0].plotLinesAndBands[length - 1 - ((i + 1) % 2)];
-                }
-            }
-            else if (this.chart.cursorType === 'voltage') {
-                for (let i = 0; i < 2; i++) {
-                    this.chart.timelineCursorRefs[i + 2] = this.chart.timelineChart.yAxis[0].plotLinesAndBands[i];
-                }
-            }
-        }
-    }
-
     openColorPicker(event, type: string) {
         this.colorPickType = type;
-        console.log(this.chart.numXCursors, this.chart.numYCursors, this.chart.cursorRefs);
         this.colorPickerRef.removeEventListener('input', this.colorPickCallbackRef);
         this.colorPickCallbackRef = this.colorPickerRef.addEventListener('input', (event: any) => {
             let color = event.target.value;
             if (this.colorPickType === 'chart-background') {
-                console.log('chart-background');
-                console.log(this.chart.cursorRefs);
                 this.chart.chart.chartBackground.attr({
                     fill: event.target.value
                 });
@@ -100,7 +72,6 @@ export class ChartModalPage {
                         }
                     }
                 }, true);
-                console.log(this.chart.cursorRefs);
                 this.chart.chart.xAxis[0].update({
                     labels: {
                         style: {
@@ -113,7 +84,6 @@ export class ChartModalPage {
                         }
                     }
                 }, true);
-                console.log(this.chart.cursorRefs);
                 console.log(this.chart.chart);
                 this.currentColors[1] = color;
             }
@@ -130,7 +100,6 @@ export class ChartModalPage {
                 }, true);
                 this.currentColors[2] = color;
             }
-            this.reattachReferences();
         });
         this.colorPickerRef.click();
     }
@@ -184,7 +153,6 @@ export class ChartModalPage {
             lineColor: everyOtherColor
         }, true);
         this.currentColors[2] = everyOtherColor;
-        this.reattachReferences();
-    }
+    } 
 
 }

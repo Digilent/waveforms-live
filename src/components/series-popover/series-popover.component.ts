@@ -45,11 +45,6 @@ export class SeriesPopover {
                     color: event.target.value
                 }, true);
             }
-            if (this.chart.seriesAnchors[this.seriesNum] !== undefined) {
-                this.chart.seriesAnchors[this.seriesNum].attr({
-                    fill: event.target.value
-                });
-            }
         });
         this.colorPickerRef.click();
     }

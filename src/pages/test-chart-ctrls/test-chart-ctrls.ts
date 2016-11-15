@@ -114,24 +114,14 @@ export class TestChartCtrlsPage {
         }
     }
 
-    saveTimelineChart(event) {
-        this.chart1.onTimelineLoad(event);
-    }
-
     //Toggle sidecontrols
     toggleControls() {
         this.controlsVisible = !this.controlsVisible;
-        setTimeout(() => {
-            this.chart1.redrawChart();
-        }, 550);
     }
 
     //Toggle bot controls 
     toggleBotControls() {
         this.botVisible = !this.botVisible;
-        setTimeout(() => {
-            this.chart1.redrawChart();
-        }, 550);
     }
 
     //Run osc single
