@@ -60,6 +60,7 @@ Licensed under the MIT license.
                 fontWeight: '',
                 lineWidth: 1,
                 movable: true,
+                fullHeight: false,
                 mouseButton: 'all',
                 dashes: 1,
                 intersectionColor: 'darkgray',
@@ -376,6 +377,7 @@ Licensed under the MIT license.
 
         plot.hooks.drawOverlay.push(function (plot, ctx) {
             update = [];
+            let canvasRef = plot.getCanvas().getContext("2d");
 
             cursors.forEach(function (cursor) {
                 var intersections;
@@ -391,7 +393,12 @@ Licensed under the MIT license.
                     var plotOffset = plot.getPlotOffset();
 
                     ctx.save();
-                    ctx.translate(plotOffset.left, plotOffset.top);
+                    if (!cursor.fullHeight) {
+                        ctx.translate(plotOffset.left, plotOffset.top);
+                    }
+                    else {
+                        ctx.translate(plotOffset.left, 0);
+                    }
 
                     drawVerticalAndHorizontalLines(plot, ctx, cursor);
                     drawLabel(plot, ctx, cursor);
@@ -631,8 +638,13 @@ Licensed under the MIT license.
 
     function drawVerticalAndHorizontalLines(plot, ctx, cursor) {
         // abort draw if linewidth is zero
+        var canvasHeight = plot.height();
         if (cursor.lineWidth === 0) {
             return;
+        }
+        if (cursor.fullHeight) {
+            var canvasRef = plot.getCanvas();
+            canvasHeight = canvasRef.height;
         }
         // keep line sharp
         var adj = cursor.lineWidth % 2 ? 0.5 : 0;
@@ -647,10 +659,10 @@ Licensed under the MIT license.
             var drawX = Math.floor(cursor.x) + adj;
             if (cursor.dashes <= 0) {
                 ctx.moveTo(drawX, 0);
-                ctx.lineTo(drawX, plot.height());
+                ctx.lineTo(drawX, canvasHeight);
             } else {
                 var numberOfSegments = cursor.dashes * 2 - 1;
-                var delta = plot.height() / numberOfSegments;
+                var delta = canvasHeight / numberOfSegments;
                 for (var i = 0; i < numberOfSegments; i += 2) {
                     ctx.moveTo(drawX, delta * i);
                     ctx.lineTo(drawX, delta * (i + 1));

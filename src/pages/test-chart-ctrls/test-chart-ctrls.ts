@@ -89,9 +89,6 @@ export class TestChartCtrlsPage {
 
     //Alert user with toast if no active device is set
     ngOnInit() {
-        this.chart1.enableCursors();
-        this.chart1.enableTimelineView();
-        this.chart1.enableMath();
         if (this.deviceManagerService.activeDeviceIndex === undefined) {
             console.log('in if');
             let toast = this.toastCtrl.create({
@@ -219,6 +216,8 @@ export class TestChartCtrlsPage {
                 ]
             ];
         }
+
+        //TODO if trigger single error, send whole set parameter multi command.
         singleCommand['trigger']['single'] = [[1]];
         /*if (this.triggerComponent.edgeDirection === 'off') {
             singleCommand['trigger']['forceTrigger'] = [[1]];
@@ -350,8 +349,8 @@ export class TestChartCtrlsPage {
 
     //Enable cursors and timeline view
     initSettings() {
-        setTimeout(() => {
-            this.chart1.redrawChart();
-        }, 200);
+        this.chart1.enableCursors();
+        this.chart1.enableTimelineView();
+        this.chart1.enableMath();
     }
 }

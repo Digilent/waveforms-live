@@ -49,6 +49,8 @@
                 existingChartRef = options.timelineChart.existingChartRef;
                 updateExistingChart = options.timelineChart.updateExistingChart;
 
+                console.log(options);
+
                 //Setup Chart
                 setupChart(plot);
             }
@@ -169,13 +171,13 @@
                     var difference = newVal - oldValinNewWindow;
                     var base = (existingChartGetAxes.xaxis.max + existingChartGetAxes.xaxis.min) / 2;
                     var timePerDivision = (existingChartGetAxes.xaxis.max - existingChartGetAxes.xaxis.min) / 10;
-                    var newPos = base - difference;
+                    var newPos = base + difference;
                     var min = newPos - timePerDivision * 5;
                     var max = newPos + timePerDivision * 5;
                     existingChartGetAxes.xaxis.options.min = min;
                     existingChartGetAxes.xaxis.options.max = max;
-                    existingChartGetAxes.setupGrid();
-                    existingChartGetAxes.draw();
+                    existingChartRef.setupGrid();
+                    existingChartRef.draw();
                     plot.getPlaceholder().trigger('timelinePanEvent', [
                         {
                             x: e.clientX,

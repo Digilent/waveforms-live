@@ -119,94 +119,175 @@ export class SilverNeedleChart {
     }
 
     createTimelineChart(dataObjectArray: any) {
+        if (this.timelineChart !== null) { return; }
+
+        let chartRef = this.chart;
         this.timelineChart = $.plot("#timelineContainer", dataObjectArray, {
-                series: {
-                    lines: {
-                        show: true
-                    }
-                },
-                legend: {
-                    show: false
-                },
-                grid: {
-                    hoverable: true,
-                    clickable: true,
-                    autoHighlight: false,
-                    borderWidth: 0,
-                    backgroundColor: 'black',
-                    margin: {
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0
-                    }
-                },
-                colors: this.colorArray,
-                yaxis: {
-                    ticks: []
-                },
-                xaxis: {
-                    ticks: []
+            series: {
+                lines: {
+                    show: true
                 }
-            });
+            },
+            timelineChart: {
+                enabled: true,
+                secsPerDivisionValues: [0.000000001, 0.000000002, 0.000000005, 0.00000001, 0.00000002, 0.00000005, 0.0000001, 0.0000002,
+                    0.0000005, 0.000001, 0.000002, 0.000005, 0.00001, 0.00002, 0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01,
+                    0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10],
+                startingXIndex: 0,
+
+                updateExistingChart: true,
+                existingChartRef: chartRef
+            },
+            cursors: [
+                {
+                    name: 'curtain-1',
+                    mode: 'x',
+                    color: 'rgba(182, 191, 190, 0.5)',
+                    lineWidth: 10,
+                    position: {
+                        relativeX: 0.25,
+                        relativeY: 0.25
+                    },
+                    show: true,
+                    fullHeight: true,
+                    symbol: 'none',
+                    showLabel: false,
+                    movable: true,
+                    showIntersections: false,
+                }, {
+                    name: 'curtain-2',
+                    mode: 'x',
+                    color: 'rgba(182, 191, 190, 0.5)',
+                    lineWidth: 10,
+                    position: {
+                        relativeX: 0.75,
+                        relativeY: 0.75
+                    },
+                    show: true,
+                    fullHeight: true,
+                    symbol: 'none',
+                    showLabel: false,
+                    movable: true,
+                    showIntersections: false,
+                }, {
+                    name: 'band-1',
+                    mode: 'x',
+                    color: 'rgba(182, 191, 190, 0.5)',
+                    lineWidth: 50,
+                    position: {
+                        relativeX: 0.75,
+                        relativeY: 0.75
+                    },
+                    show: true,
+                    fullHeight: true,
+                    symbol: 'none',
+                    showLabel: false,
+                    movable: true,
+                    showIntersections: false,
+                }, {
+                    name: 'band-2',
+                    mode: 'x',
+                    color: 'rgba(182, 191, 190, 0.5)',
+                    lineWidth: 50,
+                    position: {
+                        relativeX: 0.75,
+                        relativeY: 0.75
+                    },
+                    show: true,
+                    fullHeight: true,
+                    symbol: 'none',
+                    showLabel: false,
+                    movable: true,
+                    showIntersections: false,
+                }
+            ],
+            legend: {
+                show: false
+            },
+            grid: {
+                hoverable: true,
+                clickable: true,
+                autoHighlight: false,
+                borderWidth: 0,
+                backgroundColor: 'black',
+                margin: {
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0
+                }
+            },
+            colors: this.colorArray,
+            yaxis: {
+                ticks: []
+            },
+            xaxis: {
+                ticks: []
+            }
+        });
+
+        /*$("#timelineContainer").bind("timelinePanEvent", (event, panData) => {
+            console.log(panData);
+        });*/
+
     }
 
     createChart() {
         let yAxesOptions = this.generateChartOptions();
         this.chart = $.plot("#flotContainer", this.seriesDataContainer, {
-                series: {
-                    lines: {
-                        show: true
-                    }
-                },
-                legend: {
-                    show: false
-                },
-                grid: {
-                    hoverable: true,
-                    clickable: true,
-                    autoHighlight: false,
-                    borderWidth: 0,
-                    backgroundColor: 'black',
-                    labelMargin: 10,
-                    margin: {
-                        top: 15,
-                        left: 10,
-                        right: 25,
-                        bottom: 10
-                    }
-                },
-                colors: this.colorArray,
-                axisLabels: {
+            series: {
+                lines: {
                     show: true
-                },
-                zoomPan: {
-                    enabled: true,
-                    startingIndex: 21
-                },
-                cursorMoveOnPan: true,
-                /*yaxis: {
-                    min: -1.2,
-                    max: 1.2,
-                    ticks: this.tickGenerator,
-                    tickFormatter: this.yTickFormatter,
-                    tickColor: '#666666',
-                    font: {
-                        color: '#666666'
-                    }
-                },*/
-                yaxes: yAxesOptions,
-                xaxis: {
-                    min: -1,
-                    max: 1,
-                    ticks: this.tickGenerator,
-                    tickFormatter: this.xTickFormatter,
-                    tickColor: '#666666',
-                    font: {
-                        color: '#666666'
-                    }
                 }
-            });
+            },
+            legend: {
+                show: false
+            },
+            grid: {
+                hoverable: true,
+                clickable: true,
+                autoHighlight: false,
+                borderWidth: 0,
+                backgroundColor: 'black',
+                labelMargin: 10,
+                margin: {
+                    top: 15,
+                    left: 10,
+                    right: 25,
+                    bottom: 10
+                }
+            },
+            colors: this.colorArray,
+            axisLabels: {
+                show: true
+            },
+            zoomPan: {
+                enabled: true,
+                startingIndex: 21
+            },
+            cursorMoveOnPan: true,
+            /*yaxis: {
+                min: -1.2,
+                max: 1.2,
+                ticks: this.tickGenerator,
+                tickFormatter: this.yTickFormatter,
+                tickColor: '#666666',
+                font: {
+                    color: '#666666'
+                }
+            },*/
+            yaxes: yAxesOptions,
+            xaxis: {
+                min: -1,
+                max: 1,
+                ticks: this.tickGenerator,
+                tickFormatter: this.xTickFormatter,
+                tickColor: '#666666',
+                font: {
+                    color: '#666666'
+                }
+            }
+        });
 
         this.chart.setVoltsPerDivArray(this.voltsPerDivVals);
 
@@ -588,23 +669,28 @@ export class SilverNeedleChart {
             };
             if (bounds.min < this.currentBufferArray[this.numSeries[i]].t0 || isNaN(bounds.min) || ignoreAutoscale) { bounds.min = this.currentBufferArray[this.numSeries[i]].t0 }
             if (bounds.max > this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length || isNaN(bounds.max) || ignoreAutoscale) { bounds.max = this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length }
+            let decimatedData = this.flotDecimateData(this.numSeries[i], bounds).data;
+            console.log(decimatedData.length);
             dataObjects.push(
                 {
-                    data: this.flotDecimateData(this.numSeries[i], bounds).data,
+                    data: decimatedData,
                     yaxis: 1,
                     label: 'Series' + this.numSeries[i].toString()
                 }
             );
-            this.seriesDataContainer[this.numSeries[i]].data = this.flotDecimateData(this.numSeries[i], bounds).data;
+            this.seriesDataContainer[this.numSeries[i]].data = decimatedData;
         }
         this.chart.setData(this.seriesDataContainer);
         this.chart.draw();
 
-        console.log(this.chart.getData());
-
         if (this.timelineView && initialDraw) {
-            this.createTimelineChart(dataObjects);
+            this.timelineChart.setData(dataObjects);
+            this.timelineChart.setupGrid();
+            this.timelineChart.draw();
         }
+        let duhCursors = this.timelineChart.getCursors();
+        console.log(this.timelineChart.getCanvas());
+        console.log(duhCursors);
     }
 
     //Draws a waveform. If axis does not exist for series number, add new axis and then set data
@@ -1627,7 +1713,7 @@ export class SilverNeedleChart {
     //Enables timeline view. Called when chart is initialized
     enableTimelineView() {
         this.timelineView = true;
-        this.createTimelineChart([{data:[[]]}]);
+        this.createTimelineChart([{ data: [[]] }]);
     }
 
     enableMath() {
