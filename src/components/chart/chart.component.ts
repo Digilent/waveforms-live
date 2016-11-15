@@ -138,69 +138,7 @@ export class SilverNeedleChart {
                 updateExistingChart: true,
                 existingChartRef: chartRef
             },
-            cursors: [
-                {
-                    name: 'curtain-1',
-                    mode: 'x',
-                    color: 'rgba(182, 191, 190, 0.5)',
-                    lineWidth: 10,
-                    position: {
-                        relativeX: 0.25,
-                        relativeY: 0.25
-                    },
-                    show: true,
-                    fullHeight: true,
-                    symbol: 'none',
-                    showLabel: false,
-                    movable: true,
-                    showIntersections: false,
-                }, {
-                    name: 'curtain-2',
-                    mode: 'x',
-                    color: 'rgba(182, 191, 190, 0.5)',
-                    lineWidth: 10,
-                    position: {
-                        relativeX: 0.75,
-                        relativeY: 0.75
-                    },
-                    show: true,
-                    fullHeight: true,
-                    symbol: 'none',
-                    showLabel: false,
-                    movable: true,
-                    showIntersections: false,
-                }, {
-                    name: 'band-1',
-                    mode: 'x',
-                    color: 'rgba(182, 191, 190, 0.5)',
-                    lineWidth: 50,
-                    position: {
-                        relativeX: 0.75,
-                        relativeY: 0.75
-                    },
-                    show: true,
-                    fullHeight: true,
-                    symbol: 'none',
-                    showLabel: false,
-                    movable: true,
-                    showIntersections: false,
-                }, {
-                    name: 'band-2',
-                    mode: 'x',
-                    color: 'rgba(182, 191, 190, 0.5)',
-                    lineWidth: 50,
-                    position: {
-                        relativeX: 0.75,
-                        relativeY: 0.75
-                    },
-                    show: true,
-                    fullHeight: true,
-                    symbol: 'none',
-                    showLabel: false,
-                    movable: true,
-                    showIntersections: false,
-                }
-            ],
+            cursors: [],
             legend: {
                 show: false
             },
@@ -229,6 +167,9 @@ export class SilverNeedleChart {
         /*$("#timelineContainer").bind("timelinePanEvent", (event, panData) => {
             console.log(panData);
         });*/
+
+        this.chart.setTimelineRef(this.timelineChart);
+        this.chart.setTimelineUpdate(true);
 
     }
 
@@ -651,7 +592,6 @@ export class SilverNeedleChart {
 
     setCurrentBuffer(bufferArray: WaveformComponent[]) {
         this.currentBufferArray = bufferArray;
-        console.log(bufferArray);
         /*if (this.deviceDescriptor !== undefined) {
             this.updateTriggerLine();
             this.updateTriggerAnchor(this.numSeries[0]);
@@ -685,8 +625,17 @@ export class SilverNeedleChart {
 
         if (this.timelineView && initialDraw) {
             this.timelineChart.setData(dataObjects);
+            //Use setupgrid to autoscale the buffer
             this.timelineChart.setupGrid();
             this.timelineChart.draw();
+
+            let newChartAxes = this.chart.getAxes();
+            let infoContainer = {
+                min: newChartAxes.xaxis.min,
+                max: newChartAxes.xaxis.max
+            };
+
+            this.timelineChart.updateTimelineCurtains(infoContainer);
         }
     }
 

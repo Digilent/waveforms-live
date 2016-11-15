@@ -60,6 +60,10 @@
         * Sets Up Plugin
         **************************************************************/
         function setupChart(plot) {
+            /**************************************************************
+            * Add Initial Curtains to Timeline
+            **************************************************************/
+            addCurtains();
 
             /**************************************************************
             * User Accessible Functions
@@ -96,6 +100,57 @@
                 updateExistingChart = false;
             }
 
+            plot.updateTimelineCurtains = function updateTimelineCurtains(newChartInfoContainer) {
+                var timelineAxes = plot.getAxes();
+                var leftCor = timelineAxes.xaxis.min;
+                var leftCorStop = newChartInfoContainer.min;
+                var rightCor = timelineAxes.xaxis.max;
+                var rightCorStop = newChartInfoContainer.max;
+                var cursorRefs = plot.getCursors();
+                var leftBandWidth = timelineAxes.xaxis.p2c(leftCorStop) - timelineAxes.xaxis.p2c(leftCor) + 10;
+                var rightBandWidth = timelineAxes.xaxis.p2c(rightCor) - timelineAxes.xaxis.p2c(rightCorStop) + 10;
+                leftBandWidth = leftBandWidth < 0 ? 20 : leftBandWidth;
+                rightBandWidth = rightBandWidth < 0 ? 20 : rightBandWidth;
+
+                var leftLinePos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c(leftCorStop) - 5);
+                var rightLinePos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c(rightCorStop) + 5);
+
+                var leftBandPos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c((leftCor + leftCorStop) / 2) - 5);
+                var rightBandPos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c((rightCor + rightCorStop) / 2) + 5);
+
+                let optionsArray = [];
+                optionsArray[0] = {
+                    lineWidth: 10,
+                    position: {
+                        x: leftLinePos,
+                        relativeY: 0.5
+                    }
+                };
+                optionsArray[1] = {
+                    lineWidth: 10,
+                    position: {
+                        x: rightLinePos,
+                        relativeY: 0.5
+                    }
+                };
+                optionsArray[2] = {
+                    lineWidth: leftBandWidth,
+                    position: {
+                        x: leftBandPos,
+                        relativeY: 0.5
+                    }
+                };
+                optionsArray[3] = {
+                    lineWidth: rightBandWidth,
+                    position: {
+                        x: rightBandPos,
+                        relativeY: 0.5
+                    }
+                };
+
+                plot.setMultipleCursors(cursorRefs, optionsArray);
+            }
+
             /**************************************************************
             * Event Functions
             **************************************************************/
@@ -104,6 +159,29 @@
                 previousXPosition = e.clientX;
                 previousYPosition = e.clientY;
 
+                var chartAxes = existingChartRef.getAxes();
+                var timelineAxes = plot.getAxes();
+                var leftBoundVal = chartAxes.xaxis.min;
+                var rightBoundVal = chartAxes.xaxis.max;
+                var eventVal = timelineAxes.xaxis.c2p(e.clientX - plot.offset().left);
+                if ((eventVal < leftBoundVal || eventVal > rightBoundVal) && updateExistingChart) {
+                    //Center chart on the click event.
+                    if (existingChartRef == null) { return; }
+                    var existingChartGetAxes = existingChartRef.getAxes();
+                    var newPos = timelineAxes.xaxis.c2p(e.clientX - plot.offset().left);
+                    var timePerDivision = (existingChartGetAxes.xaxis.max - existingChartGetAxes.xaxis.min) / 10;
+                    var min = newPos - timePerDivision * 5;
+                    var max = newPos + timePerDivision * 5;
+                    existingChartGetAxes.xaxis.options.min = min;
+                    existingChartGetAxes.xaxis.options.max = max;
+                    existingChartRef.setupGrid();
+                    existingChartRef.draw();
+                    plot.updateTimelineCurtains({
+                        min: min,
+                        max: max
+                    });
+                    plot.getPlaceholder().bind('mousemove', horPanTimeline);
+                }
                 plot.getPlaceholder().bind('mousemove', horPanTimeline);
             }
 
@@ -122,6 +200,73 @@
                     timelineMouseWheelRedraw();
                 }
 
+            }
+
+            function addCurtains() {
+                plot.addCursor({
+                    name: 'curtain-1',
+                    mode: 'x',
+                    color: 'rgba(182, 191, 190, 0.5)',
+                    lineWidth: 10,
+                    position: {
+                        relativeX: 0,
+                        relativeY: 0
+                    },
+                    show: true,
+                    fullHeight: true,
+                    symbol: 'none',
+                    showLabel: false,
+                    movable: false,
+                    showIntersections: false,
+                });
+                plot.addCursor({
+                    name: 'curtain-2',
+                    mode: 'x',
+                    color: 'rgba(182, 191, 190, 0.5)',
+                    lineWidth: 10,
+                    position: {
+                        relativeX: 1,
+                        relativeY: 1
+                    },
+                    show: true,
+                    fullHeight: true,
+                    symbol: 'none',
+                    showLabel: false,
+                    movable: false,
+                    showIntersections: false,
+                });
+                plot.addCursor({
+                    name: 'band-1',
+                    mode: 'x',
+                    color: 'rgba(182, 191, 190, 0.5)',
+                    lineWidth: 10,
+                    position: {
+                        relativeX: 0,
+                        relativeY: 0
+                    },
+                    show: true,
+                    fullHeight: true,
+                    symbol: 'none',
+                    showLabel: false,
+                    movable: false,
+                    showIntersections: false,
+                });
+                plot.addCursor({
+                    name: 'band-2',
+                    mode: 'x',
+                    color: 'rgba(182, 191, 190, 0.5)',
+                    lineWidth: 10,
+                    position: {
+                        relativeX: 1,
+                        relativeY: 1
+                    },
+                    show: true,
+                    fullHeight: true,
+                    symbol: 'none',
+                    showLabel: false,
+                    movable: false,
+                    showIntersections: false,
+                });
             }
 
             function timelineMouseWheelRedraw() {
@@ -151,13 +296,15 @@
 
                     plot.setupGrid();
                     plot.draw();
+
+                    plot.updateTimelineCurtains({
+                        min: min,
+                        max: max
+                    });
                 }
             }
 
             function horPanTimeline(e) {
-
-                //Move cursors
-                //code here
 
                 //update existing chart if enabled
                 if (updateExistingChart) {
@@ -178,18 +325,19 @@
                     existingChartGetAxes.xaxis.options.max = max;
                     existingChartRef.setupGrid();
                     existingChartRef.draw();
-                    plot.getPlaceholder().trigger('timelinePanEvent', [
-                        {
-                            x: e.clientX,
-                            y: e.clientY,
-                            min: min,
-                            max: max,
-                            mid: newPos,
-                            axisNum: 1,
-                            axis: 'xaxis'
-                        }
-                    ]);
+                    var infoContainer = {
+                        x: e.clientX,
+                        y: e.clientY,
+                        min: min,
+                        max: max,
+                        mid: newPos,
+                        axisNum: 1,
+                        axis: 'xaxis'
+                    };
+                    plot.getPlaceholder().trigger('timelinePanEvent', [infoContainer]);
                     previousXPosition = e.clientX;
+                    plot.updateTimelineCurtains(infoContainer);
+
                 }
             }
 

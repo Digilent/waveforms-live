@@ -22,7 +22,10 @@
 
             startingYIndexArray: [0, 0],
             selectedYAxis: 1,
-            voltsPerDivisionValues: [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5]
+            voltsPerDivisionValues: [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5],
+
+            updateTimelineChart: false,
+            timelineChartRef: null
         }
     };
 
@@ -38,6 +41,8 @@
     var voltsPerDivisionValues;
     var startingXIndex;
     var startingYIndexArray;
+    var updateTimelineChart;
+    var timelineChartRef;
 
     function init(plot) {
 
@@ -54,6 +59,8 @@
                 voltsPerDivisionValues = options.zoomPan.voltsPerDivisionValues;
                 startingXIndex = options.zoomPan.startingXIndex;
                 startingYIndexArray = options.zoomPan.startingYIndexArray;
+                updateTimelineChart = options.zoomPan.updateTimelineChart;
+                timelineChartRef = options.zoomPan.timelineChartRef;
 
                 //Setup Chart
                 setupChart(plot);
@@ -106,6 +113,22 @@
 
             plot.setVoltsPerDivArray = function setVoltsPerDivArray(voltsPerDivArray) {
                 voltsPerDivisionValues = voltsPerDivArray;
+            }
+
+            plot.getTimelineRef = function getTimelineRef() {
+                return timelineChartRef;
+            }
+
+            plot.setTimelineRef = function setTimelineRef(timelineRef) {
+                timelineChartRef = timelineRef;
+            }
+
+            plot.getTimelineUpdate = function getTimelineUpdate() {
+                return updateTimelineChart;
+            }
+
+            plot.setTimelineUpdate = function setTimelineUpdate(update) {
+                updateTimelineChart = update;
             }
 
             /**************************************************************
@@ -161,13 +184,14 @@
 
             function mouseWheelRedraw() {
                 var getAxes = plot.getAxes();
+                var infoContainer;
                 if (wheelZoomX) {
                     var base = (getAxes.xaxis.max + getAxes.xaxis.min) / 2;
                     var min = base - secsPerDivisionValues[startingXIndex] * 5;
                     var max = base + secsPerDivisionValues[startingXIndex] * 5;
                     getAxes.xaxis.options.min = min;
                     getAxes.xaxis.options.max = max;
-                    plot.getPlaceholder().trigger('mouseWheelRedraw', [{
+                    infoContainer = {
                         min: min,
                         max: max,
                         mid: base,
@@ -175,7 +199,8 @@
                         perDivArrayIndex: startingXIndex,
                         axisNum: 1,
                         axis: 'xaxis'
-                    }]);
+                    };
+                    plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
                 }
                 else {
                     var yaxisIndexer = 'y' + (selectedYAxis === 1 ? '' : selectedYAxis.toString()) + 'axis';
@@ -184,7 +209,7 @@
                     var max = base + voltsPerDivisionValues[startingYIndexArray[selectedYAxis - 1]] * 5;
                     getAxes[yaxisIndexer].options.min = min;
                     getAxes[yaxisIndexer].options.max = max;
-                    plot.getPlaceholder().trigger('mouseWheelRedraw', [{
+                    infoContainer = {
                         min: min,
                         max: max,
                         mid: base,
@@ -192,11 +217,16 @@
                         perDivArrayIndex: startingYIndexArray[selectedYAxis - 1],
                         axisNum: selectedYAxis,
                         axis: yaxisIndexer
-                    }]);
+                    };
+                    plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
                 }
 
                 plot.setupGrid();
                 plot.draw();
+
+                if (updateTimelineChart && timelineChartRef != null) {
+                    timelineChartRef.updateTimelineCurtains(infoContainer)
+                }
             }
 
             function vertPanChart(e) {
@@ -217,7 +247,7 @@
                 previousYPosition = e.clientY;
                 plot.getPlaceholder().trigger('panEvent', [
                     {
-                        x: e.clientX, 
+                        x: e.clientX,
                         y: e.clientY,
                         min: min,
                         max: max,
@@ -242,17 +272,19 @@
                 getAxes.xaxis.options.max = max;
                 plot.setupGrid();
                 plot.draw();
-                plot.getPlaceholder().trigger('panEvent', [
-                    {
-                        x: e.clientX, 
-                        y: e.clientY,
-                        min: min,
-                        max: max,
-                        mid: newPos,
-                        axisNum: 1,
-                        axis: 'xaxis'
-                    }
-                ]);
+                var infoContainer = {
+                    x: e.clientX,
+                    y: e.clientY,
+                    min: min,
+                    max: max,
+                    mid: newPos,
+                    axisNum: 1,
+                    axis: 'xaxis'
+                };
+                plot.getPlaceholder().trigger('panEvent', [infoContainer]);
+                if (updateTimelineChart && timelineChartRef != null) {
+                    timelineChartRef.updateTimelineCurtains(infoContainer)
+                }
                 previousXPosition = e.clientX;
             }
 

@@ -44,7 +44,14 @@ export interface Chart {
     setVoltsPerDivArray(voltsPerDivArray: number[]),
     addCursor(cursorSettings: any),
     getCursors(),
-    removeCursor(cursorObjectToRemove: any)
+    setCursor(cursor: any, options: any),
+    setMultipleCursors(cursorArray: any[], optionsArray: any[]),
+    removeCursor(cursorObjectToRemove: any),
+    setTimelineRef(timelineChartRef: any),
+    getTimelineRef(),
+    getTimelineUpdate(),
+    setTimelineUpdate(updateTimeline: boolean),
+    updateTimelineCurtains(minMaxContainer: any)
 }
 
 export interface ChartBounds {

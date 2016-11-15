@@ -108,6 +108,19 @@ Licensed under the MIT license.
             }
         };
 
+        plot.setMultipleCursors = function setMultipleCursors(cursorArray, optionsArray) {
+            if (cursorArray.length !== optionsArray.length) { return; }
+
+            for (var i = 0; i < cursorArray.length; i++) {
+                var index = cursors.indexOf(cursorArray[i]);
+                if (index !== -1) {
+                    mixin(optionsArray[i], cursors[index]);
+                    setPosition(plot, cursors[index], cursors[index].position);
+                }
+            }
+            plot.triggerRedrawOverlay();
+        }
+
         plot.getIntersections = function getIntersections(cursor) {
             var index = cursors.indexOf(cursor);
 
