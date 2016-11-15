@@ -109,14 +109,15 @@
                 var cursorRefs = plot.getCursors();
                 var leftBandWidth = timelineAxes.xaxis.p2c(leftCorStop) - timelineAxes.xaxis.p2c(leftCor) + 10;
                 var rightBandWidth = timelineAxes.xaxis.p2c(rightCor) - timelineAxes.xaxis.p2c(rightCorStop) + 10;
-                leftBandWidth = leftBandWidth < 0 ? 20 : leftBandWidth;
-                rightBandWidth = rightBandWidth < 0 ? 20 : rightBandWidth;
 
                 var leftLinePos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c(leftCorStop) - 5);
                 var rightLinePos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c(rightCorStop) + 5);
 
                 var leftBandPos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c((leftCor + leftCorStop) / 2) - 5);
                 var rightBandPos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c((rightCor + rightCorStop) / 2) + 5);
+                
+                leftBandWidth = leftBandWidth < 20 ? 20 : leftBandWidth;
+                rightBandWidth = rightBandWidth < 20 ? 20 : rightBandWidth;
 
                 let optionsArray = [];
                 optionsArray[0] = {
