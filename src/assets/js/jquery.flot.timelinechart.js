@@ -115,11 +115,11 @@
 
                 var leftBandPos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c((leftCor + leftCorStop) / 2) - 5);
                 var rightBandPos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c((rightCor + rightCorStop) / 2) + 5);
-                
+
                 leftBandWidth = leftBandWidth < 20 ? 20 : leftBandWidth;
                 rightBandWidth = rightBandWidth < 20 ? 20 : rightBandWidth;
 
-                let optionsArray = [];
+                var optionsArray = [];
                 optionsArray[0] = {
                     lineWidth: 10,
                     position: {
@@ -181,9 +181,82 @@
                         min: min,
                         max: max
                     });
-                    plot.getPlaceholder().bind('mousemove', horPanTimeline);
                 }
                 plot.getPlaceholder().bind('mousemove', horPanTimeline);
+            }
+
+            function timelineTouchDown(e) {
+                previousXPosition = e.originalEvent.touches[0].clientX;
+                previousYPosition = e.originalEvent.touches[0].clientY;
+
+                if (e.originalEvent.touches.length === 1) {
+
+                    var chartAxes = existingChartRef.getAxes();
+                    var timelineAxes = plot.getAxes();
+                    var leftBoundVal = chartAxes.xaxis.min;
+                    var rightBoundVal = chartAxes.xaxis.max;
+                    var eventVal = timelineAxes.xaxis.c2p(previousXPosition - plot.offset().left);
+
+                    if ((eventVal < leftBoundVal || eventVal > rightBoundVal) && updateExistingChart) {
+                        //Center chart on the click event.
+                        if (existingChartRef == null) { return; }
+                        var existingChartGetAxes = existingChartRef.getAxes();
+                        var newPos = timelineAxes.xaxis.c2p(previousXPosition - plot.offset().left);
+                        var timePerDivision = (existingChartGetAxes.xaxis.max - existingChartGetAxes.xaxis.min) / 10;
+                        var min = newPos - timePerDivision * 5;
+                        var max = newPos + timePerDivision * 5;
+                        existingChartGetAxes.xaxis.options.min = min;
+                        existingChartGetAxes.xaxis.options.max = max;
+                        existingChartRef.setupGrid();
+                        existingChartRef.draw();
+                        plot.updateTimelineCurtains({
+                            min: min,
+                            max: max
+                        });
+                    }
+                    plot.getPlaceholder().bind('touchmove', timelineTouchMove);
+                }
+            }
+
+            function timelineTouchMove(e) {
+                //update existing chart if enabled
+                if (updateExistingChart) {
+                    if (existingChartRef == null) { return; }
+
+                    var getAxes = plot.getAxes();
+                    var newVal = getAxes.xaxis.c2p(e.originalEvent.touches[0].clientX);
+                    var oldValinNewWindow = getAxes.xaxis.c2p(previousXPosition);
+
+                    var existingChartGetAxes = existingChartRef.getAxes();
+                    var difference = newVal - oldValinNewWindow;
+                    var base = (existingChartGetAxes.xaxis.max + existingChartGetAxes.xaxis.min) / 2;
+                    var timePerDivision = (existingChartGetAxes.xaxis.max - existingChartGetAxes.xaxis.min) / 10;
+                    var newPos = base + difference;
+                    var min = newPos - timePerDivision * 5;
+                    var max = newPos + timePerDivision * 5;
+                    existingChartGetAxes.xaxis.options.min = min;
+                    existingChartGetAxes.xaxis.options.max = max;
+                    if (isNaN(min) || isNaN(max)) { return; }
+                    existingChartRef.setupGrid();
+                    existingChartRef.draw();
+                    var infoContainer = {
+                        x: e.originalEvent.touches[0].clientX,
+                        y: e.originalEvent.touches[0].clientY,
+                        min: min,
+                        max: max,
+                        mid: newPos,
+                        axisNum: 1,
+                        axis: 'xaxis'
+                    };
+                    plot.getPlaceholder().trigger('timelinePanEvent', [infoContainer]);
+                    previousXPosition = e.originalEvent.touches[0].clientX;
+                    plot.updateTimelineCurtains(infoContainer);
+
+                }
+            }
+
+            function timelineTouchEnd(e) {
+                plot.getPlaceholder().unbind('touchmove', timelineTouchMove);
             }
 
             function timelineMouseUp(e) {
@@ -350,6 +423,8 @@
                 eventHolder.mouseup(timelineMouseUp);
                 eventHolder.mouseout(timelineMouseUp);
                 eventHolder.mousewheel(timelineMouseWheel);
+                eventHolder.bind('touchstart', timelineTouchDown);
+                eventHolder.bind('touchend', timelineTouchEnd);
             });
 
             /**************************************************************
@@ -362,6 +437,8 @@
                 eventHolder.unbind('mousewheel', timelineMouseWheel);
                 eventHolder.unbind('timelinePanEvent');
                 eventHolder.unbind('timelineWheelRedraw');
+                eventHolder.unbind('touchstart', timelineTouchDown);
+                eventHolder.unbind('touchend', timelineTouchEnd);
             });
         }
     }

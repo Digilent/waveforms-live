@@ -9,9 +9,9 @@
  *
  * Requires: 1.2.2+
  */
-(function(d) { function e(a) { var b = a || window.event, c = [].slice.call(arguments, 1), f = 0, e = 0, g = 0, a = d.event.fix(b); a.type = "mousewheel"; b.wheelDelta && (f = b.wheelDelta / 120); b.detail && (f = -b.detail / 3); g = f; void 0 !== b.axis && b.axis === b.HORIZONTAL_AXIS && (g = 0, e = -1 * f); void 0 !== b.wheelDeltaY && (g = b.wheelDeltaY / 120); void 0 !== b.wheelDeltaX && (e = -1 * b.wheelDeltaX / 120); c.unshift(a, f, e, g); return (d.event.dispatch || d.event.handle).apply(this, c) } var c = ["DOMMouseScroll", "mousewheel"]; if (d.event.fixHooks) for (var h = c.length; h;)d.event.fixHooks[c[--h]] = d.event.mouseHooks; d.event.special.mousewheel = { setup: function() { if (this.addEventListener) for (var a = c.length; a;)this.addEventListener(c[--a], e, !1); else this.onmousewheel = e }, teardown: function() { if (this.removeEventListener) for (var a = c.length; a;)this.removeEventListener(c[--a], e, !1); else this.onmousewheel = null } }; d.fn.extend({ mousewheel: function(a) { return a ? this.bind("mousewheel", a) : this.trigger("mousewheel") }, unmousewheel: function(a) { return this.unbind("mousewheel", a) } }) })(jQuery);
+(function (d) { function e(a) { var b = a || window.event, c = [].slice.call(arguments, 1), f = 0, e = 0, g = 0, a = d.event.fix(b); a.type = "mousewheel"; b.wheelDelta && (f = b.wheelDelta / 120); b.detail && (f = -b.detail / 3); g = f; void 0 !== b.axis && b.axis === b.HORIZONTAL_AXIS && (g = 0, e = -1 * f); void 0 !== b.wheelDeltaY && (g = b.wheelDeltaY / 120); void 0 !== b.wheelDeltaX && (e = -1 * b.wheelDeltaX / 120); c.unshift(a, f, e, g); return (d.event.dispatch || d.event.handle).apply(this, c) } var c = ["DOMMouseScroll", "mousewheel"]; if (d.event.fixHooks) for (var h = c.length; h;)d.event.fixHooks[c[--h]] = d.event.mouseHooks; d.event.special.mousewheel = { setup: function () { if (this.addEventListener) for (var a = c.length; a;)this.addEventListener(c[--a], e, !1); else this.onmousewheel = e }, teardown: function () { if (this.removeEventListener) for (var a = c.length; a;)this.removeEventListener(c[--a], e, !1); else this.onmousewheel = null } }; d.fn.extend({ mousewheel: function (a) { return a ? this.bind("mousewheel", a) : this.trigger("mousewheel") }, unmousewheel: function (a) { return this.unbind("mousewheel", a) } }) })(jQuery);
 
-(function($) {
+(function ($) {
     var options = {
         zoomPan: {
             enabled: false,
@@ -49,7 +49,7 @@
         /**************************************************************
         * Process Options
         **************************************************************/
-        plot.hooks.processOptions.push(function(plot, options) {
+        plot.hooks.processOptions.push(function (plot, options) {
             if (options.zoomPan.enabled) {
                 console.log('zoom pan plugin enabled');
 
@@ -147,6 +147,57 @@
                     panType = 'horizontal';
                     plot.getPlaceholder().bind('mousemove', horPanChart);
                 }
+            }
+
+            function touchDown(e) {
+                //Use e.originalEvent since jquery does stuff to the event object.
+                console.log('touchdown');
+                console.log(e);
+                //alert(e.originalEvent.touches.length);
+                if (e.originalEvent.touches.length === 1) {
+                    previousXPosition = e.originalEvent.touches[0].clientX;
+                    previousYPosition = e.originalEvent.touches[0].clientY;
+                    plot.getPlaceholder().bind('touchmove', touchMove);
+                }
+            }
+
+            function touchMove(e) {
+                var getAxes = plot.getAxes();
+                var offsets = plot.offset();
+                var newVal = getAxes.xaxis.c2p(e.originalEvent.touches[0].clientX - offsets.left);
+                var oldValinNewWindow = getAxes.xaxis.c2p(previousXPosition - offsets.left)
+                var difference = newVal - oldValinNewWindow;
+                var base = (getAxes.xaxis.max + getAxes.xaxis.min) / 2;
+                var timePerDivision = (getAxes.xaxis.max - getAxes.xaxis.min) / 10;
+                var newPos = base - difference;
+                var min = newPos - timePerDivision * 5;
+                var max = newPos + timePerDivision * 5;
+                getAxes.xaxis.options.min = min;
+                getAxes.xaxis.options.max = max;
+                if (isNaN(min) || isNaN(max)) {
+                    alert('nan');
+                    return;
+                }
+                plot.setupGrid();
+                plot.draw();
+                var infoContainer = {
+                    x: e.originalEvent.touches[0].clientX,
+                    y: e.originalEvent.touches[0].clientY,
+                    min: min,
+                    max: max,
+                    mid: newPos,
+                    axisNum: 1,
+                    axis: 'xaxis'
+                };
+                plot.getPlaceholder().trigger('touchPanEvent', [infoContainer]);
+                if (updateTimelineChart && timelineChartRef != null) {
+                    timelineChartRef.updateTimelineCurtains(infoContainer)
+                }
+                previousXPosition = e.originalEvent.touches[0].clientX;
+            }
+
+            function touchEnd(e) {
+                plot.getPlaceholder().unbind('touchmove', touchMove);
             }
 
             function chartMouseUp(e) {
@@ -291,8 +342,10 @@
             /**************************************************************
             * Bind Events
             **************************************************************/
-            plot.hooks.bindEvents.push(function(plot, eventHolder) {
+            plot.hooks.bindEvents.push(function (plot, eventHolder) {
                 eventHolder.mousedown(chartMouseDown);
+                eventHolder.bind('touchstart', touchDown);
+                eventHolder.bind('touchend', touchEnd);
                 eventHolder.mouseup(chartMouseUp);
                 eventHolder.mouseout(chartMouseUp);
                 eventHolder.mousewheel(mouseWheel);
@@ -301,8 +354,10 @@
             /**************************************************************
             * Unbind Events
             **************************************************************/
-            plot.hooks.shutdown.push(function(plot, eventHolder) {
+            plot.hooks.shutdown.push(function (plot, eventHolder) {
                 eventHolder.unbind('mousedown', chartMouseDown);
+                eventHolder.unbind('touchstart', touchDown);
+                eventHolder.unbind('touchend', touchEnd);
                 eventHolder.unbind('mouseup', chartMouseUp);
                 eventHolder.unbind('mouseout', chartMouseUp);
                 eventHolder.unbind('mousewheel', mouseWheel);

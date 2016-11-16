@@ -956,6 +956,13 @@ export class SilverNeedleChart {
         getAxes.xaxis.options.max = this.base + 5 * this.timeDivision;
         this.chart.setupGrid();
         this.chart.draw();
+
+        if (this.timelineView) {
+            this.timelineChart.updateTimelineCurtains({
+                min: this.base - 5 * this.timeDivision,
+                max: this.base + 5 * this.timeDivision
+            });
+        }
         /*if (this.currentBufferArray[0] !== undefined) {
             this.chart.xAxis[0].setExtremes(min, max, false, false);
             for (let i = 0; i < this.oscopeChansActive.length; i++) {
