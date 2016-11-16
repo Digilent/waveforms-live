@@ -232,11 +232,11 @@
             function vertPanChart(e) {
                 var yaxisIndexer = 'y' + (selectedYAxis === 1 ? '' : selectedYAxis.toString()) + 'axis';
                 var getAxes = plot.getAxes();
-                var newVal = getAxes.yaxis.c2p(e.clientY);
-                var oldValinNewWindow = getAxes.yaxis.c2p(previousYPosition);
+                var newVal = getAxes[yaxisIndexer].c2p(e.clientY);
+                var oldValinNewWindow = getAxes[yaxisIndexer].c2p(previousYPosition);
                 var difference = newVal - oldValinNewWindow;
-                var base = (getAxes.yaxis.max + getAxes.yaxis.min) / 2;
-                var voltsPerDivision = (getAxes.yaxis.max - getAxes.yaxis.min) / 10;
+                var base = (getAxes[yaxisIndexer].max + getAxes[yaxisIndexer].min) / 2;
+                var voltsPerDivision = (getAxes[yaxisIndexer].max - getAxes[yaxisIndexer].min) / 10;
                 var newPos = base - difference;
                 var min = newPos - voltsPerDivision * 5;
                 var max = newPos + voltsPerDivision * 5;

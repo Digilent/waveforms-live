@@ -303,7 +303,7 @@ export class TestChartCtrlsPage {
                     }*/
                 }
                 let start = performance.now();
-                this.chart1.flotDrawWaveform(true, true);
+                this.chart1.flotDrawWaveform(true, false);
                 let finish = performance.now();
                 console.log('decimate and draw: ' + (finish - start));
                 this.triggerStatus = 'Idle';

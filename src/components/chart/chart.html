@@ -17,23 +17,23 @@
                     </button>
                     <ion-col center class="cursor-info-col" id="test-test">
                         <span *ngIf="selectedMathInfo[0]">
-                            <span [style.color]="chart.series[selectedMathInfo[0].channel].color">&#9632;</span>
+                            <span [style.color]="chart.getData()[selectedMathInfo[0].channel].color">&#9632;</span>
                             {{selectedMathInfo[0].measurement}}: {{selectedMathInfo[0].value}}
                         </span>
                         <br>
                         <span *ngIf="selectedMathInfo[1]">
-                            <span [style.color]="chart.series[selectedMathInfo[1].channel].color">&#9632;</span>
+                            <span [style.color]="chart.getData()[selectedMathInfo[1].channel].color">&#9632;</span>
                             {{selectedMathInfo[1].measurement}}: {{selectedMathInfo[1].value}}
                         </span>
                     </ion-col>
                     <ion-col center class="cursor-info-col">
                         <span *ngIf="selectedMathInfo[2]">
-                            <span [style.color]="chart.series[selectedMathInfo[2].channel].color">&#9632;</span>
+                            <span [style.color]="chart.getData()[selectedMathInfo[2].channel].color">&#9632;</span>
                             {{selectedMathInfo[2].measurement}}: {{selectedMathInfo[2].value}}
                         </span>
                         <br>
                         <span *ngIf="selectedMathInfo[3]">
-                            <span [style.color]="chart.series[selectedMathInfo[3].channel].color">&#9632;</span>
+                            <span [style.color]="chart.getData()[selectedMathInfo[3].channel].color">&#9632;</span>
                             {{selectedMathInfo[3].measurement}}: {{selectedMathInfo[3].value}}
                         </span>
                     </ion-col>

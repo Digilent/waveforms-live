@@ -12,6 +12,8 @@ import {DeviceManagerService} from '../../services/device/device-manager.service
 import {Chart} from '../../components/chart/chart.interface';
 import {SelectedData} from './math-modal.interface';
 
+declare var mathFunctions: any;
+
 @Component({
     templateUrl: "math-modal.html"
 })
@@ -55,6 +57,7 @@ export class MathModalPage {
             this.activeChannels.push(this.chartComponent.currentBufferArray[i] !== undefined && this.chartComponent.currentBufferArray[i].y !== undefined);
         }
         this.selectedData.channel = this.activeChannels.indexOf(true) + 1;
+        console.log('about to calc range');
         this.calcSelectedRange();
     }
 
@@ -64,22 +67,37 @@ export class MathModalPage {
     }
 
     calcSelectedRange() {
-        let extremes = this.chart.xAxis[0].getExtremes();
+        let extremes = this.chart.getAxes().xaxis;
         this.chartMin = extremes.min;
         this.chartMax = extremes.max;
-        if (extremes.dataMin > this.chartMin) {
+        /*if (extremes.dataMin > this.chartMin) {
             this.chartMin = extremes.dataMin;
         }
         if (extremes.dataMax < this.chartMax) {
             this.chartMax = extremes.dataMax;
-        }
+        }*/
         this.calcDataIndexRange();
     }
 
     calcDataIndexRange() {
         let seriesNum = this.selectedData.channel - 1;
-        this.minIndex = Math.round((this.chartMin - this.chart.series[seriesNum].xData[0]) / this.chart.series[seriesNum].options.pointInterval);
-        this.maxIndex = Math.round((this.chartMax - this.chart.series[seriesNum].xData[0]) / this.chart.series[seriesNum].options.pointInterval);
+        let series = this.chart.getData();
+        console.log(series);
+        this.minIndex = Math.round((this.chartMin - series[seriesNum].data[0][0]) / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]));
+        this.maxIndex = Math.round((this.chartMax - series[seriesNum].data[0][0]) / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]));
+        if (this.minIndex < 0) {
+            this.minIndex = 0;
+        }
+        if (this.minIndex > series[seriesNum].data.length) {
+            this.minIndex = series[seriesNum].data.length - 1;
+        }
+        if (this.maxIndex < 0) {
+            this.maxIndex = 0;
+        }
+        if (this.maxIndex > series[seriesNum].data.length) {
+            this.maxIndex = series[seriesNum].data.length - 1;
+        }
+        console.log(this.minIndex, this.maxIndex);
     }
     
     setActiveSeries(channel: string) {
@@ -93,7 +111,7 @@ export class MathModalPage {
     getMetrics(metric: string) {
         switch (metric) {
             case 'Frequency': 
-                return this.chartComponent.getFrequency(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
+                return mathFunctions.getFrequency(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
                 
             case 'Pos Pulse Width':
                 return 'Pos Pulse Width'
@@ -102,7 +120,7 @@ export class MathModalPage {
                 return 'Pos Duty Cycle'
                 
             case 'Period':
-                return this.chartComponent.getPeriod(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
+                return mathFunctions.getPeriod(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
 
             case 'Neg Pulse Width':
                 return 'Neg Pulse Width'
@@ -117,7 +135,7 @@ export class MathModalPage {
                 return 'Rise Time'
                 
             case 'Amplitude':
-                return this.chartComponent.getAmplitude(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
+                return mathFunctions.getAmplitude(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
                 
             case 'High':
                 return 'High'
@@ -126,19 +144,19 @@ export class MathModalPage {
                 return 'Low'
                 
             case 'Peak to Peak':
-                return this.chartComponent.getPeakToPeak(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
+                return mathFunctions.getPeakToPeak(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
                 
             case 'Maximum':
-                return this.chartComponent.getMax(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
+                return mathFunctions.getMax(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
                 
             case 'Minimum':
-                return this.chartComponent.getMin(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
+                return mathFunctions.getMin(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
                 
             case 'Mean':
-                return this.chartComponent.getMean(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
+                return mathFunctions.getMean(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
                 
             case 'RMS':
-                return this.chartComponent.getRMS(this.selectedData.channel - 1, this.maxIndex, this.minIndex);
+                return mathFunctions.getRMS(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
                 
             case 'Overshoot':
                 return 'Overshoot'

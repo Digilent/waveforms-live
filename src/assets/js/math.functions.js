@@ -5,9 +5,15 @@ var mathFunctions = (function() {
     **************************************************/
     var getMax = function getMax(chartRef, seriesNum, minIndex, maxIndex) {
         //Spread operator '...' uses each index as the corresponding parameter in the function
-        var activeIndices = this.chart.series[seriesNum].yData.slice(minIndex, maxIndex);
-        var value = Math.max(...activeIndices);
-        var vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
+        var series = chartRef.getData();
+        var getAxes = chartRef.getAxes();
+        var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+        var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+        var yArray = activeIndices.map((element) => {
+            return element[1];
+        });
+        var value = Math.max(...yArray);
+        var vPerDiv = Math.abs(getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
         var i = 0;
         var unit = '';
         while (vPerDiv < 1) {
@@ -31,15 +37,20 @@ var mathFunctions = (function() {
         var wholeLength = val.indexOf('.');
         if (wholeLength === -1) { wholeLength = 4 }
         var fixedNum = 4 - wholeLength;
-
         return (parseFloat(val)).toFixed(fixedNum) + unit;
 
     }
 
     var getMin = function getMin(chartRef, seriesNum, minIndex, maxIndex) {
-        var activeIndices = this.chart.series[seriesNum].yData.slice(minIndex, maxIndex);
-        var value = Math.min(...activeIndices);
-        var vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
+        var series = chartRef.getData();
+        var getAxes = chartRef.getAxes();
+        var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+        var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+        var yArray = activeIndices.map((element) => {
+            return element[1];
+        });
+        var value = Math.min(...yArray);
+        var vPerDiv = Math.abs(getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
         var i = 0;
         var unit = '';
         while (vPerDiv < 1) {
@@ -102,8 +113,8 @@ var mathFunctions = (function() {
     }
 
     var getAmplitude = function getAmplitude(chartRef, seriesNum, minIndex, maxIndex) {
-        var max = this.getMax(seriesNum, minIndex, maxIndex);
-        var min = this.getMin(seriesNum, minIndex, maxIndex);
+        var max = getMax(chartRef, seriesNum, minIndex, maxIndex);
+        var min = getMin(chartRef, seriesNum, minIndex, maxIndex);
         var amplitude = (parseFloat(max) - parseFloat(min)) / 2;
         var unit = max.substr(max.indexOf(' '));
 
@@ -116,11 +127,18 @@ var mathFunctions = (function() {
 
     var getMean = function getMean(chartRef, seriesNum, minIndex, maxIndex) {
         var sum = 0;
-        for (var i = minIndex; i < maxIndex; i++) {
-            sum += this.chart.series[seriesNum].yData[i];
+        var series = chartRef.getData();
+        var getAxes = chartRef.getAxes();
+        var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+        var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+        var yArray = activeIndices.map((element) => {
+            return element[1];
+        });
+        for (var i = 0; i < yArray.length; i++) {
+            sum += yArray[i];
         }
         var value = sum / (maxIndex - minIndex);
-        var vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
+        var vPerDiv = Math.abs(getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
         var i = 0;
         var unit = '';
         while (vPerDiv < 1) {
@@ -150,11 +168,18 @@ var mathFunctions = (function() {
 
     var getRMS = function getRMS(chartRef, seriesNum, minIndex, maxIndex) {
         var sum = 0;
-        for (var i = minIndex; i < maxIndex; i++) {
-            sum += Math.pow(this.chart.series[seriesNum].yData[i], 2);
+        var series = chartRef.getData();
+        var getAxes = chartRef.getAxes();
+        var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+        var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+        var yArray = activeIndices.map((element) => {
+            return element[1];
+        });
+        for (var i = 0; i < yArray.length; i++) {
+            sum += Math.pow(yArray[i], 2);
         }
         var value = Math.sqrt(sum / (maxIndex - minIndex));
-        var vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
+        var vPerDiv = Math.abs(getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
         var i = 0;
         var unit = '';
         while (vPerDiv < 1) {
@@ -182,11 +207,10 @@ var mathFunctions = (function() {
     }
 
     var getPeakToPeak = function getPeakToPeak(chartRef, seriesNum, minIndex, maxIndex) {
-        var max = this.getMax(seriesNum, minIndex, maxIndex);
-        var min = this.getMin(seriesNum, minIndex, maxIndex);
+        var max = getMax(chartRef, seriesNum, minIndex, maxIndex);
+        var min = getMin(chartRef, seriesNum, minIndex, maxIndex);
         var unit = max.substr(max.indexOf(' '));
         var p2p = Math.abs(parseFloat(max)) + Math.abs(parseFloat(min));
-
         var wholeLength = p2p.toString().indexOf('.');
         if (wholeLength === -1) { wholeLength = 4 }
         var fixedNum = 4 - wholeLength;
@@ -195,11 +219,18 @@ var mathFunctions = (function() {
     }
 
     var getFrequency = function getFrequency(chartRef, seriesNum, minIndex, maxIndex) {
-        var value = this.chart.series[seriesNum].yData[minIndex];
+        var series = chartRef.getData();
+        var getAxes = chartRef.getAxes();
+        var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+        var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+        var yArray = activeIndices.map((element) => {
+            return element[1];
+        });
+        var value = yArray[0];
         var points = [];
-        for (var i = minIndex; i < maxIndex - 1; i++) {
-            if (this.chart.series[seriesNum].yData[i] <= value && this.chart.series[seriesNum].yData[i + 1] >= value) {
-                points.push(this.chart.series[seriesNum].xData[i]);
+        for (var i = 0; i < yArray.length; i++) {
+            if (yArray[i] <= value && yArray[i + 1] >= value) {
+                points.push(activeIndices[i][0]);
                 //Increment i twice in case one of the points was equal to the value
                 i++;
             }
@@ -239,11 +270,18 @@ var mathFunctions = (function() {
     }
 
     var getPeriod = function getPeriod(chartRef, seriesNum, minIndex, maxIndex) {
-        var value = this.chart.series[seriesNum].yData[minIndex];
+        var series = chartRef.getData();
+        var getAxes = chartRef.getAxes();
+        var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+        var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+        var yArray = activeIndices.map((element) => {
+            return element[1];
+        });
+        var value = yArray[0];
         var points = [];
-        for (var i = minIndex; i < maxIndex - 1; i++) {
-            if (this.chart.series[seriesNum].yData[i] <= value && this.chart.series[seriesNum].yData[i + 1] >= value) {
-                points.push(this.chart.series[seriesNum].xData[i]);
+        for (var i = 0; i < yArray.length; i++) {
+            if (yArray[i] <= value && yArray[i + 1] >= value) {
+                points.push(activeIndices[i][0]);
                 //Increment i twice in case one of the points was equal to the value
                 i++;
             }

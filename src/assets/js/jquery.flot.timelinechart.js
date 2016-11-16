@@ -240,7 +240,7 @@
                     name: 'band-1',
                     mode: 'x',
                     color: 'rgba(182, 191, 190, 0.5)',
-                    lineWidth: 10,
+                    lineWidth: 20,
                     position: {
                         relativeX: 0,
                         relativeY: 0
@@ -256,7 +256,7 @@
                     name: 'band-2',
                     mode: 'x',
                     color: 'rgba(182, 191, 190, 0.5)',
-                    lineWidth: 10,
+                    lineWidth: 20,
                     position: {
                         relativeX: 1,
                         relativeY: 1

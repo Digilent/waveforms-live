@@ -405,6 +405,7 @@ export class SilverNeedleChart {
     flotDecimateData(seriesNum: number, bounds: any) {
         let waveform = this.currentBufferArray[seriesNum];
         let numPointsInView = Math.round((bounds.max - bounds.min) / waveform.dt);
+        console.log(numPointsInView);
         if (numPointsInView <= 2000) {
             return this.currentBufferArray[seriesNum];
         }
@@ -465,8 +466,13 @@ export class SilverNeedleChart {
                 min: axesInfo.xaxis.min,
                 max: axesInfo.xaxis.max
             };
-            if (bounds.min < this.currentBufferArray[this.numSeries[i]].t0 || isNaN(bounds.min) || ignoreAutoscale) { bounds.min = this.currentBufferArray[this.numSeries[i]].t0 }
-            if (bounds.max > this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length || isNaN(bounds.max) || ignoreAutoscale) { bounds.max = this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length }
+            console.log(bounds);
+            if (bounds.min < this.currentBufferArray[this.numSeries[i]].t0 || isNaN(bounds.min) || ignoreAutoscale) {
+                bounds.min = this.currentBufferArray[this.numSeries[i]].t0;
+            }
+            if (bounds.max > this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length || isNaN(bounds.max) || ignoreAutoscale) { 
+                bounds.max = this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length;
+            }
             let decimatedData = this.flotDecimateData(this.numSeries[i], bounds).data;
             console.log(decimatedData.length);
             dataObjects.push(
@@ -991,6 +997,7 @@ export class SilverNeedleChart {
     setActiveSeries(seriesNum: number) {
         console.log('setActiveSeries');
         this.updateYAxisLabels(seriesNum);
+        this.chart.setActiveYAxis(seriesNum);
         this.activeSeries = seriesNum;
         /*this.activeSeries = seriesNum;
         this.updateCursorLabels();
@@ -1231,23 +1238,30 @@ export class SilverNeedleChart {
     }
 
     updateMath() {
-        let extremes = this.chart.xAxis[0].getExtremes();
+        let extremes = this.chart.getAxes().xaxis;
         let chartMin = extremes.min;
         let chartMax = extremes.max;
-        if (extremes.dataMin > chartMin) {
-            chartMin = extremes.dataMin;
-        }
-        if (extremes.dataMax < chartMax) {
-            chartMax = extremes.dataMax;
-        }
         for (let i = 0; i < this.selectedMathInfo.length; i++) {
             if (this.currentBufferArray[this.selectedMathInfo[i].channel] === undefined || this.currentBufferArray[this.selectedMathInfo[i].channel].y === undefined) {
                 this.selectedMathInfo[i].value = '----';
                 continue;
             }
             let seriesNum = this.selectedMathInfo[i].channel;
-            let minIndex = Math.round((chartMin - this.chart.series[seriesNum].xData[0]) / this.chart.series[seriesNum].options.pointInterval);
-            let maxIndex = Math.round((chartMax - this.chart.series[seriesNum].xData[0]) / this.chart.series[seriesNum].options.pointInterval);
+            let series = this.chart.getData();
+            let minIndex = Math.round((chartMin - series[seriesNum].data[0][0]) / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]));
+            let maxIndex = Math.round((chartMax - series[seriesNum].data[0][0]) / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]));
+            if (minIndex < 0) {
+                minIndex = 0;
+            }
+            if (minIndex > series[seriesNum].data.length) {
+                minIndex = series[seriesNum].data.length - 1;
+            }
+            if (maxIndex < 0) {
+                maxIndex = 0;
+            }
+            if (maxIndex > series[seriesNum].data.length) {
+                maxIndex = series[seriesNum].data.length - 1;
+            }
             this.selectedMathInfo[i].value = this.updateMathByName(this.selectedMathInfo[i], maxIndex, minIndex);
         }
 
@@ -1256,7 +1270,7 @@ export class SilverNeedleChart {
     updateMathByName(selectedMathInfoObj: any, maxIndex: number, minIndex: number) {
         switch (selectedMathInfoObj.measurement) {
             case 'Frequency':
-                return this.getFrequency(selectedMathInfoObj.channel, maxIndex, minIndex);
+                return mathFunctions.getFrequency(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
 
             case 'Pos Pulse Width':
                 return 'Pos Pulse Width'
@@ -1265,7 +1279,7 @@ export class SilverNeedleChart {
                 return 'Pos Duty Cycle'
 
             case 'Period':
-                return this.getPeriod(selectedMathInfoObj.channel, maxIndex, minIndex);
+                return mathFunctions.getPeriod(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
 
             case 'Neg Pulse Width':
                 return 'Neg Pulse Width'
@@ -1280,7 +1294,7 @@ export class SilverNeedleChart {
                 return 'Rise Time'
 
             case 'Amplitude':
-                return this.getAmplitude(selectedMathInfoObj.channel, maxIndex, minIndex);
+                return mathFunctions.getAmplitude(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
 
             case 'High':
                 return 'High'
@@ -1289,19 +1303,19 @@ export class SilverNeedleChart {
                 return 'Low'
 
             case 'Peak to Peak':
-                return this.getPeakToPeak(selectedMathInfoObj.channel, maxIndex, minIndex);
+                return mathFunctions.getPeakToPeak(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
 
             case 'Maximum':
-                return this.getMax(selectedMathInfoObj.channel, maxIndex, minIndex);
+                return mathFunctions.getMax(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
 
             case 'Minimum':
-                return this.getMin(selectedMathInfoObj.channel, maxIndex, minIndex);
+                return mathFunctions.getMin(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
 
             case 'Mean':
-                return this.getMean(selectedMathInfoObj.channel, maxIndex, minIndex);
+                return mathFunctions.getMean(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
 
             case 'RMS':
-                return this.getRMS(selectedMathInfoObj.channel, maxIndex, minIndex);
+                return mathFunctions.getRMS(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
 
             case 'Overshoot':
                 return 'Overshoot'
@@ -1318,287 +1332,6 @@ export class SilverNeedleChart {
             default:
                 return 'default'
         }
-    }
-
-    getMax(seriesNum: number, maxIndex: number, minIndex: number) {
-        //Spread operator '...' uses each index as the corresponding parameter in the function
-        let activeIndices = this.chart.series[seriesNum].yData.slice(minIndex, maxIndex);
-        let value = Math.max(...activeIndices);
-        let vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
-        let i = 0;
-        let unit = '';
-        while (vPerDiv < 1) {
-            i++;
-            vPerDiv = vPerDiv * 1000;
-        }
-        if (i == 0) {
-            unit = ' V';
-        }
-        else if (i == 1) {
-            unit = ' mV';
-        }
-        else if (i == 2) {
-            unit = ' uV';
-        }
-        else if (i == 3) {
-            unit = ' nV';
-        }
-
-        let val = (value * Math.pow(1000, i)).toString();
-        let wholeLength = val.indexOf('.');
-        if (wholeLength === -1) { wholeLength = 4 }
-        let fixedNum = 4 - wholeLength;
-
-        return (parseFloat(val)).toFixed(fixedNum) + unit;
-
-    }
-
-    getMin(seriesNum: number, maxIndex: number, minIndex: number) {
-        let activeIndices = this.chart.series[seriesNum].yData.slice(minIndex, maxIndex);
-        let value = Math.min(...activeIndices);
-        let vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
-        let i = 0;
-        let unit = '';
-        while (vPerDiv < 1) {
-            i++;
-            vPerDiv = vPerDiv * 1000;
-        }
-        if (i == 0) {
-            unit = ' V';
-        }
-        else if (i == 1) {
-            unit = ' mV';
-        }
-        else if (i == 2) {
-            unit = ' uV';
-        }
-        else if (i == 3) {
-            unit = ' nV';
-        }
-
-        let val = (value * Math.pow(1000, i)).toString();
-        let wholeLength = val.indexOf('.');
-        if (wholeLength === -1) { wholeLength = 4 }
-        let fixedNum = 4 - wholeLength;
-
-        return (parseFloat(val)).toFixed(fixedNum) + unit;
-    }
-
-    getLocalMax(seriesNum: number, maxIndex: number, minIndex: number) {
-        let maxCoordinates = [];
-        let detector: boolean = true;
-        for (let i = minIndex; i < maxIndex - 1; i++) {
-            if (this.chart.series[seriesNum].yData[i] - this.chart.series[seriesNum].yData[i + 1] >= 0 && !detector) {
-                maxCoordinates.push({
-                    x: this.chart.series[seriesNum].xData[i],
-                    y: this.chart.series[seriesNum].yData[i]
-                });
-                detector = true;
-            }
-            if (this.chart.series[seriesNum].yData[i] - this.chart.series[seriesNum].yData[i + 1] < 0 && detector) {
-                detector = false;
-            }
-        }
-    }
-
-    getLocalMin(seriesNum: number, maxIndex: number, minIndex: number) {
-        let minCoordinates = [];
-        let detector: boolean = true;
-        for (let i = minIndex; i < maxIndex - 1; i++) {
-            if (this.chart.series[seriesNum].yData[i] - this.chart.series[seriesNum].yData[i + 1] < 0 && !detector) {
-                minCoordinates.push({
-                    x: this.chart.series[seriesNum].xData[i],
-                    y: this.chart.series[seriesNum].yData[i]
-                });
-                detector = true;
-            }
-            if (this.chart.series[seriesNum].yData[i] - this.chart.series[seriesNum].yData[i + 1] >= 0 && detector) {
-                detector = false;
-            }
-        }
-    }
-
-    getAmplitude(seriesNum: number, maxIndex: number, minIndex: number) {
-        let max = this.getMax(seriesNum, maxIndex, minIndex);
-        let min = this.getMin(seriesNum, maxIndex, minIndex);
-        let amplitude = (parseFloat(max) - parseFloat(min)) / 2;
-        let unit = max.substr(max.indexOf(' '));
-
-        let wholeLength = amplitude.toString().indexOf('.');
-        if (wholeLength === -1) { wholeLength = 4 }
-        let fixedNum = 4 - wholeLength;
-
-        return (amplitude).toFixed(fixedNum) + unit;
-    }
-
-    getMean(seriesNum: number, maxIndex: number, minIndex: number) {
-        let sum = 0;
-        for (let i = minIndex; i < maxIndex; i++) {
-            sum += this.chart.series[seriesNum].yData[i];
-        }
-        let value = sum / (maxIndex - minIndex);
-        let vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
-        let i = 0;
-        let unit = '';
-        while (vPerDiv < 1) {
-            i++;
-            vPerDiv = vPerDiv * 1000;
-        }
-        if (i == 0) {
-            unit = ' V';
-        }
-        else if (i == 1) {
-            unit = ' mV';
-        }
-        else if (i == 2) {
-            unit = ' uV';
-        }
-        else if (i == 3) {
-            unit = ' nV';
-        }
-
-        let val = (value * Math.pow(1000, i)).toString();
-        let wholeLength = val.indexOf('.');
-        if (wholeLength === -1) { wholeLength = 4 }
-        let fixedNum = 4 - wholeLength;
-
-        return (parseFloat(val)).toFixed(fixedNum) + unit;
-    }
-
-    getRMS(seriesNum: number, maxIndex: number, minIndex: number) {
-        let sum = 0;
-        for (let i = minIndex; i < maxIndex; i++) {
-            sum += Math.pow(this.chart.series[seriesNum].yData[i], 2);
-        }
-        let value = Math.sqrt(sum / (maxIndex - minIndex));
-        let vPerDiv = Math.abs(this.chart.yAxis[seriesNum].max - this.chart.yAxis[seriesNum].min) / 10;
-        let i = 0;
-        let unit = '';
-        while (vPerDiv < 1) {
-            i++;
-            vPerDiv = vPerDiv * 1000;
-        }
-        if (i == 0) {
-            unit = ' V';
-        }
-        else if (i == 1) {
-            unit = ' mV';
-        }
-        else if (i == 2) {
-            unit = ' uV';
-        }
-        else if (i == 3) {
-            unit = ' nV';
-        }
-        let val = (value * Math.pow(1000, i)).toString();
-        let wholeLength = val.indexOf('.');
-        if (wholeLength === -1) { wholeLength = 4 }
-        let fixedNum = 4 - wholeLength;
-
-        return (parseFloat(val)).toFixed(fixedNum) + unit;
-    }
-
-    getPeakToPeak(seriesNum: number, maxIndex: number, minIndex: number) {
-        let max = this.getMax(seriesNum, maxIndex, minIndex);
-        let min = this.getMin(seriesNum, maxIndex, minIndex);
-        let unit = max.substr(max.indexOf(' '));
-        let p2p = Math.abs(parseFloat(max)) + Math.abs(parseFloat(min));
-
-        let wholeLength = p2p.toString().indexOf('.');
-        if (wholeLength === -1) { wholeLength = 4 }
-        let fixedNum = 4 - wholeLength;
-
-        return (p2p).toFixed(fixedNum) + unit;
-    }
-
-    getFrequency(seriesNum: number, maxIndex: number, minIndex: number) {
-        let value = this.chart.series[seriesNum].yData[minIndex];
-        let points = [];
-        for (let i = minIndex; i < maxIndex - 1; i++) {
-            if (this.chart.series[seriesNum].yData[i] <= value && this.chart.series[seriesNum].yData[i + 1] >= value) {
-                points.push(this.chart.series[seriesNum].xData[i]);
-                //Increment i twice in case one of the points was equal to the value
-                i++;
-            }
-        }
-        let sum = 0;
-        for (let i = 0; i < points.length - 1; i++) {
-            sum += (points[i + 1] - points[i]);
-        }
-        let toInverse = sum / (points.length - 1);
-        let freqRange = 1 / toInverse;
-        let i = 0;
-        let unit = '';
-        while (freqRange > 1) {
-            i++;
-            freqRange = freqRange / 1000;
-        }
-        i--;
-        if (i == 0) {
-            unit = ' Hz';
-        }
-        else if (i == 1) {
-            unit = ' kHz';
-        }
-        else if (i == 2) {
-            unit = ' Mhz';
-        }
-        else if (i == 3) {
-            unit = ' GHz';
-        }
-
-        let val = ((1 / (toInverse)) / Math.pow(1000, i)).toString();
-        let wholeLength = val.indexOf('.');
-        if (wholeLength === -1) { wholeLength = 4 }
-        let fixedNum = 4 - wholeLength;
-
-        return (parseFloat(val)).toFixed(fixedNum) + unit;
-    }
-
-    getPeriod(seriesNum: number, maxIndex: number, minIndex: number) {
-        let value = this.chart.series[seriesNum].yData[minIndex];
-        let points = [];
-        for (let i = minIndex; i < maxIndex - 1; i++) {
-            if (this.chart.series[seriesNum].yData[i] <= value && this.chart.series[seriesNum].yData[i + 1] >= value) {
-                points.push(this.chart.series[seriesNum].xData[i]);
-                //Increment i twice in case one of the points was equal to the value
-                i++;
-            }
-        }
-        let sum = 0;
-        for (let i = 0; i < points.length - 1; i++) {
-            sum += (points[i + 1] - points[i]);
-        }
-
-        let timeInterval = sum / (points.length - 1);
-        let i = 0;
-        let unit = '';
-        while (timeInterval < 1) {
-            i++;
-            timeInterval = timeInterval * 1000;
-        }
-        if (i == 0) {
-            unit = ' s';
-        }
-        else if (i == 1) {
-            unit = ' ms';
-        }
-        else if (i == 2) {
-            unit = ' us';
-        }
-        else if (i == 3) {
-            unit = ' ns';
-        }
-        else if (i == 4) {
-            unit = ' ps';
-        }
-
-        let val = ((sum / (points.length - 1)) * Math.pow(1000, i)).toString();
-        let wholeLength = val.indexOf('.');
-        if (wholeLength === -1) { wholeLength = 4 }
-        let fixedNum = 4 - wholeLength;
-
-        return (parseFloat(val)).toFixed(fixedNum) + unit;
     }
 
     calculateDataFromWindow() {
