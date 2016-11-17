@@ -34,6 +34,24 @@
     var previousYPosition;
     var panType;
     var wheelZoomX;
+    var multiTouchEventContainer = {
+        midPoint: null,
+        previousX1: null,
+        previousX2: null,
+        previousY1: null,
+        previousY2: null,
+        startingMultiTouch: true,
+        initialXDistance: null,
+        initialYDistance: null,
+        lastSuccessfulEventPositions: {
+            previousX1: null,
+            previousY1: null,
+            previousX2: null,
+            previousY2: null,
+            xDistance: null,
+            yDistance: null
+        },
+    };
 
     //Variables exposed in options
     var selectedYAxis;
@@ -161,7 +179,126 @@
                 }
             }
 
-            function touchMove(e) {
+            function multiTouch(e) {
+                var positionX1 = e.originalEvent.touches[0].clientX;
+                var positionX2 = e.originalEvent.touches[1].clientX;
+                var positionY1 = e.originalEvent.touches[0].clientY;
+                var positionY2 = e.originalEvent.touches[1].clientY;
+                var midPoint = (positionX1 + positionX2) / 2;
+                var xDistance = Math.abs(positionX1 - positionX2);
+                var yDistance = Math.abs(positionY1 - positionY2);
+
+                //Set initial tpd and vpd values
+                var getAxes = plot.getAxes();
+                var offsets = plot.offset();
+                var timePerDivision = (getAxes.xaxis.max - getAxes.xaxis.min) / 10;
+                var yaxisIndexer = 'y' + (selectedYAxis === 1 ? '' : selectedYAxis.toString()) + 'axis';
+                var voltsPerDivision = (getAxes[yaxisIndexer].max - getAxes[yaxisIndexer].min) / 10;
+
+                if (multiTouchEventContainer.startingMultiTouch) {
+                    //new multitouch event. Setup event container and exit.
+                    multiTouchEventContainer.startingMultiTouch = false;
+                    multiTouchEventContainer.initialXDistance = Math.abs(positionX1 - positionX2);
+                    multiTouchEventContainer.initialYDistance = Math.abs(positionY1 - positionY2);
+                    multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 = positionX1;
+                    multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 = positionY1;
+                    multiTouchEventContainer.lastSuccessfulEventPositions.previousX2 = positionX2;
+                    multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 = positionY2;
+                    multiTouchEventContainer.lastSuccessfulEventPositions.xDistance = xDistance;
+                    multiTouchEventContainer.lastSuccessfulEventPositions.yDistance = yDistance;
+                    multiTouchEventContainer.previousX1 = positionX1;
+                    multiTouchEventContainer.previousY1 = positionY1;
+                    multiTouchEventContainer.previousX2 = positionX2;
+                    multiTouchEventContainer.previousY2 = positionY2;
+                    multiTouchEventContainer.midPoint = midPoint;
+                    return;
+                }
+                else {
+                    var zoomMargin = plot.width() / 10;
+                    //zoomMargin = zoomMargin > 30 ? 30 : zoomMargin;
+
+                    //use previous multitouch for context
+                    var finger1MovedLR = positionX1 < multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 - zoomMargin ||
+                        positionX1 > multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 + zoomMargin;
+                    var finger1MovedUD = positionY1 < multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 - zoomMargin ||
+                        positionY1 > multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 + zoomMargin;
+                    var finger2MovedLR = positionX2 > multiTouchEventContainer.lastSuccessfulEventPositions.previousX2 + zoomMargin ||
+                        positionX2 < multiTouchEventContainer.lastSuccessfulEventPositions.previousX2 - zoomMargin;
+                    var finger2MovedUD = positionY2 > multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 + zoomMargin ||
+                        positionY2 < multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 - zoomMargin;
+
+                    var zoomChange = false;
+
+                    if (finger1MovedLR || finger2MovedLR) {
+                        if (xDistance < multiTouchEventContainer.lastSuccessfulEventPositions.xDistance - zoomMargin && startingXIndex < secsPerDivisionValues.length - 1) {
+                            //zoom out
+                            startingXIndex++;
+                            timePerDivision = secsPerDivisionValues[startingXIndex];
+                            zoomChange = true;
+                        }
+                        else if (xDistance > multiTouchEventContainer.lastSuccessfulEventPositions.xDistance + zoomMargin && startingXIndex > 0) {
+                            //zoom in
+                            startingXIndex--;
+                            timePerDivision = secsPerDivisionValues[startingXIndex];
+                            zoomChange = true;
+                        }
+                    }
+                    if (finger1MovedUD || finger2MovedUD) {
+                        //alert('zoom vert');
+                    }
+
+                    if (zoomChange) {
+                        multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 = positionX1;
+                        multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 = positionY1;
+                        multiTouchEventContainer.lastSuccessfulEventPositions.previousX2 = positionX2;
+                        multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 = positionY2;
+                        multiTouchEventContainer.lastSuccessfulEventPositions.xDistance = xDistance;
+                        multiTouchEventContainer.lastSuccessfulEventPositions.yDistance = yDistance;
+                    }
+                }
+
+                var newVal = getAxes.xaxis.c2p(midPoint - offsets.left);
+                var oldValinNewWindow = getAxes.xaxis.c2p(multiTouchEventContainer.midPoint - offsets.left)
+                var difference = newVal - oldValinNewWindow;
+                var base = (getAxes.xaxis.max + getAxes.xaxis.min) / 2;
+                var yBase = (getAxes[yaxisIndexer].max + getAxes[yaxisIndexer].min) / 2;
+                var newPos = base - difference;
+                var min = newPos - timePerDivision * 5;
+                var max = newPos + timePerDivision * 5;
+                var yMin = yBase - voltsPerDivision * 5;
+                var yMax = yBase + voltsPerDivision * 5;
+                getAxes.xaxis.options.min = min;
+                getAxes.xaxis.options.max = max;
+                getAxes[yaxisIndexer].options.min = yMin;
+                getAxes[yaxisIndexer].options.max = yMax;
+                if (isNaN(min) || isNaN(max) || isNaN(yMin) || isNaN(yMax)) {
+                    alert('Error Setting Window');
+                    return;
+                }
+                plot.setupGrid();
+                plot.draw();
+                var infoContainer = {
+                    x: midPoint,
+                    y: e.originalEvent.touches[0].clientY,
+                    min: min,
+                    max: max,
+                    mid: newPos,
+                    axisNum: 1,
+                    axis: 'xaxis'
+                };
+                plot.getPlaceholder().trigger('panEvent', [infoContainer]);
+                if (updateTimelineChart && timelineChartRef != null) {
+                    timelineChartRef.updateTimelineCurtains(infoContainer)
+                }
+
+                multiTouchEventContainer.previousX1 = positionX1;
+                multiTouchEventContainer.previousY1 = positionY1;
+                multiTouchEventContainer.previousX2 = positionX2;
+                multiTouchEventContainer.previousY2 = positionY2;
+                multiTouchEventContainer.midPoint = midPoint;
+            }
+
+            function singleTouch(e) {
                 var getAxes = plot.getAxes();
                 var offsets = plot.offset();
                 var newVal = getAxes.xaxis.c2p(e.originalEvent.touches[0].clientX - offsets.left);
@@ -189,14 +326,25 @@
                     axisNum: 1,
                     axis: 'xaxis'
                 };
-                plot.getPlaceholder().trigger('touchPanEvent', [infoContainer]);
+                plot.getPlaceholder().trigger('panEvent', [infoContainer]);
                 if (updateTimelineChart && timelineChartRef != null) {
                     timelineChartRef.updateTimelineCurtains(infoContainer)
                 }
                 previousXPosition = e.originalEvent.touches[0].clientX;
             }
 
+            function touchMove(e) {
+                if (e.originalEvent.touches.length > 1) {
+                    multiTouch(e);
+                }
+                else {
+                    multiTouchEventContainer.startingMultiTouch = true;
+                    singleTouch(e);
+                }
+            }
+
             function touchEnd(e) {
+                multiTouchEventContainer.startingMultiTouch = true;
                 plot.getPlaceholder().unbind('touchmove', touchMove);
             }
 

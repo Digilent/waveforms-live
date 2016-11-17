@@ -138,6 +138,7 @@ export class SilverNeedleChart {
             legend: {
                 show: false
             },
+            canvas: true,
             grid: {
                 hoverable: true,
                 clickable: true,
@@ -372,7 +373,6 @@ export class SilverNeedleChart {
         let yIndexer0 = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
 
         let axes = this.chart.getAxes();
-        console.log(axes);
         axes[yIndexer0].options.show = false;
         axes[yIndexer1].options.show = true;
 
@@ -405,7 +405,6 @@ export class SilverNeedleChart {
     flotDecimateData(seriesNum: number, bounds: any) {
         let waveform = this.currentBufferArray[seriesNum];
         let numPointsInView = Math.round((bounds.max - bounds.min) / waveform.dt);
-        console.log(numPointsInView);
         if (numPointsInView <= 2000) {
             return this.currentBufferArray[seriesNum];
         }
@@ -466,7 +465,6 @@ export class SilverNeedleChart {
                 min: axesInfo.xaxis.min,
                 max: axesInfo.xaxis.max
             };
-            console.log(bounds);
             if (bounds.min < this.currentBufferArray[this.numSeries[i]].t0 || isNaN(bounds.min) || ignoreAutoscale) {
                 bounds.min = this.currentBufferArray[this.numSeries[i]].t0;
             }
@@ -474,7 +472,6 @@ export class SilverNeedleChart {
                 bounds.max = this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length;
             }
             let decimatedData = this.flotDecimateData(this.numSeries[i], bounds).data;
-            console.log(decimatedData.length);
             dataObjects.push(
                 {
                     data: decimatedData,
@@ -533,7 +530,6 @@ export class SilverNeedleChart {
     //Remove cursors from the chart including their labels
     removeCursors() {
         let cursors = this.chart.getCursors();
-        console.log(cursors);
         let length = cursors.length;
         for (let i = 0; i < length; i++) {
             //cursor array shifts itself so always remove first entry in array
@@ -987,13 +983,11 @@ export class SilverNeedleChart {
 
     //Set series settings based on an object containing the series number, volts per division, and base
     setSeriesSettings(seriesSettings: any) {
-        console.log('seriesNum' + seriesSettings.seriesNum);
         this.voltDivision[seriesSettings.seriesNum] = seriesSettings.voltsPerDiv;
         this.voltBase[seriesSettings.seriesNum] = seriesSettings.voltBase;
         //this.setYExtremes(seriesSettings);
         let getAxes = this.chart.getAxes();
         let yIndexer = 'y' + (seriesSettings.seriesNum === 0 ? '' : (seriesSettings.seriesNum + 1).toString()) + 'axis';
-        console.log(this.voltBase);
         getAxes[yIndexer].options.min = this.voltBase[seriesSettings.seriesNum] - 5 * this.voltDivision[seriesSettings.seriesNum];
         getAxes[yIndexer].options.max = this.voltBase[seriesSettings.seriesNum] + 5 * this.voltDivision[seriesSettings.seriesNum];
         this.chart.setupGrid();
@@ -1002,7 +996,6 @@ export class SilverNeedleChart {
 
     //Set active series and update labels
     setActiveSeries(seriesNum: number) {
-        console.log('setActiveSeries');
         this.updateYAxisLabels(seriesNum);
         this.chart.setActiveYAxis(seriesNum);
         this.activeSeries = seriesNum;
@@ -1147,7 +1140,6 @@ export class SilverNeedleChart {
     }
 
     incrementOffset(seriesNum) {
-        console.log('increment offset' + seriesNum);
         this.voltBase[seriesNum] = this.voltBase[seriesNum] + this.voltDivision[seriesNum];
         this.setSeriesSettings({
             voltsPerDiv: this.voltDivision[seriesNum],
@@ -1244,7 +1236,18 @@ export class SilverNeedleChart {
         this.updateMath();
     }
 
+    exportCanvasAsPng() {
+        let canvas = this.chart.getCanvas();
+        let data = canvas.toDataURL();
+        let link = document.createElement("a");
+        link.setAttribute("href", data);
+        link.setAttribute("download", 'WaveFormsLiveChart.png');
+        document.body.appendChild(link);
+        link.click();
+    }
+
     updateMath() {
+        this.exportCanvasAsPng();
         let extremes = this.chart.getAxes().xaxis;
         let chartMin = extremes.min;
         let chartMax = extremes.max;

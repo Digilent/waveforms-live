@@ -133,7 +133,6 @@ export class SimulatedOscComponent {
         let dt = 1000 / sampleRate;
 
         let phase = ((parseInt(chan) - 1) * (90)) * (Math.PI / 180); //in radians
-        console.log(phase);
 
         //Clock time in seconds.  Rolls ever every hour.
 

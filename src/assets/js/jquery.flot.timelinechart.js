@@ -49,8 +49,6 @@
                 existingChartRef = options.timelineChart.existingChartRef;
                 updateExistingChart = options.timelineChart.updateExistingChart;
 
-                console.log(options);
-
                 //Setup Chart
                 setupChart(plot);
             }
