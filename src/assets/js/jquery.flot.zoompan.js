@@ -215,10 +215,21 @@
                 }
                 else {
                     var zoomMargin = plot.width() / 10;
-                    //zoomMargin = zoomMargin > 30 ? 30 : zoomMargin;
+                    var pixelsPerDiv = zoomMargin;
+
+                    //var newFinger1DivPos = (positionX1 - offsets.left) / pixelsPerDiv; //Precise distance from left in #divs
+                    //var newFinger2DivPos = (positionX2 - offsets.left) / pixelsPerDiv;
+                    //var prevFinger1DivPos = (multiTouchEventContainer.previousX1 - offsets.left) / pixelsPerDiv;
+                    //var prevFinger2DivPos = (multiTouchEventContainer.previousX2 - offsets.left) / pixelsPerDiv;
+                    var deltaFinger1 = positionX1 - multiTouchEventContainer.previousX1;
+                    var deltaFinger2 = positionX2 - multiTouchEventContainer.previousX2;
+                    var deltaFinger1ValDiff = getAxes.xaxis.c2p(deltaFinger1);
+                    var deltaFinger2ValDiff = getAxes.xaxis.c2p(deltaFinger2);
+                    //alert(deltaFinger1ValDiff, deltaFinger2ValDiff, 'hey');
+
 
                     //use previous multitouch for context
-                    var finger1MovedLR = positionX1 < multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 - zoomMargin ||
+                    /*var finger1MovedLR = positionX1 < multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 - zoomMargin ||
                         positionX1 > multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 + zoomMargin;
                     var finger1MovedUD = positionY1 < multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 - zoomMargin ||
                         positionY1 > multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 + zoomMargin;
@@ -227,9 +238,9 @@
                     var finger2MovedUD = positionY2 > multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 + zoomMargin ||
                         positionY2 < multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 - zoomMargin;
 
-                    var zoomChange = false;
+                    var zoomChange = false;*/
 
-                    if (finger1MovedLR || finger2MovedLR) {
+                    /*if (finger1MovedLR || finger2MovedLR) {
                         if (xDistance < multiTouchEventContainer.lastSuccessfulEventPositions.xDistance - zoomMargin && startingXIndex < secsPerDivisionValues.length - 1) {
                             //zoom out
                             startingXIndex++;
@@ -245,19 +256,19 @@
                     }
                     if (finger1MovedUD || finger2MovedUD) {
                         //alert('zoom vert');
-                    }
+                    }*/
 
-                    if (zoomChange) {
+                    /*if (zoomChange) {
                         multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 = positionX1;
                         multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 = positionY1;
                         multiTouchEventContainer.lastSuccessfulEventPositions.previousX2 = positionX2;
                         multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 = positionY2;
                         multiTouchEventContainer.lastSuccessfulEventPositions.xDistance = xDistance;
                         multiTouchEventContainer.lastSuccessfulEventPositions.yDistance = yDistance;
-                    }
+                    }*/
                 }
 
-                var newVal = getAxes.xaxis.c2p(midPoint - offsets.left);
+                /*var newVal = getAxes.xaxis.c2p(midPoint - offsets.left);
                 var oldValinNewWindow = getAxes.xaxis.c2p(multiTouchEventContainer.midPoint - offsets.left)
                 var difference = newVal - oldValinNewWindow;
                 var base = (getAxes.xaxis.max + getAxes.xaxis.min) / 2;
@@ -266,12 +277,15 @@
                 var min = newPos - timePerDivision * 5;
                 var max = newPos + timePerDivision * 5;
                 var yMin = yBase - voltsPerDivision * 5;
-                var yMax = yBase + voltsPerDivision * 5;
+                var yMax = yBase + voltsPerDivision * 5;*/
+                var min = getAxes.xaxis.min + deltaFinger1ValDiff;
+                var max = getAxes.xaxis.max - deltaFinger2ValDiff;
+                //alert(deltaFinger2ValDiff);
                 getAxes.xaxis.options.min = min;
                 getAxes.xaxis.options.max = max;
-                getAxes[yaxisIndexer].options.min = yMin;
-                getAxes[yaxisIndexer].options.max = yMax;
-                if (isNaN(min) || isNaN(max) || isNaN(yMin) || isNaN(yMax)) {
+                //getAxes[yaxisIndexer].options.min = yMin;
+                //getAxes[yaxisIndexer].options.max = yMax;
+                if (isNaN(min) || isNaN(max)) {
                     alert('Error Setting Window');
                     return;
                 }
@@ -282,7 +296,7 @@
                     y: e.originalEvent.touches[0].clientY,
                     min: min,
                     max: max,
-                    mid: newPos,
+                    mid: 0,
                     axisNum: 1,
                     axis: 'xaxis'
                 };
