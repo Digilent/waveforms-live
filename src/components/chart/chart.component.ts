@@ -224,7 +224,7 @@ export class SilverNeedleChart {
                 }
             }
             let dataObject = {
-                data: [[]],
+                data: [],
                 yaxis: i + 1,
                 lines: {
                     show: (i === 0)
@@ -459,6 +459,7 @@ export class SilverNeedleChart {
 
     flotDrawWaveform(initialDraw: boolean, ignoreAutoscale?: boolean) {
         let dataObjects: any[] = [];
+        let currentSeries = this.chart.getData();
         for (let i = 0; i < this.numSeries.length; i++) {
             let axesInfo = this.chart.getAxes();
             let bounds = {
@@ -476,7 +477,8 @@ export class SilverNeedleChart {
                 {
                     data: decimatedData,
                     yaxis: 1,
-                    label: 'Series' + this.numSeries[i].toString()
+                    label: 'Series' + this.numSeries[i].toString(),
+                    color: currentSeries[this.numSeries[i]].color
                 }
             );
             this.seriesDataContainer[this.numSeries[i]].data = decimatedData;
@@ -525,6 +527,9 @@ export class SilverNeedleChart {
     //Remove extra series and axes from the chart
     clearExtraSeries(usedSeries: number[]) {
         this.numSeries = usedSeries;
+        for (let i = 0; i < this.seriesDataContainer.length; i++) {
+            this.seriesDataContainer[i].data = [];
+        }
     }
 
     //Remove cursors from the chart including their labels

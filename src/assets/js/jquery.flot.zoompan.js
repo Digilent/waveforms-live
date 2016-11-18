@@ -220,14 +220,12 @@
                 }
                 else {
                     var plotWidth = plot.width();
-                    //var pixelsPerDiv = zoomMargin;
                     var oldUnitLeft = getAxes.xaxis.c2p(multiTouchEventContainer.previousX1 - offsets.left);
                     var oldUnitRight = getAxes.xaxis.c2p(multiTouchEventContainer.previousX2 - offsets.left)
                     var oldUnitValDif = Math.abs(oldUnitLeft - oldUnitRight);
                     var newUnitPerPix = oldUnitValDif / Math.abs(positionX1 - positionX2);
                     var max = oldUnitRight + newUnitPerPix * (plotWidth - (positionX2 - offsets.left));
                     var min = oldUnitLeft - newUnitPerPix * (positionX1 - offsets.left);
-                    //alert(max);
                 }
                 getAxes.xaxis.options.min = min;
                 getAxes.xaxis.options.max = max;
