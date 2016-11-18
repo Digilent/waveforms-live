@@ -117,6 +117,16 @@
                 leftBandWidth = leftBandWidth < 20 ? 20 : leftBandWidth;
                 rightBandWidth = rightBandWidth < 20 ? 20 : rightBandWidth;
 
+                var cursorsToUpdate = cursorRefs;
+                if (cursorRefs.length > 4) {
+                    cursorsToUpdate = [];
+                    for (var i = 0; i < cursorRefs.length; i++) {
+                        if (cursorRefs[i].name === 'curtain-1' || cursorRefs[i].name === 'curtain-2' || cursorRefs[i].name === 'band-1' || cursorRefs[i].name === 'band-2') {
+                            cursorsToUpdate.push(cursorRefs[i]);
+                        }
+                    }
+                }
+
                 var optionsArray = [];
                 optionsArray[0] = {
                     lineWidth: 10,
@@ -147,7 +157,7 @@
                     }
                 };
 
-                plot.setMultipleCursors(cursorRefs, optionsArray);
+                plot.setMultipleCursors(cursorsToUpdate, optionsArray);
             }
 
             /**************************************************************

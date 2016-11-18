@@ -186,7 +186,7 @@ export class SilverNeedleChart {
             }
         });
         $("#flotContainer").bind("cursorupdates", (event, cursorData) => {
-            if (cursorData[0] === undefined) { return; }
+            if (cursorData[0] === undefined || this.cursorType === 'disabled') { return; }
             for (let i = 0; i < 2; i++) {
                 this.cursorPositions[i].x = cursorData[i].x;
                 this.cursorPositions[i].y = cursorData[i].y;
@@ -450,11 +450,11 @@ export class SilverNeedleChart {
 
     setCurrentBuffer(bufferArray: WaveformComponent[]) {
         this.currentBufferArray = bufferArray;
-        /*if (this.deviceDescriptor !== undefined) {
+        if (this.deviceDescriptor !== undefined) {
             this.updateTriggerLine();
-            this.updateTriggerAnchor(this.numSeries[0]);
+            //this.updateTriggerAnchor(this.numSeries[0]);
             this.applyPointOfInterest(this.numSeries[0]);
-        }*/
+        }
     }
 
     flotDrawWaveform(initialDraw: boolean, ignoreAutoscale?: boolean) {
@@ -469,7 +469,7 @@ export class SilverNeedleChart {
             if (bounds.min < this.currentBufferArray[this.numSeries[i]].t0 || isNaN(bounds.min) || ignoreAutoscale) {
                 bounds.min = this.currentBufferArray[this.numSeries[i]].t0;
             }
-            if (bounds.max > this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length || isNaN(bounds.max) || ignoreAutoscale) { 
+            if (bounds.max > this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length || isNaN(bounds.max) || ignoreAutoscale) {
                 bounds.max = this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length;
             }
             let decimatedData = this.flotDecimateData(this.numSeries[i], bounds).data;
@@ -1412,45 +1412,49 @@ export class SilverNeedleChart {
     }
 
     updateTriggerLine() {
-        /*if (this.triggerPlotLine === undefined) {
+        let cursors = this.chart.getCursors();
+        if (cursors.length === 0) {
             this.addTriggerLine(this.numSeries[0]);
             return;
         }
         let trigPosition = this.currentBufferArray[this.numSeries[0]].triggerPosition;
         if (trigPosition < 0) {
-            this.triggerPlotLine.destroy();
+            //TODO get rid of it or not?
+            /*this.triggerPlotLine.destroy();
             this.timelineTriggerPlotLine.destroy();
             this.triggerPlotLine = undefined;
             this.timelineTriggerPlotLine = undefined;
-            return;
+            return;*/
         }
         let value = trigPosition * this.currentBufferArray[this.numSeries[0]].dt;
-        this.triggerPlotLine.options.value = value;
-        this.timelineTriggerPlotLine.options.value = value;
-        this.triggerPlotLine.render();
-        this.timelineTriggerPlotLine.render();*/
+        //Now set cursor if we want. Not sure yet.
     }
 
     addTriggerLine(seriesNum) {
-        /*let trigPosition = this.currentBufferArray[seriesNum].triggerPosition;
+        let trigPosition = this.currentBufferArray[seriesNum].triggerPosition;
         if (trigPosition < 0 || trigPosition === undefined) { return; }
         let initialValue = trigPosition * this.currentBufferArray[seriesNum].dt;
-        this.triggerPlotLine = this.chart.xAxis[0].addPlotLine({
-            value: initialValue,
+        //Add trigger line
+        let options = {
+            name: 'triggerLine',
+            mode: 'x',
             color: 'green',
-            width: 1,
-            zIndex: 3,
-            id: 'triggerLine'
-        });
+            showIntersections: false,
+            showLabel: false,
+            movable: false,
+            symbol: 'none',
+            position: {
+                x: initialValue,
+                relativeY: 0.5
+            }
+        }
+        this.chart.addCursor(options);
         if (this.timelineView) {
-            this.timelineTriggerPlotLine = this.timelineChart.xAxis[0].addPlotLine({
-                value: initialValue,
-                color: 'green',
-                width: 1,
-                zIndex: 3,
-                id: 'triggerLine'
-            });
-        }*/
+            let timelineOptions = options;
+            timelineOptions['fullHeight'] = true;
+            this.timelineChart.addCursor(timelineOptions);
+            //add to timeline as well
+        }
     }
 
     addSeriesAnchor(seriesNum: number) {
@@ -1470,16 +1474,20 @@ export class SilverNeedleChart {
     }
 
     applyPointOfInterest(seriesNum: number) {
-        /*let poiIndex = this.currentBufferArray[seriesNum].pointOfInterest;
+        let poiIndex = this.currentBufferArray[seriesNum].pointOfInterest;
         if (poiIndex < 0 || poiIndex === undefined) {
             return;
         }
+        let getAxes = this.chart.getAxes();
         let poi = poiIndex * this.currentBufferArray[seriesNum].dt + 0;
         this.base = poi;
         let min = poi - 5 * this.timeDivision;
         let max = poi + 5 * this.timeDivision;
-        this.chart.xAxis[0].setExtremes(min, max, false, false);
+        getAxes.xaxis.options.min = min;
+        getAxes.xaxis.options.max = max;
+        this.chart.setupGrid();
+        this.chart.draw();
         if (this.timelineView) {
-        }*/
+        }
     }
 }
