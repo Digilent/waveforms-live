@@ -35,6 +35,7 @@
     var panType;
     var wheelZoomX;
     var multiTouchEventContainer = {
+        firstFingerLeft: false,
         midPoint: null,
         previousX1: null,
         previousX2: null,
@@ -177,6 +178,9 @@
                     previousYPosition = e.originalEvent.touches[0].clientY;
                     plot.getPlaceholder().bind('touchmove', touchMove);
                 }
+                else if (e.originalEvent.touches.length > 1) {
+                    multiTouchEventContainer.startingMultiTouch = true;
+                }
             }
 
             function multiTouch(e) {
@@ -211,80 +215,22 @@
                     multiTouchEventContainer.previousX2 = positionX2;
                     multiTouchEventContainer.previousY2 = positionY2;
                     multiTouchEventContainer.midPoint = midPoint;
+                    firstFingerLeft = positionX1 < positionX2;
                     return;
                 }
                 else {
-                    var zoomMargin = plot.width() / 10;
-                    var pixelsPerDiv = zoomMargin;
-
-                    //var newFinger1DivPos = (positionX1 - offsets.left) / pixelsPerDiv; //Precise distance from left in #divs
-                    //var newFinger2DivPos = (positionX2 - offsets.left) / pixelsPerDiv;
-                    //var prevFinger1DivPos = (multiTouchEventContainer.previousX1 - offsets.left) / pixelsPerDiv;
-                    //var prevFinger2DivPos = (multiTouchEventContainer.previousX2 - offsets.left) / pixelsPerDiv;
-                    var deltaFinger1 = positionX1 - multiTouchEventContainer.previousX1;
-                    var deltaFinger2 = positionX2 - multiTouchEventContainer.previousX2;
-                    var deltaFinger1ValDiff = getAxes.xaxis.c2p(deltaFinger1);
-                    var deltaFinger2ValDiff = getAxes.xaxis.c2p(deltaFinger2);
-                    //alert(deltaFinger1ValDiff, deltaFinger2ValDiff, 'hey');
-
-
-                    //use previous multitouch for context
-                    /*var finger1MovedLR = positionX1 < multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 - zoomMargin ||
-                        positionX1 > multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 + zoomMargin;
-                    var finger1MovedUD = positionY1 < multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 - zoomMargin ||
-                        positionY1 > multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 + zoomMargin;
-                    var finger2MovedLR = positionX2 > multiTouchEventContainer.lastSuccessfulEventPositions.previousX2 + zoomMargin ||
-                        positionX2 < multiTouchEventContainer.lastSuccessfulEventPositions.previousX2 - zoomMargin;
-                    var finger2MovedUD = positionY2 > multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 + zoomMargin ||
-                        positionY2 < multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 - zoomMargin;
-
-                    var zoomChange = false;*/
-
-                    /*if (finger1MovedLR || finger2MovedLR) {
-                        if (xDistance < multiTouchEventContainer.lastSuccessfulEventPositions.xDistance - zoomMargin && startingXIndex < secsPerDivisionValues.length - 1) {
-                            //zoom out
-                            startingXIndex++;
-                            timePerDivision = secsPerDivisionValues[startingXIndex];
-                            zoomChange = true;
-                        }
-                        else if (xDistance > multiTouchEventContainer.lastSuccessfulEventPositions.xDistance + zoomMargin && startingXIndex > 0) {
-                            //zoom in
-                            startingXIndex--;
-                            timePerDivision = secsPerDivisionValues[startingXIndex];
-                            zoomChange = true;
-                        }
-                    }
-                    if (finger1MovedUD || finger2MovedUD) {
-                        //alert('zoom vert');
-                    }*/
-
-                    /*if (zoomChange) {
-                        multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 = positionX1;
-                        multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 = positionY1;
-                        multiTouchEventContainer.lastSuccessfulEventPositions.previousX2 = positionX2;
-                        multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 = positionY2;
-                        multiTouchEventContainer.lastSuccessfulEventPositions.xDistance = xDistance;
-                        multiTouchEventContainer.lastSuccessfulEventPositions.yDistance = yDistance;
-                    }*/
+                    var plotWidth = plot.width();
+                    //var pixelsPerDiv = zoomMargin;
+                    var oldUnitLeft = getAxes.xaxis.c2p(multiTouchEventContainer.previousX1 - offsets.left);
+                    var oldUnitRight = getAxes.xaxis.c2p(multiTouchEventContainer.previousX2 - offsets.left)
+                    var oldUnitValDif = Math.abs(oldUnitLeft - oldUnitRight);
+                    var newUnitPerPix = oldUnitValDif / Math.abs(positionX1 - positionX2);
+                    var max = oldUnitRight + newUnitPerPix * (plotWidth - (positionX2 - offsets.left));
+                    var min = oldUnitLeft - newUnitPerPix * (positionX1 - offsets.left);
+                    //alert(max);
                 }
-
-                /*var newVal = getAxes.xaxis.c2p(midPoint - offsets.left);
-                var oldValinNewWindow = getAxes.xaxis.c2p(multiTouchEventContainer.midPoint - offsets.left)
-                var difference = newVal - oldValinNewWindow;
-                var base = (getAxes.xaxis.max + getAxes.xaxis.min) / 2;
-                var yBase = (getAxes[yaxisIndexer].max + getAxes[yaxisIndexer].min) / 2;
-                var newPos = base - difference;
-                var min = newPos - timePerDivision * 5;
-                var max = newPos + timePerDivision * 5;
-                var yMin = yBase - voltsPerDivision * 5;
-                var yMax = yBase + voltsPerDivision * 5;*/
-                var min = getAxes.xaxis.min + deltaFinger1ValDiff;
-                var max = getAxes.xaxis.max - deltaFinger2ValDiff;
-                //alert(deltaFinger2ValDiff);
                 getAxes.xaxis.options.min = min;
                 getAxes.xaxis.options.max = max;
-                //getAxes[yaxisIndexer].options.min = yMin;
-                //getAxes[yaxisIndexer].options.max = yMax;
                 if (isNaN(min) || isNaN(max)) {
                     alert('Error Setting Window');
                     return;
@@ -358,8 +304,11 @@
             }
 
             function touchEnd(e) {
+                if (e.originalEvent.touches.length === 0) {
+                    plot.getPlaceholder().unbind('touchmove', touchMove);
+                }
+                previousXPosition = e.originalEvent.touches[0].clientX;
                 multiTouchEventContainer.startingMultiTouch = true;
-                plot.getPlaceholder().unbind('touchmove', touchMove);
             }
 
             function chartMouseUp(e) {
