@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
   <meta charset="UTF-8">
   <title>Ionic App</title>
@@ -21,6 +22,11 @@
   </script>-->
 
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(window).load(function() {
+      $(".loader").fadeOut("slow");
+    });
+</script>
   <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.1/jquery.flot.categories.min.js"></script>
   <script language="javascript" type="text/javascript" src="assets/js/math.functions.js"></script>
@@ -35,8 +41,9 @@
   <link href="build/main.css" rel="stylesheet">
 
 </head>
-<body>
 
+<body>
+  <div class="loader" style="position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;z-index: 9999;background: url('assets/img/page-loader.gif') 50% 50% no-repeat rgb(249,249,249);"></div>
   <!-- Ionic's root component and where the app will load -->
   <ion-app></ion-app>
 
@@ -50,4 +57,5 @@
   <script src="build/main.js"></script>
 
 </body>
+
 </html>
