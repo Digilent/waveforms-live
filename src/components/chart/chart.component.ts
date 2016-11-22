@@ -68,7 +68,9 @@ export class SilverNeedleChart {
     }
     public seriesAnchorContainer: any[];
     public seriesAnchorVertPanRef: any;
+    public seriesAnchorTouchVertPanRef: any;
     public unbindCustomEventsRef: any;
+    public seriesAnchorTouchStartRef: any;
     public previousYPos: number;
 
     constructor(_modalCtrl: ModalController) {
@@ -76,15 +78,16 @@ export class SilverNeedleChart {
     }
 
     ngAfterViewInit() {
-
+        this.seriesAnchorVertPanRef = this.seriesAnchorVertPan.bind(this);
+        this.unbindCustomEventsRef = this.unbindCustomEvents.bind(this);
+        this.seriesAnchorTouchStartRef = this.seriesAnchorTouchStart.bind(this);
+        this.seriesAnchorTouchVertPanRef = this.seriesAnchorTouchVertPan.bind(this);
         let plotArea = $('#flotContainer');
         plotArea.css({
             width: '100%',
             height: '100%'
         });
         this.createChart();
-        this.seriesAnchorVertPanRef = this.seriesAnchorVertPan.bind(this);
-        this.unbindCustomEventsRef = this.unbindCustomEvents.bind(this);
     }
 
     createTimelineChart(dataObjectArray: any) {
@@ -255,16 +258,52 @@ export class SilverNeedleChart {
             }
         });
 
+        $("#flotContainer").bind("touchstart", this.seriesAnchorTouchStartRef);
+
         //updateChart();
         this.onLoad(this.chart);
+    }
+
+    seriesAnchorTouchStart(event) {
+        if (this.numSeries == undefined) { return; }
+        let offsets = this.chart.offset();
+        let plotRelXPos = event.originalEvent.touches[0].clientX - offsets.left;
+        let plotRelYPos = event.originalEvent.touches[0].clientY - offsets.top;
+        let getAxes = this.chart.getAxes();
+        for (let i = 0; i < this.numSeries.length; i++) {
+            let yIndexer = 'y' + (this.numSeries[i] === 0 ? '' : (this.numSeries[i] + 1).toString()) + 'axis';
+            let seriesAnchorPixPos = getAxes[yIndexer].p2c(this.currentBufferArray[this.numSeries[i]].seriesOffset);
+            if (plotRelXPos > -20 && plotRelXPos < 5 && plotRelYPos < seriesAnchorPixPos + 10 && plotRelYPos > seriesAnchorPixPos - 10) {
+                this.overSeriesAnchor = {
+                    over: true,
+                    seriesNum: this.numSeries[i]
+                }
+                this.chart.unbindMoveEvents();
+                this.setActiveSeries(this.overSeriesAnchor.seriesNum + 1);
+                $("#flotContainer").bind("touchmove", this.seriesAnchorTouchVertPanRef);
+                $("#flotContainer").bind("touchend", this.unbindCustomEventsRef);
+                $("#flotContainer").bind("touchleave", this.unbindCustomEventsRef);
+                this.previousYPos = event.originalEvent.touches[0].clientY;
+                return;
+            }
+        }
+        this.overSeriesAnchor = {
+            over: false,
+            seriesNum: null
+        }
     }
 
     seriesAnchorsHandler(plot: any, ctx: any) {
         if (this.seriesAnchorContainer == undefined || this.seriesAnchorContainer.length < 1) { return; }
         let offsets = this.chart.offset();
+        let getAxes = this.chart.getAxes();
         for (let i = 0; i < this.seriesAnchorContainer.length; i++) {
+            let seriesNum = this.seriesAnchorContainer[i].seriesNum;
+            let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
+            let offsetVal = this.currentBufferArray[seriesNum].seriesOffset;
+            let offsetPix = getAxes[yIndexer].p2c(offsetVal);
             ctx.save();
-            ctx.translate(offsets.left - 11, this.seriesAnchorContainer[i].y + 10);
+            ctx.translate(offsets.left - 11, offsetPix + 10);
             ctx.beginPath();
             ctx.moveTo(0, 0);
             ctx.lineTo(0, 10);
@@ -280,8 +319,6 @@ export class SilverNeedleChart {
     seriesAnchorVertPan(e) {
         let yIndexer = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
         let newYPos = e.clientY;
-        let pixDif = newYPos - this.previousYPos;
-        this.seriesAnchorContainer[this.activeSeries - 1].y += pixDif;
         let getAxes = this.chart.getAxes();
         let newVal = getAxes[yIndexer].c2p(e.clientY);
         let oldValinNewWindow = getAxes[yIndexer].c2p(this.previousYPos);
@@ -298,8 +335,28 @@ export class SilverNeedleChart {
         this.previousYPos = e.clientY;
     }
 
+    seriesAnchorTouchVertPan(e) {
+        let yIndexer = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
+        let newYPos = e.originalEvent.touches[0].clientY;
+        let getAxes = this.chart.getAxes();
+        let newVal = getAxes[yIndexer].c2p(e.originalEvent.touches[0].clientY);
+        let oldValinNewWindow = getAxes[yIndexer].c2p(this.previousYPos);
+        let difference = newVal - oldValinNewWindow;
+        let base = (getAxes[yIndexer].max + getAxes[yIndexer].min) / 2;
+        let voltsPerDivision = (getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
+        let newPos = base - difference;
+        let min = newPos - voltsPerDivision * 5;
+        let max = newPos + voltsPerDivision * 5;
+        getAxes[yIndexer].options.min = min;
+        getAxes[yIndexer].options.max = max;
+        this.chart.setupGrid();
+        this.chart.draw();
+        this.previousYPos = e.originalEvent.touches[0].clientY;
+    }
+
     unbindCustomEvents(e) {
         $("#flotContainer").unbind("mousemove", this.seriesAnchorVertPanRef);
+        $("#flotContainer").unbind("touchmove", this.seriesAnchorTouchVertPanRef);
         $("#flotContainer").unbind("mouseup", this.unbindCustomEventsRef);
         $("#flotContainer").unbind("mouseout", this.unbindCustomEventsRef);
         this.chart.getPlaceholder().css('cursor', 'default');
@@ -314,8 +371,8 @@ export class SilverNeedleChart {
             let yVal = this.currentBufferArray[this.numSeries[i]].seriesOffset;
             let y = getAxes[yIndexer].p2c(yVal);
             this.seriesAnchorContainer.push({
-                y: y,
-                color: series[this.numSeries[i]].color
+                color: series[this.numSeries[i]].color,
+                seriesNum: this.numSeries[i]
             });
         }
     }
