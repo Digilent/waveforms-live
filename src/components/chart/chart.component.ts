@@ -481,20 +481,12 @@ export class SilverNeedleChart {
     //Displays the y axis label for the active series and hide the others
     updateYAxisLabels(newActiveSeries: number) {
         //If LA is set as active series don't do anything
-        let axes = this.chart.getAxes();
-        console.log(axes);
         if (newActiveSeries > this.oscopeChansActive.length || newActiveSeries === this.activeSeries) { return; }
-
+        let axes = this.chart.getAxes();
         let yIndexer1 = 'y' + ((newActiveSeries - 1 === 0) ? '' : newActiveSeries.toString()) + 'axis';
         let yIndexer0 = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
-
-        
         axes[yIndexer0].options.show = false;
-        axes[yIndexer0].options.ticks = false;
         axes[yIndexer1].options.show = true;
-        axes[yIndexer1].options.ticks = this.tickGenerator;
-        console.log('updating labels');
-        console.log(axes);
         this.chart.setupGrid();
         this.chart.draw();
     }
