@@ -150,6 +150,12 @@
                 updateTimelineChart = update;
             }
 
+            plot.unbindMoveEvents = function unbindMoveEvents() {
+                plot.getPlaceholder().unbind('mousemove', vertPanChart);
+                plot.getPlaceholder().unbind('mousemove', horPanChart);
+                plot.getPlaceholder().unbind('touchmove', touchMove);
+            }
+
             /**************************************************************
             * Event Functions
             **************************************************************/

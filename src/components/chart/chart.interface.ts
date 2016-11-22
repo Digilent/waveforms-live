@@ -51,7 +51,9 @@ export interface Chart {
     getTimelineRef(),
     getTimelineUpdate(),
     setTimelineUpdate(updateTimeline: boolean),
-    updateTimelineCurtains(minMaxContainer: any)
+    updateTimelineCurtains(minMaxContainer: any),
+    hooks: any,
+    unbindMoveEvents()
 }
 
 export interface CursorPositions {

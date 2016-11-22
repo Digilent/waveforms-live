@@ -546,7 +546,6 @@ Licensed under the MIT license.
 
         plot.hooks.drawOverlay.push(function (plot, ctx) {
             update = [];
-            let canvasRef = plot.getCanvas().getContext("2d");
 
             cursors.forEach(function (cursor) {
                 var intersections;
