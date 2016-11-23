@@ -250,8 +250,7 @@ export class TestChartCtrlsPage {
     readLa() {
         this.activeDevice.instruments.la.read([1]).subscribe(
             (data) => {
-                this.chart1.currentBufferArray.push(this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferWriteIndex - 1][0]);
-                this.chart1.drawWaveform(1, this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferWriteIndex - 1][0], true);
+                
             },
             (err) => {
 
@@ -280,27 +279,9 @@ export class TestChartCtrlsPage {
                 this.chart1.clearExtraSeries(numSeries);
                 if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1]);
-                    /*for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
-                        if (this.chart1.oscopeChansActive[i] === true) {
-                            let initial = performance.now();
-                            this.chart1.drawWaveform(i, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1][i], true);
-                            let final = performance.now();
-                            console.log(final - initial);
-                            this.chart1.updateSeriesAnchor(i);
-                        }
-                    }*/
                 }
                 else {
                     this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1]);
-                    /*for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
-                        if (this.chart1.oscopeChansActive[i] === true) {
-                            let initial = performance.now();
-                            this.chart1.drawWaveform(i, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1][i], true);
-                            let final = performance.now();
-                            console.log((final - initial));
-                            this.chart1.updateSeriesAnchor(i);
-                        }
-                    }*/
                 }
                 let start = performance.now();
                 this.chart1.flotDrawWaveform(true, false);

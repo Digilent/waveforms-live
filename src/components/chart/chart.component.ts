@@ -171,6 +171,22 @@ export class SilverNeedleChart {
             axisLabels: {
                 show: true
             },
+            tooltip: {
+                show: true,
+                cssClass: 'flotTip',
+                content: (label, xval, yval, flotItem) => {
+                    let xLabel = flotItem.series.xaxis.options.tickFormatter(xval, flotItem.series.xaxis);
+                    let yLabel = flotItem.series.yaxis.options.tickFormatter(yval, flotItem.series.yaxis);
+                    return xLabel + ' (' + yLabel + ')'; 
+                },
+                onHover: (flotItem, tooltipel) => {
+                    let color = flotItem.series.color;
+                    tooltipel[0].style.borderBottomColor = color;
+                    tooltipel[0].style.borderTopColor = color;
+                    tooltipel[0].style.borderLeftColor = color;
+                    tooltipel[0].style.borderRightColor = color;
+                }
+            },
             zoomPan: {
                 enabled: true,
                 startingIndex: 21
@@ -318,7 +334,6 @@ export class SilverNeedleChart {
 
     seriesAnchorVertPan(e) {
         let yIndexer = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
-        let newYPos = e.clientY;
         let getAxes = this.chart.getAxes();
         let newVal = getAxes[yIndexer].c2p(e.clientY);
         let oldValinNewWindow = getAxes[yIndexer].c2p(this.previousYPos);
@@ -337,7 +352,6 @@ export class SilverNeedleChart {
 
     seriesAnchorTouchVertPan(e) {
         let yIndexer = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
-        let newYPos = e.originalEvent.touches[0].clientY;
         let getAxes = this.chart.getAxes();
         let newVal = getAxes[yIndexer].c2p(e.originalEvent.touches[0].clientY);
         let oldValinNewWindow = getAxes[yIndexer].c2p(this.previousYPos);
@@ -365,11 +379,7 @@ export class SilverNeedleChart {
     drawSeriesAnchors() {
         this.seriesAnchorContainer = [];
         let series = this.chart.getData();
-        let getAxes = this.chart.getAxes();
         for (let i = 0; i < this.numSeries.length; i++) {
-            let yIndexer = 'y' + (this.numSeries[i] === 0 ? '' : (this.numSeries[i] + 1).toString()) + 'axis';
-            let yVal = this.currentBufferArray[this.numSeries[i]].seriesOffset;
-            let y = getAxes[yIndexer].p2c(yVal);
             this.seriesAnchorContainer.push({
                 color: series[this.numSeries[i]].color,
                 seriesNum: this.numSeries[i]
@@ -399,7 +409,10 @@ export class SilverNeedleChart {
                 yaxis: i + 1,
                 lines: {
                     show: (i === 0)
-                }
+                }/*,
+                points: {
+                    show: true
+                }*/
             };
             this.seriesDataContainer.push(dataObject);
             this.yAxisOptionsContainer.push(axisOptions);
@@ -529,12 +542,6 @@ export class SilverNeedleChart {
 
     }
 
-    //Called when a point is selected. Sets active series and updates y axis labels
-    onPointSelect(event) {
-        /*this.updateYAxisLabels(event.context.series.index + 1);
-        this.activeSeries = event.context.series.index + 1;*/
-    }
-
     //Displays the y axis label for the active series and hide the others
     updateYAxisLabels(newActiveSeries: number) {
         //If LA is set as active series don't do anything
@@ -620,7 +627,6 @@ export class SilverNeedleChart {
         this.currentBufferArray = bufferArray;
         if (this.deviceDescriptor !== undefined) {
             this.updateTriggerLine();
-            //this.updateTriggerAnchor(this.numSeries[0]);
             this.applyPointOfInterest(this.numSeries[0]);
         }
     }
@@ -672,28 +678,6 @@ export class SilverNeedleChart {
         this.drawSeriesAnchors();
     }
 
-    //Draws a waveform. If axis does not exist for series number, add new axis and then set data
-    drawWaveform(seriesNum: number, waveform: any, initialDraw: boolean, ignoreAutoscale?: boolean) {
-        /*let bounds = this.chart.xAxis[0].getExtremes();
-        if (bounds.min < waveform.t0 || isNaN(bounds.min) || ignoreAutoscale) { bounds.min = waveform.t0 }
-        if (bounds.max > waveform.dt * waveform.y.length || isNaN(bounds.max) || ignoreAutoscale) { bounds.max = waveform.dt * waveform.y.length }
-        waveform = this.decimateData(seriesNum, waveform, bounds);
-        this.chart.series[seriesNum].setData(waveform.y, false, false, false);
-
-        if (this.timelineView && initialDraw) {
-            let timelineWaveform = this.decimateTimeline(seriesNum, waveform);
-            this.timelineChart.series[seriesNum].setData(timelineWaveform.y, false, false, false);
-            this.timelineChart.series[seriesNum].update({
-                pointStart: timelineWaveform.t0,
-                pointInterval: timelineWaveform.dt
-            }, false);
-            this.timelineChart.redraw(false);
-            let extremesX = this.timelineChart.xAxis[0].getExtremes();
-            let extremesY = this.timelineChart.yAxis[0].getExtremes();
-            this.timelineBounds = [extremesX.min, extremesX.max, extremesY.dataMin, extremesY.dataMax];
-        }*/
-    }
-
     //Remove extra series and axes from the chart
     clearExtraSeries(usedSeries: number[]) {
         this.numSeries = usedSeries;
@@ -718,12 +702,6 @@ export class SilverNeedleChart {
         this.numXCursors = 0;
         this.numYCursors = 0;
         this.cursorPositions = [{ x: null, y: null }, { x: null, y: null }];
-    }
-
-    setTitle(newTitle: string) {
-        /*this.chart.setTitle({
-            text: newTitle
-        });*/
     }
 
     //Get cursor position differences and return an array of data
@@ -1031,98 +1009,6 @@ export class SilverNeedleChart {
         this.cursorsEnabled = true;
     }
 
-    //Called on chart mousedown. Sets either vertical or horizontal pan listener
-    onChartClick(event) {
-        /*this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.panListener);
-        //check cursors enabled to see if the chart is 'interactive'. Added to remove pan from fgen config modal
-        if (event.target.localName === 'rect' && this.oscopeChartInner !== undefined && event.target.id === '' && this.cursorsEnabled) {
-            this.canPan = true;
-            this.xPositionPixels = event.chartX;
-            this.yPositionPixels = event.chartY;
-            if (event.shiftKey) {
-                this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.verticalOffsetListener);
-                this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.verticalOffsetListener);
-            }
-            else {
-                this.oscopeChartInner.nativeElement.addEventListener('mousemove', this.panListener);
-                this.oscopeChartInner.nativeElement.addEventListener('touchmove', this.panListener);
-            }
-        }*/
-    }
-
-    //Called on chart mouseup. Removes pan listeners
-    /*clearMouse() {
-        this.canPan = false;
-        if (this.oscopeChartInner !== undefined) {
-            this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.panListener);
-            this.oscopeChartInner.nativeElement.removeEventListener('mousemove', this.verticalOffsetListener);
-            this.oscopeChartInner.nativeElement.removeEventListener('touchmove', this.panListener);
-            this.oscopeChartInner.nativeElement.removeEventListener('touchmove', this.verticalOffsetListener);
-
-            if (this.timelineView && this.timelineChartInner !== undefined) {
-                this.timelineChartInner.nativeElement.removeEventListener('mousemove', this.timelineWhiteDragListener);
-                this.timelineChartInner.nativeElement.removeEventListener('mousemove', this.timelineDragListener);
-                this.timelineChartInner.nativeElement.removeEventListener('touchmove', this.timelineWhiteDragListener);
-                this.timelineChartInner.nativeElement.removeEventListener('touchmove', this.timelineDragListener);
-                this.inTimelineDrag = false;
-            }
-        }
-    }*/
-
-    //Callback function for panning
-    /*panListener = function (event) {
-        let newVal = this.chart.xAxis[0].toValue(event.chartX) || this.chart.xAxis[0].toValue(event.targetTouches[0].pageX - this.chart.plotLeft);
-        let oldValinNewWindow = this.chart.xAxis[0].toValue(this.xPositionPixels);
-        let difference = newVal - oldValinNewWindow;
-        this.setXExtremes(difference);
-        this.updateCursorLabels();
-        this.updateTriggerAnchor(this.numSeries[0]);
-        this.xPositionPixels = event.chartX || (event.targetTouches[0].pageX - this.chart.plotLeft);
-    }.bind(this);*/
-
-    //Callback function for vertical panning of a series
-    /*verticalOffsetListener = function (event) {
-
-        let newVal = parseFloat(this.chart.yAxis[this.activeSeries - 1].toValue(event.chartY));
-        let oldValinNewWindow = parseFloat(this.chart.yAxis[this.activeSeries - 1].toValue(this.yPositionPixels));
-        let difference = newVal - oldValinNewWindow;
-        let seriesSettings = {
-            seriesNum: this.activeSeries - 1,
-            voltsPerDiv: this.voltDivision[this.activeSeries - 1],
-            voltBase: parseFloat(this.voltBase[this.activeSeries - 1]) - difference
-        };
-        this.setYExtremes(seriesSettings);
-        this.voltBase[this.activeSeries - 1] = parseFloat((parseFloat(this.voltBase[this.activeSeries - 1]) - difference).toFixed(3));
-        this.yPositionPixels = event.chartY;
-
-        this.seriesAnchors[this.activeSeries - 1].translate(this.chart.plotLeft - 12, this.chart.yAxis[this.activeSeries - 1].toPixels(this.currentBufferArray[this.activeSeries - 1].seriesOffset / 1000) - 6);
-    }.bind(this);*/
-
-    //Sets x extremes based on position change from previos position
-    setXExtremes(positionChange: number) {
-        /*let newPos = this.base - positionChange;
-        let min = newPos - this.timeDivision * 5;
-        let max = newPos + this.timeDivision * 5;
-        this.chart.xAxis[0].setExtremes(min, max, true, false);
-        this.base = newPos;
-        if (this.timelineView) {
-            this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
-            let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
-            let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
-            this.updatePlotLines([0, 1], [val1, val2]);
-        }*/
-    }
-
-    //Sets y extremes based on an object containing a voltBase, voltsPerDivision, and a series number
-    setYExtremes(seriesSettings: any) {
-        /*let offset = parseFloat(seriesSettings.voltBase);
-        let min = offset - (parseFloat(seriesSettings.voltsPerDiv) * 5);
-        let max = offset + (parseFloat(seriesSettings.voltsPerDiv) * 5);
-        this.chart.yAxis[seriesSettings.seriesNum].setExtremes(min, max, true, false);
-        this.updateCursorLabels();
-        this.updateSeriesAnchor(seriesSettings.seriesNum);*/
-    }
-
     //Set time settings (base and time/div) from an object containing the base and timeDivision
     setTimeSettings(timeObj: any, autoscale: boolean) {
         this.timeDivision = parseFloat(timeObj.timePerDiv);
@@ -1139,33 +1025,12 @@ export class SilverNeedleChart {
                 max: this.base + 5 * this.timeDivision
             });
         }
-        /*if (this.currentBufferArray[0] !== undefined) {
-            this.chart.xAxis[0].setExtremes(min, max, false, false);
-            for (let i = 0; i < this.oscopeChansActive.length; i++) {
-                if (this.oscopeChansActive[i] === true && this.currentBufferArray[i].y !== undefined) {
-                    this.drawWaveform(i, this.currentBufferArray[i], false, autoscale);
-                }
-            }
-        }
-        else {
-            this.chart.xAxis[0].setExtremes(min, max, true, false);
-        }*/
-
-        /*if (this.timelineView) {
-            this.updatePlotBands([2, 3], [[this.timelineBounds[0], min], [max, this.timelineBounds[1]]]);
-            let val1 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(min) - 5);
-            let val2 = this.timelineChart.xAxis[0].toValue(this.timelineChart.xAxis[0].toPixels(max) + 5);
-            this.updatePlotLines([0, 1], [val1, val2]);
-        }*/
-        /*this.updateCursorLabels();
-        this.updateTriggerAnchor(this.numSeries[0]);*/
     }
 
     //Set series settings based on an object containing the series number, volts per division, and base
     setSeriesSettings(seriesSettings: any) {
         this.voltDivision[seriesSettings.seriesNum] = seriesSettings.voltsPerDiv;
         this.voltBase[seriesSettings.seriesNum] = seriesSettings.voltBase;
-        //this.setYExtremes(seriesSettings);
         let getAxes = this.chart.getAxes();
         let yIndexer = 'y' + (seriesSettings.seriesNum === 0 ? '' : (seriesSettings.seriesNum + 1).toString()) + 'axis';
         getAxes[yIndexer].options.min = this.voltBase[seriesSettings.seriesNum] - 5 * this.voltDivision[seriesSettings.seriesNum];
@@ -1179,12 +1044,6 @@ export class SilverNeedleChart {
         this.updateYAxisLabels(seriesNum);
         this.chart.setActiveYAxis(seriesNum);
         this.activeSeries = seriesNum;
-        /*this.activeSeries = seriesNum;
-        this.updateCursorLabels();
-        this.updateTriggerAnchor(seriesNum);
-        for (let i = 0; i < this.seriesAnchors.length; i++) {
-            this.updateSeriesAnchor(i);
-        }*/
     }
 
     //Autoscale all axes on chart
@@ -1536,73 +1395,12 @@ export class SilverNeedleChart {
         };
     }
 
-    removeSeriesAnchor(seriesNum: number) {
-        /*this.seriesAnchors[seriesNum].destroy();
-        this.seriesAnchors[seriesNum] = undefined;*/
-    }
-
-    removeTriggerAnchor() {
-        /*this.triggerAnchor.destroy();
-        this.triggerAnchor = undefined;*/
-    }
-
-    updateTriggerAnchor(seriesNum: number) {
-        /*if (this.currentBufferArray[seriesNum] === undefined || this.currentBufferArray[seriesNum].triggerPosition === undefined) { return; }
-        if (this.triggerAnchor === undefined) {
-            this.addTriggerAnchor(seriesNum);
-            return;
-        }
-        let timePostion = this.currentBufferArray[seriesNum].triggerPosition * this.currentBufferArray[seriesNum].dt;
-        let xPixel = this.chart.xAxis[0].toPixels(timePostion);
-        if (xPixel < this.chart.plotLeft) {
-            this.removeTriggerAnchor();
-            return;
-        }
-        this.triggerAnchor.translate(xPixel - 1, this.chart.plotTop - 1);*/
-    }
-
-    addTriggerAnchor(seriesNum: number) {
-        /*if (this.triggerAnchor !== undefined) { return; }
-        let position = this.currentBufferArray[seriesNum].triggerPosition;
-        if (position < 0) { return; }
-        let dt = this.currentBufferArray[seriesNum].dt;
-        //TODO add delay in here yo
-        let timePosition = position * dt + 0;
-        let xPixel = this.chart.xAxis[0].toPixels(timePosition);
-        let extremes = this.chart.xAxis[0].getExtremes();
-        if (isNaN(xPixel) || timePosition > extremes.max || timePosition < extremes.min) {
-            return;
-        }
-        let path = ['M', 0, 0, 'L', 5, -9, -5, -9, 'Z'];*/
-        /*this.triggerAnchor = this.chart.renderer.path(path)
-            .attr({
-                'stroke-width': 1,
-                stroke: 'black',
-                fill: 'green',
-                zIndex: 3,
-                id: ('triggerAnchor')
-            })
-            .add();
-        this.triggerAnchor.translate(xPixel - 1, this.chart.plotTop - 1);*/
-    }
-
     updateTriggerLine() {
         let cursors = this.chart.getCursors();
         if (cursors.length === 0) {
             this.addTriggerLine(this.numSeries[0]);
             return;
         }
-        let trigPosition = this.currentBufferArray[this.numSeries[0]].triggerPosition;
-        if (trigPosition < 0) {
-            //TODO get rid of it or not?
-            /*this.triggerPlotLine.destroy();
-            this.timelineTriggerPlotLine.destroy();
-            this.triggerPlotLine = undefined;
-            this.timelineTriggerPlotLine = undefined;
-            return;*/
-        }
-        let value = trigPosition * this.currentBufferArray[this.numSeries[0]].dt;
-        //Now set cursor if we want. Not sure yet.
     }
 
     addTriggerLine(seriesNum) {
@@ -1630,22 +1428,6 @@ export class SilverNeedleChart {
             this.timelineChart.addCursor(timelineOptions);
             //add to timeline as well
         }
-    }
-
-    addSeriesAnchor(seriesNum: number) {
-
-    }
-
-    updateSeriesAnchor(seriesNum: number) {
-        /*if (this.oscopeChansActive[seriesNum] === false || this.currentBufferArray[seriesNum] === undefined || this.currentBufferArray[seriesNum].y === undefined) { return; }
-        if (this.seriesAnchors[seriesNum] === undefined) {
-            this.addSeriesAnchor(seriesNum);
-            return;
-        }
-        else if (this.oscopeChansActive[seriesNum] === false) { return; }
-        let offset = this.currentBufferArray[seriesNum].seriesOffset / 1000;
-        this.seriesAnchors[seriesNum].translate(this.chart.plotLeft - 12, this.chart.yAxis[seriesNum].toPixels(offset) - 6);
-        this.yPositionPixels = this.chart.yAxis[seriesNum].toPixels(offset);*/
     }
 
     applyPointOfInterest(seriesNum: number) {

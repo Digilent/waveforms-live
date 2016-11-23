@@ -56,16 +56,14 @@ export class TimelineComponent {
         }
         console.log('loading buffer: ' + buffCalc);
         this.chart.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[buffCalc]);
+        let numSeries = [];
         for (let i = 0; i < this.chart.oscopeChansActive.length; i++) {
             if (this.activeDevice.instruments.osc.dataBuffer[buffCalc][i] !== undefined && this.activeDevice.instruments.osc.dataBuffer[buffCalc][i].y !== undefined) {
-                this.chart.drawWaveform(i, this.activeDevice.instruments.osc.dataBuffer[buffCalc][i], true, false);
-                this.chart.setActiveSeries(i + 1);
-            }
-            else {
-                this.chart.chart.series[i].setData([], true);
-                this.chart.timelineChart.series[i].setData([], true);
+                numSeries.push(i);
             }
         }
+        this.chart.clearExtraSeries(numSeries);
+        this.chart.flotDrawWaveform(true, false);
     }
     
 }

@@ -82,6 +82,15 @@
     background-color: #535353;
 }
 
+.flotTip
+{
+    border-radius: 0px !important;
+    border-width: 2px !important;
+    background-color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 12px !important;
+    color: black !important;
+}
+
 //Remove text from collapse buttons also this is cool
 @media screen and (max-width: 1200px) {
     .chart-component-wrapper .collapse-button {

@@ -65,7 +65,8 @@ export class ModalFgenPage {
     }
 
     parseCsv(fileAsText: string) {
-        let points = fileAsText.split('\n');
+        //TODO - parse for flot
+        /*let points = fileAsText.split('\n');
         console.log(points.length);
         let pointData = points[0].split(',');
         let pointData2 = points[1].split(',');
@@ -107,7 +108,7 @@ export class ModalFgenPage {
         this.chart.setCurrentBuffer(waveformComponentArray);
         for (let i = 0; i < dataContainer.length; i++) {
             this.chart.drawWaveform(i, waveformComponentArray[i], true);
-        }
+        }*/
     }
 
     //Called when fgen modal is closed. Returns data
@@ -137,7 +138,6 @@ export class ModalFgenPage {
 
     //Initialize chart for awg config
     initChart(chart: Object) {
-        this.chart.setTitle('AWG Configuration');
         this.chart.clearExtraSeries([0]);
         this.drawWave();
     }
@@ -179,7 +179,8 @@ export class ModalFgenPage {
             waveform.y[i] = parseFloat(this.fgenComponent.amplitude) * Math.sin(((Math.PI * 2) / (this.numPoints / 2)) * i) + parseFloat(this.fgenComponent.offset);
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
-        this.chart.drawWaveform(0, waveform, true);
+        this.chart.clearExtraSeries([0]);
+        this.chart.flotDrawWaveform(true, false);
     }
 
     //Draws ramp up 
@@ -203,7 +204,8 @@ export class ModalFgenPage {
                 parseFloat(this.fgenComponent.offset);
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
-        this.chart.drawWaveform(0, waveform, true);
+        this.chart.clearExtraSeries([0]);
+        this.chart.flotDrawWaveform(true, false);
     }
 
     //Draws dc 
@@ -221,7 +223,8 @@ export class ModalFgenPage {
             waveform.y[i] = parseFloat(this.fgenComponent.offset);
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
-        this.chart.drawWaveform(0, waveform, true);
+        this.chart.clearExtraSeries([0]);
+        this.chart.flotDrawWaveform(true, false);
     }
 
     //Draws triangle wave
@@ -254,7 +257,8 @@ export class ModalFgenPage {
             waveform.y[i + this.numPoints / 2] = (waveform.y[i]);
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
-        this.chart.drawWaveform(0, waveform, true);
+        this.chart.clearExtraSeries([0]);
+        this.chart.flotDrawWaveform(true, false);
     }
 
     //Draws ramp down
@@ -278,7 +282,8 @@ export class ModalFgenPage {
                 parseFloat(this.fgenComponent.amplitude) + parseFloat(this.fgenComponent.offset);
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
-        this.chart.drawWaveform(0, waveform, true);
+        this.chart.clearExtraSeries([0]);
+        this.chart.flotDrawWaveform(true, false);
     }
 
     //Not yet implemented
@@ -323,6 +328,7 @@ export class ModalFgenPage {
             waveform.y[i] = waveform.y[j];
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
-        this.chart.drawWaveform(0, waveform, true);
+        this.chart.clearExtraSeries([0]);
+        this.chart.flotDrawWaveform(true, false);
     }
 }
