@@ -154,6 +154,54 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         });
     }
 
+    setRegularWaveformJson(chans: number[], settings: SettingsObject[]) {
+        let command = {
+            "awg": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.awg[chans[index]] =
+                [
+                    {
+                        command: "setRegularWaveform",
+                        signalType: settings[index].signalType,
+                        signalFreq: Math.floor(settings[index].signalFreq * 1000),
+                        vpp: Math.floor(settings[index].vpp * 1000),
+                        vOffset: Math.floor(settings[index].vOffset * 1000)
+                    }
+                ]
+        });
+
+        return command;
+    }
+
+    setRegularWaveformParse(chan, responseObject) {
+        console.log(responseObject);
+        return 'Set regular successful';
+    }
+
+    runJson(chans: number[]) {
+        let command = {
+            "awg": {}
+        }
+        chans.forEach((element, index, array) => {
+            command.awg[chans[index]] =
+                [
+                    {
+                        command: "run"
+                    }
+                ]
+        });
+        return command;
+    }
+    //TODO return objects with statusCodes in parse functions
+    runParse(chan, responseObject) {
+        console.log(responseObject);
+        if (responseObject.statusCode > 0) {
+            return 'ERR'
+        }
+        return 'awg run successful';
+    }
+
     run(chans: number[]): Observable<any> {
         let command = {
             "awg": {}

@@ -302,7 +302,9 @@ export class TestChartCtrlsPage {
                 else {
                     console.log('attempting read again');
                     this.readAttemptCount++;
-                    this.readOscope();
+                    setTimeout(() => {
+                        this.readOscope();
+                    }, 100);
                 }
             },
             () => {

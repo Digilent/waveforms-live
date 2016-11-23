@@ -32,16 +32,21 @@ export class SimulatedAwgComponent {
         this.vOffsets[chan] = commandObject.vOffset;
         this.simulatedDeviceService.setAwgSettings(commandObject, chan);
         return {
-            statusCode: 0,
-            wait: 0
+            "command":"setRegularWaveform",
+            "statusCode":0,
+            "actualSignalFreq": commandObject.signalFreq,
+            "actualVpp": commandObject.vpp,
+            "actualVOffset":commandObject.vOffset,
+            "wait": 0
         };
     }
 
     run(chan) {
         this.simulatedDeviceService.setTriggerArmed(true);
         return {
-            statusCode: 0,
-            wait: 0
+            "command":"run",
+            "statusCode":0,
+            "wait":0
         }
     }
 
@@ -49,8 +54,9 @@ export class SimulatedAwgComponent {
         console.log('stop');
         this.simulatedDeviceService.setTriggerArmed(false);
         return {
-            statusCode: 0,
-            wait: 0
+            "command":"stop",
+            "statusCode":0,
+            "wait":0
         };
     }
 }

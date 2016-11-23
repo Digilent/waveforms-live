@@ -67,6 +67,7 @@ export class DeviceComponent {
             for (let instrument in commandObject) {
                 commandToBeSent[instrument] = {};
                 let functionNames = Object.keys(commandObject[instrument]);
+                console.log(commandObject, functionNames);
                 let flag = false;
                     for (let element of functionNames) {
                         let responseJson;

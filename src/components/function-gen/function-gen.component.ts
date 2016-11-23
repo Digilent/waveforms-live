@@ -89,8 +89,61 @@ export class FgenComponent {
             };
         }
         if (!this.powerOn) {
-            this.setRegularWaveform(chans, settings);
-            this.run(chans);
+            let singleCommand = {
+                awg: {
+                    setRegularWaveform: [chans, settings],
+                    run: [chans]
+                }
+            }
+
+            /*if (setOscParams) {
+                singleCommand['osc'] = {};
+                singleCommand['osc']['setParameters'] = [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]];
+            }
+            singleCommand['trigger'] = {};
+            if (setTrigParams) {
+                singleCommand['trigger']['setParameters'] = [
+                    [1],
+                    [
+                        {
+                            instrument: trigSourceArr[0].toLowerCase(),
+                            channel: parseInt(trigSourceArr[2]),
+                            type: trigType,
+                            lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
+                            upperThreshold: parseInt(this.triggerComponent.upperThresh)
+                        }
+                    ],
+                    [
+                        {
+                            osc: readArray[0],
+                            //la: [1]
+                        }
+                    ]
+                ];
+            }*/
+            /*this.setRegularWaveform(chans, settings);
+            this.run(chans);*/
+            console.log(singleCommand);
+            this.activeDevice.multiCommand(singleCommand).subscribe(
+                (data) => {
+                    console.log(data);
+                },
+                (err) => {
+                    console.log(err);
+                    console.log('AWG Set Regular and Run Failed');
+                    this.stop(chans);
+                    let toast = this.toastCtrl.create({
+                        message: 'Error Setting AWG Parameters. Please Try Again. If Problem Persists, Reset The Device',
+                        showCloseButton: true,
+                        position: 'bottom'
+                    });
+                    toast.present();
+                },
+                () => {
+                    console.log('multi command awg complete');
+                    this.powerOn = !this.powerOn;
+                }
+            );
         }
         else {
             this.stop(chans);

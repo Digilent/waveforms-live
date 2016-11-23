@@ -1,14 +1,14 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-import {InstrumentComponent} from '../instrument.component';
-import {OscChannelComponent} from './osc-channel.component';
-import {WaveformComponent} from '../../data-types/waveform';
+import { InstrumentComponent } from '../instrument.component';
+import { OscChannelComponent } from './osc-channel.component';
+import { WaveformComponent } from '../../data-types/waveform';
 
 //Services
-import {TransportService} from '../../../services/transport/transport.service';
+import { TransportService } from '../../../services/transport/transport.service';
 
 @Injectable()
 export class OscInstrumentComponent extends InstrumentComponent {
@@ -164,8 +164,17 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         observer.complete();
                         return;
                     }
+                    console.log(command);
                     for (let channel in command.osc) {
-                        let binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex + command.osc[channel][0].binaryOffset, binaryIndexStringLength + 2 + binaryIndex + command.osc[channel][0].binaryOffset + command.osc[channel][0].binaryLength));
+                        let binaryData;
+                        try {
+                            binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex + command.osc[channel][0].binaryOffset, binaryIndexStringLength + 2 + binaryIndex + command.osc[channel][0].binaryOffset + command.osc[channel][0].binaryLength));
+                        }
+                        catch (e) {
+                            console.log(e);
+                            observer.error(e);
+                            observer.complete();
+                        }
                         let untypedArray = Array.prototype.slice.call(binaryData);
                         let scaledArray = untypedArray.map((voltage) => {
                             return voltage / 1000;
@@ -182,7 +191,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                             data: pointContainer,
                             pointOfInterest: command.osc[channel][0].pointOfInterest,
                             triggerPosition: command.osc[channel][0].triggerIndex,
-                            seriesOffset: command.osc[channel][0].actualVOffset
+                            seriesOffset: command.osc[channel][0].actualVOffset / 1000
                         });
                     }
                     this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
