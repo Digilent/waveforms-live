@@ -95,34 +95,6 @@ export class FgenComponent {
                     run: [chans]
                 }
             }
-
-            /*if (setOscParams) {
-                singleCommand['osc'] = {};
-                singleCommand['osc']['setParameters'] = [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]];
-            }
-            singleCommand['trigger'] = {};
-            if (setTrigParams) {
-                singleCommand['trigger']['setParameters'] = [
-                    [1],
-                    [
-                        {
-                            instrument: trigSourceArr[0].toLowerCase(),
-                            channel: parseInt(trigSourceArr[2]),
-                            type: trigType,
-                            lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
-                            upperThreshold: parseInt(this.triggerComponent.upperThresh)
-                        }
-                    ],
-                    [
-                        {
-                            osc: readArray[0],
-                            //la: [1]
-                        }
-                    ]
-                ];
-            }*/
-            /*this.setRegularWaveform(chans, settings);
-            this.run(chans);*/
             console.log(singleCommand);
             this.activeDevice.multiCommand(singleCommand).subscribe(
                 (data) => {
@@ -133,8 +105,9 @@ export class FgenComponent {
                     console.log('AWG Set Regular and Run Failed');
                     this.stop(chans);
                     let toast = this.toastCtrl.create({
-                        message: 'Error Setting AWG Parameters. Please Try Again. If Problem Persists, Reset The Device',
+                        message: 'Error Setting AWG Parameters. The AWG May Have Been Running And Has Been Stopped. Please Try Again.',
                         showCloseButton: true,
+                        duration: 5000,
                         position: 'bottom'
                     });
                     toast.present();
@@ -147,22 +120,6 @@ export class FgenComponent {
         }
         else {
             this.stop(chans);
-            /*let numPoints = 30000;
-            let waveform = {
-                y: [],
-                t0: 0,
-                dt: 1
-            };
-            let period = 0;
-            if (parseFloat(this.frequency) != 0) {
-                period = 1 / parseFloat(this.frequency);
-            }
-            let dt = (2 * period) / numPoints;
-            waveform.dt = dt;
-            for (let i = 0; i < numPoints; i++) {
-                waveform.y[i] = parseFloat(this.amplitude) * Math.sin(((Math.PI * 2) / (numPoints / 2)) * i) + parseFloat(this.offset);
-            }
-            this.setArbitraryWaveform(chans, [waveform], ['I16']);*/
         }
     }
 

@@ -175,8 +175,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
     }
 
     setRegularWaveformParse(chan, responseObject) {
-        console.log(responseObject);
-        return 'Set regular successful';
+        return responseObject;
     }
 
     runJson(chans: number[]) {
@@ -195,11 +194,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
     }
     //TODO return objects with statusCodes in parse functions
     runParse(chan, responseObject) {
-        console.log(responseObject);
-        if (responseObject.statusCode > 0) {
-            return 'ERR'
-        }
-        return 'awg run successful';
+        return responseObject;
     }
 
     run(chans: number[]): Observable<any> {

@@ -173,6 +173,10 @@ export class DeviceComponent {
                             for (let channel in multiCommandResponse[instrument]) {
                                 for (let responseObject of multiCommandResponse[instrument][channel]) {
                                     try {
+                                        if (responseObject.statusCode > 0) {
+                                            observer.error('StatusCode Error.\nStatusCode: ' + responseObject.statusCode);
+                                            flag = true;
+                                        }
                                         observer.next(this.instruments[instrument][responseObject.command + 'Parse'](channel, responseObject));
                                     }
                                     catch (e) {
@@ -180,7 +184,7 @@ export class DeviceComponent {
                                         flag = true;
                                         observer.error('Error in multiCommand().\nThis is most likely due to an undefined function.\nUnknown function name is: ' + responseObject.command + 'Parse.\nAuto-generated error: ' + e);
                                     }
-                                    if (flag) return;
+                                    if (flag) { return; }
                                 }
                             }
                         }
