@@ -15,6 +15,7 @@ import { Chart, CursorPositions } from './chart.interface';
 
 declare var $: any;
 declare var mathFunctions: any;
+declare var decimateModule: any;
 
 @Component({
     selector: 'silverNeedleChart',
@@ -600,6 +601,15 @@ export class SilverNeedleChart {
             seriesOffset: waveform.seriesOffset
         };
         return newWaveform;
+        /*console.log(mathFunctions);
+        console.log(decimateModule);
+        decimateModule.initData(['time', 'Series ' + seriesNum]);
+
+        decimateModule.appendData(this.currentBufferArray[seriesNum].data);
+
+        let data = decimateModule.getData(0, 10, this.chart.width());
+        console.log(data);
+        return data[0]*/
     }
 
     decimateTimeline(seriesNum: number, waveform: any) {
