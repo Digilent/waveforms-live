@@ -311,6 +311,23 @@
                 if (e.originalEvent.touches.length === 0) {
                     plot.getPlaceholder().unbind('touchmove', touchMove);
                 }
+                var xaxis = plot.getAxes().xaxis;
+                var timePerDiv = (xaxis.max - xaxis.min) / 10;
+                var count = 0;
+                while (secsPerDivisionValues[count] < timePerDiv) {
+                    count++;
+                }
+                startingXIndex = count;
+                infoContainer = {
+                    min: xaxis.min,
+                    max: xaxis.max,
+                    mid: (xaxis.max + xaxis.min) / 2,
+                    perDivVal: timePerDiv,
+                    perDivArrayIndex: startingXIndex,
+                    axisNum: 1,
+                    axis: 'xaxis'
+                };
+                plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
                 previousXPosition = e.originalEvent.touches[0].clientX;
                 multiTouchEventContainer.startingMultiTouch = true;
             }

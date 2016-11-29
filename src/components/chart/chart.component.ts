@@ -232,6 +232,7 @@ export class SilverNeedleChart {
             if (wheelData.axis === 'xaxis') {
                 this.activeTPDIndex = wheelData.perDivArrayIndex;
                 this.timeDivision = this.secsPerDivVals[this.activeTPDIndex];
+                this.base = wheelData.mid;
             }
             else {
                 this.activeVPDIndex[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
