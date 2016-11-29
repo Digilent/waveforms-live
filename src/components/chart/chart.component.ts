@@ -178,7 +178,7 @@ export class SilverNeedleChart {
                 content: (label, xval, yval, flotItem) => {
                     let xLabel = flotItem.series.xaxis.options.tickFormatter(xval, flotItem.series.xaxis);
                     let yLabel = flotItem.series.yaxis.options.tickFormatter(yval, flotItem.series.yaxis);
-                    return xLabel + ' (' + yLabel + ')'; 
+                    return xLabel + ' (' + yLabel + ')';
                 },
                 onHover: (flotItem, tooltipel) => {
                     let color = flotItem.series.color;
@@ -258,11 +258,13 @@ export class SilverNeedleChart {
                     return;
                 }
             }
-            this.overSeriesAnchor = {
-                over: false,
-                seriesNum: null
+            if (this.overSeriesAnchor.over) {
+                this.overSeriesAnchor = {
+                    over: false,
+                    seriesNum: null
+                }
+                this.chart.getPlaceholder().css('cursor', 'default');
             }
-            this.chart.getPlaceholder().css('cursor', 'default');
         });
 
         $("#flotContainer").bind("mousedown", (event) => {
