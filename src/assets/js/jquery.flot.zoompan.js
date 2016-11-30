@@ -35,23 +35,12 @@
     var panType;
     var wheelZoomX;
     var multiTouchEventContainer = {
-        firstFingerLeft: false,
         midPoint: null,
         previousX1: null,
         previousX2: null,
         previousY1: null,
         previousY2: null,
-        startingMultiTouch: true,
-        initialXDistance: null,
-        initialYDistance: null,
-        lastSuccessfulEventPositions: {
-            previousX1: null,
-            previousY1: null,
-            previousX2: null,
-            previousY2: null,
-            xDistance: null,
-            yDistance: null
-        },
+        startingMultiTouch: true
     };
 
     //Variables exposed in options
@@ -72,7 +61,7 @@
             if (options.zoomPan.enabled) {
                 console.log('zoom pan plugin enabled');
 
-                //Read values. Options will be default defined above unless specified by developer
+                //Read values. Options will be default defined above unless specified in options
                 selectedYAxis = options.zoomPan.selectedYAxis;
                 secsPerDivisionValues = options.zoomPan.secsPerDivisionValues;
                 voltsPerDivisionValues = options.zoomPan.voltsPerDivisionValues;
@@ -176,9 +165,6 @@
 
             function touchDown(e) {
                 //Use e.originalEvent since jquery does stuff to the event object.
-                console.log('touchdown');
-                console.log(e);
-                //alert(e.originalEvent.touches.length);
                 if (e.originalEvent.touches.length === 1) {
                     previousXPosition = e.originalEvent.touches[0].clientX;
                     previousYPosition = e.originalEvent.touches[0].clientY;
@@ -195,8 +181,6 @@
                 var positionY1 = e.originalEvent.touches[0].clientY;
                 var positionY2 = e.originalEvent.touches[1].clientY;
                 var midPoint = (positionX1 + positionX2) / 2;
-                var xDistance = Math.abs(positionX1 - positionX2);
-                var yDistance = Math.abs(positionY1 - positionY2);
 
                 //Set initial tpd and vpd values
                 var getAxes = plot.getAxes();
@@ -208,20 +192,11 @@
                 if (multiTouchEventContainer.startingMultiTouch) {
                     //new multitouch event. Setup event container and exit.
                     multiTouchEventContainer.startingMultiTouch = false;
-                    multiTouchEventContainer.initialXDistance = Math.abs(positionX1 - positionX2);
-                    multiTouchEventContainer.initialYDistance = Math.abs(positionY1 - positionY2);
-                    multiTouchEventContainer.lastSuccessfulEventPositions.previousX1 = positionX1;
-                    multiTouchEventContainer.lastSuccessfulEventPositions.previousY1 = positionY1;
-                    multiTouchEventContainer.lastSuccessfulEventPositions.previousX2 = positionX2;
-                    multiTouchEventContainer.lastSuccessfulEventPositions.previousY2 = positionY2;
-                    multiTouchEventContainer.lastSuccessfulEventPositions.xDistance = xDistance;
-                    multiTouchEventContainer.lastSuccessfulEventPositions.yDistance = yDistance;
                     multiTouchEventContainer.previousX1 = positionX1;
                     multiTouchEventContainer.previousY1 = positionY1;
                     multiTouchEventContainer.previousX2 = positionX2;
                     multiTouchEventContainer.previousY2 = positionY2;
                     multiTouchEventContainer.midPoint = midPoint;
-                    firstFingerLeft = positionX1 < positionX2;
                     return;
                 }
                 else {
@@ -233,12 +208,12 @@
                     var max = oldUnitRight + newUnitPerPix * (plotWidth - (positionX2 - offsets.left));
                     var min = oldUnitLeft - newUnitPerPix * (positionX1 - offsets.left);
                 }
-                getAxes.xaxis.options.min = min;
-                getAxes.xaxis.options.max = max;
                 if (isNaN(min) || isNaN(max)) {
                     alert('Error Setting Window');
                     return;
                 }
+                getAxes.xaxis.options.min = min;
+                getAxes.xaxis.options.max = max;
                 plot.setupGrid();
                 plot.draw();
                 var infoContainer = {
@@ -273,12 +248,12 @@
                 var newPos = base - difference;
                 var min = newPos - timePerDivision * 5;
                 var max = newPos + timePerDivision * 5;
-                getAxes.xaxis.options.min = min;
-                getAxes.xaxis.options.max = max;
                 if (isNaN(min) || isNaN(max)) {
                     alert('nan');
                     return;
                 }
+                getAxes.xaxis.options.min = min;
+                getAxes.xaxis.options.max = max;
                 plot.setupGrid();
                 plot.draw();
                 var infoContainer = {
@@ -314,7 +289,7 @@
                 var xaxis = plot.getAxes().xaxis;
                 var timePerDiv = (xaxis.max - xaxis.min) / 10;
                 var count = 0;
-                while (secsPerDivisionValues[count] < timePerDiv) {
+                while (secsPerDivisionValues[count] < timePerDiv && count < secsPerDivisionValues.length) {
                     count++;
                 }
                 startingXIndex = count;

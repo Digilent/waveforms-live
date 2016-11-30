@@ -9,6 +9,9 @@ import { BridgeModalPage } from '../../../../pages/bridge-modal/bridge-modal';
 //Components
 import { GenPopover } from '../../../../components/gen-popover/gen-popover.component';
 
+//Interfaces
+import { DeviceCardInfo } from './device-manager-tab1.interface';
+
 //Services
 import { DeviceManagerService } from '../../../../services/device/device-manager.service';
 import { StorageService } from '../../../../services/storage/storage.service';
@@ -31,7 +34,7 @@ export class Tab1 {
     public selectedSimulatedDevice: string = 'Select a Device';
     public deviceBridgeAddress = 'http://localhost:56089';
 
-    public devices = [];
+    public devices: DeviceCardInfo[] = [];
 
     constructor(_popoverCtrl: PopoverController,
         _deviceManagerService: DeviceManagerService,
@@ -106,6 +109,16 @@ export class Tab1 {
                 return true;
             }
         }
+        return false;
+    }
+
+    checkIfMatchingBridge(bridgeAddress: string) {
+        for (let i = 0; i < this.devices.length; i++) {
+            if (this.devices[i].deviceBridgeAddress === bridgeAddress && this.devices[i].bridge) {
+                return true;
+            }
+        }
+        return false;
     }
 
     checkIfMatchingLocal(device: string) {
@@ -119,9 +132,33 @@ export class Tab1 {
 
     attemptBridgeConnect(deviceBridgeAddress: string) {
         //Note: no need to check if device exists since it depends on selection of device from config utility
+        if (this.checkIfMatchingBridge(deviceBridgeAddress)) {
+            let toast = this.toastCtrl.create({
+                message: 'Agent Is Added Already. Use Settings To Configure Active Device',
+                showCloseButton: true,
+                position: 'bottom'
+            });
+            toast.present();
+            return;
+        }
+
         this.connectingToDevice = true;
         this.deviceManagerService.connectBridge(deviceBridgeAddress).subscribe(
             (success) => {
+                let start = performance.now();
+                let finish;
+                this.deviceManagerService.transport.writeRead('/config', JSON.stringify({
+                    "agent": [
+                        {
+                            "command": "getInfo"
+                        }
+                    ]
+                }), 'json').subscribe((data) => {
+                    finish = performance.now();
+                    console.log('get info latency');
+                    console.log(finish - start);
+                    console.log(data);
+                });
                 this.connectingToDevice = false;
                 console.log(success);
                 let modal = this.modalCtrl.create(BridgeModalPage, {
@@ -190,7 +227,9 @@ export class Tab1 {
                     {
                         deviceDescriptor: success.device[0],
                         ipAddress: ipAddress,
-                        hostname: 'Hostname'
+                        hostname: 'Hostname',
+                        bridge: false,
+                        deviceBridgeAddress: null
                     }
                 );
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
@@ -238,7 +277,9 @@ export class Tab1 {
                             {
                                 deviceDescriptor: success.device[0],
                                 ipAddress: 'local',
-                                hostname: 'Simulated ' + this.selectedSimulatedDevice
+                                hostname: 'Simulated ' + this.selectedSimulatedDevice,
+                                bridge: false,
+                                deviceBridgeAddress: null
                             }
                         );
                         this.storage.saveData('savedDevices', JSON.stringify(this.devices));

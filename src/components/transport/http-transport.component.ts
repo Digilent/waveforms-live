@@ -19,6 +19,9 @@ export class HttpTransportComponent extends TransportComponent {
     public dataSource;
     public dataSourceSubscription;
 
+    public start;
+    public finish;
+
     constructor(_rootUri: string) {
         console.log('Transport HTTP Contructor');
         super();
@@ -44,17 +47,20 @@ export class HttpTransportComponent extends TransportComponent {
 
 
             // We define what will happen if the data are successfully sent
-            XHR.addEventListener("load", function (event: MyEventResponse) {
+            XHR.addEventListener("load", (event: MyEventResponse) => {
+                this.finish = performance.now();
+                console.log('from start to fin');
+                console.log(this.finish - this.start);
                 observer.next(event.currentTarget.response);
                 observer.complete();
             });
 
             // We define what will happen in case of error
-            XHR.addEventListener("error", function (event) {
+            XHR.addEventListener("error", (event) => {
                 observer.error('TX Error: ', event);
             });
 
-            XHR.addEventListener("timeout", function (event) {
+            XHR.addEventListener("timeout", (event) => {
                 observer.error('HTTP Timeout: ', event);
             });
 
@@ -74,6 +80,7 @@ export class HttpTransportComponent extends TransportComponent {
             XHR.responseType = 'arraybuffer';
             
             XHR.send(body);
+            this.start = performance.now();
             console.log('command sent');
         });
     }

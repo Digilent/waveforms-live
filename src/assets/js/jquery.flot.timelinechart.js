@@ -43,7 +43,7 @@
             if (options.timelineChart.enabled) {
                 console.log('timeline plugin enabled');
 
-                //Read values. Options will be default defined above unless specified by developer
+                //Read values. Options will be default defined above unless specified by options
                 secsPerDivisionValues = options.timelineChart.secsPerDivisionValues;
                 startingXIndex = options.timelineChart.startingXIndex;
                 existingChartRef = options.timelineChart.existingChartRef;

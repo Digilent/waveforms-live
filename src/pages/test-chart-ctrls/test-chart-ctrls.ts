@@ -57,6 +57,11 @@ export class TestChartCtrlsPage {
         upperThreshold: null
     };
 
+    //TODO REMOVE this
+    public startTime;
+    public finishTime;
+    public singleClickTime;
+
     constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController, _app: App, _platform: Platform) {
         this.toastCtrl = _toastCtrl;
         this.app = _app;
@@ -126,6 +131,7 @@ export class TestChartCtrlsPage {
 
     //Run osc single
     singleClick(forceWholeCommand?: boolean) {
+        this.singleClickTime = performance.now();
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
         console.log('single clicked');
         if (this.chart1.oscopeChansActive.indexOf(true) === -1 ) {
@@ -224,7 +230,6 @@ export class TestChartCtrlsPage {
         /*if (this.triggerComponent.edgeDirection === 'off') {
             singleCommand['trigger']['forceTrigger'] = [[1]];
         }*/
-
         this.activeDevice.multiCommand(singleCommand).subscribe(
             (data) => {
                 console.log(data);
@@ -275,9 +280,16 @@ export class TestChartCtrlsPage {
                 readArray.push(i + 1);
             }
         }
+        this.startTime = this.startTime == null ? performance.now() : this.startTime;
         this.activeDevice.instruments.osc.read(readArray).subscribe(
             (data) => {
-
+                this.finishTime = performance.now();
+                console.log('read latency: ');
+                console.log(this.finishTime - this.startTime);
+                console.log('total latency: ');
+                console.log(this.finishTime - this.singleClickTime);
+                this.startTime = null;
+                this.finishTime = null;
                 this.readAttemptCount = 0;
                 let numSeries = [];
                 for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
