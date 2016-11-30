@@ -54,6 +54,10 @@ export class HttpTransportComponent extends TransportComponent {
                 observer.error('TX Error: ', event);
             });
 
+            XHR.addEventListener("timeout", function (event) {
+                observer.error('HTTP Timeout: ', event);
+            });
+
 
             // We set up our request
             XHR.open("POST", uri);
@@ -63,6 +67,8 @@ export class HttpTransportComponent extends TransportComponent {
             else if (dataType === 'binary') {
                 XHR.setRequestHeader("Content-Type", "application/octet-stream");
             }
+
+            XHR.timeout = 4000;
             
             //Set resposne type as arraybuffer to receive response as bytes
             XHR.responseType = 'arraybuffer';

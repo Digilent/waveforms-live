@@ -117,7 +117,6 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
     }
 
     singleParse(chan, command) {
-        console.log(command);
         return 'single channel ' + chan + ' is done';
     }
 

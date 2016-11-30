@@ -1,15 +1,15 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-import {DeviceComponent} from '../../components/device/device.component';
+import { DeviceComponent } from '../../components/device/device.component';
 
 //Services
-import {TransportService} from '../transport/transport.service';
+import { TransportService } from '../transport/transport.service';
 
 //Interfaces
-import {MyEventResponse} from '../../components/transport/http-transport.interface';
+import { MyEventResponse } from '../../components/transport/http-transport.interface';
 
 @Injectable()
 export class DeviceManagerService {
@@ -47,7 +47,7 @@ export class DeviceManagerService {
                         observer.error(error);
                     }
                     console.log(response);
-                    
+
                     observer.next(response);
                     observer.complete();
                 },
@@ -55,8 +55,44 @@ export class DeviceManagerService {
                     observer.error(err);
                 },
                 () => {
-                     observer.complete();
+                    observer.complete();
                 });
+        });
+    }
+
+    connectBridge(uri: string): Observable<any> {
+        return Observable.create((observer) => {
+
+            this.transport.setUri(uri);
+            let command = {
+                "agent": [
+                    {
+                        "command": "enumerateDevices"
+                    }
+                ]
+            };
+
+            this.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
+                (data) => {
+                    let response;
+                    try {
+                        response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(data.slice(0))));
+                    }
+                    catch (error) {
+                        observer.error(error);
+                    }
+                    console.log(response);
+
+                    observer.next(response);
+                    observer.complete();
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            );
         });
     }
 

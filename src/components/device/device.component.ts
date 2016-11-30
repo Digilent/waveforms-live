@@ -174,7 +174,8 @@ export class DeviceComponent {
                                 for (let responseObject of multiCommandResponse[instrument][channel]) {
                                     try {
                                         if (responseObject.statusCode > 0) {
-                                            observer.error('StatusCode Error.\nStatusCode: ' + responseObject.statusCode);
+                                            console.log('StatusCode Error!');
+                                            observer.error(responseObject);
                                             flag = true;
                                         }
                                         observer.next(this.instruments[instrument][responseObject.command + 'Parse'](channel, responseObject));

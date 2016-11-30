@@ -1398,9 +1398,13 @@ export class SilverNeedleChart {
 
     calculateDataFromWindow() {
         //100 points per division
-        let numPoints = 1000;
+        let numPoints = this.chart.width();
         //Need to sample at 100 times in 1 time division
-        let sampleFreq = 100 * (1 / this.secsPerDivVals[this.activeTPDIndex]);
+        let sampleFreq = (numPoints / 10) * (1 / this.secsPerDivVals[this.activeTPDIndex]);
+
+        numPoints = Math.min(numPoints * 2, this.deviceDescriptor.instruments.osc.chans[0].bufferSizeMax);
+
+        sampleFreq = Math.min(Math.max(sampleFreq, this.deviceDescriptor.instruments.osc.chans[0].sampleFreqMin / 1000), this.deviceDescriptor.instruments.osc.chans[0].sampleFreqMax / 1000);
 
         return {
             bufferSize: numPoints,

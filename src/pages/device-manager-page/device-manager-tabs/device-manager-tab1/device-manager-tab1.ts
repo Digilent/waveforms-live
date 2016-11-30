@@ -4,6 +4,7 @@ import { PopoverController, App, ToastController, NavController, ModalController
 //Pages
 import { TestChartCtrlsPage } from '../../../../pages/test-chart-ctrls/test-chart-ctrls';
 import { DeviceConfigureModal } from '../../../../pages/device-configure-modal/device-configure-modal';
+import { BridgeModalPage } from '../../../../pages/bridge-modal/bridge-modal';
 
 //Components
 import { GenPopover } from '../../../../components/gen-popover/gen-popover.component';
@@ -28,7 +29,7 @@ export class Tab1 {
     public showDevMenu: boolean = false;
     public connectingToDevice: boolean = false;
     public selectedSimulatedDevice: string = 'Select a Device';
-    public deviceBridgeAddress = 'http://';
+    public deviceBridgeAddress = 'http://localhost:56089';
 
     public devices = [];
 
@@ -116,6 +117,59 @@ export class Tab1 {
         return false;
     }
 
+    attemptBridgeConnect(deviceBridgeAddress: string) {
+        //Note: no need to check if device exists since it depends on selection of device from config utility
+        this.connectingToDevice = true;
+        this.deviceManagerService.connectBridge(deviceBridgeAddress).subscribe(
+            (success) => {
+                this.connectingToDevice = false;
+                console.log(success);
+                let modal = this.modalCtrl.create(BridgeModalPage, {
+                    potentialDevices: success.agent[0].devices,
+                    deviceBridgeAddress: deviceBridgeAddress
+                });
+                modal.onDidDismiss((data) => {
+                    console.log(data);
+                    this.connectingToDevice = false;
+                    if (data == null) { return; }
+                    this.devices.unshift(
+                        {
+                            deviceDescriptor: data.deviceEnum.device[0],
+                            ipAddress: deviceBridgeAddress + ' - ' + data.selectedDevice,
+                            hostname: 'Hostname',
+                            bridge: true,
+                            deviceBridgeAddress: deviceBridgeAddress
+                        }
+                    );
+                    console.log(this.devices);
+                    this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                    this.showDevMenu = false;
+                    let toast = this.toastCtrl.create({
+                        message: 'Device Added Successfully',
+                        duration: 5000,
+                        position: 'bottom'
+                    });
+                    toast.present();
+                });
+                modal.present();
+            },
+            (err) => {
+                console.log(err);
+                this.connectingToDevice = false;
+                let toast = this.toastCtrl.create({
+                    message: 'Error: Invalid Response From Bridge',
+                    showCloseButton: true,
+                    duration: 5000,
+                    position: 'bottom'
+                });
+                toast.present();
+            },
+            () => {
+
+            }
+        );
+    }
+
     attemptConnect(ipAddress: string) {
         if (this.checkIfMatchingIp(ipAddress)) {
             let toast = this.toastCtrl.create({
@@ -130,9 +184,7 @@ export class Tab1 {
         this.connectingToDevice = true;
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
-                console.log('SWAG SWAG');
                 console.log(success);
-                console.log(success.device[0]);
                 this.connectingToDevice = false;
                 this.devices.unshift(
                     {
@@ -233,6 +285,10 @@ export class Tab1 {
             return;
         }
         let ipAddress = this.devices[deviceIndex].ipAddress;
+        if (this.devices[deviceIndex].bridge) {
+            ipAddress = this.devices[deviceIndex].deviceBridgeAddress;
+        }
+        console.log(this.devices[deviceIndex]);
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
                 this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);

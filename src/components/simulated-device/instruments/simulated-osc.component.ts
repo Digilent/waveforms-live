@@ -111,8 +111,8 @@ export class SimulatedOscComponent {
             acqCount: 3,
             actualSampleFreq: 1000 / dt,
             y: typedArray,
-            pointOfInterest: 16320,
-            triggerIndex: 16320,
+            pointOfInterest: numSamples / 2,
+            triggerIndex: numSamples / 2,
             actualVOffset: vOffset,
             actualGain: 1
         };
@@ -152,8 +152,8 @@ export class SimulatedOscComponent {
             acqCount: 3,
             actualSampleFreq: 1000 / dt,
             y: typedArray,
-            pointOfInterest: 16320,
-            triggerIndex: 16320,
+            pointOfInterest: numSamples / 2,
+            triggerIndex: numSamples / 2,
             actualVOffset: vOffset,
             actualGain: 1
         };
@@ -195,8 +195,8 @@ export class SimulatedOscComponent {
             acqCount: 3,
             actualSampleFreq: 1000 / dt,
             y: typedArray,
-            pointOfInterest: 16320,
-            triggerIndex: 16320,
+            pointOfInterest: numSamples / 2,
+            triggerIndex: numSamples / 2,
             actualVOffset: vOffset,
             actualGain: 1
         };
@@ -231,8 +231,8 @@ export class SimulatedOscComponent {
             acqCount: 3,
             actualSampleFreq: 1000 / dt,
             y: typedArray,
-            pointOfInterest: 16320,
-            triggerIndex: 16320,
+            pointOfInterest: numSamples / 2,
+            triggerIndex: numSamples / 2,
             actualVOffset: vOffset,
             actualGain: 1
         };
@@ -268,8 +268,8 @@ export class SimulatedOscComponent {
             acqCount: 3,
             actualSampleFreq: 1000 / dt,
             y: typedArray,
-            pointOfInterest: 16320,
-            triggerIndex: 16320,
+            pointOfInterest: numSamples / 2,
+            triggerIndex: numSamples / 2,
             actualVOffset: vOffset,
             actualGain: 1
         };
@@ -299,8 +299,8 @@ export class SimulatedOscComponent {
             acqCount: 3,
             actualSampleFreq: 1000 / dt,
             y: typedArray,
-            pointOfInterest: 16320,
-            triggerIndex: 16320,
+            pointOfInterest: numSamples / 2,
+            triggerIndex: numSamples / 2,
             actualVOffset: vOffset,
             actualGain: 1
         };

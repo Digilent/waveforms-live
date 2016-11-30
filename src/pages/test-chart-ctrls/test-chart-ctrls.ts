@@ -125,7 +125,8 @@ export class TestChartCtrlsPage {
     }
 
     //Run osc single
-    singleClick() {
+    singleClick(forceWholeCommand?: boolean) {
+        forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
         console.log('single clicked');
         if (this.chart1.oscopeChansActive.indexOf(true) === -1 ) {
             let toast = this.toastCtrl.create({
@@ -150,6 +151,8 @@ export class TestChartCtrlsPage {
             case 'falling': trigType = 'fallingEdge'; break;
             default: trigType = 'risingEdge';
         }
+        let samplingParams = this.chart1.calculateDataFromWindow();
+        console.log(samplingParams);
         if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[2]) ||
             this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== parseInt(this.triggerComponent.lowerThresh) ||
             this.previousTrigSettings.upperThreshold !== parseInt(this.triggerComponent.upperThresh)) {
@@ -166,8 +169,8 @@ export class TestChartCtrlsPage {
                 }
 
                 if (this.previousOscSettings[i].offset !== 0 || this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
-                    this.previousOscSettings[i].sampleFreqMax !== this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000 ||
-                    this.previousOscSettings[i].bufferSizeMax !== this.activeDevice.instruments.osc.chans[i].bufferSizeMax ||
+                    this.previousOscSettings[i].sampleFreqMax !== samplingParams.sampleFreq ||
+                    this.previousOscSettings[i].bufferSizeMax !== samplingParams.bufferSize ||
                     this.previousOscSettings[i].delay !== parseFloat(this.triggerComponent.delay)) {
                     setOscParams = true;
                     setTrigParams = true;
@@ -176,26 +179,26 @@ export class TestChartCtrlsPage {
                 readArray[0].push(i + 1);
                 readArray[1].push(0);
                 readArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
-                readArray[3].push(this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000);
-                readArray[4].push(this.activeDevice.instruments.osc.chans[i].bufferSizeMax);
+                readArray[3].push(samplingParams.sampleFreq);
+                readArray[4].push(samplingParams.bufferSize);
                 readArray[5].push(parseFloat(this.triggerComponent.delay));
                 this.previousOscSettings[i] = {
                     offset: 0,
                     gain: this.activeDevice.instruments.osc.chans[i].gains[j],
-                    sampleFreqMax: this.activeDevice.instruments.osc.chans[i].sampleFreqMax / 1000,
-                    bufferSizeMax: this.activeDevice.instruments.osc.chans[i].bufferSizeMax,
+                    sampleFreqMax: samplingParams.sampleFreq,
+                    bufferSizeMax: samplingParams.bufferSize,
                     delay: parseFloat(this.triggerComponent.delay)
                 }
             }
         }
         let singleCommand = {}
 
-        if (setOscParams) {
+        if (setOscParams || forceWholeCommand) {
             singleCommand['osc'] = {};
             singleCommand['osc']['setParameters'] = [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]];
         }
         singleCommand['trigger'] = {};
-        if (setTrigParams) {
+        if (setTrigParams || forceWholeCommand) {
             singleCommand['trigger']['setParameters'] = [
                 [1],
                 [
@@ -228,7 +231,13 @@ export class TestChartCtrlsPage {
             },
             (err) => {
                 console.log(err);
-                this.triggerStatus = 'Idle';
+                if (err.statusCode > 0 && err.command !== 'single') {
+                    this.readAttemptCount = 0;
+                    this.readOscope();
+                }
+                if (err.statusCode > 0 && err.command === 'single') {
+                    this.singleClick(true);
+                }
             },
             () => {
                 this.readOscope();
@@ -293,11 +302,10 @@ export class TestChartCtrlsPage {
                 if (this.readAttemptCount > 5) {
                     console.log(err);
                     let toast = this.toastCtrl.create({
-                        message: err,
+                        message: 'OpenScope is still acquiring data. Please Press Single Again.',
                         showCloseButton: true
                     });
                     toast.present();
-                    this.triggerStatus = 'Idle';
                 }
                 else {
                     console.log('attempting read again');
