@@ -231,13 +231,7 @@ export class TestChartCtrlsPage {
             },
             (err) => {
                 console.log(err);
-                if (err.statusCode > 0 && err.command !== 'single') {
-                    this.readAttemptCount = 0;
-                    this.readOscope();
-                }
-                if (err.statusCode > 0 && err.command === 'single') {
-                    this.singleClick(true);
-                }
+                //Still acquiring
             },
             () => {
                 if (this.activeDevice.transport.getType() !== 'local') {
@@ -306,7 +300,7 @@ export class TestChartCtrlsPage {
                 this.triggerStatus = 'Idle';
             },
             (err) => {
-                if (this.readAttemptCount > 5) {
+                if (this.readAttemptCount > 20) {
                     console.log(err);
                     let toast = this.toastCtrl.create({
                         message: 'OpenScope is still acquiring data. Please Press Single Again.',
