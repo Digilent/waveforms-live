@@ -3,5 +3,6 @@ export interface DeviceCardInfo {
     ipAddress: string,
     hostname: string,
     bridge: boolean,
-    deviceBridgeAddress: string
+    deviceBridgeAddress: string,
+    connectedDeviceAddress: string
 }

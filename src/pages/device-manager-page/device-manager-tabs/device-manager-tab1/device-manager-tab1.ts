@@ -145,20 +145,6 @@ export class Tab1 {
         this.connectingToDevice = true;
         this.deviceManagerService.connectBridge(deviceBridgeAddress).subscribe(
             (success) => {
-                let start = performance.now();
-                let finish;
-                this.deviceManagerService.transport.writeRead('/config', JSON.stringify({
-                    "agent": [
-                        {
-                            "command": "getInfo"
-                        }
-                    ]
-                }), 'json').subscribe((data) => {
-                    finish = performance.now();
-                    console.log('get info latency');
-                    console.log(finish - start);
-                    console.log(data);
-                });
                 this.connectingToDevice = false;
                 console.log(success);
                 if (success.agent[0].devices.length === 0) {
@@ -168,7 +154,8 @@ export class Tab1 {
                         duration: 3000,
                         position: 'bottom'
                     });
-                    return; 
+                    toast.present();
+                    return;
                 }
                 let modal = this.modalCtrl.create(BridgeModalPage, {
                     potentialDevices: success.agent[0].devices,
@@ -184,7 +171,8 @@ export class Tab1 {
                             ipAddress: deviceBridgeAddress + ' - ' + data.selectedDevice,
                             hostname: 'Hostname',
                             bridge: true,
-                            deviceBridgeAddress: deviceBridgeAddress
+                            deviceBridgeAddress: deviceBridgeAddress,
+                            connectedDeviceAddress: data.selectedDevice
                         }
                     );
                     console.log(this.devices);
@@ -238,7 +226,8 @@ export class Tab1 {
                         ipAddress: ipAddress,
                         hostname: 'Hostname',
                         bridge: false,
-                        deviceBridgeAddress: null
+                        deviceBridgeAddress: null,
+                        connectedDeviceAddress: null
                     }
                 );
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
@@ -288,7 +277,8 @@ export class Tab1 {
                                 ipAddress: 'local',
                                 hostname: 'Simulated ' + this.selectedSimulatedDevice,
                                 bridge: false,
-                                deviceBridgeAddress: null
+                                deviceBridgeAddress: null,
+                                connectedDeviceAddress: null
                             }
                         );
                         this.storage.saveData('savedDevices', JSON.stringify(this.devices));
@@ -337,8 +327,43 @@ export class Tab1 {
         let ipAddress = this.devices[deviceIndex].ipAddress;
         if (this.devices[deviceIndex].bridge) {
             ipAddress = this.devices[deviceIndex].deviceBridgeAddress;
+            this.deviceManagerService.transport.setUri(ipAddress);
+            let command = {
+                "agent": [
+                    {
+                        "command": "setActiveDevice",
+                        "device": this.devices[deviceIndex].connectedDeviceAddress
+                    }
+                ]
+            };
+            console.log(command);
+            this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    let data;
+                    try {
+                        let duhString = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
+                        console.log(duhString);
+                        data = JSON.parse(duhString);
+                    }
+                    catch (e) {
+                        console.log('Error Parsing Set Active Device Response');
+                        console.log(e);
+                    }
+                    console.log(data);
+                    if (data.agent[0].statusCode === 0) { this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress); }
+                },
+                (err) => {
+                    console.log(err);
+                },
+                () => { }
+            );
+            return;
         }
         console.log(this.devices[deviceIndex]);
+        this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress);
+    }
+
+    sendEnumerationCommandAndLoadInstrumentPanel(ipAddress: string) {
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
                 this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);

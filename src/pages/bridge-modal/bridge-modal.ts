@@ -41,12 +41,26 @@ export class BridgeModalPage {
             ]
         };
         this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
-            (data) => {
+            (arrayBuffer) => {
+                console.log('response to set active device');
                 console.log(this.deviceBridgeAddress);
+                let data;
+                try {
+                    let duhString = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
+                    console.log(duhString);
+                    data = JSON.parse(duhString);
+                }
+                catch (e) {
+                    console.log('Error Parsing Set Active Device Response');
+                    console.log(e);
+                }
+                console.log(data);
+
                 this.deviceManagerService.connect(this.deviceBridgeAddress).subscribe(
                     (data) => {
+                        console.log('enumeration response');
                         console.log(data);
-                        
+
                         this.viewCtrl.dismiss({
                             selectedDevice: this.potentialDevices[selectedIndex],
                             deviceEnum: data
