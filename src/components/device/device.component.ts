@@ -67,7 +67,6 @@ export class DeviceComponent {
             for (let instrument in commandObject) {
                 commandToBeSent[instrument] = {};
                 let functionNames = Object.keys(commandObject[instrument]);
-                console.log(commandObject, functionNames);
                 let flag = false;
                     for (let element of functionNames) {
                         let responseJson;
@@ -95,12 +94,8 @@ export class DeviceComponent {
             }
             //MultiCommand packet is complete. Now to send
             let multiCommandResponse;
-            console.log(commandToBeSent);
-            let start = performance.now();
-            let finish;
             this.transport.writeRead('/', JSON.stringify(commandToBeSent), 'json').subscribe(
                 (arrayBuffer) => {
-                    finish = performance.now();
                     let firstChar = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0, 1)));
                     if (!isNaN(parseInt(firstChar))) {
                         //OSJB
@@ -197,8 +192,6 @@ export class DeviceComponent {
                     else {
                         observer.error('Error in multiCommand().\nThis is most likely due to an unrecognized response format. Exiting');
                     }
-                    console.log('multi command latency');
-                    console.log(finish - start);
                 },
                 (err) => {
                     console.log(err);

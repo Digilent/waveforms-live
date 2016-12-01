@@ -95,10 +95,9 @@ export class FgenComponent {
                     run: [chans]
                 }
             }
-            console.log(singleCommand);
             this.activeDevice.multiCommand(singleCommand).subscribe(
                 (data) => {
-                    console.log(data);
+                    //console.log(data);
                 },
                 (err) => {
                     console.log(err);
@@ -113,7 +112,7 @@ export class FgenComponent {
                     toast.present();
                 },
                 () => {
-                    console.log('multi command awg complete');
+                    //console.log('multi command awg complete');
                     this.powerOn = !this.powerOn;
                 }
             );

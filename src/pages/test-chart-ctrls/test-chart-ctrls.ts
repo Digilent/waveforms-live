@@ -59,11 +59,6 @@ export class TestChartCtrlsPage {
 
     public theoreticalAcqTime: number;
 
-    //TODO REMOVE this
-    public startTime;
-    public finishTime;
-    public singleClickTime;
-
     constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController, _app: App, _platform: Platform) {
         this.toastCtrl = _toastCtrl;
         this.app = _app;
@@ -133,9 +128,7 @@ export class TestChartCtrlsPage {
 
     //Run osc single
     singleClick(forceWholeCommand?: boolean) {
-        this.singleClickTime = performance.now();
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
-        console.log('single clicked');
         if (this.chart1.oscopeChansActive.indexOf(true) === -1) {
             let toast = this.toastCtrl.create({
                 message: 'Err: No Channels Active. Please Activate a Channel and Run Again',
@@ -161,8 +154,6 @@ export class TestChartCtrlsPage {
         }
         let samplingParams = this.chart1.calculateDataFromWindow();
         this.theoreticalAcqTime = 2 * 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
-        console.log(this.theoreticalAcqTime);
-        console.log(samplingParams);
         if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[2]) ||
             this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== parseInt(this.triggerComponent.lowerThresh) ||
             this.previousTrigSettings.upperThreshold !== parseInt(this.triggerComponent.upperThresh)) {
@@ -292,16 +283,8 @@ export class TestChartCtrlsPage {
                 readArray.push(i + 1);
             }
         }
-        this.startTime = this.startTime == null ? performance.now() : this.startTime;
         this.activeDevice.instruments.osc.read(readArray).subscribe(
             (data) => {
-                this.finishTime = performance.now();
-                console.log('read latency: ');
-                console.log(this.finishTime - this.startTime);
-                console.log('total latency: ');
-                console.log(this.finishTime - this.singleClickTime);
-                this.startTime = null;
-                this.finishTime = null;
                 this.readAttemptCount = 0;
                 let numSeries = [];
                 for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {

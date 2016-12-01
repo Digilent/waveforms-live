@@ -58,12 +58,10 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     }
                 ]
         });
-        console.log(command);
         return command;
     }
 
     setParametersParse(chan, responseObject) {
-        console.log(responseObject);
         return 'Channel ' + chan + ' ' + responseObject.command + ' successful';
     }
 
