@@ -32,9 +32,9 @@ export class SilverNeedleChart {
     public cursorType: string = 'disabled';
     public cursor1Chan: string = 'Osc 1';
     public cursor2Chan: string = 'Osc 1';
-    public cursorsEnabled: boolean = false;
+    public cursorsEnabled: boolean = true;
     public activeChannels = [1, 1];
-    public mathEnabled: boolean = false;
+    public mathEnabled: boolean = true;
     public generalVoltsPerDivOpts: string[] = ['1 mV', '2 mV', '5 mv', '10 mV', '20 mV', '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
     public activeVPDIndex: number[] = [9, 9];
     public generalVoltsPerDivVals: number[] = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5];
