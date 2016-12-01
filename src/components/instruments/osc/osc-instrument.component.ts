@@ -128,6 +128,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     }
                 ]
         });
+        this.dataBuffer[this.dataBufferWriteIndex] = [];
         return Observable.create((observer) => {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (data) => {
@@ -179,6 +180,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         let scaledArray = untypedArray.map((voltage) => {
                             return voltage / 1000;
                         });
+                        console.log(binaryData);
                         let dt = 1 / (command.osc[channel][0].actualSampleFreq / 1000);
                         let pointContainer = [];
                         for (let i = 0; i < scaledArray.length; i++) {

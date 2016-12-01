@@ -124,6 +124,6 @@ export class HttpTransportComponent extends TransportComponent {
 
     //Get transport type
     getType() {
-        return 'Http';
+        return 'http';
     }
 }

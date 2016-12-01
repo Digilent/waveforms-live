@@ -86,6 +86,6 @@ export class LocalTransportComponent extends TransportComponent {
 
     //Get transport type
     getType() {
-        return 'Local';
+        return 'local';
     }
 }

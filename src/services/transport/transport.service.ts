@@ -36,9 +36,9 @@ export class TransportService {
         this.transport.stopStream();
     }
 
-    //Get type of transport service (parent)
+    //Get type of transport service
     getType() {
-        return 'Parent';
+        return this.transport.getType();
     }
 
     setHttpTransport(uri) {

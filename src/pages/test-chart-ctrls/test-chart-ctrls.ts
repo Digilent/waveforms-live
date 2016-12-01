@@ -57,6 +57,8 @@ export class TestChartCtrlsPage {
         upperThreshold: null
     };
 
+    public theoreticalAcqTime: number;
+
     //TODO REMOVE this
     public startTime;
     public finishTime;
@@ -134,7 +136,7 @@ export class TestChartCtrlsPage {
         this.singleClickTime = performance.now();
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
         console.log('single clicked');
-        if (this.chart1.oscopeChansActive.indexOf(true) === -1 ) {
+        if (this.chart1.oscopeChansActive.indexOf(true) === -1) {
             let toast = this.toastCtrl.create({
                 message: 'Err: No Channels Active. Please Activate a Channel and Run Again',
                 showCloseButton: true,
@@ -158,6 +160,8 @@ export class TestChartCtrlsPage {
             default: trigType = 'risingEdge';
         }
         let samplingParams = this.chart1.calculateDataFromWindow();
+        this.theoreticalAcqTime = 2 * 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
+        console.log(this.theoreticalAcqTime);
         console.log(samplingParams);
         if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[2]) ||
             this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== parseInt(this.triggerComponent.lowerThresh) ||
@@ -245,7 +249,15 @@ export class TestChartCtrlsPage {
                 }
             },
             () => {
-                this.readOscope();
+                if (this.activeDevice.transport.getType() !== 'local') {
+                    setTimeout(() => {
+                        this.readOscope();
+                    }, this.theoreticalAcqTime);
+                }
+                else {
+                    this.readOscope();
+                }
+
                 //this.readLa();
             }
         );
@@ -264,7 +276,7 @@ export class TestChartCtrlsPage {
     readLa() {
         this.activeDevice.instruments.la.read([1]).subscribe(
             (data) => {
-                
+
             },
             (err) => {
 

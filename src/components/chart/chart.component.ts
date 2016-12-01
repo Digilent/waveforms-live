@@ -1418,6 +1418,37 @@ export class SilverNeedleChart {
             this.addTriggerLine(this.numSeries[0]);
             return;
         }
+        let triggerLineRef;
+        for (let i = 0; i < cursors.length; i++) {
+            if (cursors[i].name === 'triggerLine') {
+                triggerLineRef = cursors[i];
+            }
+        }
+        let seriesNum = this.numSeries[0];
+        let trigPosition = this.currentBufferArray[seriesNum].triggerPosition;
+        if (trigPosition < 0 || trigPosition === undefined) { return; }
+        let initialValue = trigPosition * this.currentBufferArray[seriesNum].dt;
+        //Update trigger line
+        let options = {
+            position: {
+                x: initialValue,
+                relativeY: 0.5
+            }
+        }
+        this.chart.setCursor(triggerLineRef, options);
+        if (this.timelineView) {
+            let timelineCursors = this.timelineChart.getCursors();
+            let timelineTriggerLineRef;
+            for (let i = 0; i < timelineCursors.length; i++) {
+                if (timelineCursors[i].name === 'triggerLine') {
+                    timelineTriggerLineRef = timelineCursors[i];
+                }
+            }
+            let timelineOptions = options;
+            timelineOptions['fullHeight'] = true;
+            this.timelineChart.setCursor(timelineTriggerLineRef, timelineOptions);
+            //add to timeline as well
+        }
     }
 
     addTriggerLine(seriesNum) {

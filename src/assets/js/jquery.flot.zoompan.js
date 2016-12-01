@@ -185,9 +185,6 @@
                 //Set initial tpd and vpd values
                 var getAxes = plot.getAxes();
                 var offsets = plot.offset();
-                var timePerDivision = (getAxes.xaxis.max - getAxes.xaxis.min) / 10;
-                var yaxisIndexer = 'y' + (selectedYAxis === 1 ? '' : selectedYAxis.toString()) + 'axis';
-                var voltsPerDivision = (getAxes[yaxisIndexer].max - getAxes[yaxisIndexer].min) / 10;
 
                 if (multiTouchEventContainer.startingMultiTouch) {
                     //new multitouch event. Setup event container and exit.
@@ -293,7 +290,7 @@
                     count++;
                 }
                 startingXIndex = count;
-                infoContainer = {
+                var infoContainer = {
                     min: xaxis.min,
                     max: xaxis.max,
                     mid: (xaxis.max + xaxis.min) / 2,
