@@ -10,7 +10,7 @@
 
                 <ion-col width-30 text-center center>
                     <div class="timeline-chart-wrapper">
-                        <timeline-chart (timelineChartLoad)="saveTimelineChart($event)"></timeline-chart>
+                        <timeline-chart></timeline-chart>
                     </div>
                 </ion-col>
                 <ion-col *ngIf="false" text-center center class="buffer-count-container">
@@ -36,19 +36,11 @@
             </ion-row>
         </div>
 
-        
         <div class="center-container">
             <div class="chart-wrapper">
-                <!-- chart here -->
                 <silverNeedleChart #chart1 (chartLoad)="initSettings()"></silverNeedleChart>
             </div>
             <div class="controls-wrapper">
-                <!-- controls here -->
-                <!--<div class="fgen-button-container">
-                    <button ion-button class="icon-only-button-side disable-hover fgen-button" (click)="toggleControls()">
-                        <ion-icon name="pulse"></ion-icon>
-                    </button>
-                </div>-->
                 <xaxis-controls [chart]="chart1"></xaxis-controls>
                 <trigger #triggerComponent></trigger>
                 <yaxis-controls [chart]="chart1"></yaxis-controls>
@@ -56,15 +48,6 @@
                 <digital-io></digital-io>
                 <dc-supply></dc-supply>
             </div>
-            <!--<div class="fgen-wrapper" [ngClass]="{'show-fgen': controlsVisible}">
-                <fgen [hidden]="!controlsVisible"></fgen>
-            </div>-->
         </div>
-
-
-        
-        <!--<div class="bottom-bar-container">
-            <bottom-bar (headerClicked)="toggleBotControls();"></bottom-bar>
-        </div>-->
     </div>
 </ion-content>

@@ -59,7 +59,7 @@
     -ms-flex: 1 1 400px;
 
 
-    height: 100%;
+    //height: 100%;
     background-color: #535353;
 
     display: -webkit-flex;     
@@ -96,55 +96,6 @@
     background-color: #535353;
     z-index: 5;
     border-left: solid black 1px;
-}
-
-.chart-page-container .center-container .show-fgen
-{
-    flex: 1 0 200px;
-    -webkit-flex: 1 0 200px;
-    -ms-flex: 1 0 200px;
-
-    min-width: 200px;
-    overflow: auto;
-
-    background-color: #444444;
-    z-index: 5;
-    border-top: solid #686868 1px;
-    padding-left: 0.5rem;
-}
-
-.chart-page-container .center-container .fgen-button-container
-{
-    border-bottom: solid black 1px;
-    border-top: solid #686868 1px;
-    text-align: right;
-    padding: 1px 0px 1px 0px;
-}
-
-.chart-page-container .center-container .fgen-wrapper
-{
-    flex: 0 1 0px;
-    -webkit-flex: 0 1 0px;
-    -ms-flex: 0 1 0px;
-
-    width: 0px;
-}
-
-.chart-page-container .center-container .fgen-button-container .fgen-button
-{
-    margin-top: 0.1rem;
-    margin-right: 0.5rem;
-    margin-bottom: 0.1rem;
-    margin-left: 0.1rem;
-}
-
-
-//Bottom
-.chart-page-container .bottom-bar-container
-{
-    z-index: 5;
-    flex: 0 0 auto;
-    min-height: 21px;
 }
 
 .chart-page-container .move-left

@@ -161,6 +161,15 @@ export class Tab1 {
                 });
                 this.connectingToDevice = false;
                 console.log(success);
+                if (success.agent[0].devices.length === 0) {
+                    let toast = this.toastCtrl.create({
+                        message: 'No UART Devices Found',
+                        showCloseButton: true,
+                        duration: 3000,
+                        position: 'bottom'
+                    });
+                    return; 
+                }
                 let modal = this.modalCtrl.create(BridgeModalPage, {
                     potentialDevices: success.agent[0].devices,
                     deviceBridgeAddress: deviceBridgeAddress

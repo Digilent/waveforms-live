@@ -7,7 +7,6 @@ import { TestChartCtrlsPage } from '../pages/test-chart-ctrls/test-chart-ctrls';
 import { SettingsPage } from '../pages/settings/settings';
 import { ProtocolTestPanel } from '../pages/protocol-test-panel/protocol-test-panel';
 import { DeviceManagerPage } from '../pages/device-manager-page/device-manager-page';
-import { FlotPage } from '../pages/flot/flot';
 
 //Services
 import { SettingsService } from '../services/settings/settings.service';
@@ -36,7 +35,6 @@ export class MyApp {
             //{ title: 'Home Page', component: HomePage },
             //{ title: 'Test Page', component: TestPage },
             { title: 'Settings', component: SettingsPage },
-            { title: 'Flot', component: FlotPage },
             { title: 'Test Panel', component: ProtocolTestPanel },
             { title: 'Device Manager', component: DeviceManagerPage }
         ];
