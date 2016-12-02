@@ -169,6 +169,7 @@ export class DcSupplyComponent {
             let toast = this.toastCtrl.create({
                 message: 'Invalid Value. Supply Range: ' + this.voltageLimitFormats[channel],
                 showCloseButton: true,
+                duration: 3000,
                 position: 'bottom'
             });
             toast.present();

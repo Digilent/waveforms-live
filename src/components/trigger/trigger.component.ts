@@ -76,6 +76,7 @@ export class TriggerComponent {
         let toast = this.toastCtrl.create({
             message: 'Force Trigger Not Yet Implemented',
             showCloseButton: true,
+            duration: 3000,
             position: 'bottom'
         });
         toast.present();
@@ -87,6 +88,7 @@ export class TriggerComponent {
                 let toast = this.toastCtrl.create({
                     message: 'Selected Level Value Is Not In Osc Input Voltage Range And May Not Trigger',
                     showCloseButton: true,
+                    duration: 3000,
                     position: 'bottom'
                 });
                 toast.present();

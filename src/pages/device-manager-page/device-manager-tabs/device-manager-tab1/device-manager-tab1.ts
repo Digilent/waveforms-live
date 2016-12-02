@@ -136,6 +136,7 @@ export class Tab1 {
             let toast = this.toastCtrl.create({
                 message: 'Agent Is Added Already. Use Settings To Configure Active Device',
                 showCloseButton: true,
+                duration: 3000,
                 position: 'bottom'
             });
             toast.present();
@@ -235,6 +236,7 @@ export class Tab1 {
             let toast = this.toastCtrl.create({
                 message: 'Device is Added Already',
                 showCloseButton: true,
+                duration: 3000,
                 position: 'bottom'
             });
             toast.present();
@@ -271,6 +273,7 @@ export class Tab1 {
                 let toast = this.toastCtrl.create({
                     message: 'Error: No Response Received',
                     showCloseButton: true,
+                    duration: 3000,
                     position: 'bottom'
                 });
                 toast.present();
@@ -285,6 +288,7 @@ export class Tab1 {
                 let toast = this.toastCtrl.create({
                     message: 'Device is Added Already',
                     showCloseButton: true,
+                    duration: 3000,
                     position: 'bottom'
                 });
                 toast.present();
@@ -321,6 +325,7 @@ export class Tab1 {
                         let toast = this.toastCtrl.create({
                             message: 'Error: No Response Received',
                             showCloseButton: true,
+                            duration: 3000,
                             position: 'bottom'
                         });
                         toast.present();
@@ -405,6 +410,7 @@ export class Tab1 {
                 let toast = this.toastCtrl.create({
                     message: 'Error: No Response Received',
                     showCloseButton: true,
+                    duration: 3000,
                     position: 'bottom'
                 });
                 toast.present();

@@ -95,7 +95,9 @@ export class TestChartCtrlsPage {
             console.log('in if');
             let toast = this.toastCtrl.create({
                 message: 'You currently have no device connected. Please visit the settings page.',
-                showCloseButton: true
+                showCloseButton: true,
+                duration: 3000,
+                position: 'bottom'
             });
 
             toast.present();
@@ -109,7 +111,7 @@ export class TestChartCtrlsPage {
 
     ionViewDidEnter() {
         this.app.setTitle('Instrument Panel');
-        if (this.platform.is('android')) {
+        if (this.platform.is('android') && !this.platform.is('cordova')) {
             //Have to create bind reference to remove listener since .bind creates new function reference
             this.clickBindReference = this.requestFullscreen.bind(this);
             document.getElementById('instrument-panel-container').addEventListener('click', this.clickBindReference);
@@ -133,6 +135,7 @@ export class TestChartCtrlsPage {
             let toast = this.toastCtrl.create({
                 message: 'Err: No Channels Active. Please Activate a Channel and Run Again',
                 showCloseButton: true,
+                duration: 3000,
                 position: 'bottom'
             });
             toast.present();
@@ -304,7 +307,9 @@ export class TestChartCtrlsPage {
                     console.log(err);
                     let toast = this.toastCtrl.create({
                         message: 'OpenScope is still acquiring data. Please Press Single Again.',
-                        showCloseButton: true
+                        showCloseButton: true,
+                        duration: 3000,
+                        position: 'bottom'
                     });
                     toast.present();
                 }

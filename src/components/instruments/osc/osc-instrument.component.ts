@@ -165,6 +165,9 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     }
                     console.log(command);
                     for (let channel in command.osc) {
+                        if(command.osc[channel][0].statusCode > 0) {
+                            observer.error('One or more channels still acquiring');
+                        }
                         let binaryData;
                         try {
                             binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex + command.osc[channel][0].binaryOffset, binaryIndexStringLength + 2 + binaryIndex + command.osc[channel][0].binaryOffset + command.osc[channel][0].binaryLength));

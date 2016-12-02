@@ -88,6 +88,7 @@ export class DigitalIoComponent {
             let toast = this.toastCtrl.create({
                 message: 'Analyzer Currently Unsupported',
                 showCloseButton: true,
+                duration: 3000,
                 position: 'bottom'
             });
             toast.present();

@@ -148,6 +148,7 @@ export class FgenComponent {
                 let toast = this.toastCtrl.create({
                     message: 'Error Setting AWG Parameters. Please Try Again. If Problem Persists, Reset The Device',
                     showCloseButton: true,
+                    duration: 3000,
                     position: 'bottom'
                 });
                 toast.present();
@@ -190,6 +191,7 @@ export class FgenComponent {
                     let toast = this.toastCtrl.create({
                         message: 'Error Running AWG. AWG Has Been Stopped Automatically. Please Try Again',
                         showCloseButton: true,
+                        duration: 3000,
                         position: 'bottom'
                     });
                     toast.present();

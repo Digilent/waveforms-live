@@ -320,38 +320,42 @@
                 if (wheelZoomX) {
                     if (delta < 0 && startingXIndex < secsPerDivisionValues.length - 1) {
                         startingXIndex++;
-                        mouseWheelRedraw();
+                        mouseWheelRedraw(e);
                     }
                     else if (delta > 0 && startingXIndex > 0) {
                         startingXIndex--;
-                        mouseWheelRedraw();
+                        mouseWheelRedraw(e);
                     }
                 }
                 else {
                     if (delta < 0 && startingYIndexArray[selectedYAxis - 1] < voltsPerDivisionValues.length - 1) {
                         startingYIndexArray[selectedYAxis - 1]++;
-                        mouseWheelRedraw();
+                        mouseWheelRedraw(e);
                     }
                     else if (delta > 0 && startingYIndexArray[selectedYAxis - 1] > 0) {
                         startingYIndexArray[selectedYAxis - 1]--;
-                        mouseWheelRedraw();
+                        mouseWheelRedraw(e);
                     }
                 }
             }
 
-            function mouseWheelRedraw() {
+            function mouseWheelRedraw(e) {
                 var getAxes = plot.getAxes();
                 var infoContainer;
                 if (wheelZoomX) {
-                    var base = (getAxes.xaxis.max + getAxes.xaxis.min) / 2;
-                    var min = base - secsPerDivisionValues[startingXIndex] * 5;
-                    var max = base + secsPerDivisionValues[startingXIndex] * 5;
+                    var offsets = plot.offset();
+                    var newValPerPix = (secsPerDivisionValues[startingXIndex] * 10) / plot.width();
+                    var mousePix = e.clientX - offsets.left;
+                    var mouseVal = getAxes.xaxis.c2p(mousePix);
+                    var min = mouseVal - newValPerPix * mousePix;
+                    var max = min + 10 * secsPerDivisionValues[startingXIndex];
                     getAxes.xaxis.options.min = min;
                     getAxes.xaxis.options.max = max;
+                    var newMidPoint = (max + min) / 2
                     infoContainer = {
                         min: min,
                         max: max,
-                        mid: base,
+                        mid: newMidPoint,
                         perDivVal: secsPerDivisionValues[startingXIndex],
                         perDivArrayIndex: startingXIndex,
                         axisNum: 1,
