@@ -6,3 +6,12 @@ export interface DeviceCardInfo {
     deviceBridgeAddress: string,
     connectedDeviceAddress: string
 }
+
+export interface DeviceConfigureParams {
+
+    potentialDevices: any,
+    deviceBridgeAddress: string,
+    bridge: boolean,
+    tab1Ref: any
+    deviceObject: any
+}

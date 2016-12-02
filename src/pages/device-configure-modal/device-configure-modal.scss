@@ -1,7 +1,6 @@
 .device-configure-modal-container
 {
-    height: 230px;
-    width: 300px;
+    background-color: #535353;
 }
 
 .device-configure-modal-container .device-configure-list
@@ -15,12 +14,12 @@
     color: white;
 }
 
-.configure-item .set-white-font
+.device-configure-modal-container .set-white-font
 {
     color: white;
 }
 
-.configure-button
+.device-configure-modal-container .configure-button
 {
     color: white;
 }
@@ -30,11 +29,9 @@
     border-bottom: solid black 1px;
 }
 
-@media only screen and (min-height: 768px) and (min-width: 768px)
+.device-configure-modal-container .section-header
 {
-    .modal-wrapper .device-configure-modal
-    {
-        width: 26%;
-        left: calc(50% - (26%/2));
-    }
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
 }

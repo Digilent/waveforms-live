@@ -4,13 +4,12 @@ import { PopoverController, App, ToastController, NavController, ModalController
 //Pages
 import { TestChartCtrlsPage } from '../../../../pages/test-chart-ctrls/test-chart-ctrls';
 import { DeviceConfigureModal } from '../../../../pages/device-configure-modal/device-configure-modal';
-import { BridgeModalPage } from '../../../../pages/bridge-modal/bridge-modal';
 
 //Components
 import { GenPopover } from '../../../../components/gen-popover/gen-popover.component';
 
 //Interfaces
-import { DeviceCardInfo } from './device-manager-tab1.interface';
+import { DeviceCardInfo, DeviceConfigureParams } from './device-manager-tab1.interface';
 
 //Services
 import { DeviceManagerService } from '../../../../services/device/device-manager.service';
@@ -84,15 +83,20 @@ export class Tab1 {
                 this.connectToDevice(arrayIndex);
             }
             else if (data.option === 'configure') {
-                this.openConfigureModal();
+                this.openConfigureModal(arrayIndex);
             }
         });
     }
 
-    openConfigureModal() {
-        let modal = this.modalCtrl.create(DeviceConfigureModal, {
-            message: 'hey'
-        });
+    openConfigureModal(deviceArrayIndex: number) {
+        let deviceConfigureParams: DeviceConfigureParams = {
+            potentialDevices: null,
+            deviceBridgeAddress: null,
+            bridge: false,
+            tab1Ref: this,
+            deviceObject: this.devices[deviceArrayIndex]
+        };
+        let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
         modal.onDidDismiss((data) => {
             console.log(data);
         });
@@ -170,12 +174,15 @@ export class Tab1 {
                     toast.present();
                     return;
                 }
-                let modal = this.modalCtrl.create(BridgeModalPage, {
+                let deviceConfigureParams: DeviceConfigureParams = {
                     potentialDevices: success.agent[0].devices,
-                    deviceBridgeAddress: deviceBridgeAddress
-                });
+                    deviceBridgeAddress: deviceBridgeAddress,
+                    bridge: true,
+                    tab1Ref: this,
+                    deviceObject: null
+                };
+                let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
                 modal.onDidDismiss((data) => {
-                    this.bridgeModalDismissHandler(data, deviceBridgeAddress);
                 });
                 modal.present();
             },
@@ -196,10 +203,10 @@ export class Tab1 {
         );
     }
 
-    bridgeModalDismissHandler(data, deviceBridgeAddress: string) {
+    bridgeDeviceSelect(data, deviceBridgeAddress: string): boolean {
         console.log(data);
         this.connectingToDevice = false;
-        if (data == null) { return; }
+        if (data == null) { return false; }
         if (data.deviceEnum.device == undefined) {
             let toast = this.toastCtrl.create({
                 message: 'Error Parsing Enumeration Command',
@@ -208,7 +215,7 @@ export class Tab1 {
                 position: 'bottom'
             });
             toast.present();
-            return;
+            return false;
         }
         this.devices.unshift(
             {
@@ -229,6 +236,7 @@ export class Tab1 {
             position: 'bottom'
         });
         toast.present();
+        return true;
     }
 
     attemptConnect(ipAddress: string) {
