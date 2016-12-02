@@ -147,6 +147,18 @@ export class Tab1 {
             (success) => {
                 this.connectingToDevice = false;
                 console.log(success);
+                if (success.agent == undefined || success.agent[0].statusCode > 0) {
+                    let message = 'Error Parsing Agent Response To Devices Enumeration';
+                    console.log(message);
+                    let toast = this.toastCtrl.create({
+                        message: message,
+                        showCloseButton: true,
+                        duration: 3000,
+                        position: 'bottom'
+                    });
+                    toast.present();
+                    return;
+                }
                 if (success.agent[0].devices.length === 0) {
                     let toast = this.toastCtrl.create({
                         message: 'No UART Devices Found',
@@ -162,28 +174,7 @@ export class Tab1 {
                     deviceBridgeAddress: deviceBridgeAddress
                 });
                 modal.onDidDismiss((data) => {
-                    console.log(data);
-                    this.connectingToDevice = false;
-                    if (data == null) { return; }
-                    this.devices.unshift(
-                        {
-                            deviceDescriptor: data.deviceEnum.device[0],
-                            ipAddress: deviceBridgeAddress + ' - ' + data.selectedDevice,
-                            hostname: 'Hostname',
-                            bridge: true,
-                            deviceBridgeAddress: deviceBridgeAddress,
-                            connectedDeviceAddress: data.selectedDevice
-                        }
-                    );
-                    console.log(this.devices);
-                    this.storage.saveData('savedDevices', JSON.stringify(this.devices));
-                    this.showDevMenu = false;
-                    let toast = this.toastCtrl.create({
-                        message: 'Device Added Successfully',
-                        duration: 5000,
-                        position: 'bottom'
-                    });
-                    toast.present();
+                    this.bridgeModalDismissHandler(data, deviceBridgeAddress);
                 });
                 modal.present();
             },
@@ -202,6 +193,41 @@ export class Tab1 {
 
             }
         );
+    }
+
+    bridgeModalDismissHandler(data, deviceBridgeAddress: string) {
+        console.log(data);
+        this.connectingToDevice = false;
+        if (data == null) { return; }
+        if (data.deviceEnum.device == undefined) {
+            let toast = this.toastCtrl.create({
+                message: 'Error Parsing Enumeration Command',
+                showCloseButton: true,
+                duration: 3000,
+                position: 'bottom'
+            });
+            toast.present();
+            return;
+        }
+        this.devices.unshift(
+            {
+                deviceDescriptor: data.deviceEnum.device[0],
+                ipAddress: deviceBridgeAddress + ' - ' + data.selectedDevice,
+                hostname: 'Hostname',
+                bridge: true,
+                deviceBridgeAddress: deviceBridgeAddress,
+                connectedDeviceAddress: data.selectedDevice
+            }
+        );
+        console.log(this.devices);
+        this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+        this.showDevMenu = false;
+        let toast = this.toastCtrl.create({
+            message: 'Device Added Successfully',
+            duration: 5000,
+            position: 'bottom'
+        });
+        toast.present();
     }
 
     attemptConnect(ipAddress: string) {
@@ -340,10 +366,12 @@ export class Tab1 {
             this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data;
+                    let statusCode;
                     try {
                         let duhString = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
                         console.log(duhString);
                         data = JSON.parse(duhString);
+                        statusCode = data.agent[0].statusCode;
                     }
                     catch (e) {
                         console.log('Error Parsing Set Active Device Response');

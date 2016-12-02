@@ -270,6 +270,7 @@
             }
 
             function touchMove(e) {
+                e.preventDefault();
                 if (e.originalEvent.touches.length > 1) {
                     multiTouch(e);
                 }
@@ -314,6 +315,7 @@
             }
 
             function mouseWheel(e, delta) {
+                e.preventDefault();
                 wheelZoomX = !e.shiftKey;
                 if (wheelZoomX) {
                     if (delta < 0 && startingXIndex < secsPerDivisionValues.length - 1) {

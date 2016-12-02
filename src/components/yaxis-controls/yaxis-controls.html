@@ -17,25 +17,25 @@
                 <ion-row class="controls-container">
 
                     <ion-col text-right center class="vpd-button-col">
-                        <button ion-button [disabled]="chart.activeVPDIndex[i] == 0" (click)="chart.decrementVPD(i)" class="icon-only-button-side disable-hover"><ion-icon name="remove"></ion-icon></button>
+                        <button ion-button [disabled]="chart.activeVPDIndex[i] == 0" (tap)="chart.decrementVPD(i)" class="icon-only-button-side disable-hover"><ion-icon name="remove"></ion-icon></button>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <div class="set-darkgrey-font">{{chart.voltsPerDivOpts[chart.activeVPDIndex[i]]}}/</div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col">
-                        <button ion-button [disabled]="chart.activeVPDIndex[i] == chart.voltsPerDivOpts.length-1" (click)="chart.incrementVPD(i)" class="icon-only-button-side disable-hover"><ion-icon name="add"></ion-icon></button>
+                        <button ion-button [disabled]="chart.activeVPDIndex[i] == chart.voltsPerDivOpts.length-1" (tap)="chart.incrementVPD(i)" class="icon-only-button-side disable-hover"><ion-icon name="add"></ion-icon></button>
                     </ion-col>
                 </ion-row>
 
                 <ion-row class="controls-container">
                     <ion-col text-right center class="vpd-button-col">
-                        <button ion-button (click)="chart.decrementOffset(i)" class="icon-only-button-side disable-hover"><ion-icon name="remove"></ion-icon></button>
+                        <button ion-button (tap)="chart.decrementOffset(i)" class="icon-only-button-side disable-hover"><ion-icon name="remove"></ion-icon></button>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <div class="set-darkgrey-font">Offset</div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col">
-                        <button ion-button (click)="chart.incrementOffset(i)" class="icon-only-button-side disable-hover"><ion-icon name="add"></ion-icon></button>
+                        <button ion-button (tap)="chart.incrementOffset(i)" class="icon-only-button-side disable-hover"><ion-icon name="add"></ion-icon></button>
                     </ion-col>
                 </ion-row>
             </div>

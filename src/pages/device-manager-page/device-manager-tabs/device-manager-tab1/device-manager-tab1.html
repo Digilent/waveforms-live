@@ -18,7 +18,7 @@
                                 <ion-item class="dev-menu-item">
                                     <ion-label stacked>Hostname / IP</ion-label>
                                     <ion-input [(ngModel)]="addDeviceIp"></ion-input>
-                                    <button ion-button class="connect-button disable-hover" item-right (click)="attemptConnect(addDeviceIp)">Add</button>
+                                    <button ion-button class="connect-button disable-hover" item-right (tap)="attemptConnect(addDeviceIp)">Add</button>
                                 </ion-item>
                             </ion-label>
                         </ion-item>
@@ -34,7 +34,7 @@
                                         {{selectedSimulatedDevice}}
                                         <ion-icon name="arrow-dropdown"></ion-icon>
                                     </button>
-                                    <button ion-button class="connect-button disable-hover" item-right (click)="openSimDevice()">Add</button>
+                                    <button ion-button class="connect-button disable-hover" item-right (tap)="openSimDevice()">Add</button>
                                 </ion-item>
                             </ion-label>
                         </ion-item>
@@ -47,7 +47,7 @@
                                 <ion-item class="dev-menu-item">
                                     <ion-label stacked>Agent</ion-label>
                                     <ion-input [(ngModel)]="deviceBridgeAddress"></ion-input>
-                                    <button ion-button class="connect-button disable-hover" item-right (click)="attemptBridgeConnect(deviceBridgeAddress)">Add</button>
+                                    <button ion-button class="connect-button disable-hover" item-right (tap)="attemptBridgeConnect(deviceBridgeAddress)">Add</button>
                                 </ion-item>
                             </ion-label>
                         </ion-item>

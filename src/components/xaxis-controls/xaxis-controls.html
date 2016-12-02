@@ -8,7 +8,7 @@
         <ion-col text-center class="time-col-container">
             <ion-row class="xaxis-flex" center text-center>
                 <ion-col center class="xaxis-left">
-                    <button ion-button (click)="chart.decrementTPD()" [disabled]="chart.activeTPDIndex == 0" class="icon-only-button-side disable-hover">
+                    <button ion-button (tap)="chart.decrementTPD()" [disabled]="chart.activeTPDIndex == 0" class="icon-only-button-side disable-hover">
                         <ion-icon name="remove"></ion-icon>
                     </button>
                 </ion-col>
@@ -16,7 +16,7 @@
                     <div class="set-darkgrey-font">{{chart.secsPerDivOpts[chart.activeTPDIndex]}}/</div>
                 </ion-col>
                 <ion-col center class="xaxis-right">
-                    <button ion-button (click)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivOpts.length-1" class="icon-only-button-side disable-hover">
+                    <button ion-button (tap)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivOpts.length-1" class="icon-only-button-side disable-hover">
                         <ion-icon name="add"></ion-icon>
                     </button>
                 </ion-col>
