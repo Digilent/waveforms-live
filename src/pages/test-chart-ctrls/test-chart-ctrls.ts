@@ -58,6 +58,7 @@ export class TestChartCtrlsPage {
     };
 
     public theoreticalAcqTime: number;
+    public retryingReadAfterTimeout: boolean = false;
 
     constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController, _app: App, _platform: Platform) {
         this.toastCtrl = _toastCtrl;
@@ -130,6 +131,16 @@ export class TestChartCtrlsPage {
 
     //Run osc single
     singleClick(forceWholeCommand?: boolean) {
+        if (this.readAttemptCount > 0 && !this.retryingReadAfterTimeout) {
+            this.readAttemptCount = 0;
+            console.log('unsuccessful read before. Trying again.');
+            this.retryingReadAfterTimeout = true;
+            this.readOscope();
+            return;
+        }
+
+        this.readAttemptCount = 0;
+        this.retryingReadAfterTimeout = false;
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
         if (this.chart1.oscopeChansActive.indexOf(true) === -1) {
             let toast = this.toastCtrl.create({
@@ -316,9 +327,10 @@ export class TestChartCtrlsPage {
                 else {
                     console.log('attempting read again');
                     this.readAttemptCount++;
+                    let waitTime = this.readAttemptCount * 100 > 1000 ? 1000 : this.readAttemptCount * 100;
                     setTimeout(() => {
                         this.readOscope();
-                    }, 100);
+                    }, waitTime);
                 }
             },
             () => {

@@ -294,6 +294,7 @@ export class Tab1 {
             this.navCtrl.parent.parent.setRoot(TestChartCtrlsPage);
             return;
         }
+        this.connectingToDevice = true;
         let ipAddress = this.devices[deviceIndex].ipAddress;
         if (this.devices[deviceIndex].bridge) {
             ipAddress = this.devices[deviceIndex].deviceBridgeAddress;
@@ -325,10 +326,13 @@ export class Tab1 {
                     if (data.agent[0].statusCode === 0) { this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress); }
                     else {
                         this.createToast('Agent Could Not Connect To Device', true);
+                        this.connectingToDevice = false;
                     }
                 },
                 (err) => {
                     console.log(err);
+                    this.createToast('No Response From Agent', true);
+                    this.connectingToDevice = false;
                 },
                 () => { }
             );
@@ -341,6 +345,7 @@ export class Tab1 {
     sendEnumerationCommandAndLoadInstrumentPanel(ipAddress: string) {
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
+                this.connectingToDevice = false;
                 this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);
                 /*Navigate to the parents of the tab controller so they have the nav type.
                 Without navigating to the parents, the navCtrl is a 'Tab' and thus the 
@@ -350,6 +355,7 @@ export class Tab1 {
             (err) => {
                 console.log(err);
                 this.createToast('Error: No Response Received', true);
+                this.connectingToDevice = false;
             },
             () => { }
         );

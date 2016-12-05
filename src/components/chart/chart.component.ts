@@ -233,6 +233,7 @@ export class SilverNeedleChart {
                 this.activeTPDIndex = wheelData.perDivArrayIndex;
                 this.timeDivision = this.secsPerDivVals[this.activeTPDIndex];
                 this.base = wheelData.mid;
+                setTimeout(() => {this.shouldShowIndividualPoints(); }, 20);
             }
             else {
                 this.activeVPDIndex[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
@@ -282,6 +283,28 @@ export class SilverNeedleChart {
 
         //updateChart();
         this.onLoad(this.chart);
+    }
+
+    shouldShowIndividualPoints() {
+        if (this.numSeries == undefined ||this.numSeries[0] == undefined || this.currentBufferArray[this.numSeries[0]] == undefined) { return ;}
+        let series = this.chart.getData();
+        let axesInfo = this.chart.getAxes();
+        let bounds = {
+            min: axesInfo.xaxis.min,
+            max: axesInfo.xaxis.max
+        };
+        if (bounds.min < this.currentBufferArray[this.numSeries[0]].t0 || isNaN(bounds.min)) {
+            bounds.min = this.currentBufferArray[this.numSeries[0]].t0;
+        }
+        if (bounds.max > this.currentBufferArray[this.numSeries[0]].dt * this.currentBufferArray[this.numSeries[0]].y.length || isNaN(bounds.max)) {
+            bounds.max = this.currentBufferArray[this.numSeries[0]].dt * this.currentBufferArray[this.numSeries[0]].y.length;
+        }
+        let numPointsInView = Math.round((bounds.max - bounds.min) / this.currentBufferArray[this.numSeries[0]].dt);
+        let pointsView = numPointsInView < 50;
+        for (let i = 0; i < series.length; i++) {
+            series[i].points.show = pointsView;
+        }
+        this.chart.draw();
     }
 
     seriesAnchorTouchStart(event) {
@@ -413,10 +436,10 @@ export class SilverNeedleChart {
                 yaxis: i + 1,
                 lines: {
                     show: (i === 0)
-                }/*,
+                },
                 points: {
-                    show: true
-                }*/
+                    show: false
+                }
             };
             this.seriesDataContainer.push(dataObject);
             this.yAxisOptionsContainer.push(axisOptions);
@@ -1038,6 +1061,8 @@ export class SilverNeedleChart {
                 max: this.base + 5 * this.timeDivision
             });
         }
+
+        this.shouldShowIndividualPoints();
     }
 
     //Set series settings based on an object containing the series number, volts per division, and base
