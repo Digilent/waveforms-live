@@ -13,7 +13,7 @@
                 <ion-col class="input-col">
                     <div class="label-flex">
                         <div class="label-left">
-                            <input class="custom-input" (focusout)="inputLeave(i)" type="number" step="any" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)"
+                            <input class="custom-input" (keypress)="checkForEnter($event, i)" (focusout)="inputLeave(i)" type="number" step="any" [(ngModel)]="voltages[i]" (ngModelChange)="validateSupply(i)"
                                 [ngClass]="{wrongPower: !correctVoltages[i]}" />
                         </div>
                         <div class="label-right">

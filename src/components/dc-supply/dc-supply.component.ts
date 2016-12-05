@@ -27,14 +27,12 @@ export class DcSupplyComponent {
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
 
-
-    public intervalReference;
-
     public showCurrent: boolean = false;
 
     public readVoltages: string[] = [];
     public showDcSettings: boolean = true;
     public toastCtrl: ToastController;
+    public ignoreFocusOut: boolean = false;
 
     constructor(_deviceManagerService: DeviceManagerService, _toastCtrl: ToastController) {
         this.toastCtrl = _toastCtrl;
@@ -157,6 +155,13 @@ export class DcSupplyComponent {
     }
 
     inputLeave(channel: number) {
+        if (!this.ignoreFocusOut) {
+            this.setNewVoltageAndRefresh(channel);
+        }
+        this.ignoreFocusOut = false;
+    }
+
+    setNewVoltageAndRefresh(channel: number) {
         this.voltages[channel] = parseFloat(this.voltages[channel]).toFixed(3);
         if (this.validateSupply(channel)) {
             this.setVoltages([channel + 1], [parseFloat(this.voltages[channel])]);
@@ -174,15 +179,17 @@ export class DcSupplyComponent {
             });
             toast.present();
         }
+    }
 
+    checkForEnter(event, channel: number) {
+        if (event.key === 'Enter') {
+            this.setNewVoltageAndRefresh(channel);
+            this.ignoreFocusOut = true;
+        }
     }
 
     hideBar() {
-        this.headerClicked.emit(null);
-        clearInterval(this.intervalReference);
-        for (let i = 0; i < this.activeDevice.instruments.dc.chans.length; i++) {
-            this.dcOn[i] = false;
-        }
+
     }
 
     //Validate voltage supplies 
