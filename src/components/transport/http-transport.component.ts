@@ -74,7 +74,7 @@ export class HttpTransportComponent extends TransportComponent {
                 XHR.setRequestHeader("Content-Type", "application/octet-stream");
             }
 
-            XHR.timeout = 4000;
+            XHR.timeout = 5000;
             
             //Set resposne type as arraybuffer to receive response as bytes
             XHR.responseType = 'arraybuffer';

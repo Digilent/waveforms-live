@@ -137,13 +137,7 @@ export class Tab1 {
     attemptBridgeConnect(deviceBridgeAddress: string) {
         //Note: no need to check if device exists since it depends on selection of device from config utility
         if (this.checkIfMatchingBridge(deviceBridgeAddress)) {
-            let toast = this.toastCtrl.create({
-                message: 'Agent Is Added Already. Use Settings To Configure Active Device',
-                showCloseButton: true,
-                duration: 3000,
-                position: 'bottom'
-            });
-            toast.present();
+            this.createToast('Agent Is Added Already. Use Settings To Configure Active Device', true);
             return;
         }
 
@@ -155,23 +149,11 @@ export class Tab1 {
                 if (success.agent == undefined || success.agent[0].statusCode > 0) {
                     let message = 'Error Parsing Agent Response To Devices Enumeration';
                     console.log(message);
-                    let toast = this.toastCtrl.create({
-                        message: message,
-                        showCloseButton: true,
-                        duration: 3000,
-                        position: 'bottom'
-                    });
-                    toast.present();
+                    this.createToast('Error Parsing Agent Response To Devices Enumeration', true);
                     return;
                 }
                 if (success.agent[0].devices.length === 0) {
-                    let toast = this.toastCtrl.create({
-                        message: 'No UART Devices Found',
-                        showCloseButton: true,
-                        duration: 3000,
-                        position: 'bottom'
-                    });
-                    toast.present();
+                    this.createToast('Error: No UART Devices Found', true);
                     return;
                 }
                 let deviceConfigureParams: DeviceConfigureParams = {
@@ -189,13 +171,7 @@ export class Tab1 {
             (err) => {
                 console.log(err);
                 this.connectingToDevice = false;
-                let toast = this.toastCtrl.create({
-                    message: 'Error: Invalid Response From Bridge',
-                    showCloseButton: true,
-                    duration: 5000,
-                    position: 'bottom'
-                });
-                toast.present();
+                this.createToast('Error: Invalid Response From Agent', true);
             },
             () => {
 
@@ -208,13 +184,7 @@ export class Tab1 {
         this.connectingToDevice = false;
         if (data == null) { return false; }
         if (data.deviceEnum.device == undefined) {
-            let toast = this.toastCtrl.create({
-                message: 'Error Parsing Enumeration Command',
-                showCloseButton: true,
-                duration: 3000,
-                position: 'bottom'
-            });
-            toast.present();
+            this.createToast('Error Parsing Enumeration Command', true);
             return false;
         }
         this.devices.unshift(
@@ -230,24 +200,13 @@ export class Tab1 {
         console.log(this.devices);
         this.storage.saveData('savedDevices', JSON.stringify(this.devices));
         this.showDevMenu = false;
-        let toast = this.toastCtrl.create({
-            message: 'Device Added Successfully',
-            duration: 5000,
-            position: 'bottom'
-        });
-        toast.present();
+        this.createToast('Device Added Successfully');
         return true;
     }
 
     attemptConnect(ipAddress: string) {
         if (this.checkIfMatchingIp(ipAddress)) {
-            let toast = this.toastCtrl.create({
-                message: 'Device is Added Already',
-                showCloseButton: true,
-                duration: 3000,
-                position: 'bottom'
-            });
-            toast.present();
+            this.createToast('Device is Added Already', true);
             return;
         }
 
@@ -268,23 +227,12 @@ export class Tab1 {
                 );
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
                 this.showDevMenu = false;
-                let toast = this.toastCtrl.create({
-                    message: 'Device Added Successfully',
-                    duration: 5000,
-                    position: 'bottom'
-                });
-                toast.present();
+                this.createToast('Device Added Successfully');
             },
             (err) => {
                 this.connectingToDevice = false;
                 console.log(err);
-                let toast = this.toastCtrl.create({
-                    message: 'Error: No Response Received',
-                    showCloseButton: true,
-                    duration: 3000,
-                    position: 'bottom'
-                });
-                toast.present();
+                this.createToast('Error: No Response Received', true);
             },
             () => { }
         );
@@ -293,13 +241,7 @@ export class Tab1 {
     openSimDevice() {
         if (this.selectedSimulatedDevice === 'OpenScope-MZ') {
             if (this.checkIfMatchingLocal(this.selectedSimulatedDevice)) {
-                let toast = this.toastCtrl.create({
-                    message: 'Device is Added Already',
-                    showCloseButton: true,
-                    duration: 3000,
-                    position: 'bottom'
-                });
-                toast.present();
+                this.createToast('Device is Added Already', true);
                 return;
             }
             else {
@@ -321,22 +263,11 @@ export class Tab1 {
                         );
                         this.storage.saveData('savedDevices', JSON.stringify(this.devices));
                         this.showDevMenu = false;
-                        let toast = this.toastCtrl.create({
-                            message: 'Device Added Successfully',
-                            duration: 5000,
-                            position: 'bottom'
-                        });
-                        toast.present();
+                        this.createToast('Device Added Successfully');
                     },
                     (err) => {
                         this.connectingToDevice = false;
-                        let toast = this.toastCtrl.create({
-                            message: 'Error: No Response Received',
-                            showCloseButton: true,
-                            duration: 3000,
-                            position: 'bottom'
-                        });
-                        toast.present();
+                        this.createToast('Error: No Response Received', true);
                     },
                     () => { }
                 );
@@ -392,6 +323,9 @@ export class Tab1 {
                     }
                     console.log(data);
                     if (data.agent[0].statusCode === 0) { this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress); }
+                    else {
+                        this.createToast('Agent Could Not Connect To Device', true);
+                    }
                 },
                 (err) => {
                     console.log(err);
@@ -415,15 +349,25 @@ export class Tab1 {
             },
             (err) => {
                 console.log(err);
-                let toast = this.toastCtrl.create({
-                    message: 'Error: No Response Received',
-                    showCloseButton: true,
-                    duration: 3000,
-                    position: 'bottom'
-                });
-                toast.present();
+                this.createToast('Error: No Response Received', true);
             },
             () => { }
         );
+    }
+
+    createToast(message?: string, showCloseButton?: boolean, duration?: number, position?: string) {
+        //Check optional parameters and load defaults if required
+        message = message == undefined ? 'Error Occurred' : message;
+        showCloseButton = showCloseButton == undefined ? false : showCloseButton;
+        duration = duration == undefined ? 3000 : duration;
+        position = position == undefined ? 'bottom' : position;
+
+        let toast = this.toastCtrl.create({
+            message: message,
+            showCloseButton: showCloseButton,
+            duration: duration,
+            position: position
+        });
+        toast.present();
     }
 }
