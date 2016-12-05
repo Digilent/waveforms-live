@@ -1489,6 +1489,7 @@ export class SilverNeedleChart {
             showLabel: false,
             movable: false,
             symbol: 'none',
+            lineWidth: 2,
             position: {
                 x: initialValue,
                 relativeY: 0.5
