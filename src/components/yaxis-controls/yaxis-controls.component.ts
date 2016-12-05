@@ -5,12 +5,16 @@ import {NavParams, ViewController, PopoverController} from 'ionic-angular';
 import {SilverNeedleChart} from '../chart/chart.component';
 import {SeriesPopover} from '../series-popover/series-popover.component';
 
+//Services
+import { SettingsService } from '../../services/settings/settings.service';
+
 @Component({
     templateUrl: 'yaxis-controls.html',
     selector: 'yaxis-controls'
 })
 export class YAxisComponent {
     @Input() chart: SilverNeedleChart;
+    public settingsService: SettingsService;
     public numSeries: number[] = [0, 1];
     public storageEventListener: EventEmitter<any>;
     public viewCtrl: ViewController;
@@ -22,10 +26,11 @@ export class YAxisComponent {
     public timeoutRef: any;
     public showOscSettings: boolean = true;
     
-    constructor(_viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController) {
+    constructor(_viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController, _settingsSrv: SettingsService) {
         this.popoverCtrl = _popoverCtrl;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
+        this.settingsService = _settingsSrv;
     }
 
     ngOnInit() {

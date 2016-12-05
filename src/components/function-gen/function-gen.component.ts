@@ -10,6 +10,7 @@ import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { SettingsService } from '../../services/settings/settings.service';
 
 //Interfaces
 import { SettingsObject } from '../instruments/awg/awg-instrument.component';
@@ -19,6 +20,7 @@ import { SettingsObject } from '../instruments/awg/awg-instrument.component';
     selector: 'fgen'
 })
 export class FgenComponent {
+    public settingsService: SettingsService;
     public showDutyCycle: boolean;
     public waveType: string;
     public frequency: string;
@@ -37,10 +39,14 @@ export class FgenComponent {
     public showSettings: boolean = true;
     public showChanSettings: boolean[] = [true];
 
-    constructor(_deviceManagerService: DeviceManagerService,
+    constructor(
+        _deviceManagerService: DeviceManagerService,
         _modalCtrl: ModalController,
         _popoverCtrl: PopoverController,
-        _toastCtrl: ToastController) {
+        _toastCtrl: ToastController,
+        _settingsService: SettingsService
+    ) {
+        this.settingsService = _settingsService;
         this.modalCtrl = _modalCtrl;
         this.popoverCtrl = _popoverCtrl;
         this.toastCtrl = _toastCtrl;

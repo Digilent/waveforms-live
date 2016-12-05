@@ -10,11 +10,16 @@ export class SettingsService {
     public defaultConsoleLog;
     public logArguments;
     public logLength: number = 50;
+    public nestedChannels: boolean = false;
 
     constructor(_storageService: StorageService) {
         console.log('settings service constructor');
         this.storageService = _storageService;
         this.defaultConsoleLog = window.console.log;
+    }
+
+    setNestedChannels(nested: boolean) {
+        this.nestedChannels = nested;
     }
 
     changeConsoleLog(type: string) {
