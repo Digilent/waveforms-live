@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { ModalController } from 'ionic-angular';
+import { ModalController, Platform } from 'ionic-angular';
+import { Transfer } from 'ionic-native';
 
 //Components
 import { DeviceComponent } from '../device/device.component';
@@ -16,6 +17,7 @@ import { Chart, CursorPositions } from './chart.interface';
 declare var $: any;
 declare var mathFunctions: any;
 declare var decimateModule: any;
+declare var cordova: any;
 
 @Component({
     selector: 'silverNeedleChart',
@@ -24,6 +26,7 @@ declare var decimateModule: any;
 
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
+    public platform: Platform;
     public chart: Chart;
     public timelineChart: Chart = null;
     public numXCursors: number = 0;
@@ -74,8 +77,9 @@ export class SilverNeedleChart {
     public seriesAnchorTouchStartRef: any;
     public previousYPos: number;
 
-    constructor(_modalCtrl: ModalController) {
+    constructor(_modalCtrl: ModalController, _platform: Platform) {
         this.modalCtrl = _modalCtrl;
+        this.platform = _platform;
     }
 
     ngAfterViewInit() {
@@ -233,7 +237,7 @@ export class SilverNeedleChart {
                 this.activeTPDIndex = wheelData.perDivArrayIndex;
                 this.timeDivision = this.secsPerDivVals[this.activeTPDIndex];
                 this.base = wheelData.mid;
-                setTimeout(() => {this.shouldShowIndividualPoints(); }, 20);
+                setTimeout(() => { this.shouldShowIndividualPoints(); }, 20);
             }
             else {
                 this.activeVPDIndex[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
@@ -286,7 +290,7 @@ export class SilverNeedleChart {
     }
 
     shouldShowIndividualPoints() {
-        if (this.numSeries == undefined ||this.numSeries[0] == undefined || this.currentBufferArray[this.numSeries[0]] == undefined) { return ;}
+        if (this.numSeries == undefined || this.numSeries[0] == undefined || this.currentBufferArray[this.numSeries[0]] == undefined) { return; }
         let series = this.chart.getData();
         let axesInfo = this.chart.getAxes();
         let bounds = {
@@ -1316,11 +1320,36 @@ export class SilverNeedleChart {
     exportCanvasAsPng() {
         let canvas = this.chart.getCanvas();
         let data = canvas.toDataURL();
-        let link = document.createElement("a");
-        link.setAttribute("href", data);
-        link.setAttribute("download", 'WaveFormsLiveChart.png');
-        document.body.appendChild(link);
-        link.click();
+        if (this.platform.is('cordova')) {
+            alert('hey');
+
+            this.platform.ready().then(() => {
+                alert('ready');
+
+                const fileTransfer = new Transfer();
+                //const imageLocation = `${cordova.file.applicationDirectory}www/assets/img/${data}`;
+
+                fileTransfer.download(data, cordova.file.dataDirectory + 'file.png').then((entry) => {
+
+                    alert('success');
+
+                }, (error) => {
+
+                    alert('FAIL');
+
+                });
+
+            });
+
+
+        }
+        else {
+            let link = document.createElement("a");
+            link.setAttribute("href", data);
+            link.setAttribute("download", 'WaveFormsLiveChart.png');
+            document.body.appendChild(link);
+            link.click();
+        }
     }
 
     updateMath() {
