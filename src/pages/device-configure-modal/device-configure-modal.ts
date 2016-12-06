@@ -71,23 +71,11 @@ export class DeviceConfigureModal {
                 if (success.agent == undefined || success.agent[0].statusCode > 0) {
                     let message = 'Error Parsing Agent Response To Devices Enumeration';
                     console.log(message);
-                    let toast = this.tab1Ref.toastCtrl.create({
-                        message: message,
-                        showCloseButton: true,
-                        duration: 3000,
-                        position: 'bottom'
-                    });
-                    toast.present();
+                    this.tab1Ref.createToast(message, true);
                     return;
                 }
                 if (success.agent[0].devices.length === 0) {
-                    let toast = this.tab1Ref.toastCtrl.create({
-                        message: 'No UART Devices Found',
-                        showCloseButton: true,
-                        duration: 3000,
-                        position: 'bottom'
-                    });
-                    toast.present();
+                    this.tab1Ref.createToast('No UART Devices Found', true);
                     return;
                 }
                 this.potentialDevices = success.agent[0].devices;
@@ -95,13 +83,7 @@ export class DeviceConfigureModal {
             },
             (err) => {
                 console.log(err);
-                let toast = this.tab1Ref.toastCtrl.create({
-                    message: 'Error: Invalid Response From Bridge',
-                    showCloseButton: true,
-                    duration: 5000,
-                    position: 'bottom'
-                });
-                toast.present();
+                this.tab1Ref.createToast('Error: Invalid Response From Bridge', true);
             },
             () => {
 
@@ -119,12 +101,7 @@ export class DeviceConfigureModal {
             ]
         };
         if (this.deviceObject != null && this.potentialDevices[selectedIndex] === this.deviceObject.connectedDeviceAddress) {
-            let toast = this.tab1Ref.toastCtrl.create({
-                message: 'Device Added Already',
-                duration: 5000,
-                position: 'bottom'
-            });
-            toast.present();
+            this.tab1Ref.createToast('Device Added Already');
             return;
         }
         this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
@@ -147,6 +124,19 @@ export class DeviceConfigureModal {
                     (data) => {
                         console.log('enumeration response');
                         console.log(data);
+                        if (data.device[0].statusCode == undefined || data.device[0].statusCode > 0) {
+                            this.tab1Ref.createToast('Error: Invalid Device Enumeration', true);
+                            return;
+                        }
+
+                        if (this.deviceObject != undefined) {
+                            this.tab1Ref.devices[0].connectedDeviceAddress = this.potentialDevices[selectedIndex];
+                            this.tab1Ref.devices[0].ipAddress = this.tab1Ref.devices[0].deviceBridgeAddress + ' - ' + this.tab1Ref.devices[0].connectedDeviceAddress;
+                            this.tab1Ref.storage.saveData('savedDevices', JSON.stringify(this.tab1Ref.devices));
+                            this.devicesEnumeration = false;
+                            this.deviceConfigure = true;
+                            return;
+                        }
 
                         let validDevice = this.tab1Ref.bridgeDeviceSelect({
                             selectedDevice: this.potentialDevices[selectedIndex],
@@ -156,18 +146,12 @@ export class DeviceConfigureModal {
                             this.devicesEnumeration = false;
                             this.deviceConfigure = true;
                             this.deviceObject = this.tab1Ref.devices[0];
-                            this.deviceObject.connectedDeviceAddress
+                            this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex]
                         }
                     },
                     (err) => {
                         console.log(err);
-                        let toast = this.tab1Ref.toastCtrl.create({
-                            message: 'No Response From Agent',
-                            showCloseButton: true,
-                            duration: 3000,
-                            position: 'bottom'
-                        });
-                        toast.present();
+                        this.tab1Ref.createToast('No Response From Agent', true);
                     },
                     () => { }
                 );

@@ -1321,27 +1321,16 @@ export class SilverNeedleChart {
         let canvas = this.chart.getCanvas();
         let data = canvas.toDataURL();
         if (this.platform.is('cordova')) {
-            alert('hey');
-
             this.platform.ready().then(() => {
-                alert('ready');
-
                 const fileTransfer = new Transfer();
                 //const imageLocation = `${cordova.file.applicationDirectory}www/assets/img/${data}`;
-
-                fileTransfer.download(data, cordova.file.dataDirectory + 'file.png').then((entry) => {
-
-                    alert('success');
-
-                }, (error) => {
-
-                    alert('FAIL');
-
-                });
-
+                fileTransfer.download(data, cordova.file.dataDirectory + 'file.png').then(
+                    (entry) => {
+                    },
+                    (error) => {
+                    }
+                );
             });
-
-
         }
         else {
             let link = document.createElement("a");

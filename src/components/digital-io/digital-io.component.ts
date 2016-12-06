@@ -84,7 +84,7 @@ export class DigitalIoComponent {
     }
 
     setMode(mode: string) {
-        if (mode === 'analyzer') {
+        /*if (mode === 'analyzer') {
             let toast = this.toastCtrl.create({
                 message: 'Analyzer Currently Unsupported',
                 showCloseButton: true,
@@ -94,7 +94,7 @@ export class DigitalIoComponent {
             toast.present();
             this.selectedMode = 'io';
             return;
-        }
+        }*/
         this.selectedMode = mode;
     }
 

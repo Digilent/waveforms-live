@@ -5,6 +5,7 @@ import { ViewChild, Component } from '@angular/core';
 import { SilverNeedleChart } from '../../components/chart/chart.component';
 import { DeviceComponent } from '../../components/device/device.component';
 import { TriggerComponent } from '../../components/trigger/trigger.component';
+import { DigitalIoComponent } from '../../components/digital-io/digital-io.component';
 
 
 //Services
@@ -18,6 +19,7 @@ import { StorageService } from '../../services/storage/storage.service';
 export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
     @ViewChild('triggerComponent') triggerComponent: TriggerComponent;
+    @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
     public app: App;
     public platform: Platform;
     public controlsVisible = false;
@@ -30,25 +32,11 @@ export class TestChartCtrlsPage {
     public activeDevice: DeviceComponent;
     public storage: StorageService;
 
-    public oscopeChans: number[];
-
     public chartReady: boolean = false;
     public toastCtrl: ToastController;
     public clickBindReference;
     public readAttemptCount: number = 0;
-    public previousOscSettings: any[] = [{
-        offset: null,
-        gain: null,
-        sampleFreqMax: null,
-        bufferSizeMax: null,
-        delay: null
-    }, {
-        offset: null,
-        gain: null,
-        sampleFreqMax: null,
-        bufferSizeMax: null,
-        delay: null
-    }];
+    public previousOscSettings: any[] = [];
     public previousTrigSettings: any = {
         instrument: null,
         channel: null,
@@ -56,6 +44,7 @@ export class TestChartCtrlsPage {
         lowerThreshold: null,
         upperThreshold: null
     };
+    public previousLaSettings: any[] = [];
 
     public theoreticalAcqTime: number;
     public retryingReadAfterTimeout: boolean = false;
@@ -104,9 +93,24 @@ export class TestChartCtrlsPage {
             toast.present();
         }
         else {
-            this.oscopeChans = [0, 1];
             this.chartReady = true;
             this.chart1.loadDeviceSpecificValues(this.activeDevice);
+            for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
+                this.previousOscSettings.push({
+                    offset: null,
+                    gain: null,
+                    sampleFreqMax: null,
+                    bufferSizeMax: null,
+                    delay: null
+                });
+            }
+            for (let i = 0; i < this.activeDevice.instruments.la.numChans; i++) {
+                this.previousLaSettings.push({
+                    sampleFreq: null,
+                    bufferSize: null
+                });
+            }
+            console.log(this.previousLaSettings);
         }
     }
 
@@ -129,6 +133,10 @@ export class TestChartCtrlsPage {
         this.botVisible = !this.botVisible;
     }
 
+    generateOscReadArray() {
+
+    }
+
     //Run osc single
     singleClick(forceWholeCommand?: boolean) {
         if (this.readAttemptCount > 0 && !this.retryingReadAfterTimeout) {
@@ -142,7 +150,8 @@ export class TestChartCtrlsPage {
         this.readAttemptCount = 0;
         this.retryingReadAfterTimeout = false;
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
-        if (this.chart1.oscopeChansActive.indexOf(true) === -1) {
+
+        if (this.chart1.oscopeChansActive.indexOf(true) === -1 && this.gpioComponent.laActiveChans.indexOf(true) === -1) {
             let toast = this.toastCtrl.create({
                 message: 'Err: No Channels Active. Please Activate a Channel and Run Again',
                 showCloseButton: true,
@@ -155,6 +164,7 @@ export class TestChartCtrlsPage {
         this.triggerStatus = 'Armed';
         let setTrigParams = false;
         let setOscParams = false;
+        let setLaParams = false;
 
         let trigSourceArr = this.triggerComponent.triggerSource.split(' ');
         if (trigSourceArr[2] === undefined) {
@@ -168,6 +178,7 @@ export class TestChartCtrlsPage {
         }
         let samplingParams = this.chart1.calculateDataFromWindow();
         this.theoreticalAcqTime = 2 * 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
+
         if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[2]) ||
             this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== parseInt(this.triggerComponent.lowerThresh) ||
             this.previousTrigSettings.upperThreshold !== parseInt(this.triggerComponent.upperThresh)) {
@@ -206,11 +217,33 @@ export class TestChartCtrlsPage {
                 }
             }
         }
+
+        let laArray = [[], [], []];
+        for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
+            if (this.gpioComponent.laActiveChans[i]) {
+                if (this.previousLaSettings[i].sampleFreq !== samplingParams.sampleFreq || this.previousLaSettings[i].bufferSize !== samplingParams.bufferSize) {
+                    setLaParams = true;
+                }
+                laArray[0].push(i + 1);
+                laArray[1].push(samplingParams.sampleFreq);
+                laArray[2].push(samplingParams.bufferSize);
+                this.previousLaSettings[i] = {
+                    sampleFreq: samplingParams.sampleFreq,
+                    bufferSize: samplingParams.bufferSize
+                }
+            }
+        }
+
+
         let singleCommand = {}
 
         if (setOscParams || forceWholeCommand) {
             singleCommand['osc'] = {};
             singleCommand['osc']['setParameters'] = [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]];
+        }
+        if (setLaParams || forceWholeCommand) {
+            singleCommand['la'] = {};
+            singleCommand['la']['setParameters'] = [laArray[0], laArray[1], laArray[2]];
         }
         singleCommand['trigger'] = {};
         if (setTrigParams || forceWholeCommand) {
@@ -228,7 +261,7 @@ export class TestChartCtrlsPage {
                 [
                     {
                         osc: readArray[0],
-                        //la: [1]
+                        la: laArray[0]
                     }
                 ]
             ];
@@ -239,6 +272,7 @@ export class TestChartCtrlsPage {
         /*if (this.triggerComponent.edgeDirection === 'off') {
             singleCommand['trigger']['forceTrigger'] = [[1]];
         }*/
+        console.log(singleCommand);
         this.activeDevice.multiCommand(singleCommand).subscribe(
             (data) => {
                 console.log(data);
@@ -251,13 +285,13 @@ export class TestChartCtrlsPage {
                 if (this.activeDevice.transport.getType() !== 'local') {
                     setTimeout(() => {
                         this.readOscope();
+                        this.readLa();
                     }, this.theoreticalAcqTime);
                 }
                 else {
                     this.readOscope();
+                    this.readLa();
                 }
-
-                //this.readLa();
             }
         );
 
@@ -273,9 +307,16 @@ export class TestChartCtrlsPage {
     }
 
     readLa() {
-        this.activeDevice.instruments.la.read([1]).subscribe(
+        let readArray = [];
+        for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
+            if (this.gpioComponent.laActiveChans[i]) {
+                readArray.push(i + 1);
+            }
+        }
+        if (readArray.length < 1) { return; }
+        this.activeDevice.instruments.la.read(readArray).subscribe(
             (data) => {
-
+                console.log(data);
             },
             (err) => {
 
@@ -291,6 +332,7 @@ export class TestChartCtrlsPage {
                 readArray.push(i + 1);
             }
         }
+        if (readArray.length < 1) { return; }
         this.activeDevice.instruments.osc.read(readArray).subscribe(
             (data) => {
                 this.readAttemptCount = 0;

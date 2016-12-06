@@ -59,9 +59,10 @@ export class SimulatedLaComponent {
             binaryOffset: null,
             acqCount: 3,
             actualSampleFreq: 6250000000,
+            actualVOffset: 0,
             y: typedArray,
-            pointOfInterest: 16384,
-            triggerDelta: -16384,
+            pointOfInterest: 5000,
+            triggerIndex: 5000,
             actualGain: 1
         };
     }

@@ -40,7 +40,7 @@ export class LaInstrumentComponent extends InstrumentComponent {
         }
     }
 
-    setParametersJson(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[]) {
+    setParametersJson(chans: number[], sampleFreqs: number[], bufferSizes: number[]) {
         let command = {
             "la": {}
         }
@@ -62,7 +62,7 @@ export class LaInstrumentComponent extends InstrumentComponent {
     }
 
     //Tell OpenScope to run once and return a buffer
-    setParameters(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[]): Observable<any> {
+    setParameters(chans: number[], sampleFreqs: number[], bufferSizes: number[]): Observable<any> {
         if (chans.length == 0) {
             return Observable.create((observer) => {
                 observer.complete();
@@ -165,14 +165,15 @@ export class LaInstrumentComponent extends InstrumentComponent {
                                 let andVal = Math.pow(2, i);
                                 //console.log('andVal: ' + andVal);
                                 let seriesVal = andVal & untypedArray[j];
-                                if (seriesVal) {
+                                /*if (seriesVal) {
                                     //console.log('channel ' + i + ' is high');
                                     channelsObject[i].push(1);
                                 }
                                 else {
                                     //console.log('channel ' + i + ' is low');
                                     channelsObject[i].push(0);
-                                }
+                                }*/
+                                channelsObject[i].push(seriesVal > 0 ? 1 : 0);
                             }
                         }
                         let finish = performance.now();
@@ -186,6 +187,13 @@ export class LaInstrumentComponent extends InstrumentComponent {
                             pointOfInterest: command.la[channel][0].pointOfInterest,
                             triggerPosition: command.la[channel][0].triggerDelta,
                             seriesOffset: 500
+                            /*dt: 1 / (command.osc[channel][0].actualSampleFreq / 1000),
+                            t0: 0,
+                            y: scaledArray,
+                            data: pointContainer,
+                            pointOfInterest: command.osc[channel][0].pointOfInterest,
+                            triggerPosition: command.osc[channel][0].triggerIndex,
+                            seriesOffset: command.osc[channel][0].actualVOffset / 1000*/
                         });
                         bufferCount++;
                         this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
