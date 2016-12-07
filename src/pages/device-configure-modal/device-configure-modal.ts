@@ -130,8 +130,9 @@ export class DeviceConfigureModal {
                         }
 
                         if (this.deviceObject != undefined) {
-                            this.tab1Ref.devices[0].connectedDeviceAddress = this.potentialDevices[selectedIndex];
-                            this.tab1Ref.devices[0].ipAddress = this.tab1Ref.devices[0].deviceBridgeAddress + ' - ' + this.tab1Ref.devices[0].connectedDeviceAddress;
+                            console.log
+                            this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
+                            this.deviceObject.ipAddress = this.deviceObject.deviceBridgeAddress + ' - ' + this.deviceObject.connectedDeviceAddress;
                             this.tab1Ref.storage.saveData('savedDevices', JSON.stringify(this.tab1Ref.devices));
                             this.devicesEnumeration = false;
                             this.deviceConfigure = true;

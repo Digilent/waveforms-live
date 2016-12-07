@@ -35,3 +35,14 @@
     font-weight: 500;
     font-size: 16px;
 }
+
+.device-configure-modal-container .custom-padding
+{
+    padding-top: 1px;
+    padding-left: 16px;
+}
+
+.device-configure-modal-container .item-md.item-input.ng-valid.input-has-value:not(.input-has-focus) .item-inner {
+    border-bottom-color: #dedede;
+    box-shadow: none;
+}

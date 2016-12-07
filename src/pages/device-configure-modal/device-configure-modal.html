@@ -1,5 +1,5 @@
 <div class="device-configure-modal-container">
-    <div *ngIf="bridgeConfigure" padding>
+    <div *ngIf="bridgeConfigure" class="custom-padding">
         <p class="section-header">Agent Configuration</p>
         <div *ngIf="devicesEnumeration">
             <p class="set-white-font">Select A Device</p>
@@ -11,12 +11,12 @@
             <button ion-button class="text-button-side disable-hover" (click)="reEnumerateAgent()">Change Agent Device</button>
         </div>
     </div>
-    <div *ngIf="deviceConfigure" padding>
+    <div *ngIf="deviceConfigure" class="custom-padding">
         <p class="section-header">Device Configuration</p>
         <ion-list class="device-configure-list">
             <ion-item class="configure-item">
                 <ion-label stacked>Hostname</ion-label>
-                <ion-input ([ngModel])="hostname"></ion-input>
+                <ion-input [(ngModel)]=deviceObject.hostname></ion-input>
             </ion-item>
             <ion-item class="configure-item">
                 <p class="set-white-font">Device Address: {{deviceObject.connectedDeviceAddress || deviceObject.ipAddress}}</p>
@@ -33,5 +33,7 @@
             </ion-item>
         </ion-list>
     </div>
-    <button ion-button class="text-button-side disable-hover" (click)="closeModal()">Close</button>
+    <div padding>
+        <button ion-button class="text-button-side disable-hover" (click)="closeModal()">Close</button>
+    </div>
 </div>

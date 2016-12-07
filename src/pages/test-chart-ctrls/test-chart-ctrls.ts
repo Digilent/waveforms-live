@@ -185,7 +185,7 @@ export class TestChartCtrlsPage {
             setTrigParams = true;
         }
 
-        let readArray = [[], [], [], [], [], []];
+        let oscArray = [[], [], [], [], [], []];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
                 let range = this.chart1.voltsPerDivVals[this.chart1.activeVPDIndex[i]] * 10;
@@ -202,12 +202,12 @@ export class TestChartCtrlsPage {
                     setTrigParams = true;
                 }
 
-                readArray[0].push(i + 1);
-                readArray[1].push(0);
-                readArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
-                readArray[3].push(samplingParams.sampleFreq);
-                readArray[4].push(samplingParams.bufferSize);
-                readArray[5].push(parseFloat(this.triggerComponent.delay));
+                oscArray[0].push(i + 1);
+                oscArray[1].push(0);
+                oscArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
+                oscArray[3].push(samplingParams.sampleFreq);
+                oscArray[4].push(samplingParams.bufferSize);
+                oscArray[5].push(parseFloat(this.triggerComponent.delay));
                 this.previousOscSettings[i] = {
                     offset: 0,
                     gain: this.activeDevice.instruments.osc.chans[i].gains[j],
@@ -237,9 +237,17 @@ export class TestChartCtrlsPage {
 
         let singleCommand = {}
 
+        let targetsObject = {};
+        if (oscArray[0].length > 0) {
+            targetsObject['osc'] = oscArray[0];
+        }
+        if (laArray[0].length > 0) {
+            targetsObject['la'] = laArray[0];
+        }
+
         if (setOscParams || forceWholeCommand) {
             singleCommand['osc'] = {};
-            singleCommand['osc']['setParameters'] = [readArray[0], readArray[1], readArray[2], readArray[3], readArray[4], readArray[5]];
+            singleCommand['osc']['setParameters'] = [oscArray[0], oscArray[1], oscArray[2], oscArray[3], oscArray[4], oscArray[5]];
         }
         if (setLaParams || forceWholeCommand) {
             singleCommand['la'] = {};
@@ -259,10 +267,7 @@ export class TestChartCtrlsPage {
                     }
                 ],
                 [
-                    {
-                        osc: readArray[0],
-                        la: laArray[0]
-                    }
+                    targetsObject
                 ]
             ];
         }
