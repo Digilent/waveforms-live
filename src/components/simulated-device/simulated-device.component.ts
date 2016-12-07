@@ -1,17 +1,17 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-import {SimulatedAwgComponent} from './instruments/simulated-awg.component';
-import {SimulatedDcComponent} from './instruments/simulated-dc.component';
-import {SimulatedOscComponent} from './instruments/simulated-osc.component';
-import {SimulatedTriggerComponent} from './instruments/simulated-trigger.component';
-import {SimulatedLaComponent} from './instruments/simulated-la.component';
-import {SimulatedGpioComponent} from './instruments/simulated-gpio.component';
+import { SimulatedAwgComponent } from './instruments/simulated-awg.component';
+import { SimulatedDcComponent } from './instruments/simulated-dc.component';
+import { SimulatedOscComponent } from './instruments/simulated-osc.component';
+import { SimulatedTriggerComponent } from './instruments/simulated-trigger.component';
+import { SimulatedLaComponent } from './instruments/simulated-la.component';
+import { SimulatedGpioComponent } from './instruments/simulated-gpio.component';
 
 //Services
-import {SimulatedDeviceService} from '../../services/simulated-device/simulated-device.service';
+import { SimulatedDeviceService } from '../../services/simulated-device/simulated-device.service';
 
 @Injectable()
 export class SimulatedDeviceComponent {
@@ -83,7 +83,7 @@ export class SimulatedDeviceComponent {
             }
         }
         if (binaryDataFlag) {
-            return this.processBinaryDataAndSend(responseObject); 
+            return this.processBinaryDataAndSend(responseObject);
         }
         else {
             let response = JSON.stringify(responseObject);
@@ -118,7 +118,7 @@ export class SimulatedDeviceComponent {
                 return this.dc.setVoltage(params[0], commandObject.voltage);
             case 'dcgetVoltage':
                 return this.dc.getVoltage(params[0]);
-            
+
             //---------- GPIO ----------        
             case 'gpiowrite':
                 return this.gpio.write(params[0], commandObject.value);
@@ -158,17 +158,17 @@ export class SimulatedDeviceComponent {
     processBinaryDataAndSend(commandObject: any) {
         let binaryDataContainer = {};
         let binaryOffset = 0;
-            for (let instrument in this.trigger.targets) {
+        for (let instrument in this.trigger.targets) {
 
-                for (let channel in commandObject[instrument]) {
-                    binaryDataContainer[channel] = commandObject[instrument][channel][0].y;
-                    commandObject[instrument][channel][0].binaryOffset = binaryOffset;
-                    binaryOffset += commandObject[instrument][channel][0].binaryLength;
-                    delete commandObject[instrument][channel][0].y;
-                }
-
+            for (let channel in commandObject[instrument]) {
+                binaryDataContainer[channel] = commandObject[instrument][channel][0].y;
+                commandObject[instrument][channel][0].binaryOffset = binaryOffset;
+                binaryOffset += commandObject[instrument][channel][0].binaryLength;
+                delete commandObject[instrument][channel][0].y;
             }
 
+        }
+        console.log(binaryDataContainer);
         let stringCommand = JSON.stringify(commandObject);
         let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
 

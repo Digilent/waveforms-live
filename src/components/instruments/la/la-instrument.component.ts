@@ -1,14 +1,14 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-import {LaChannelComponent} from './la-channel.component';
-import {InstrumentComponent} from '../instrument.component';
-import {WaveformComponent} from '../../data-types/waveform';
+import { LaChannelComponent } from './la-channel.component';
+import { InstrumentComponent } from '../instrument.component';
+import { WaveformComponent } from '../../data-types/waveform';
 
 //Services
-import {TransportService} from '../../../services/transport/transport.service';
+import { TransportService } from '../../../services/transport/transport.service';
 
 @Injectable()
 export class LaInstrumentComponent extends InstrumentComponent {
@@ -127,7 +127,7 @@ export class LaInstrumentComponent extends InstrumentComponent {
                     let count = 0;
                     let i = 0;
                     let stringBuffer = '';
-                    while (count < 2) {
+                    while (count < 2 && i < 2000) {
                         let char = '';
                         char += String.fromCharCode.apply(null, new Int8Array(data.slice(i, i + 1)));
                         if (char === '\n') {
@@ -135,6 +135,11 @@ export class LaInstrumentComponent extends InstrumentComponent {
                         }
                         stringBuffer += char;
                         i++;
+                    }
+                    if (i === 2000) {
+                        console.log(stringBuffer);
+                        observer.error('Osc Read Failed. Try Again');
+                        return;
                     }
                     let binaryIndexStringLength = stringBuffer.indexOf('\r\n');
                     let binaryIndex = parseFloat(stringBuffer.substring(0, binaryIndexStringLength));
@@ -150,40 +155,24 @@ export class LaInstrumentComponent extends InstrumentComponent {
                         observer.complete();
                         return;
                     }
+                    //Holds the info
+                    let channelsObject = {};
+                    console.log(command);
+                    let binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex + command.la[chans[0].toString()][0].binaryOffset, binaryIndexStringLength + 2 + binaryIndex + command.la[chans[0].toString()][0].binaryOffset + command.la[chans[0].toString()][0].binaryLength));
+                    let untypedArray = Array.prototype.slice.call(binaryData);
+                    let start = performance.now();
                     for (let channel in command.la) {
-                        console.log(command);
-                        let binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex + command.la[channel][0].binaryOffset, binaryIndexStringLength + 2 + binaryIndex + command.la[channel][0].binaryOffset + command.la[channel][0].binaryLength));
-                        let untypedArray = Array.prototype.slice.call(binaryData);
-                        console.log(untypedArray);
-                        let channelsObject = {};
-                        for (let i = 0; i < 10; i++) {
-                            channelsObject[i.toString()] = [];
-                        }
-                        let start = performance.now();
+                        channelsObject[channel] = [];
+
+                        let andVal = Math.pow(2, parseInt(channel) - 1);
                         for (let j = 0; j < untypedArray.length; j++) {
-                            for (let i = 0; i < 10; i++) {
-                                let andVal = Math.pow(2, i);
-                                //console.log('andVal: ' + andVal);
-                                let seriesVal = andVal & untypedArray[j];
-                                /*if (seriesVal) {
-                                    //console.log('channel ' + i + ' is high');
-                                    channelsObject[i].push(1);
-                                }
-                                else {
-                                    //console.log('channel ' + i + ' is low');
-                                    channelsObject[i].push(0);
-                                }*/
-                                channelsObject[i].push(seriesVal > 0 ? 1 : 0);
-                            }
+                            channelsObject[channel].push((andVal & untypedArray[j]) > 0 ? 1 : 0);
                         }
-                        let finish = performance.now();
-                        console.log('Time: ' + (finish - start));
-                        console.log(channelsObject);
 
                         this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
                             dt: 1 / (command.la[channel][0].actualSampleFreq / 1000),
                             t0: 0,
-                            y: channelsObject['0'],
+                            y: channelsObject[channel],
                             pointOfInterest: command.la[channel][0].pointOfInterest,
                             triggerPosition: command.la[channel][0].triggerDelta,
                             seriesOffset: 500
@@ -205,6 +194,9 @@ export class LaInstrumentComponent extends InstrumentComponent {
                             this.activeBuffer = (this.numDataBuffers).toString();
                         }
                     }
+                    let finish = performance.now();
+                    console.log('Time: ' + (finish - start));
+                    console.log(channelsObject);
 
                     observer.next(command);
                     //Handle device errors and warnings

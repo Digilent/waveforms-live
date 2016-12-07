@@ -223,6 +223,7 @@ export class TestChartCtrlsPage {
             if (this.gpioComponent.laActiveChans[i]) {
                 if (this.previousLaSettings[i].sampleFreq !== samplingParams.sampleFreq || this.previousLaSettings[i].bufferSize !== samplingParams.bufferSize) {
                     setLaParams = true;
+                    setTrigParams = true;
                 }
                 laArray[0].push(i + 1);
                 laArray[1].push(samplingParams.sampleFreq);

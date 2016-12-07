@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
 //Services
-import {SimulatedDeviceService} from '../../../services/simulated-device/simulated-device.service';
+import { SimulatedDeviceService } from '../../../services/simulated-device/simulated-device.service';
 
 @Injectable()
 export class SimulatedLaComponent {
@@ -30,25 +30,26 @@ export class SimulatedLaComponent {
         this.bufferSizes[chan] = commandObject.bufferSize;
         this.simulatedDeviceService.setLaParameters(commandObject, chan);
         return {
-            "command":"setParameters",
-            "statusCode":0,
+            "command": "setParameters",
+            "statusCode": 0,
             "actualSampleFreq": 6250000000,
-            "wait":0
+            "wait": 0
         };
     }
 
     read(chan) {
         let targets = this.simulatedDeviceService.getTriggerTargets();
+        console.log(targets);
         let returnInfo = {};
-        targets.osc.forEach((element, index, array) => {
-            returnInfo = this.generateLaData();
-
-            });
+        targets.la.forEach((element, index, array) => {
+            returnInfo = this.generateLaData(chan);
+        });
         return returnInfo;
     }
 
-    generateLaData() {
-        let typedArray = new Int16Array(10000);
+    generateLaData(channel: number) {
+        let maxBufferSize = Math.max(...this.bufferSizes);
+        let typedArray = new Int16Array(maxBufferSize);
         for (let i = 0; i < typedArray.length; i++) {
             typedArray[i] = i;
         }
@@ -58,11 +59,11 @@ export class SimulatedLaComponent {
             binaryLength: 2 * typedArray.length,
             binaryOffset: null,
             acqCount: 3,
-            actualSampleFreq: 6250000000,
-            actualVOffset: 0,
+            actualSampleFreq: this.sampleFreqs[channel],
+            actualVOffset: this.offsets[channel],
             y: typedArray,
-            pointOfInterest: 5000,
-            triggerIndex: 5000,
+            pointOfInterest: this.bufferSizes[channel] / 2,
+            triggerIndex: this.bufferSizes[channel] / 2,
             actualGain: 1
         };
     }

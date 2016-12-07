@@ -140,6 +140,7 @@ export class DigitalIoComponent {
                 inputChans.push(i + 1);
             }
         }
+        if (inputChans.length < 1) { return; }
         this.activeDev.instruments.gpio.read(inputChans).subscribe(
             (data) => {
                 for (let channel in data.gpio) {

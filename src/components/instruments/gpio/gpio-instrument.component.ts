@@ -107,6 +107,7 @@ export class GpioInstrumentComponent extends InstrumentComponent {
                 ]
         });
         return Observable.create((observer) => {
+            if (chans.length < 1) { observer.error('No Channels Specified') }
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     //Handle device errors and warnings
