@@ -97,9 +97,6 @@ export class Tab1 {
             deviceObject: this.devices[deviceArrayIndex]
         };
         let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
-        modal.onDidDismiss((data) => {
-            console.log(data);
-        });
         modal.present();
     }
 
@@ -180,7 +177,6 @@ export class Tab1 {
     }
 
     bridgeDeviceSelect(data, deviceBridgeAddress: string): boolean {
-        console.log(data);
         this.connectingToDevice = false;
         if (data == null) { return false; }
         if (data.deviceEnum.device == undefined) {
@@ -197,7 +193,6 @@ export class Tab1 {
                 connectedDeviceAddress: data.selectedDevice
             }
         );
-        console.log(this.devices);
         this.storage.saveData('savedDevices', JSON.stringify(this.devices));
         this.showDevMenu = false;
         this.createToast('Device Added Successfully');
@@ -248,7 +243,6 @@ export class Tab1 {
                 this.connectingToDevice = true;
                 this.deviceManagerService.connectLocal(this.selectedSimulatedDevice).subscribe(
                     (success) => {
-                        console.log('WHUWHU');
                         console.log(success);
                         this.connectingToDevice = false;
                         this.devices.unshift(
@@ -313,9 +307,7 @@ export class Tab1 {
                     let data;
                     let statusCode;
                     try {
-                        let duhString = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
-                        console.log(duhString);
-                        data = JSON.parse(duhString);
+                        data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
                         statusCode = data.agent[0].statusCode;
                     }
                     catch (e) {
@@ -338,7 +330,6 @@ export class Tab1 {
             );
             return;
         }
-        console.log(this.devices[deviceIndex]);
         this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress);
     }
 
