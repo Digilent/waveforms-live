@@ -81,7 +81,7 @@ export class TriggerPopover {
             ev: event
         });
 
-        genPopover.onDidDismiss((data) => {
+        genPopover.onWillDismiss((data) => {
             if (data === null) {return;}
             console.log(data);
             let selection = data.option.toLowerCase();

@@ -68,21 +68,21 @@ export class Tab1 {
 
     openPopover(event, arrayIndex: number) {
         let genPopover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['connect', 'remove', 'configure']
+            dataArray: ['Connect', 'Remove', 'Configure']
         });
         genPopover.present({
             ev: event
         });
-        genPopover.onDidDismiss((data) => {
+        genPopover.onWillDismiss((data) => {
             if (data === null) { return; }
-            if (data.option === 'remove') {
+            if (data.option === 'Remove') {
                 this.devices.splice(arrayIndex, 1);
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
             }
-            else if (data.option === 'connect') {
+            else if (data.option === 'Connect') {
                 this.connectToDevice(arrayIndex);
             }
-            else if (data.option === 'configure') {
+            else if (data.option === 'Configure') {
                 this.openConfigureModal(arrayIndex);
             }
         });
@@ -132,7 +132,10 @@ export class Tab1 {
     }
 
     attemptBridgeConnect(deviceBridgeAddress: string) {
-        //Note: no need to check if device exists since it depends on selection of device from config utility
+        if (deviceBridgeAddress.indexOf('http://') === -1) {
+            deviceBridgeAddress = 'http://' + deviceBridgeAddress;
+            this.deviceBridgeAddress = deviceBridgeAddress;
+        }
         if (this.checkIfMatchingBridge(deviceBridgeAddress)) {
             this.createToast('Agent Is Added Already. Use Settings To Configure Active Device', true);
             return;
@@ -161,7 +164,7 @@ export class Tab1 {
                     deviceObject: null
                 };
                 let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
-                modal.onDidDismiss((data) => {
+                modal.onWillDismiss((data) => {
                 });
                 modal.present();
             },
@@ -200,6 +203,11 @@ export class Tab1 {
     }
 
     attemptConnect(ipAddress: string) {
+        if (ipAddress.indexOf('http://') === -1) {
+            ipAddress = 'http://' + ipAddress;
+            this.addDeviceIp = ipAddress;
+        }
+        console.log(ipAddress);
         if (this.checkIfMatchingIp(ipAddress)) {
             this.createToast('Device is Added Already', true);
             return;
@@ -276,7 +284,7 @@ export class Tab1 {
         genPopover.present({
             ev: event
         });
-        genPopover.onDidDismiss(data => {
+        genPopover.onWillDismiss(data => {
             if (data === null) { return; }
             this.selectedSimulatedDevice = data.option;
         });

@@ -116,10 +116,6 @@ export class ModalFgenPage {
         this.viewCtrl.dismiss();
     }
 
-    togglePower() {
-        this.fgenComponent.togglePower();
-    }
-
     //Determines if current wave type is square
     isSquare() {
         if (this.fgenComponent.waveType === 'square') {

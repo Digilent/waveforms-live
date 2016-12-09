@@ -56,7 +56,7 @@ export class TriggerComponent {
             ev: event
         });
 
-        genPopover.onDidDismiss((data) => {
+        genPopover.onWillDismiss((data) => {
             if (data === null) { return; }
             console.log(data);
             this.triggerSource = data.option;
@@ -106,7 +106,7 @@ export class TriggerComponent {
         popover.present({
             ev: event
         });
-        popover.onDidDismiss(data => {
+        popover.onWillDismiss(data => {
         });
     }
 

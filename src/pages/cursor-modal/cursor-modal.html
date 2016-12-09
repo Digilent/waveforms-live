@@ -1,20 +1,16 @@
 <div class="cursor-modal-container">
     <ion-list class="cursor-modal-list">
         <ion-item class="cursor-modal-item">
-            <h3>Cursor Type</h3>
-            <button ion-button icon-right clear class="cursor-modal-button" (click)="showPopover($event, 'cursorType')"> {{cursorType}} <ion-icon name="arrow-dropdown"></ion-icon></button>
+            <h3>Type</h3>
+            <button ion-button icon-right clear class="cursor-modal-button disable-hover" (click)="showPopover($event, 'cursorType')"> {{chartComponent.cursorType}} <ion-icon name="arrow-dropdown"></ion-icon></button>
         </ion-item>
         <ion-item class="cursor-modal-item">
             <h3>Cursor 1 Channel</h3>
-            <button ion-button icon-right clear class="cursor-modal-button" (click)="showPopover($event, 'cursor1Chan')"> {{cursor1Chan}} <ion-icon name="arrow-dropdown"></ion-icon></button>
+            <button ion-button icon-right clear class="cursor-modal-button disable-hover" (click)="showPopover($event, 'cursor1Chan')"> {{chartComponent.cursor1Chan}} <ion-icon name="arrow-dropdown"></ion-icon></button>
         </ion-item>
         <ion-item class="cursor-modal-item">
             <h3>Cursor 2 Channel</h3>
-            <button ion-button icon-right clear class="cursor-modal-button" (click)="showPopover($event, 'cursor2Chan')"> {{cursor2Chan}} <ion-icon name="arrow-dropdown"></ion-icon></button>
+            <button ion-button icon-right clear class="cursor-modal-button disable-hover" (click)="showPopover($event, 'cursor2Chan')"> {{chartComponent.cursor2Chan}} <ion-icon name="arrow-dropdown"></ion-icon></button>
         </ion-item>
-        <div class="cursor-modal-item" text-center>
-            <button ion-button class="text-button-side disable-hover close-buttons" (click)="closeModal(true)">OK</button>
-            <button ion-button class="text-button-side disable-hover close-buttons" (click)="closeModal(false)">Cancel</button>
-        </div>
     </ion-list>
 </div>

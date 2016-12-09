@@ -7,7 +7,7 @@
     <ion-col width-50 text-center>
         <div class="power-button-container">
             <div class="dummy-power-underline" [ngClass]="{'power-underline': fgenComponent.powerOn}">
-                <button ion-button clear (click)="togglePower()" class="powerOff" [ngClass]="{powerOn: fgenComponent.powerOn}">
+                <button ion-button clear (click)="fgenComponent.togglePower($event)" class="powerOff" [ngClass]="{powerOn: fgenComponent.powerOn}">
                     <ion-icon name="power"></ion-icon>
                 </button>
             </div>

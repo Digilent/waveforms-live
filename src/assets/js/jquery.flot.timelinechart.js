@@ -423,6 +423,16 @@
                 }
             }
 
+            function timelineResize() {
+                if (updateExistingChart && existingChartRef != null) {
+                    var getAxes = existingChartRef.getAxes();
+                    plot.updateTimelineCurtains({
+                        min: getAxes.xaxis.min,
+                        max: getAxes.xaxis.max
+                    });
+                }
+            }
+
             /**************************************************************
             * Bind Events
             **************************************************************/
@@ -433,6 +443,7 @@
                 eventHolder.mousewheel(timelineMouseWheel);
                 eventHolder.bind('touchstart', timelineTouchDown);
                 eventHolder.bind('touchend', timelineTouchEnd);
+                eventHolder.resize(timelineResize);
             });
 
             /**************************************************************
@@ -447,6 +458,7 @@
                 eventHolder.unbind('timelineWheelRedraw');
                 eventHolder.unbind('touchstart', timelineTouchDown);
                 eventHolder.unbind('touchend', timelineTouchEnd);
+                eventHolder.unbind('resize', timelineResize);
             });
         }
     }

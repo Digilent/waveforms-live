@@ -752,7 +752,7 @@ export class ProtocolTestPanel {
             dataToDisplay: untypedArray,
             command: JSON.parse(this.formattedResponseBody)
         });
-        modal.onDidDismiss(data => {
+        modal.onWillDismiss(data => {
             console.log('dismiss');
         });
         modal.present();

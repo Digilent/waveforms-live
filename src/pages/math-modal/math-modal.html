@@ -1,27 +1,19 @@
 <div class="math-modal-wrapper">
-    <ion-row>
-        <div class="channel-div">
-            <ion-row *ngFor="let chan of mathChannels, let k = index;">
-                <ion-col *ngIf="activeChannels[k]">
-                    <button ion-button (click)="setActiveSeries(chan)" [ngClass]="{'selected-channel': (k+1)==selectedData.channel}" class="text-button-side disable-hover">{{chan}}</button>
-                </ion-col>
-            </ion-row>
-        </div>
-        <ion-col class="data-container">
-            <ion-row *ngFor="let row of buttonNames, let i = index;">
-                <ion-col *ngFor="let button of row, let j = index;" text-center>
-                    <div><button ion-button (click)="exportMathInfoToChart(button)" class="text-button-side disable-hover">{{button}}</button></div>
-                    <div class="center">{{getMetrics(button)}}</div>
-                </ion-col>
-            </ion-row>
+    <div text-center class="channel-separator">
+        <button ion-button icon-right class="select-button disable-hover" (click)="openChannelSelect($event)">
+            {{selectedData.instrument}} Ch {{selectedData.channel}}
+            <ion-icon name="arrow-dropdown"></ion-icon>
+        </button>
+    </div>
+    <!--<ion-row *ngFor="let chan of mathChannels, let k = index;">
+        <ion-col *ngIf="activeChannels[k]">
+            <button ion-button (click)="setActiveSeries(chan)" [ngClass]="{'selected-channel': (k+1)==selectedData.channel}" class="text-button-side disable-hover">{{chan}}</button>
         </ion-col>
-    </ion-row>
-    <ion-row class="exit-buttons">
-        <ion-col>
-            <div class="align-buttons">
-                <button ion-button class="text-button-side disable-hover" (click)="closeModal()">OK</button>
-                <button ion-button class="text-button-side disable-hover" (click)="closeModal()">Cancel</button>
-            </div>
+    </ion-row>-->
+    <ion-row *ngFor="let row of buttonNames, let i = index;">
+        <ion-col *ngFor="let button of row, let j = index;" text-center>
+            <div><button ion-button (click)="exportMathInfoToChart(button)" class="text-button-side disable-hover">{{button}}</button></div>
+            <div class="center">{{getMetrics(button)}}</div>
         </ion-col>
     </ion-row>
 </div>

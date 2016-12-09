@@ -8,7 +8,7 @@
         <ion-row class="chart-info">
             <ion-col center *ngIf="mathEnabled" class="info-col">
                 <ion-row center class="cursor-container">
-                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openMathModal()" [disabled]="currentBufferArray.length === 0">
+                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openMathModal($event)" [disabled]="currentBufferArray.length === 0">
                         <span class="collapse-button">Math</span>
                         <ion-icon name="ios-glasses-outline"></ion-icon>
                     </button>
@@ -41,27 +41,27 @@
             </ion-col>
             <ion-col *ngIf="cursorsEnabled" center class="info-col">
                 <ion-row center class="cursor-container">
-                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openCursorModal()" [disabled]="currentBufferArray.length === 0">
+                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openCursorModal($event)" [disabled]="currentBufferArray.length === 0">
                         <span class="collapse-button">Cursors</span>
                         <ion-icon name="md-create"></ion-icon>
                     </button>
-                    <ion-col center *ngIf="cursorType === 'time'" class="cursor-info-col">
+                    <ion-col center *ngIf="cursorType.toLowerCase() === 'time'" class="cursor-info-col">
                         1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
                     </ion-col>
-                    <ion-col center class="cursor-info-col" *ngIf="cursorType === 'time'">
+                    <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'time'">
                         &Delta; X: {{getCursorInfo('xDelta')}} <br> 1/&Delta;X: {{getCursorInfo('xFreq')}}
                     </ion-col>
-                    <ion-col center class="cursor-info-col" *ngIf="cursorType === 'track'">
+                    <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'track'">
                         1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
                     </ion-col>
-                    <ion-col center class="cursor-info-col" *ngIf="cursorType === 'track'">
+                    <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'track'">
                         &Delta;X: {{getCursorInfo('xDelta')}} &Delta;Y: {{getCursorInfo('yDelta')}} <br>
                         1/&Delta;X: {{getCursorInfo('xFreq')}}
                     </ion-col>
-                    <ion-col center class="cursor-info-col" *ngIf="cursorType === 'voltage'">
+                    <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'voltage'">
                         1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
                     </ion-col>
-                    <ion-col center class="cursor-info-col" *ngIf="cursorType === 'voltage'">
+                    <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'voltage'">
                         &Delta;Y: {{getCursorInfo('yDelta')}}
                     </ion-col>
                 </ion-row>

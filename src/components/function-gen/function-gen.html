@@ -10,26 +10,26 @@
             <div (dblclick)="toggleChanSettings(i)" class="align-center-container header-bar-side">
                 <img class="custom-dropdown-img" [ngClass]="{rotateOn: showChanSettings[i]}" (click)="toggleChanSettings(i)" src="assets/img/arrow-right.png">
                 <div class="vertical-align" [ngClass]="{'instrument-header': !settingsService.nestedChannels}">{{settingsService.nestedChannels === false ? 'Wavegen' : ''}} Ch {{i + 1}}</div>
-                <button ion-button clear (click)="togglePower()" class="powerOff" [ngClass]="{powerOn: powerOn}">
+                <button ion-button clear (click)="togglePower($event)" class="powerOff" [ngClass]="{powerOn: powerOn}">
                     <ion-icon name="power"></ion-icon>
                 </button>
             </div>
             <div *ngIf="showChanSettings[i]">
                 <div class="wavetype-images-container" text-center>
-                    <div class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sine'}">
-                        <img src="assets/img/sine.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}" (click)="toggleWave('sine')">
+                    <div (click)="toggleWave('sine')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sine'}">
+                        <img src="assets/img/sine.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}">
                     </div>
-                    <div class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='triangle'}">
-                        <img src="assets/img/triangle.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}" (click)="toggleWave('triangle')">
+                    <div (click)="toggleWave('triangle')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='triangle'}">
+                        <img src="assets/img/triangle.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}">
                     </div>
-                    <div class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sawtooth'}">
-                        <img src="assets/img/sawtooth.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}" (click)="toggleWave('sawtooth')">
+                    <div (click)="toggleWave('sawtooth')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sawtooth'}">
+                        <img src="assets/img/sawtooth.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}">
                     </div>
-                    <div class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='square'}">
-                        <img src="assets/img/square.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}" (click)="toggleWave('square')">
+                    <div (click)="toggleWave('square')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='square'}">
+                        <img src="assets/img/square.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}">
                     </div>
-                    <div class="wavetype-image image-end" [ngClass]="{'selected-wavetype': waveType==='dc'}">
-                        <img src="assets/img/dc.png" [ngClass]="{'dim-image': powerOn&&waveType!=='dc'}" (click)="toggleWave('dc')">
+                    <div (click)="toggleWave('dc')" class="wavetype-image image-end" [ngClass]="{'selected-wavetype': waveType==='dc'}">
+                        <img src="assets/img/dc.png" [ngClass]="{'dim-image': powerOn&&waveType!=='dc'}">
                     </div>
                 </div>
                 <ion-row>

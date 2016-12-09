@@ -1,16 +1,17 @@
-import {NavParams, ViewController, Platform} from 'ionic-angular';
-import {Component} from '@angular/core';
+import { NavParams, ViewController, Platform, PopoverController } from 'ionic-angular';
+import { Component } from '@angular/core';
 
 //Components
-import {DeviceComponent} from '../../components/device/device.component';
-import {SilverNeedleChart} from '../../components/chart/chart.component';
+import { DeviceComponent } from '../../components/device/device.component';
+import { SilverNeedleChart } from '../../components/chart/chart.component';
+import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Services
-import {DeviceManagerService} from '../../services/device/device-manager.service';
+import { DeviceManagerService } from '../../services/device/device-manager.service';
 
 //Interfaces
-import {Chart} from '../../components/chart/chart.interface';
-import {SelectedData} from './math-modal.interface';
+import { Chart } from '../../components/chart/chart.interface';
+import { SelectedData } from './math-modal.interface';
 
 declare var mathFunctions: any;
 
@@ -19,6 +20,7 @@ declare var mathFunctions: any;
 })
 
 export class MathModalPage {
+    public popoverCtrl: PopoverController;
     public chartComponent: SilverNeedleChart;
     public platform: Platform;
     public viewCtrl: ViewController;
@@ -26,10 +28,10 @@ export class MathModalPage {
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
     public mathChannels: string[];
-    public buttonNames: Array<string[]> = [['Frequency', 'Period', 'Amplitude'], ['Peak to Peak', 'Maximum', 'Minimum'], ['Mean', 'RMS']];
+    public buttonNames: Array<string[]> = [['Frequency', 'Period'], ['Amplitude', 'Peak to Peak'], ['Maximum', 'Minimum'], ['Mean', 'RMS']];
     public chart: Chart;
     public selectedData: SelectedData = {
-        instrument: 'osc',
+        instrument: 'Osc',
         channel: 1
     };
     public chartMin: number = 0;
@@ -42,8 +44,10 @@ export class MathModalPage {
         _platform: Platform,
         _viewCtrl: ViewController,
         _params: NavParams,
+        _popoverCtrl: PopoverController,
         _deviceManagerService: DeviceManagerService
     ) {
+        this.popoverCtrl = _popoverCtrl;
         this.platform = _platform;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
@@ -53,7 +57,7 @@ export class MathModalPage {
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
         this.mathChannels = [];
         for (let i = 0; i < this.activeDevice.instruments.osc.chans.length; i++) {
-            this.mathChannels.push('Osc ' + (i + 1));
+            this.mathChannels.push('Osc Ch ' + (i + 1));
             this.activeChannels.push(this.chartComponent.currentBufferArray[i] !== undefined && this.chartComponent.currentBufferArray[i].y !== undefined);
         }
         this.selectedData.channel = this.activeChannels.indexOf(true) + 1;
@@ -61,21 +65,30 @@ export class MathModalPage {
         this.calcSelectedRange();
     }
 
-    //Close modal and save settings if they are changed
-    closeModal() {
-        this.viewCtrl.dismiss();
+    openChannelSelect(event) {
+        let dataArray = [];
+        for (let i = 0; i < this.mathChannels.length; i++) {
+            if (this.activeChannels[i]) {
+                dataArray.push(this.mathChannels[i]);
+            }
+        }
+        let popover = this.popoverCtrl.create(GenPopover, {
+            dataArray: dataArray
+        });
+        popover.onWillDismiss((data) => {
+            console.log(data);
+            if (data == null) { return; }
+            this.setActiveSeries(data.option);
+        });
+        popover.present({
+            ev: event
+        });
     }
 
     calcSelectedRange() {
         let extremes = this.chart.getAxes().xaxis;
         this.chartMin = extremes.min;
         this.chartMax = extremes.max;
-        /*if (extremes.dataMin > this.chartMin) {
-            this.chartMin = extremes.dataMin;
-        }
-        if (extremes.dataMax < this.chartMax) {
-            this.chartMax = extremes.dataMax;
-        }*/
         this.calcDataIndexRange();
     }
 
@@ -97,88 +110,87 @@ export class MathModalPage {
         if (this.maxIndex > series[seriesNum].data.length) {
             this.maxIndex = series[seriesNum].data.length - 1;
         }
-        console.log(this.minIndex, this.maxIndex);
     }
-    
-    setActiveSeries(channel: string) {
-        channel = channel.toLowerCase();
+
+    setActiveSeries(selection: string) {
+        let infoSplit = selection.split(' ');
         this.selectedData = {
-            instrument: channel.substring(0, channel.length - 2),
-            channel: parseInt(channel.slice(-1))
+            instrument: infoSplit[0],
+            channel: parseInt(infoSplit[2])
         }
     }
 
     getMetrics(metric: string) {
         switch (metric) {
-            case 'Frequency': 
+            case 'Frequency':
                 return mathFunctions.getFrequency(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
-                
+
             case 'Pos Pulse Width':
                 return 'Pos Pulse Width'
-                
+
             case 'Pos Duty Cycle':
                 return 'Pos Duty Cycle'
-                
+
             case 'Period':
                 return mathFunctions.getPeriod(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
 
             case 'Neg Pulse Width':
                 return 'Neg Pulse Width'
-                
+
             case 'Neg Duty Cycle':
                 return 'Neg Duty Cycle'
-                
+
             case 'Rise Rate':
                 return 'Rise Rate'
-                
+
             case 'Rise Time':
                 return 'Rise Time'
-                
+
             case 'Amplitude':
                 return mathFunctions.getAmplitude(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
-                
+
             case 'High':
                 return 'High'
-                
+
             case 'Low':
                 return 'Low'
-                
+
             case 'Peak to Peak':
                 return mathFunctions.getPeakToPeak(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
-                
+
             case 'Maximum':
                 return mathFunctions.getMax(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
-                
+
             case 'Minimum':
                 return mathFunctions.getMin(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
-                
+
             case 'Mean':
                 return mathFunctions.getMean(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
-                
+
             case 'RMS':
                 return mathFunctions.getRMS(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
-                
+
             case 'Overshoot':
                 return 'Overshoot'
-                
+
             case 'Cycle Mean':
                 return 'Cycle Mean'
-                
+
             case 'Cycle RMS':
                 return 'Cycle RMS'
-                
+
             case 'Undershoot':
                 return 'Undershoot'
-                
+
             default:
                 return 'default'
         }
-        
+
 
     }
 
     exportMathInfoToChart(info: string) {
         this.chartComponent.addMathInfo(info, this.selectedData.channel - 1, this.maxIndex, this.minIndex);
     }
-    
+
 }

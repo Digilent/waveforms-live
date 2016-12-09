@@ -1,16 +1,17 @@
 .cursor-modal-container
 {
-    position: absolute;            
+    /*position: absolute;            
     top: 50%;      
     left: 50%;                  
     transform: translate(-50%, -50%);
     max-width: 500px;
-    width: 100%;
+    width: 100%;*/
 }
 
 .cursor-modal-list
 {
     background-color: #535353;
+    margin: 0;
 }
 
 .cursor-modal-container ion-list > .item:last-child {
@@ -19,14 +20,23 @@
 
 .cursor-modal-container .cursor-modal-item
 {
-    background-color: #535353;
+    background-color: #535353 !important;
     color: white;
     border-top: solid #535353 1px !important;
 }
 
 .cursor-modal-container .cursor-modal-button
 {
-    color: white;
+    color: #CCCCCC;
+    width: 98%;
+    background-color: #3A3A3A;
+    border: solid black 1px;
+    border-radius: 0px;
+    .button-inner
+    {
+        text-transform: none;
+        justify-content: space-between;
+    }
 }
 
 .cursor-modal-container .close-buttons

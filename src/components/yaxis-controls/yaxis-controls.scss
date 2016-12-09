@@ -108,6 +108,11 @@
     color: #CCCCCC;
 }
 
+.button-md.activated
+{
+    background-color: inherit;
+}
+
 .text-button-side:hover
 {
     border: solid white 1px;
@@ -198,7 +203,7 @@
 .instrument-header
 {
     color: white;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .yaxis-component-container .button-info-container

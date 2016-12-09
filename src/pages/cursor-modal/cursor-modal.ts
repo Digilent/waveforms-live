@@ -16,13 +16,8 @@ export class ModalCursorPage {
     public platform: Platform;
     public viewCtrl: ViewController;
     public params: NavParams;
-    public cursorType: string;
-    public cursor1Chan: string;
-    public cursor2Chan: string;
-    public cursorTypeArray: string[] = ['disabled', 'time', 'track', 'voltage'];
+    public cursorTypeArray: string[] = ['Disabled', 'Time', 'Track', 'Voltage'];
     public cursorChanArray: string[] = [];
-
-    public value: number;
     public popoverCtrl: PopoverController;
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
@@ -45,37 +40,19 @@ export class ModalCursorPage {
         for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
             this.cursorChanArray.push('Osc ' + (i + 1));
         }
-        this.cursorType = this.params.get('cursorType');
-        this.cursor1Chan = this.params.get('cursor1Chan');
-        this.cursor2Chan = this.params.get('cursor2Chan');
         this.chartComponent = this.params.get('chartComponent');
         for (let i = 0; i < this.chartComponent.currentBufferArray.length; i++) {
             if (this.chartComponent.currentBufferArray[i] !== undefined && this.chartComponent.currentBufferArray[i].y !== undefined) {
                 this.activeChans.push('Osc ' + (i + 1));
             }
         }
-        if (this.activeChans.indexOf(this.cursor1Chan) === -1) {
-            this.cursor1Chan = this.activeChans[0];
+        if (this.activeChans.indexOf(this.chartComponent.cursor1Chan) === -1) {
+            this.chartComponent.cursor1Chan = this.activeChans[0];
+            this.chartComponent.handleCursors();
         }
-        if (this.activeChans.indexOf(this.cursor2Chan) === -1) {
-            this.cursor2Chan = this.activeChans[0];
-        }
-    }
-
-    //Close modal and save settings if they are changed
-    closeModal(save: boolean) {
-        if (save) {
-            this.viewCtrl.dismiss({
-                save: save,
-                cursorType: this.cursorType,
-                cursor1Chan: this.cursor1Chan,
-                cursor2Chan: this.cursor2Chan
-            });
-        }
-        else {
-            this.viewCtrl.dismiss({
-                save: save
-            });
+        if (this.activeChans.indexOf(this.chartComponent.cursor2Chan) === -1) {
+            this.chartComponent.cursor2Chan = this.activeChans[0];
+            this.chartComponent.handleCursors();
         }
     }
 
@@ -105,20 +82,21 @@ export class ModalCursorPage {
         popover.present({
             ev: event
         });
-        popover.onDidDismiss(data => {
+        popover.onWillDismiss(data => {
             if (data === null) { return; }
             if (type === 'cursorType') {
-                this.cursorType = data.option
+                this.chartComponent.cursorType = data.option
             }
             else if (type === 'cursor1Chan') {
-                this.cursor1Chan = data.option;
+                this.chartComponent.cursor1Chan = data.option;
             }
             else if (type === 'cursor2Chan') {
-                this.cursor2Chan = data.option;
+                this.chartComponent.cursor2Chan = data.option;
             }
             else {
                 console.log('error in show popover handler');
             }
+            this.chartComponent.handleCursors();
         });
     }
 

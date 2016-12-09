@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { ModalController, Platform } from 'ionic-angular';
+import { ModalController, Platform, PopoverController } from 'ionic-angular';
 import { Transfer } from 'ionic-native';
 
 //Components
@@ -27,12 +27,13 @@ declare var cordova: any;
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     public platform: Platform;
+    public popoverCtrl: PopoverController;
     public chart: Chart;
     public timelineChart: Chart = null;
     public numXCursors: number = 0;
     public activeSeries: number = 1;
     public numYCursors: number = 0;
-    public cursorType: string = 'disabled';
+    public cursorType: string = 'Disabled';
     public cursor1Chan: string = 'Osc 1';
     public cursor2Chan: string = 'Osc 1';
     public cursorsEnabled: boolean = true;
@@ -77,8 +78,9 @@ export class SilverNeedleChart {
     public seriesAnchorTouchStartRef: any;
     public previousYPos: number;
 
-    constructor(_modalCtrl: ModalController, _platform: Platform) {
+    constructor(_modalCtrl: ModalController, _platform: Platform, _popoverCtrl: PopoverController) {
         this.modalCtrl = _modalCtrl;
+        this.popoverCtrl = _popoverCtrl;
         this.platform = _platform;
     }
 
@@ -223,7 +225,7 @@ export class SilverNeedleChart {
             }
         });
         $("#flotContainer").bind("cursorupdates", (event, cursorData) => {
-            if (cursorData[0] === undefined || this.cursorType === 'disabled') { return; }
+            if (cursorData[0] === undefined || this.cursorType.toLowerCase() === 'disabled') { return; }
             for (let i = 0; i < cursorData.length; i++) {
                 if (cursorData[i].cursor !== 'triggerLine') {
                     let cursorNum = parseInt(cursorData[i].cursor.slice(-1)) - 1;
@@ -943,36 +945,26 @@ export class SilverNeedleChart {
     }
 
     //Opens cursor modal menu and sets data on modal dismiss
-    openCursorModal() {
-        let modal = this.modalCtrl.create(ModalCursorPage, {
+    openCursorModal(event) {
+        let popover = this.popoverCtrl.create(ModalCursorPage, {
             cursorType: this.cursorType,
             cursor1Chan: this.cursor1Chan,
             cursor2Chan: this.cursor2Chan,
             chartComponent: this
         });
-        modal.onDidDismiss(data => {
-            if (data.save) {
-                this.cursorType = data.cursorType;
-                this.cursor1Chan = data.cursor1Chan;
-                this.cursor2Chan = data.cursor2Chan;
-                this.handleCursors();
-            }
-            /*setTimeout(() => {
-                this.chart.reflow();
-            }, 50);*/
+        popover.present({
+            ev: event
         });
-        modal.present();
     }
 
-    openMathModal() {
+    openMathModal(event) {
         if (this.currentBufferArray.length === 0) { return; }
-        let modal = this.modalCtrl.create(MathModalPage, {
+        let popover = this.popoverCtrl.create(MathModalPage, {
             chartComponent: this
         });
-        modal.onDidDismiss(data => {
-            console.log('rip math modal');
+        popover.present({
+            ev: event
         });
-        modal.present();
     }
 
     //Adds correct cursors from selection
@@ -980,13 +972,14 @@ export class SilverNeedleChart {
         this.activeChannels[0] = parseInt(this.cursor1Chan.slice(-1));
         this.activeChannels[1] = parseInt(this.cursor2Chan.slice(-1));
         this.removeCursors();
-        if (this.cursorType === 'time') {
+        if (this.cursorType.toLowerCase() === 'time') {
             for (let i = 0; i < 2; i++) {
                 let series = this.chart.getData();
                 let color = series[this.activeChannels[i] - 1].color
                 let options = {
                     name: 'cursor' + (i + 1),
                     mode: 'x',
+                    lineWidth: 2,
                     color: color,
                     snapToPlot: (this.activeChannels[i] - 1),
                     showIntersections: false,
@@ -1001,13 +994,14 @@ export class SilverNeedleChart {
                 this.chart.addCursor(options);
             }
         }
-        else if (this.cursorType === 'track') {
+        else if (this.cursorType.toLowerCase() === 'track') {
             for (let i = 0; i < 2; i++) {
                 let series = this.chart.getData();
                 let color = series[this.activeChannels[i] - 1].color
                 let options = {
                     name: 'cursor' + (i + 1),
                     mode: 'xy',
+                    lineWidth: 2,
                     color: color,
                     showIntersections: false,
                     showLabel: false,
@@ -1022,13 +1016,14 @@ export class SilverNeedleChart {
                 this.chart.addCursor(options);
             }
         }
-        else if (this.cursorType === 'voltage') {
+        else if (this.cursorType.toLowerCase() === 'voltage') {
             for (let i = 0; i < 2; i++) {
                 let series = this.chart.getData();
                 let color = series[this.activeChannels[i] - 1].color
                 let options = {
                     name: 'cursor' + (i + 1),
                     mode: 'y',
+                    lineWidth: 2,
                     color: color,
                     showIntersections: false,
                     showLabel: false,
@@ -1342,7 +1337,6 @@ export class SilverNeedleChart {
     }
 
     updateMath() {
-        this.exportCanvasAsPng();
         let extremes = this.chart.getAxes().xaxis;
         let chartMin = extremes.min;
         let chartMax = extremes.max;

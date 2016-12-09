@@ -29,7 +29,7 @@ export class SettingsPage {
         let popover = this.popoverCtrl.create(GenPopover, {
             dataArray: ['console', 'local storage', 'both', 'none']
         });
-        popover.onDidDismiss((data) => {
+        popover.onWillDismiss((data) => {
             if (data === null) { return; }
             this.settingsService.changeConsoleLog(data.option);
 

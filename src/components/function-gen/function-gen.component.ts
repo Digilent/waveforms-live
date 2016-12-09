@@ -82,7 +82,8 @@ export class FgenComponent {
     }
 
     //Toggle power to awg
-    togglePower() {
+    togglePower(event) {
+        event.stopPropagation();
         let chans = [];
         let settings = [];
         for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {
@@ -232,7 +233,7 @@ export class FgenComponent {
         genPopover.present({
             ev: event
         });
-        genPopover.onDidDismiss(data => {
+        genPopover.onWillDismiss(data => {
             this.toggleWave(data.option);
         });
     }
