@@ -112,7 +112,7 @@ export class SilverNeedleChart {
                 secsPerDivisionValues: [0.000000001, 0.000000002, 0.000000005, 0.00000001, 0.00000002, 0.00000005, 0.0000001, 0.0000002,
                     0.0000005, 0.000001, 0.000002, 0.000005, 0.00001, 0.00002, 0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01,
                     0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10],
-                startingXIndex: 0,
+                startingXIndex: 21,
 
                 updateExistingChart: true,
                 existingChartRef: chartRef
@@ -145,7 +145,12 @@ export class SilverNeedleChart {
 
         this.chart.setTimelineRef(this.timelineChart);
         this.chart.setTimelineUpdate(true);
-
+        $("#timelineContainer").bind("timelineWheelRedraw", (event, wheelData) => {
+            this.activeTPDIndex = wheelData.perDivArrayIndex;
+            this.timeDivision = this.secsPerDivVals[this.activeTPDIndex];
+            this.base = wheelData.mid;
+            setTimeout(() => { this.shouldShowIndividualPoints(); }, 20); 
+        });
     }
 
     createChart() {

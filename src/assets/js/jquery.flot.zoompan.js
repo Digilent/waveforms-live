@@ -386,7 +386,8 @@
                 plot.draw();
 
                 if (updateTimelineChart && timelineChartRef != null) {
-                    timelineChartRef.updateTimelineCurtains(infoContainer)
+                    timelineChartRef.setActiveXIndex(startingXIndex);
+                    timelineChartRef.updateTimelineCurtains(infoContainer);
                 }
             }
 

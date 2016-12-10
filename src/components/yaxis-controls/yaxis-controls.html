@@ -5,7 +5,7 @@
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
     <div *ngIf="showOscSettings">
-        <div *ngFor="let series of chart.deviceDescriptor.instruments.osc.chans, let i = index;" (click)="setActiveSeries(i)" [ngClass]="{'yaxis-component-wrapper':settingsService.nestedChannels}">
+        <div *ngFor="let series of chart.deviceDescriptor.instruments.osc.chans, let i = index;" (click)="setActiveSeries(i)" [ngClass]="{'yaxis-component-wrapper':settingsService.nestedChannels, 'set-top-border':i!=0}">
             <div (dblclick)="toggleSeriesSettings(i)" class="align-center-container header-bar-side">
                 <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSeriesSettings[i]}" (click)="toggleSeriesSettings(i)" src="assets/img/arrow-right.png">
                 <div class="vertical-align" [ngClass]="{'instrument-header': !settingsService.nestedChannels}">{{settingsService.nestedChannels === false ? 'Osc' : ''}} {{names[i]}}</div>

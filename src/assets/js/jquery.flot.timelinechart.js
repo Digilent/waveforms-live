@@ -359,7 +359,8 @@
                 if (updateExistingChart) {
                     if (existingChartRef == null) { return; }
 
-                    var getAxes = existingChartRef.getAxes();
+                    existingChartRef.setActiveXIndex(startingXIndex);
+                    getAxes = existingChartRef.getAxes();
                     var base = (getAxes.xaxis.max + getAxes.xaxis.min) / 2;
                     var min = base - secsPerDivisionValues[startingXIndex] * 5;
                     var max = base + secsPerDivisionValues[startingXIndex] * 5;
@@ -376,8 +377,8 @@
                     }]);
 
 
-                    plot.setupGrid();
-                    plot.draw();
+                    existingChartRef.setupGrid();
+                    existingChartRef.draw();
 
                     plot.updateTimelineCurtains({
                         min: min,

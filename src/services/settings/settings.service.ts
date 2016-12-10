@@ -11,11 +11,28 @@ export class SettingsService {
     public logArguments;
     public logLength: number = 50;
     public nestedChannels: boolean = false;
+    public routeToStore: boolean = true;
 
     constructor(_storageService: StorageService) {
         console.log('settings service constructor');
         this.storageService = _storageService;
         this.defaultConsoleLog = window.console.log;
+        this.storageService.getData('routeToStore').then((data) => {
+            console.log('hey');
+            if (data != null) {
+                this.routeToStore = data;
+            }
+            console.log(this.routeToStore);
+        });
+    }
+
+    setRouteToStore(route: boolean) {
+        this.routeToStore = route;
+        this.storageService.saveData('routeToStore', JSON.stringify(this.routeToStore));
+    }
+
+    getRouteToStore(): boolean {
+        return this.routeToStore;
     }
 
     setNestedChannels(nested: boolean) {

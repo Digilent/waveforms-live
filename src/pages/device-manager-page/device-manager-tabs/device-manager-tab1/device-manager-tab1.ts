@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { PopoverController, App, ToastController, NavController, ModalController } from 'ionic-angular';
+import { PopoverController, App, ToastController, NavController, ModalController, Platform, AlertController } from 'ionic-angular';
 
 //Pages
 import { TestChartCtrlsPage } from '../../../../pages/test-chart-ctrls/test-chart-ctrls';
@@ -14,6 +14,7 @@ import { DeviceCardInfo, DeviceConfigureParams } from './device-manager-tab1.int
 //Services
 import { DeviceManagerService } from '../../../../services/device/device-manager.service';
 import { StorageService } from '../../../../services/storage/storage.service';
+import { SettingsService } from '../../../../services/settings/settings.service';
 
 @Component({
     templateUrl: 'device-manager-tab1.html'
@@ -21,12 +22,15 @@ import { StorageService } from '../../../../services/storage/storage.service';
 export class Tab1 {
     @Output() navToInstrumentPage: EventEmitter<any> = new EventEmitter;
     public app: App;
+    public alertCtrl: AlertController;
     public popoverCtrl: PopoverController;
+    public platform: Platform;
     public toastCtrl: ToastController;
     public modalCtrl: ModalController;
     public navCtrl: NavController;
     public addDeviceIp: string;
     public deviceManagerService: DeviceManagerService;
+    public settingsService: SettingsService;
     public storage: StorageService;
     public showDevMenu: boolean = false;
     public connectingToDevice: boolean = false;
@@ -41,9 +45,16 @@ export class Tab1 {
         _storage: StorageService,
         _navCtrl: NavController,
         _modalCtrl: ModalController,
-        _app: App) {
+        _app: App,
+        _platform: Platform,
+        _settingsService: SettingsService,
+        _alertCtrl: AlertController
+    ) {
         console.log('tab1 constructor');
         this.app = _app;
+        this.alertCtrl = _alertCtrl;
+        this.settingsService = _settingsService;
+        this.platform = _platform;
         this.popoverCtrl = _popoverCtrl;
         this.toastCtrl = _toastCtrl;
         this.navCtrl = _navCtrl;
@@ -56,6 +67,42 @@ export class Tab1 {
                 this.devices = JSON.parse(data);
             }
         });
+        this.storage.getData('routeToStore').then((data) => {
+            if (data == null || (data === true && (this.platform.is('android') || this.platform.is('ios')))) {
+                this.routeToStore();
+            }
+        });
+    }
+
+    routeToStore() {
+        let alert = this.alertCtrl.create();
+        alert.setTitle('We Have An App! Would You Like to Download It?');
+
+        alert.addInput({
+            type: 'checkbox',
+            label: 'Do Not Show Again',
+            value: 'value1'
+        });
+
+        alert.addButton('Cancel');
+        alert.addButton({
+            text: 'Okay',
+            handler: data => {
+                console.log('Checkbox data:', data);
+                if (data.length > 0) {
+                    this.settingsService.setRouteToStore(false);
+                }
+                else {
+                    if (this.platform.is('android')) {
+                        window.location.href = "market://details?id=com.digilent";
+                    }
+                    else if (this.platform.is('ios')) {
+                        window.location.href = "https://itunes.apple.com/us/app/solitaire/id593715088";
+                    }
+                }
+            }
+        });
+        alert.present();
     }
 
     ionViewDidEnter() {

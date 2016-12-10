@@ -39,6 +39,11 @@
     border: solid white 1px;
 }
 
+.yaxis-component-container .set-top-border
+{
+    border-top: solid black 1px;
+}
+
 .align-center-container .align-right
 {
     margin-top: 0.1rem;
@@ -112,6 +117,22 @@
 {
     background-color: inherit;
 }
+
+ion-navbar 
+{
+    .toolbar-background {
+        background-color: #535353;
+    }
+    button {
+        color: white !important;
+    }
+    ion-title .toolbar-title {
+        color: white;
+    }
+}
+
+
+
 
 .text-button-side:hover
 {

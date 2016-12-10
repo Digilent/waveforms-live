@@ -9,7 +9,9 @@
         <div *ngFor="let channel of activeDevice.instruments.awg.chans, let i = index;" [ngClass]="{'awg-chan-container': settingsService.nestedChannels}">
             <div (dblclick)="toggleChanSettings(i)" class="align-center-container header-bar-side">
                 <img class="custom-dropdown-img" [ngClass]="{rotateOn: showChanSettings[i]}" (click)="toggleChanSettings(i)" src="assets/img/arrow-right.png">
-                <div class="vertical-align" [ngClass]="{'instrument-header': !settingsService.nestedChannels}">{{settingsService.nestedChannels === false ? 'Wavegen' : ''}} Ch {{i + 1}}</div>
+                <div class="vertical-align" [ngClass]="{'instrument-header': !settingsService.nestedChannels}">
+                    {{settingsService.nestedChannels === false ? 'Wavegen' : ''}}{{activeDevice.instruments.awg.chans.length < 2 && !settingsService.nestedChannels ? ' ' : 'Ch ' + (i + 1)}}
+                </div>
                 <button ion-button clear (click)="togglePower($event)" class="powerOff" [ngClass]="{powerOn: powerOn}">
                     <ion-icon name="power"></ion-icon>
                 </button>
