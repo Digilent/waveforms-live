@@ -48,6 +48,8 @@ export class TestChartCtrlsPage {
 
     public theoreticalAcqTime: number;
     public retryingReadAfterTimeout: boolean = false;
+    public readingOsc: boolean = false;
+    public readingLa: boolean = false;
 
     constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController, _app: App, _platform: Platform) {
         this.toastCtrl = _toastCtrl;
@@ -290,11 +292,15 @@ export class TestChartCtrlsPage {
             () => {
                 if (this.activeDevice.transport.getType() !== 'local') {
                     setTimeout(() => {
+                        this.readingOsc = true;
+                        this.readingLa = true;
                         this.readOscope();
                         this.readLa();
                     }, this.theoreticalAcqTime);
                 }
                 else {
+                    this.readingOsc = true;
+                    this.readingLa = true;
                     this.readOscope();
                     this.readLa();
                 }
@@ -319,13 +325,17 @@ export class TestChartCtrlsPage {
                 readArray.push(i + 1);
             }
         }
-        if (readArray.length < 1) { return; }
+        if (readArray.length < 1) { 
+            this.readingLa = false;
+            return; 
+        }
         this.activeDevice.instruments.la.read(readArray).subscribe(
             (data) => {
+                this.readingLa = false;
                 console.log(data);
             },
             (err) => {
-
+                
             },
             () => { }
         );
@@ -338,9 +348,13 @@ export class TestChartCtrlsPage {
                 readArray.push(i + 1);
             }
         }
-        if (readArray.length < 1) { return; }
+        if (readArray.length < 1) { 
+            this.readingOsc = false;
+            return; 
+        }
         this.activeDevice.instruments.osc.read(readArray).subscribe(
             (data) => {
+                this.readingOsc = false;
                 this.readAttemptCount = 0;
                 let numSeries = [];
                 for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
@@ -362,17 +376,7 @@ export class TestChartCtrlsPage {
                 this.triggerStatus = 'Idle';
             },
             (err) => {
-                if (this.readAttemptCount > 20) {
-                    console.log(err);
-                    let toast = this.toastCtrl.create({
-                        message: 'OpenScope is still acquiring data. Please Press Single Again.',
-                        showCloseButton: true,
-                        duration: 3000,
-                        position: 'bottom'
-                    });
-                    toast.present();
-                }
-                else {
+                if (this.readingOsc) {
                     console.log('attempting read again');
                     this.readAttemptCount++;
                     let waitTime = this.readAttemptCount * 100 > 1000 ? 1000 : this.readAttemptCount * 100;
