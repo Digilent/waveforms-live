@@ -34,10 +34,12 @@ export class DeviceManagerPage {
     public storage: StorageService;
     public showDevMenu: boolean = false;
     public connectingToDevice: boolean = false;
-    public selectedSimulatedDevice: string = 'Select a Device';
+    public selectedSimulatedDevice: string = 'OpenScope-MZ';
     public deviceBridgeAddress = 'http://localhost:56089';
 
     public devices: DeviceCardInfo[] = [];
+
+    public simulatedDevices: string[] = ['OpenScope-MZ'];
 
     constructor(_popoverCtrl: PopoverController,
         _deviceManagerService: DeviceManagerService,
@@ -68,10 +70,14 @@ export class DeviceManagerPage {
             }
         });
         this.storage.getData('routeToStore').then((data) => {
-            if (data == null || (data === true && (this.platform.is('android') || this.platform.is('ios')))) {
+            if ((data == null || data === true) && (this.platform.is('android') || this.platform.is('ios'))) {
                 this.routeToStore();
             }
         });
+    }
+
+    dropdownPopoverSelection(event) {
+        console.log(event);
     }
 
     routeToStore() {
@@ -324,17 +330,8 @@ export class DeviceManagerPage {
         }
     }
 
-    openSimDevicePopover(event) {
-        let genPopover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['OpenScope-MZ']
-        });
-        genPopover.present({
-            ev: event
-        });
-        genPopover.onWillDismiss(data => {
-            if (data === null) { return; }
-            this.selectedSimulatedDevice = data.option;
-        });
+    selectSimulatedDevice(event) {
+        this.selectedSimulatedDevice = event;
     }
 
     connectToDevice(deviceIndex: number) {
@@ -396,7 +393,7 @@ export class DeviceManagerPage {
                 /*Navigate to the parents of the tab controller so they have the nav type.
                 Without navigating to the parents, the navCtrl is a 'Tab' and thus the 
                 new root page will have the tab bar.*/
-                this.navCtrl.parent.parent.setRoot(TestChartCtrlsPage);
+                this.navCtrl.setRoot(TestChartCtrlsPage);
             },
             (err) => {
                 console.log(err);

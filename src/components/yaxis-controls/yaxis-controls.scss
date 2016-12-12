@@ -131,7 +131,9 @@ ion-navbar
     }
 }
 
-
+.header-md::after{
+    background-image: none;
+}
 
 
 .text-button-side:hover

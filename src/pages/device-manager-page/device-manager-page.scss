@@ -26,7 +26,9 @@
 .first-tab-container .dev-menu-item
 {
     background-color: #535353;
-    color: white;
+    color: #CCCCCC;
+    padding-left: 2px;
+    border: none;
 }
 
 .first-tab-container .connection-notice
@@ -57,14 +59,14 @@
 .first-tab-container .device-card-item
 {
     background-color: #535353;
-    border: solid black 1px;
+    border: solid black 1px !important;
     padding-bottom: 5px;
     padding-top: 5px;
 }
 
-.first-tab-container .item:last-child
+.first-tab-container .dropdown-popover-selector select
 {
-    border-bottom: solid black 1px;
+    font-size: 15px;
 }
 
 .first-tab-container .device-card-item .item-inner
@@ -95,12 +97,6 @@
 {
     margin-top: 2px;
     margin-bottom: 0px;
-}
-
-.first-tab-container .device-card-item .dev-menu-item
-{
-    padding-left: 2px;
-    border: none;
 }
 
 .first-tab-container .device-card-item .dev-menu-item .similated-device-button

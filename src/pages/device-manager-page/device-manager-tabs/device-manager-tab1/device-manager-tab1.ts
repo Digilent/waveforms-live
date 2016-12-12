@@ -68,7 +68,11 @@ export class Tab1 {
             }
         });
         this.storage.getData('routeToStore').then((data) => {
-            if (data == null || (data === true && (this.platform.is('android') || this.platform.is('ios')))) {
+            if ((data == null || data === true) && (this.platform.is('android') || this.platform.is('ios'))) {
+                console.log('hey');
+                console.log(data == null || data === true, this.platform.is('android'), this.platform.is('ios'));
+                console.log(this.platform.is('android'));
+                console.log('hey2');
                 this.routeToStore();
             }
         });

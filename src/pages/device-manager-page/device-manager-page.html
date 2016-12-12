@@ -3,7 +3,6 @@
         <button ion-button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
-        <ion-title>Test Test</ion-title>
     </ion-navbar>
 </ion-header>
 
@@ -47,10 +46,11 @@
                             <ion-label class="add-device-label">
                                 <ion-item class="dev-menu-item">
                                     <div class="custom-ion-label">Simulated Device</div>
-                                    <button ion-button icon-right class="similated-device-button" (click)="openSimDevicePopover($event)">
+                                    <dropdown-popover class="dropdown-popover-selector" [dataArray]="simulatedDevices" (onSelection)="selectSimulatedDevice($event)"></dropdown-popover>
+                                    <!--<button ion-button icon-right class="similated-device-button" (click)="openSimDevicePopover($event)">
                                         {{selectedSimulatedDevice}}
                                         <ion-icon name="arrow-dropdown"></ion-icon>
-                                    </button>
+                                    </button>-->
                                     <button ion-button class="connect-button disable-hover" item-right (tap)="openSimDevice()">Add</button>
                                 </ion-item>
                             </ion-label>

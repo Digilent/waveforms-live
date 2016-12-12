@@ -1,0 +1,13 @@
+<div class="dropdown-popover-container">    
+    <div *ngIf="isMobile">
+        <button ion-button icon-right (click)="openGenPopover($event)" class="popover-button">
+            {{currentlySelected}}
+            <ion-icon name="arrow-dropdown"></ion-icon>
+        </button>
+    </div>
+    <div *ngIf="!isMobile">
+        <select (change)="selectionChange($event)" class="dropdown-select">
+            <option *ngFor="let option of dataArray" [value]="option">{{option}}</option>
+        </select>
+    </div>
+</div>
