@@ -147,7 +147,7 @@ export class DeviceManagerPage {
             potentialDevices: null,
             deviceBridgeAddress: null,
             bridge: false,
-            tab1Ref: this,
+            deviceManagerPageRef: this,
             deviceObject: this.devices[deviceArrayIndex]
         };
         let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
@@ -214,7 +214,7 @@ export class DeviceManagerPage {
                     potentialDevices: success.agent[0].devices,
                     deviceBridgeAddress: deviceBridgeAddress,
                     bridge: true,
-                    tab1Ref: this,
+                    deviceManagerPageRef: this,
                     deviceObject: null
                 };
                 let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
@@ -327,6 +327,17 @@ export class DeviceManagerPage {
                     },
                     () => { }
                 );
+            }
+        }
+    }
+
+    checkForEnter(event, deviceType: string) {
+        if (event.key === 'Enter') {
+            if (deviceType === 'agent') {
+                this.attemptBridgeConnect(this.deviceBridgeAddress);
+            }
+            else if (deviceType === 'network') {
+                this.attemptConnect(this.addDeviceIp);
             }
         }
     }

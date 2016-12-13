@@ -2,10 +2,10 @@ import { NavParams, ViewController, Platform } from 'ionic-angular';
 import { Component } from '@angular/core';
 
 //Components
-import { Tab1 } from '../device-manager-page/device-manager-tabs/device-manager-tab1/device-manager-tab1';
+import { DeviceManagerPage } from '../device-manager-page/device-manager-page';
 
 //Interfaces
-import { DeviceCardInfo } from '../device-manager-page/device-manager-tabs/device-manager-tab1/device-manager-tab1.interface';
+import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
 
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
@@ -22,7 +22,7 @@ export class DeviceConfigureModal {
 
     public potentialDevices: string[];
     public deviceBridgeAddress: string;
-    public tab1Ref: Tab1;
+    public deviceManagerPageRef: DeviceManagerPage;
     public deviceObject: DeviceCardInfo;
 
     //Content controllers
@@ -45,7 +45,7 @@ export class DeviceConfigureModal {
         this.deviceManagerService = _deviceManagerService;
         this.potentialDevices = this.params.get('potentialDevices');
         this.deviceBridgeAddress = this.params.get('deviceBridgeAddress');
-        this.tab1Ref = this.params.get('tab1Ref');
+        this.deviceManagerPageRef = this.params.get('deviceManagerPageRef');
         this.deviceObject = this.params.get('deviceObject');
         if (this.params.get('bridge')) {
             this.bridgeConfigure = true;
@@ -71,11 +71,11 @@ export class DeviceConfigureModal {
                 if (success.agent == undefined || success.agent[0].statusCode > 0) {
                     let message = 'Error Parsing Agent Response To Devices Enumeration';
                     console.log(message);
-                    this.tab1Ref.createToast(message, true);
+                    this.deviceManagerPageRef.createToast(message, true);
                     return;
                 }
                 if (success.agent[0].devices.length === 0) {
-                    this.tab1Ref.createToast('No UART Devices Found', true);
+                    this.deviceManagerPageRef.createToast('No UART Devices Found', true);
                     return;
                 }
                 this.potentialDevices = success.agent[0].devices;
@@ -83,7 +83,7 @@ export class DeviceConfigureModal {
             },
             (err) => {
                 console.log(err);
-                this.tab1Ref.createToast('Error: Invalid Response From Bridge', true);
+                this.deviceManagerPageRef.createToast('Error: Invalid Response From Bridge', true);
             },
             () => {
 
@@ -101,7 +101,7 @@ export class DeviceConfigureModal {
             ]
         };
         if (this.deviceObject != null && this.potentialDevices[selectedIndex] === this.deviceObject.connectedDeviceAddress) {
-            this.tab1Ref.createToast('Device Added Already');
+            this.deviceManagerPageRef.createToast('Device Added Already');
             return;
         }
         this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
@@ -125,7 +125,7 @@ export class DeviceConfigureModal {
                         console.log('enumeration response');
                         console.log(data);
                         if (data.device[0].statusCode == undefined || data.device[0].statusCode > 0) {
-                            this.tab1Ref.createToast('Error: Invalid Device Enumeration', true);
+                            this.deviceManagerPageRef.createToast('Error: Invalid Device Enumeration', true);
                             return;
                         }
 
@@ -133,26 +133,26 @@ export class DeviceConfigureModal {
                             console.log
                             this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
                             this.deviceObject.ipAddress = this.deviceObject.deviceBridgeAddress + ' - ' + this.deviceObject.connectedDeviceAddress;
-                            this.tab1Ref.storage.saveData('savedDevices', JSON.stringify(this.tab1Ref.devices));
+                            this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices));
                             this.devicesEnumeration = false;
                             this.deviceConfigure = true;
                             return;
                         }
 
-                        let validDevice = this.tab1Ref.bridgeDeviceSelect({
+                        let validDevice = this.deviceManagerPageRef.bridgeDeviceSelect({
                             selectedDevice: this.potentialDevices[selectedIndex],
                             deviceEnum: data
                         }, this.deviceBridgeAddress);
                         if (validDevice) {
                             this.devicesEnumeration = false;
                             this.deviceConfigure = true;
-                            this.deviceObject = this.tab1Ref.devices[0];
+                            this.deviceObject = this.deviceManagerPageRef.devices[0];
                             this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex]
                         }
                     },
                     (err) => {
                         console.log(err);
-                        this.tab1Ref.createToast('No Response From Agent', true);
+                        this.deviceManagerPageRef.createToast('No Response From Agent', true);
                     },
                     () => { }
                 );

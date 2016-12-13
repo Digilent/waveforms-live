@@ -12,6 +12,6 @@ export interface DeviceConfigureParams {
     potentialDevices: any,
     deviceBridgeAddress: string,
     bridge: boolean,
-    tab1Ref: any
+    deviceManagerPageRef: any
     deviceObject: any
 }

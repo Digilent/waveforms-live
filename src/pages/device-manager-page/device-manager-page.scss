@@ -172,7 +172,7 @@
 }
 
 .fadein, .fadeout {
-    max-height: 0;            
+    max-height: 0;           
     overflow-y: hidden;
     -webkit-transition: max-height 0.5s ease-in-out;
     -moz-transition: max-height 0.5s ease-in-out;
@@ -180,7 +180,7 @@
     transition: max-height 0.5s ease-in-out;
 }
 .fadein {
-    max-height: 250px;
+    max-height: 120px;
 }
 
 .first-tab-container .device-manager-card .card-label

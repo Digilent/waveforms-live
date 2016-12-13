@@ -149,7 +149,7 @@ export class SilverNeedleChart {
             this.activeTPDIndex = wheelData.perDivArrayIndex;
             this.timeDivision = this.secsPerDivVals[this.activeTPDIndex];
             this.base = wheelData.mid;
-            setTimeout(() => { this.shouldShowIndividualPoints(); }, 20); 
+            setTimeout(() => { this.shouldShowIndividualPoints(); }, 20);
         });
     }
 
@@ -300,20 +300,11 @@ export class SilverNeedleChart {
         if (this.numSeries == undefined || this.numSeries[0] == undefined || this.currentBufferArray[this.numSeries[0]] == undefined) { return; }
         let series = this.chart.getData();
         let axesInfo = this.chart.getAxes();
-        let bounds = {
-            min: axesInfo.xaxis.min,
-            max: axesInfo.xaxis.max
-        };
-        if (bounds.min < this.currentBufferArray[this.numSeries[0]].t0 || isNaN(bounds.min)) {
-            bounds.min = this.currentBufferArray[this.numSeries[0]].t0;
-        }
-        if (bounds.max > this.currentBufferArray[this.numSeries[0]].dt * this.currentBufferArray[this.numSeries[0]].y.length || isNaN(bounds.max)) {
-            bounds.max = this.currentBufferArray[this.numSeries[0]].dt * this.currentBufferArray[this.numSeries[0]].y.length;
-        }
-        let numPointsInView = Math.round((bounds.max - bounds.min) / this.currentBufferArray[this.numSeries[0]].dt);
-        let pointsView = numPointsInView < 50;
-        for (let i = 0; i < series.length; i++) {
-            series[i].points.show = pointsView;
+        for (let i = 0; i < this.currentBufferArray.length; i++) {
+            if (this.currentBufferArray[i] != undefined && this.currentBufferArray[i].y != undefined) {
+                let numPointsInView = (axesInfo.xaxis.max - axesInfo.xaxis.min) / this.currentBufferArray[i].dt;
+                series[i].points.show = numPointsInView < 50;
+            }
         }
         this.chart.draw();
     }
@@ -723,6 +714,7 @@ export class SilverNeedleChart {
         }
 
         this.drawSeriesAnchors();
+        this.shouldShowIndividualPoints();
     }
 
     //Remove extra series and axes from the chart
