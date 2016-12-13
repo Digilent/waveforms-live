@@ -40,6 +40,7 @@ export class DeviceManagerPage {
     public devices: DeviceCardInfo[] = [];
 
     public simulatedDevices: string[] = ['OpenScope-MZ'];
+    public deviceConnectionType: string = 'network';
 
     constructor(_popoverCtrl: PopoverController,
         _deviceManagerService: DeviceManagerService,

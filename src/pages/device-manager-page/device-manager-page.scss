@@ -67,8 +67,30 @@
 .first-tab-container .dropdown-popover-selector select
 {
     font-size: 15px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    height: 25px;
 }
 
+.first-tab-container .popover-button
+{
+    font-size: 15px;
+    margin-top: 0px;
+    margin-bottom: 2px;
+    font-weight: 400;
+    height: 24px;
+}
+
+.first-tab-container .device-segment-button
+{
+    color: #4487BA;
+}
+
+.first-tab-container .segment-button.segment-activated 
+{
+    border-color: #4487BA !important;
+}
+ 
 .first-tab-container .device-card-item .item-inner
 {
     padding-top: 0px;
@@ -90,7 +112,7 @@
     margin-top: 2px;
     margin-bottom: 2px;
     padding: 0px 0px 2px 4px;
-    
+    font-size: 16px;
 }
 
 .first-tab-container .device-card-item .dev-menu-item ion-label
@@ -145,6 +167,8 @@
 {
     min-width: 35px;
     margin: 0.4rem 0.2rem;
+    color: #4487BA;
+    font-size: 18px;
 }
 
 .fadein, .fadeout {
@@ -166,7 +190,7 @@
 
 .first-tab-container .color-spinner,.spinner-crescent circle
 {
-    stroke: #387ef5;
+    stroke: #4487BA;
 }
 
 .item-md ion-avatar img {

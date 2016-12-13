@@ -15,70 +15,84 @@
             </ion-col>
         </ion-row>
     </div>
-    <div style="text-align: center">
-        <img src="assets/img/OpenScope-logo-color-500.png">
-        <div style="text-align: center">
-            <div class="add-device-container">
-                <div class="align-center">
-                    <button ion-button icon-right (click)="toggleAddDevMenu()" clear class="dev-menu-button">
-                        Add a Device
-                        <ion-icon *ngIf="!showDevMenu" name="arrow-dropdown"></ion-icon>
-                        <ion-icon *ngIf="showDevMenu" name="arrow-dropup"></ion-icon>
-                    </button>
-                </div>
-                <div [ngClass]="{fadein: showDevMenu}" class="fadeout">
-                    <ion-card class="device-manager-card">
-                        <ion-item class="device-card-item">
-                            <ion-icon class="add-device-icon" item-left name="ios-wifi"></ion-icon>
-                            <ion-label class="add-device-label">
-                                <ion-item class="dev-menu-item">
-                                    <ion-label stacked>Hostname / IP</ion-label>
-                                    <ion-input [(ngModel)]="addDeviceIp"></ion-input>
-                                    <button ion-button class="connect-button disable-hover" item-right (tap)="attemptConnect(addDeviceIp)">Add</button>
-                                </ion-item>
-                            </ion-label>
-                        </ion-item>
+    <div class="align-center">
+        <button ion-button icon-right (click)="toggleAddDevMenu()" clear class="dev-menu-button">
+            Add a Device
+            <ion-icon *ngIf="!showDevMenu" name="arrow-dropdown"></ion-icon>
+            <ion-icon *ngIf="showDevMenu" name="arrow-dropup"></ion-icon>
+        </button>
+    </div>
+    <div [ngClass]="{fadein: showDevMenu}" class="fadeout">
+        <div>
+            <ion-segment [(ngModel)]="deviceConnectionType">
+                <ion-segment-button class="device-segment-button" value="network">
+                    Network
+                </ion-segment-button>
+                <ion-segment-button class="device-segment-button" value="simulated">
+                    Simulated
+                </ion-segment-button>
+                <ion-segment-button class="device-segment-button" value="agent">
+                    Agent
+                </ion-segment-button>
+            </ion-segment>
+        </div>
 
-                    </ion-card>
-                    <ion-card class="device-manager-card">
-                        <ion-item class="device-card-item">
-                            <ion-icon class="add-device-icon" item-left name="ionitron"></ion-icon>
-                            <ion-label class="add-device-label">
-                                <ion-item class="dev-menu-item">
-                                    <div class="custom-ion-label">Simulated Device</div>
-                                    <dropdown-popover class="dropdown-popover-selector" [dataArray]="simulatedDevices" (onSelection)="selectSimulatedDevice($event)"></dropdown-popover>
-                                    <!--<button ion-button icon-right class="similated-device-button" (click)="openSimDevicePopover($event)">
+        <div [ngSwitch]="deviceConnectionType">
+            <div *ngSwitchCase="'network'" text-center>
+                <ion-card class="device-manager-card">
+                    <ion-item class="device-card-item">
+                        <ion-icon class="add-device-icon" item-left name="ios-wifi"></ion-icon>
+                        <ion-label class="add-device-label">
+                            <ion-item class="dev-menu-item">
+                                <ion-label stacked>Hostname / IP</ion-label>
+                                <ion-input [(ngModel)]="addDeviceIp"></ion-input>
+                                <button ion-button class="connect-button disable-hover" item-right (tap)="attemptConnect(addDeviceIp)">Add</button>
+                            </ion-item>
+                        </ion-label>
+                    </ion-item>
+
+                </ion-card>
+            </div>
+
+            <div *ngSwitchCase="'simulated'" text-center>
+                <ion-card class="device-manager-card">
+                    <ion-item class="device-card-item">
+                        <ion-icon class="add-device-icon" item-left name="ionitron"></ion-icon>
+                        <ion-label class="add-device-label">
+                            <ion-item class="dev-menu-item">
+                                <div class="custom-ion-label">Simulated Device</div>
+                                <dropdown-popover class="dropdown-popover-selector" [dataArray]="simulatedDevices" (onSelection)="selectSimulatedDevice($event)"></dropdown-popover>
+                                <!--<button ion-button icon-right class="similated-device-button" (click)="openSimDevicePopover($event)">
                                         {{selectedSimulatedDevice}}
                                         <ion-icon name="arrow-dropdown"></ion-icon>
                                     </button>-->
-                                    <button ion-button class="connect-button disable-hover" item-right (tap)="openSimDevice()">Add</button>
-                                </ion-item>
-                            </ion-label>
-                        </ion-item>
+                                <button ion-button class="connect-button disable-hover" item-right (tap)="openSimDevice()">Add</button>
+                            </ion-item>
+                        </ion-label>
+                    </ion-item>
 
-                    </ion-card>
-                    <ion-card class="device-manager-card">
-                        <ion-item class="device-card-item">
-                            <ion-icon class="add-device-icon" item-left name="construct"></ion-icon>
-                            <ion-label class="add-device-label">
-                                <ion-item class="dev-menu-item">
-                                    <ion-label stacked>Agent</ion-label>
-                                    <ion-input [(ngModel)]="deviceBridgeAddress"></ion-input>
-                                    <button ion-button class="connect-button disable-hover" item-right (tap)="attemptBridgeConnect(deviceBridgeAddress)">Add</button>
-                                </ion-item>
-                            </ion-label>
-                        </ion-item>
+                </ion-card>
+            </div>
 
-                    </ion-card>
-                    <!--<ion-item class="dev-menu-item">
-                        <ion-label stacked>Hostname / IP</ion-label>
-                        <ion-input [(ngModel)]="addDeviceIp"></ion-input>
-                        <button ion-button class="connect-button" item-right (click)="attemptConnect(addDeviceIp)">Connect</button>
-                    </ion-item>-->
-                </div>
+            <div *ngSwitchCase="'agent'" text-center>
+                <ion-card class="device-manager-card">
+                    <ion-item class="device-card-item">
+                        <ion-icon class="add-device-icon" item-left name="construct"></ion-icon>
+                        <ion-label class="add-device-label">
+                            <ion-item class="dev-menu-item">
+                                <ion-label stacked>Agent</ion-label>
+                                <ion-input [(ngModel)]="deviceBridgeAddress"></ion-input>
+                                <button ion-button class="connect-button disable-hover" item-right (tap)="attemptBridgeConnect(deviceBridgeAddress)">Add</button>
+                            </ion-item>
+                        </ion-label>
+                    </ion-item>
+
+                </ion-card>
             </div>
         </div>
-        <div>
+    </div>
+    <div>
+        <div text-center>
             <ion-card class="device-manager-card" *ngFor="let device of devices, let i = index;">
                 <ion-item class="card-item">
                     <ion-avatar item-left (click)="connectToDevice(i)">
