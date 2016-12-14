@@ -171,7 +171,7 @@ export class DcSupplyComponent {
         }
         else {
             this.getVoltages([channel + 1]);
-            this.toastService.createToast('Invalid Value. Supply Range: ' + this.voltageLimitFormats[channel]);
+            this.toastService.createToast('dcInvalidSupply', true, ' Supported Range: ' + this.voltageLimitFormats[channel]);
         }
     }
 

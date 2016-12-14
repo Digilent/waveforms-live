@@ -69,13 +69,11 @@ export class DeviceConfigureModal {
             (success) => {
                 console.log(success);
                 if (success.agent == undefined || success.agent[0].statusCode > 0) {
-                    let message = 'Error Parsing Agent Response To Devices Enumeration';
-                    console.log(message);
-                    this.deviceManagerPageRef.toastService.createToast(message, true);
+                    this.deviceManagerPageRef.toastService.createToast('agentInvalidResponse', true);
                     return;
                 }
                 if (success.agent[0].devices.length === 0) {
-                    this.deviceManagerPageRef.toastService.createToast('No UART Devices Found', true);
+                    this.deviceManagerPageRef.toastService.createToast('agentEnumerateError', true);
                     return;
                 }
                 this.potentialDevices = success.agent[0].devices;
@@ -83,7 +81,7 @@ export class DeviceConfigureModal {
             },
             (err) => {
                 console.log(err);
-                this.deviceManagerPageRef.toastService.createToast('Error: Invalid Response From Bridge', true);
+                this.deviceManagerPageRef.toastService.createToast('agentInvalidResponse', true);
             },
             () => {
 
@@ -101,7 +99,7 @@ export class DeviceConfigureModal {
             ]
         };
         if (this.deviceObject != null && this.potentialDevices[selectedIndex] === this.deviceObject.connectedDeviceAddress) {
-            this.deviceManagerPageRef.toastService.createToast('Device Added Already');
+            this.deviceManagerPageRef.toastService.createToast('deviceExists');
             return;
         }
         this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
@@ -125,7 +123,7 @@ export class DeviceConfigureModal {
                         console.log('enumeration response');
                         console.log(data);
                         if (data.device[0].statusCode == undefined || data.device[0].statusCode > 0) {
-                            this.deviceManagerPageRef.toastService.createToast('Error: Invalid Device Enumeration', true);
+                            this.deviceManagerPageRef.toastService.createToast('enumerateError', true);
                             return;
                         }
 
@@ -152,7 +150,7 @@ export class DeviceConfigureModal {
                     },
                     (err) => {
                         console.log(err);
-                        this.deviceManagerPageRef.toastService.createToast('No Response From Agent', true);
+                        this.deviceManagerPageRef.toastService.createToast('timeout', true);
                     },
                     () => { }
                 );

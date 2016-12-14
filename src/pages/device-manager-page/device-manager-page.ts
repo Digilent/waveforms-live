@@ -193,7 +193,7 @@ export class DeviceManagerPage {
             this.deviceBridgeAddress = deviceBridgeAddress;
         }
         if (this.checkIfMatchingBridge(deviceBridgeAddress)) {
-            this.toastService.createToast('Agent Is Added Already. Use Settings To Configure Current Active Device', true);
+            this.toastService.createToast('agentExists', true);
             return;
         }
 
@@ -205,11 +205,11 @@ export class DeviceManagerPage {
                 if (success.agent == undefined || success.agent[0].statusCode > 0) {
                     let message = 'Error Parsing Agent Response To Devices Enumeration';
                     console.log(message);
-                    this.toastService.createToast('Invalid Response From Agent', true);
+                    this.toastService.createToast('agentInvalidResponse', true);
                     return;
                 }
                 if (success.agent[0].devices.length === 0) {
-                    this.toastService.createToast('No UART Devices Found', true);
+                    this.toastService.createToast('agentEnumerateError', true);
                     return;
                 }
                 let deviceConfigureParams: DeviceConfigureParams = {
@@ -227,7 +227,7 @@ export class DeviceManagerPage {
             (err) => {
                 console.log(err);
                 this.connectingToDevice = false;
-                this.toastService.createToast('Invalid Response From Agent', true);
+                this.toastService.createToast('agentInvalidResponse', true);
             },
             () => {
 
@@ -239,7 +239,7 @@ export class DeviceManagerPage {
         this.connectingToDevice = false;
         if (data == null) { return false; }
         if (data.deviceEnum.device == undefined) {
-            this.toastService.createToast('Invalid Device Enumeration', true);
+            this.toastService.createToast('agentEnumerateError', true);
             return false;
         }
         this.devices.unshift(
@@ -254,7 +254,7 @@ export class DeviceManagerPage {
         );
         this.storage.saveData('savedDevices', JSON.stringify(this.devices));
         this.showDevMenu = false;
-        this.toastService.createToast('Device Added Successfully');
+        this.toastService.createToast('deviceAdded');
         return true;
     }
 
@@ -265,7 +265,7 @@ export class DeviceManagerPage {
         }
         console.log(ipAddress);
         if (this.checkIfMatchingIp(ipAddress)) {
-            this.toastService.createToast('Device is Added Already', true);
+            this.toastService.createToast('deviceExists', true);
             return;
         }
 
@@ -286,12 +286,12 @@ export class DeviceManagerPage {
                 );
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
                 this.showDevMenu = false;
-                this.toastService.createToast('Device Added Successfully');
+                this.toastService.createToast('deviceAdded');
             },
             (err) => {
                 this.connectingToDevice = false;
                 console.log(err);
-                this.toastService.createToast('No Response Received', true);
+                this.toastService.createToast('timeout', true);
             },
             () => { }
         );
@@ -300,7 +300,7 @@ export class DeviceManagerPage {
     openSimDevice() {
         if (this.selectedSimulatedDevice === 'OpenScope-MZ') {
             if (this.checkIfMatchingLocal(this.selectedSimulatedDevice)) {
-                this.toastService.createToast('Device is Added Already', true);
+                this.toastService.createToast('deviceExists', true);
                 return;
             }
             else {
@@ -321,11 +321,11 @@ export class DeviceManagerPage {
                         );
                         this.storage.saveData('savedDevices', JSON.stringify(this.devices));
                         this.showDevMenu = false;
-                        this.toastService.createToast('Device Added Successfully');
+                        this.toastService.createToast('deviceAdded');
                     },
                     (err) => {
                         this.connectingToDevice = false;
-                        this.toastService.createToast('No Response Received', true);
+                        this.toastService.createToast('timeout', true);
                     },
                     () => { }
                 );
@@ -392,13 +392,13 @@ export class DeviceManagerPage {
                     console.log(data);
                     if (data.agent[0].statusCode === 0) { this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress); }
                     else {
-                        this.toastService.createToast('Agent Could Not Connect To Device', true);
+                        this.toastService.createToast('agentConnectError', true);
                         this.connectingToDevice = false;
                     }
                 },
                 (err) => {
                     console.log(err);
-                    this.toastService.createToast('No Response From Agent', true);
+                    this.toastService.createToast('timeout', true);
                     this.connectingToDevice = false;
                 },
                 () => { }
@@ -420,7 +420,7 @@ export class DeviceManagerPage {
             },
             (err) => {
                 console.log(err);
-                this.toastService.createToast('No Response Received', true);
+                this.toastService.createToast('timeout', true);
                 this.connectingToDevice = false;
             },
             () => { }

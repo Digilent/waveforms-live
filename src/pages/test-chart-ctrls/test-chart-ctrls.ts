@@ -86,7 +86,7 @@ export class TestChartCtrlsPage {
     ngOnInit() {
         if (this.deviceManagerService.activeDeviceIndex === undefined) {
             console.log('in if');
-            this.toastService.createToast('You currently have no device connected. Please visit the settings page.', true);
+            this.toastService.createToast('noActiveDevice', true);
         }
         else {
             this.chartReady = true;
@@ -151,7 +151,7 @@ export class TestChartCtrlsPage {
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
 
         if (this.chart1.oscopeChansActive.indexOf(true) === -1 && this.gpioComponent.laActiveChans.indexOf(true) === -1) {
-            this.toastService.createToast('No Channels Active. Please Activate a Channel and Run Again', true);
+            this.toastService.createToast('noChannelsActive', true);
             return;
         }
         this.triggerStatus = 'Armed';
@@ -384,7 +384,7 @@ export class TestChartCtrlsPage {
 
     //Stream osc buffers
     runClick() {
-        this.toastService.createToast('Run Not Implemented', true);
+        this.toastService.createToast('notImplemented', true);
     }
 
     //Stop dc stream

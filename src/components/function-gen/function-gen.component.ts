@@ -111,7 +111,7 @@ export class FgenComponent {
                     console.log(err);
                     console.log('AWG Set Regular and Run Failed');
                     this.stop(chans);
-                    this.toastService.createToast('The AWG May Have Been Running And Has Been Stopped. Please Try Again.', true);
+                    this.toastService.createToast('awgRunError', true);
                 },
                 () => {
                     //console.log('multi command awg complete');
@@ -147,7 +147,7 @@ export class FgenComponent {
             (err) => {
                 console.log('AWG Set Regular Failed');
                 this.stop(chans);
-                this.toastService.createToast('Could Not Set AWG Parameters. Please Try Again. If Problem Persists, Reset The Device', true);
+                this.toastService.createToast('awgParamError', true);
             },
             () => {
 
@@ -184,7 +184,7 @@ export class FgenComponent {
                 this.powerOn = false;
                 if (data.awg['1'][0].statusCode === 0 && this.attemptingPowerOff) {
                     this.attemptingPowerOff = false;
-                    this.toastService.createToast('Could Not run awg. AWG Has Been Stopped Automatically. Please Try Again.', true);
+                    this.toastService.createToast('awgRunError', true);
                 }
             },
             (err) => {

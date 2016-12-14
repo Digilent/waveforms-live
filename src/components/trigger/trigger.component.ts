@@ -74,13 +74,14 @@ export class TriggerComponent {
             },
             () => { }
         );*/
-        this.toastService.createToast('Force Trigger Not Yet Implemented', true);
+        this.toastService.createToast('notImplemented', true);
     }
 
     setupLevel() {
         if (parseFloat(this.level) * 1000 > this.activeDevice.instruments.osc.chans[0].inputVoltageMax ||
             parseFloat(this.level) * 1000 - 30 < this.activeDevice.instruments.osc.chans[0].inputVoltageMin) {
-                this.toastService.createToast('Selected Level Value Is Not In Osc Input Voltage Range And May Not Trigger', true);
+                this.toastService.createToast('invalidLevel', true);
+                this.level = '0';
                 return;
         }
         this.upperThresh = (parseFloat(this.level) * 1000).toString();

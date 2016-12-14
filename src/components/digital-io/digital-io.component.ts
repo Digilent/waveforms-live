@@ -60,7 +60,7 @@ export class DigitalIoComponent {
     toggleDirectionMode() {
         this.directionMode = !this.directionMode;
         if (this.directionMode) {
-            this.toastService.createToast('Click A Channel To Set It As An Output');
+            this.toastService.createToast('selectOutput');
         }
     }
 
