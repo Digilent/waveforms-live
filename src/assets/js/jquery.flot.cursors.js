@@ -11,8 +11,7 @@ Licensed under the MIT license.
     'use strict';
 
     var options = {
-        cursors: [],
-        cursorMoveOnPan: false
+        cursors: []
     };
 
     var constants = {

@@ -224,6 +224,7 @@ export class SilverNeedleChart {
         $("#flotContainer").bind("panEvent", (event, panData) => {
             if (panData.axis === 'xaxis') {
                 this.base = panData.mid;
+                this.refreshCursors();
             }
             else {
                 this.voltBase[panData.axisNum - 1] = panData.mid;
@@ -244,7 +245,10 @@ export class SilverNeedleChart {
                 this.activeTPDIndex = wheelData.perDivArrayIndex;
                 this.timeDivision = this.secsPerDivVals[this.activeTPDIndex];
                 this.base = wheelData.mid;
-                setTimeout(() => { this.shouldShowIndividualPoints(); }, 20);
+                setTimeout(() => {
+                    this.shouldShowIndividualPoints();
+                    this.refreshCursors();
+                }, 20);
             }
             else {
                 this.activeVPDIndex[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
@@ -307,6 +311,26 @@ export class SilverNeedleChart {
             }
         }
         this.chart.draw();
+    }
+
+    refreshCursors() {
+        let cursors = this.chart.getCursors();
+        let xaxis = this.chart.getAxes().xaxis;
+        let cursorsToUpdate = [];
+        let newOptions = [];
+        for (let i = 0; i < cursors.length; i++) {
+            if (cursors[i].name !== 'triggerLine') {
+                cursorsToUpdate.push(cursors[i]);
+                let cursorNum = parseInt(cursors[i].name.slice(-1)) - 1;
+                newOptions.push({
+                    position: {
+                        x: this.cursorPositions[cursorNum].x
+                    }
+                });
+            }
+        }
+
+        this.chart.setMultipleCursors(cursorsToUpdate, newOptions);
     }
 
     seriesAnchorTouchStart(event) {
@@ -984,7 +1008,7 @@ export class SilverNeedleChart {
                     symbol: 'none',
                     position: {
                         relativeX: 0.25 + i * 0.5,
-                        relativeY: 0.25 + i * 0.5
+                        relativeY: 0
                     },
                     dashes: 10 + 10 * i
                 }
