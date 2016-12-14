@@ -1,5 +1,5 @@
 import {Component, Output, EventEmitter, Input} from '@angular/core';
-import {AlertController, PopoverController, ToastController} from 'ionic-angular';
+import {AlertController, PopoverController} from 'ionic-angular';
 
 //Components
 import {DeviceComponent} from '../device/device.component';
@@ -7,6 +7,7 @@ import {DigitalIoPopover} from '../digital-io-popover/digital-io-popover.compone
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
+import { ToastService } from '../../services/toast/toast.service';
 
 @Component({
   templateUrl: 'digital-io.html',
@@ -16,7 +17,7 @@ export class DigitalIoComponent {
     @Output() headerClicked: EventEmitter<any> = new EventEmitter();
     @Input() contentHidden: boolean;
     public alertCtrl: AlertController;
-    public toastCtrl: ToastController;
+    public toastService: ToastService;
     public deviceManagerService: DeviceManagerService;
     public activeDev: DeviceComponent;
     public gpioChans: number[] = [];
@@ -29,9 +30,9 @@ export class DigitalIoComponent {
     public selectedMode: string = 'io';
     public directionMode: boolean = false;
     
-    constructor(_alertCtrl: AlertController, _devManagerService: DeviceManagerService, _popoverCtrl: PopoverController, _toastCtrl: ToastController) {
+    constructor(_alertCtrl: AlertController, _devManagerService: DeviceManagerService, _popoverCtrl: PopoverController, _toastService: ToastService) {
         this.alertCtrl = _alertCtrl;
-        this.toastCtrl = _toastCtrl;
+        this.toastService = _toastService;
         this.popoverCtrl = _popoverCtrl;
         this.deviceManagerService = _devManagerService;
         this.activeDev = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
@@ -59,12 +60,7 @@ export class DigitalIoComponent {
     toggleDirectionMode() {
         this.directionMode = !this.directionMode;
         if (this.directionMode) {
-            let toast = this.toastCtrl.create({
-                message: 'Click A Channel To Set It As An Output',
-                duration: 2000,
-                position: 'bottom'
-            });
-            toast.present();
+            this.toastService.createToast('Click A Channel To Set It As An Output');
         }
     }
 

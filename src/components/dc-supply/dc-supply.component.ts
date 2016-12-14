@@ -1,11 +1,11 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
-import { ToastController } from 'ionic-angular';
 
 //Components
 import { DeviceComponent } from '../../components/device/device.component';
 
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { ToastService } from '../../services/toast/toast.service';
 
 @Component({
     templateUrl: 'dc-supply.html',
@@ -31,11 +31,11 @@ export class DcSupplyComponent {
 
     public readVoltages: string[] = [];
     public showDcSettings: boolean = true;
-    public toastCtrl: ToastController;
+    public toastService: ToastService;
     public ignoreFocusOut: boolean = false;
 
-    constructor(_deviceManagerService: DeviceManagerService, _toastCtrl: ToastController) {
-        this.toastCtrl = _toastCtrl;
+    constructor(_deviceManagerService: DeviceManagerService, _toastService: ToastService) {
+        this.toastService = _toastService;
         this.voltageSupplies = [0, 1, 2];
         this.contentHidden = true;
         this.voltages = ['5.00', '5.00', '-5.00'];
@@ -171,13 +171,7 @@ export class DcSupplyComponent {
         }
         else {
             this.getVoltages([channel + 1]);
-            let toast = this.toastCtrl.create({
-                message: 'Invalid Value. Supply Range: ' + this.voltageLimitFormats[channel],
-                showCloseButton: true,
-                duration: 3000,
-                position: 'bottom'
-            });
-            toast.present();
+            this.toastService.createToast('Invalid Value. Supply Range: ' + this.voltageLimitFormats[channel]);
         }
     }
 

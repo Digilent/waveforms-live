@@ -4,6 +4,7 @@ import { StorageService } from '../../services/storage/storage.service';
 import { Storage } from '@ionic/storage';
 import { DeviceManagerService } from '../../services/device/device-manager.service';
 import { SettingsService } from '../../services/settings/settings.service';
+import { ToastService } from '../../services/toast/toast.service';
 
 @NgModule({
     imports: [],
@@ -11,7 +12,8 @@ import { SettingsService } from '../../services/settings/settings.service';
         Storage,
         StorageService,
         DeviceManagerService,
-        SettingsService
+        SettingsService,
+        ToastService
     ]
 })
 export class CoreModule {

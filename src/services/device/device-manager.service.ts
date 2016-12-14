@@ -27,7 +27,7 @@ export class DeviceManagerService {
     //Connect to device and send enumerate command
     connect(uri): Observable<any> {
         return Observable.create((observer) => {
-            this.transport.setUri(uri);
+            this.transport.setHttpTransport(uri);
 
             let command = {
                 'device': [
@@ -63,7 +63,7 @@ export class DeviceManagerService {
     connectBridge(uri: string): Observable<any> {
         return Observable.create((observer) => {
 
-            this.transport.setUri(uri);
+            this.transport.setHttpTransport(uri);
             let command = {
                 "agent": [
                     {

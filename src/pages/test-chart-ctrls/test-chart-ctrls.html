@@ -18,18 +18,22 @@
                 </div>
             </ion-col>
             <ion-col class="inner-ctrls" text-center center>
-                <button ion-button icon-right class="text-button-side disable-hover main-button" (click)="singleClick()">
-                        <span class="collapse-button">Single</span>
-                        <img class="custom-image-button" src="assets/img/single.png">
-                    </button>
+                <button *ngIf="!readingLa && !readingOsc" ion-button icon-right class="text-button-side disable-hover main-button" (click)="singleClick()">
+                    <span class="collapse-button">Single</span>
+                    <img class="custom-image-button" src="assets/img/single.png">
+                </button>
+                <button *ngIf="readingLa || readingOsc" ion-button icon-right class="text-button-side disable-hover main-button" (click)="abortSingle()">
+                    <span class="collapse-button">Abort</span>
+                    <ion-icon name="hand" class="remove-icon-padding"></ion-icon>
+                </button>
                 <button ion-button icon-right class="text-button-side disable-hover main-button" (click)="runClick()" *ngIf="!running">
-                        <span class="collapse-button">Run</span>
-                        <img class="custom-image-button" src="assets/img/run.png">
-                    </button>
+                    <span class="collapse-button">Run</span>
+                    <img class="custom-image-button" src="assets/img/run.png">
+                </button>
                 <button ion-button icon-right class="text-button-side disable-hover main-button" (click)="stopClick()" *ngIf="running">
-                        <span class="collapse-button">Stop</span>
-                        <ion-icon name="hand"></ion-icon>
-                    </button>
+                    <span class="collapse-button">Stop</span>
+                    <ion-icon name="hand"></ion-icon>
+                </button>
                 <div class="trigger-indicator">
                     {{triggerStatus}}
                 </div>

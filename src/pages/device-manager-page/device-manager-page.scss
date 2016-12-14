@@ -41,6 +41,14 @@
     background-color: #535353;
     border: solid black 1px;
     border-radius: 0px;
+    margin: 0;
+    min-width: 29px;
+    color: #CCCCCC;
+}
+
+.first-tab-container .connect-button:hover
+{
+    border: solid white 1px;
 }
 
 .first-tab-container .device-manager-card
@@ -49,6 +57,50 @@
     cursor: pointer;
     background-color: #535353;
     display: inline-block;
+    border: solid black 1px;
+}
+
+.first-tab-container .devicetype-card
+{
+    background-color: #535353;
+}
+
+.first-tab-container .devicetype-button-container
+{
+    display: inline-block;
+}
+
+.first-tab-container .devicetype-button
+{
+    background-color: #535353;
+    border: solid black 1px;
+    border-radius: 0px;
+    font-size: 12px;
+    min-width: 120px;
+    color: #CCCCCC;
+    .button-inner {
+        justify-content: flex-start;
+        ion-icon {
+            padding-right: 12px;
+        }
+    }
+}
+
+@media screen and (max-width: 415px) {
+    .first-tab-container .devicetype-button-container
+    {
+        display: block;
+    }
+
+    .first-tab-container .fadein
+    {
+        max-height: 135px;
+    }
+}
+
+.first-tab-container .devicetype-button:hover
+{
+    border: solid white 1px;
 }
 
 .first-tab-container .device-manager-card .card-item:active
@@ -59,7 +111,6 @@
 .first-tab-container .device-card-item
 {
     background-color: #535353;
-    border: solid black 1px !important;
     padding-bottom: 5px;
     padding-top: 5px;
 }
@@ -90,6 +141,11 @@
 {
     border-color: #4487BA !important;
 }
+
+.first-tab-container .connect-button-container
+{
+    margin: 14px 5px 0 0 !important;
+}
  
 .first-tab-container .device-card-item .item-inner
 {
@@ -103,6 +159,8 @@
 .first-tab-container .device-card-item .add-device-icon
 {
     color: white;
+    margin-bottom: 0;
+    margin-top: 16px;
 }
 
 .first-tab-container .device-card-item .dev-menu-item ion-input input
@@ -145,7 +203,6 @@
 {
     background-color: #535353;
     margin: 0px 0px 0px 0px;
-    border: solid black 1px;
     padding: 5px 0px 5px 10px;
     .item-inner {
         padding-right: 0px;
@@ -180,7 +237,7 @@
     transition: max-height 0.5s ease-in-out;
 }
 .fadein {
-    max-height: 120px;
+    max-height: 75px;
 }
 
 .first-tab-container .device-manager-card .card-label

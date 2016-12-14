@@ -1,5 +1,5 @@
 import { Component, EventEmitter } from '@angular/core';
-import { ModalController, PopoverController, ToastController } from 'ionic-angular';
+import { ModalController, PopoverController } from 'ionic-angular';
 
 //Pages
 import { ModalFgenPage } from '../../pages/fgen-modal/fgen-modal';
@@ -11,6 +11,7 @@ import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
 import { SettingsService } from '../../services/settings/settings.service';
+import { ToastService } from '../../services/toast/toast.service';
 
 //Interfaces
 import { SettingsObject } from '../instruments/awg/awg-instrument.component';
@@ -35,7 +36,7 @@ export class FgenComponent {
     public storageEventListener: EventEmitter<any>;
     public modalCtrl: ModalController;
     public popoverCtrl: PopoverController;
-    public toastCtrl: ToastController;
+    public toastService: ToastService;
     public showSettings: boolean = true;
     public showChanSettings: boolean[] = [true];
 
@@ -43,13 +44,13 @@ export class FgenComponent {
         _deviceManagerService: DeviceManagerService,
         _modalCtrl: ModalController,
         _popoverCtrl: PopoverController,
-        _toastCtrl: ToastController,
+        _toastService: ToastService,
         _settingsService: SettingsService
     ) {
         this.settingsService = _settingsService;
         this.modalCtrl = _modalCtrl;
         this.popoverCtrl = _popoverCtrl;
-        this.toastCtrl = _toastCtrl;
+        this.toastService = _toastService;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.supportedSignalTypes = this.activeDevice.instruments.awg.chans[0].signalTypes;
@@ -110,13 +111,7 @@ export class FgenComponent {
                     console.log(err);
                     console.log('AWG Set Regular and Run Failed');
                     this.stop(chans);
-                    let toast = this.toastCtrl.create({
-                        message: 'Error Setting AWG Parameters. The AWG May Have Been Running And Has Been Stopped. Please Try Again.',
-                        showCloseButton: true,
-                        duration: 5000,
-                        position: 'bottom'
-                    });
-                    toast.present();
+                    this.toastService.createToast('The AWG May Have Been Running And Has Been Stopped. Please Try Again.', true);
                 },
                 () => {
                     //console.log('multi command awg complete');
@@ -152,13 +147,7 @@ export class FgenComponent {
             (err) => {
                 console.log('AWG Set Regular Failed');
                 this.stop(chans);
-                let toast = this.toastCtrl.create({
-                    message: 'Error Setting AWG Parameters. Please Try Again. If Problem Persists, Reset The Device',
-                    showCloseButton: true,
-                    duration: 3000,
-                    position: 'bottom'
-                });
-                toast.present();
+                this.toastService.createToast('Could Not Set AWG Parameters. Please Try Again. If Problem Persists, Reset The Device', true);
             },
             () => {
 
@@ -195,13 +184,7 @@ export class FgenComponent {
                 this.powerOn = false;
                 if (data.awg['1'][0].statusCode === 0 && this.attemptingPowerOff) {
                     this.attemptingPowerOff = false;
-                    let toast = this.toastCtrl.create({
-                        message: 'Error Running AWG. AWG Has Been Stopped Automatically. Please Try Again',
-                        showCloseButton: true,
-                        duration: 3000,
-                        position: 'bottom'
-                    });
-                    toast.present();
+                    this.toastService.createToast('Could Not run awg. AWG Has Been Stopped Automatically. Please Try Again.', true);
                 }
             },
             (err) => {

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PopoverController, ToastController } from 'ionic-angular';
+import { PopoverController } from 'ionic-angular';
 
 //Components 
 import { TriggerPopover } from '../trigger-popover/trigger-popover.component';
@@ -8,13 +8,14 @@ import { DeviceComponent } from '../device/device.component';
 
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { ToastService } from '../../services/toast/toast.service';
 
 @Component({
     templateUrl: 'trigger.html',
     selector: 'trigger'
 })
 export class TriggerComponent {
-    public toastCtrl: ToastController;
+    public toastService: ToastService;
     public delay: string = '0';
     public lowerThresh: string = '-30';
     public upperThresh: string = '0';
@@ -27,9 +28,9 @@ export class TriggerComponent {
     public activeDevice: DeviceComponent;
     public level: string = '0';
 
-    constructor(_popoverCtrl: PopoverController, _devMngSrv: DeviceManagerService, _toastCtrl: ToastController) {
+    constructor(_popoverCtrl: PopoverController, _devMngSrv: DeviceManagerService, _toastService: ToastService) {
         this.popoverCtrl = _popoverCtrl;
-        this.toastCtrl = _toastCtrl;
+        this.toastService = _toastService;
         this.devMngSrv = _devMngSrv;
         this.activeDevice = this.devMngSrv.devices[this.devMngSrv.activeDeviceIndex];
     }
@@ -73,25 +74,14 @@ export class TriggerComponent {
             },
             () => { }
         );*/
-        let toast = this.toastCtrl.create({
-            message: 'Force Trigger Not Yet Implemented',
-            showCloseButton: true,
-            duration: 3000,
-            position: 'bottom'
-        });
-        toast.present();
+        this.toastService.createToast('Force Trigger Not Yet Implemented', true);
     }
 
     setupLevel() {
         if (parseFloat(this.level) * 1000 > this.activeDevice.instruments.osc.chans[0].inputVoltageMax ||
             parseFloat(this.level) * 1000 - 30 < this.activeDevice.instruments.osc.chans[0].inputVoltageMin) {
-                let toast = this.toastCtrl.create({
-                    message: 'Selected Level Value Is Not In Osc Input Voltage Range And May Not Trigger',
-                    showCloseButton: true,
-                    duration: 3000,
-                    position: 'bottom'
-                });
-                toast.present();
+                this.toastService.createToast('Selected Level Value Is Not In Osc Input Voltage Range And May Not Trigger', true);
+                return;
         }
         this.upperThresh = (parseFloat(this.level) * 1000).toString();
         this.lowerThresh = (parseFloat(this.upperThresh) - 30).toString();

@@ -1,4 +1,4 @@
-import { ToastController, App, Platform } from 'ionic-angular';
+import { App, Platform } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 
 //Components
@@ -11,6 +11,7 @@ import { DigitalIoComponent } from '../../components/digital-io/digital-io.compo
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
 import { StorageService } from '../../services/storage/storage.service';
+import { ToastService } from '../../services/toast/toast.service';
 
 
 @Component({
@@ -33,7 +34,7 @@ export class TestChartCtrlsPage {
     public storage: StorageService;
 
     public chartReady: boolean = false;
-    public toastCtrl: ToastController;
+    public toastService: ToastService;
     public clickBindReference;
     public readAttemptCount: number = 0;
     public previousOscSettings: any[] = [];
@@ -51,8 +52,8 @@ export class TestChartCtrlsPage {
     public readingOsc: boolean = false;
     public readingLa: boolean = false;
 
-    constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastCtrl: ToastController, _app: App, _platform: Platform) {
-        this.toastCtrl = _toastCtrl;
+    constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastService: ToastService, _app: App, _platform: Platform) {
+        this.toastService = _toastService;
         this.app = _app;
         this.platform = _platform;
         this.deviceManagerService = _deviceManagerService;
@@ -85,14 +86,7 @@ export class TestChartCtrlsPage {
     ngOnInit() {
         if (this.deviceManagerService.activeDeviceIndex === undefined) {
             console.log('in if');
-            let toast = this.toastCtrl.create({
-                message: 'You currently have no device connected. Please visit the settings page.',
-                showCloseButton: true,
-                duration: 3000,
-                position: 'bottom'
-            });
-
-            toast.present();
+            this.toastService.createToast('You currently have no device connected. Please visit the settings page.', true);
         }
         else {
             this.chartReady = true;
@@ -112,7 +106,6 @@ export class TestChartCtrlsPage {
                     bufferSize: null
                 });
             }
-            console.log(this.previousLaSettings);
         }
     }
 
@@ -123,6 +116,10 @@ export class TestChartCtrlsPage {
             this.clickBindReference = this.requestFullscreen.bind(this);
             document.getElementById('instrument-panel-container').addEventListener('click', this.clickBindReference);
         }
+    }
+
+    abortSingle() {
+        console.log('abort single not implemented');
     }
 
     //Toggle sidecontrols
@@ -154,13 +151,7 @@ export class TestChartCtrlsPage {
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
 
         if (this.chart1.oscopeChansActive.indexOf(true) === -1 && this.gpioComponent.laActiveChans.indexOf(true) === -1) {
-            let toast = this.toastCtrl.create({
-                message: 'Err: No Channels Active. Please Activate a Channel and Run Again',
-                showCloseButton: true,
-                duration: 3000,
-                position: 'bottom'
-            });
-            toast.present();
+            this.toastService.createToast('No Channels Active. Please Activate a Channel and Run Again', true);
             return;
         }
         this.triggerStatus = 'Armed';
@@ -291,9 +282,10 @@ export class TestChartCtrlsPage {
             },
             () => {
                 if (this.activeDevice.transport.getType() !== 'local') {
+
+                    this.readingOsc = true;
+                    this.readingLa = true;
                     setTimeout(() => {
-                        this.readingOsc = true;
-                        this.readingLa = true;
                         this.readOscope();
                         this.readLa();
                     }, this.theoreticalAcqTime);
@@ -325,9 +317,9 @@ export class TestChartCtrlsPage {
                 readArray.push(i + 1);
             }
         }
-        if (readArray.length < 1) { 
+        if (readArray.length < 1) {
             this.readingLa = false;
-            return; 
+            return;
         }
         this.activeDevice.instruments.la.read(readArray).subscribe(
             (data) => {
@@ -335,7 +327,7 @@ export class TestChartCtrlsPage {
                 console.log(data);
             },
             (err) => {
-                
+
             },
             () => { }
         );
@@ -348,9 +340,9 @@ export class TestChartCtrlsPage {
                 readArray.push(i + 1);
             }
         }
-        if (readArray.length < 1) { 
+        if (readArray.length < 1) {
             this.readingOsc = false;
-            return; 
+            return;
         }
         this.activeDevice.instruments.osc.read(readArray).subscribe(
             (data) => {
@@ -392,12 +384,7 @@ export class TestChartCtrlsPage {
 
     //Stream osc buffers
     runClick() {
-        let toast = this.toastCtrl.create({
-            message: 'Run Not Implemented',
-            duration: 3000,
-            position: 'bottom'
-        });
-        toast.present();
+        this.toastService.createToast('Run Not Implemented', true);
     }
 
     //Stop dc stream

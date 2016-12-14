@@ -18,11 +18,9 @@ export class SettingsService {
         this.storageService = _storageService;
         this.defaultConsoleLog = window.console.log;
         this.storageService.getData('routeToStore').then((data) => {
-            console.log('hey');
             if (data != null) {
                 this.routeToStore = data;
             }
-            console.log(this.routeToStore);
         });
     }
 
