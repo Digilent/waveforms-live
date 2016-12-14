@@ -14,12 +14,13 @@ export class ToastService {
     }
 
     createToast(key: string, showCloseButton?: boolean, stringToConcat?: string) {
-        return new Promise<Object>((resolve, reject) => {
+        return new Promise<any>((resolve, reject) => {
             showCloseButton = showCloseButton || false;
             stringToConcat = stringToConcat || '';
             let messageToDisplayObject = this.getMessage(key);
             if (messageToDisplayObject.statusCode > 0) {
                 reject(messageToDisplayObject);
+                return;
             }
 
             let toast = this.toastCtrl.create({
