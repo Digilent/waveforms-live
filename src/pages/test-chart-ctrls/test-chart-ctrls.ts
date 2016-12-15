@@ -48,7 +48,6 @@ export class TestChartCtrlsPage {
     public previousLaSettings: any[] = [];
 
     public theoreticalAcqTime: number;
-    public retryingReadAfterTimeout: boolean = false;
     public readingOsc: boolean = false;
     public readingLa: boolean = false;
 
@@ -138,16 +137,8 @@ export class TestChartCtrlsPage {
 
     //Run osc single
     singleClick(forceWholeCommand?: boolean) {
-        if (this.readAttemptCount > 0 && !this.retryingReadAfterTimeout) {
-            this.readAttemptCount = 0;
-            console.log('unsuccessful read before. Trying again.');
-            this.retryingReadAfterTimeout = true;
-            this.readOscope();
-            return;
-        }
 
         this.readAttemptCount = 0;
-        this.retryingReadAfterTimeout = false;
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
 
         if (this.chart1.oscopeChansActive.indexOf(true) === -1 && this.gpioComponent.laActiveChans.indexOf(true) === -1) {
@@ -234,9 +225,11 @@ export class TestChartCtrlsPage {
         let targetsObject = {};
         if (oscArray[0].length > 0) {
             targetsObject['osc'] = oscArray[0];
+            this.readingOsc = true;
         }
         if (laArray[0].length > 0) {
             targetsObject['la'] = laArray[0];
+            this.readingLa = true;
         }
 
         if (setOscParams || forceWholeCommand) {
@@ -283,16 +276,12 @@ export class TestChartCtrlsPage {
             () => {
                 if (this.activeDevice.transport.getType() !== 'local') {
 
-                    this.readingOsc = true;
-                    this.readingLa = true;
                     setTimeout(() => {
                         this.readOscope();
                         this.readLa();
                     }, this.theoreticalAcqTime);
                 }
                 else {
-                    this.readingOsc = true;
-                    this.readingLa = true;
                     this.readOscope();
                     this.readLa();
                 }
@@ -325,6 +314,9 @@ export class TestChartCtrlsPage {
             (data) => {
                 this.readingLa = false;
                 console.log(data);
+                if (this.running) {
+                    this.runClick();
+                }
             },
             (err) => {
 
@@ -366,6 +358,9 @@ export class TestChartCtrlsPage {
                 let finish = performance.now();
                 console.log('decimate and draw: ' + (finish - start));
                 this.triggerStatus = 'Idle';
+                if (this.running) {
+                    this.runClick();
+                }
             },
             (err) => {
                 if (this.readingOsc) {
@@ -384,14 +379,49 @@ export class TestChartCtrlsPage {
 
     //Stream osc buffers
     runClick() {
-        this.toastService.createToast('notImplemented', true);
+        if (this.readingOsc || this.readingLa) { return; }
+        if (!this.running) {
+            //first iteration
+            this.running = true;
+            this.singleClick();
+            return;
+        }
+        this.activeDevice.instruments.trigger.single([1]).subscribe(
+            (data) => {
+
+            },
+            (err) => {
+                this.running = false;
+                console.log('error trigger single');
+            },
+            () => {
+                this.triggerStatus = 'Armed';
+                for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
+                    if (this.gpioComponent.laActiveChans[i]) {
+                        this.readingLa = true;
+                        break;
+                    }
+                }
+                for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+                    if (this.chart1.oscopeChansActive[i]) {
+                        this.readingOsc = true;
+                        break;
+                    }
+                }
+                setTimeout(() => {
+                    this.readOscope();
+                    this.readLa();
+                }, this.theoreticalAcqTime);
+
+            }
+        );
+
     }
 
     //Stop dc stream
     stopClick() {
         console.log('stop');
         this.running = false;
-        this.activeDevice.instruments.osc.stopStream();
     }
 
     //Enable cursors and timeline view
