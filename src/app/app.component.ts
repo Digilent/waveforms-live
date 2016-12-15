@@ -31,7 +31,7 @@ export class MyApp {
 
         // set our app's pages
         this.pages = [
-            { title: 'Instrument Panel', component: TestChartCtrlsPage },
+            //{ title: 'Instrument Panel', component: TestChartCtrlsPage },
             { title: 'Settings', component: SettingsPage },
             { title: 'Test Panel', component: ProtocolTestPanel },
             { title: 'Device Manager', component: DeviceManagerPage }

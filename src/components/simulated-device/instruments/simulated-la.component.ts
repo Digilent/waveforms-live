@@ -6,21 +6,23 @@ import { SimulatedDeviceService } from '../../../services/simulated-device/simul
 @Injectable()
 export class SimulatedLaComponent {
     public simulatedDeviceService: SimulatedDeviceService;
-    public buffers: number[][] = [
-        [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
-        [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
-        [],
-        [],
-        [],
-        []
-    ];
-    public offsets: number[] = [0, 0, 0];
-    public gains: number[] = [1, 1, 1];
-    public sampleFreqs: number[] = [0, 0, 0, 0, 0, 0, 0];
-    public bufferSizes: number[] = [0, 0, 0, 0, 0, 0, 0];
+    public buffers: number[][] = [];
+    public offsets: number[] = [];
+    public gains: number[] = [];
+    public sampleFreqs: number[] = [];
+    public bufferSizes: number[] = [];
+    public laDescriptor;
 
     constructor(_simulatedDeviceService: SimulatedDeviceService) {
         this.simulatedDeviceService = _simulatedDeviceService;
+        this.laDescriptor = this.simulatedDeviceService.getEnumeration().la;
+        for (let i = 0; i < this.laDescriptor.numChans; i++) {
+            this.buffers.push([]);
+            this.offsets.push(0);
+            this.gains.push(1);
+            this.sampleFreqs.push(0);
+            this.bufferSizes.push(0);
+        }
     }
 
     setParameters(chan, commandObject) {
@@ -39,7 +41,6 @@ export class SimulatedLaComponent {
 
     read(chan) {
         let targets = this.simulatedDeviceService.getTriggerTargets();
-        console.log(targets);
         let returnInfo = {};
         targets.la.forEach((element, index, array) => {
             returnInfo = this.generateLaData(chan);

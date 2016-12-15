@@ -44,7 +44,7 @@
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
                         <div class="dummy-border">
-                            <button (click)="toggleChanDirection(i)" class="channel-button direction-mode" [ngClass]="{'button-on': gpioDirections[i]}">
+                            <button (click)="toggleChanDirection(i)" class="channel-button direction-mode direction-mode-border" [ngClass]="{'button-on': gpioDirections[i]}">
                                 <span class="button-indicator">{{getButtonState(i)}}</span>
                             </button>
                         </div>
@@ -66,7 +66,7 @@
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
                         <div class="dummy-border">
-                            <button (click)="toggleLaChan(i)" class="channel-button la-mode" [ngClass]="{'button-on': laActiveChans[i]}">
+                            <button (click)="toggleLaChan(i)" class="channel-button la-mode la-mode-border" [ngClass]="{'button-on': laActiveChans[i]}">
                                 <span class="button-indicator">{{getButtonState(i)}}</span>
                             </button>
                         </div>

@@ -86,6 +86,13 @@ export class LaInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.la == undefined || data.la[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            console.log(data);
+                            observer.error(data);
+                            return;
+                        }
+                    }
                     observer.next(data);
                     //Handle device errors and warnings
                     observer.complete();
@@ -138,7 +145,7 @@ export class LaInstrumentComponent extends InstrumentComponent {
                     }
                     if (i === 2000) {
                         console.log(stringBuffer);
-                        observer.error('Osc Read Failed. Try Again');
+                        observer.error('La Read Failed. Try Again');
                         return;
                     }
                     let binaryIndexStringLength = stringBuffer.indexOf('\r\n');
@@ -157,11 +164,14 @@ export class LaInstrumentComponent extends InstrumentComponent {
                     }
                     //Holds the info
                     let channelsObject = {};
-                    console.log(command);
                     let binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex + command.la[chans[0].toString()][0].binaryOffset, binaryIndexStringLength + 2 + binaryIndex + command.la[chans[0].toString()][0].binaryOffset + command.la[chans[0].toString()][0].binaryLength));
                     let untypedArray = Array.prototype.slice.call(binaryData);
                     let start = performance.now();
                     for (let channel in command.la) {
+                        if (command.la[channel][0].statusCode > 0) {
+                            observer.error(command);
+                            return;
+                        }
                         channelsObject[channel] = [];
 
                         let andVal = Math.pow(2, parseInt(channel) - 1);

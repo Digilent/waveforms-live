@@ -44,6 +44,13 @@ export class GpioInstrumentComponent extends InstrumentComponent {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
                     console.log(data);
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.gpio == undefined || data.gpio[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            console.log(data);
+                            observer.error(data);
+                            return;
+                        }
+                    }
                     //Return voltages and complete observer
                     observer.next(data);
                     observer.complete();
@@ -79,6 +86,13 @@ export class GpioInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.gpio == undefined || data.gpio[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            console.log(data);
+                            observer.error(data);
+                            return;
+                        }
+                    }
                     observer.next(data);
                     observer.complete();
 
@@ -112,6 +126,13 @@ export class GpioInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.gpio == undefined || data.gpio[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            console.log(data);
+                            observer.error(data);
+                            return;
+                        }
+                    }
                     console.log(data);
                     observer.next(data);
                     observer.complete();

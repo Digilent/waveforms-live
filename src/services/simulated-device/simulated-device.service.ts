@@ -6,6 +6,8 @@ export class SimulatedDeviceService {
     constructor() {
         console.log('sim device service constructor');
     }
+    public enumeration: any;
+
     /*AWG Settings*/
     public signalTypes: string[] = ['', '', '', '', '', '', '', ''];
     public signalFreqs: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
@@ -21,6 +23,14 @@ export class SimulatedDeviceService {
     /*Trigger Parameters*/
     public targets: any;
     public triggerArmed: boolean;
+
+    setEnumeration(enumeration: any) {
+        this.enumeration = enumeration;
+    }
+    
+    getEnumeration() {
+        return this.enumeration;
+    }
 
     setTriggerArmed(triggerArmed: boolean) {
         this.triggerArmed = triggerArmed;

@@ -315,7 +315,6 @@ export class SilverNeedleChart {
 
     refreshCursors() {
         let cursors = this.chart.getCursors();
-        let xaxis = this.chart.getAxes().xaxis;
         let cursorsToUpdate = [];
         let newOptions = [];
         for (let i = 0; i < cursors.length; i++) {

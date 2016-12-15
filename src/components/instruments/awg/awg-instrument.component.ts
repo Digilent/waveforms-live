@@ -34,14 +34,6 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         }
     }
 
-    //Enumerate instrument info
-    enumerate(): Observable<number> {
-        let command = {
-            command: 'awgEnumerate'
-        }
-        return this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json');
-    }
-
     setArbitraryWaveform(chans: number[], waveforms: Array<any>, dataTypes: string[]): Observable<any> {
         let command = {
             "awg": {}
@@ -87,6 +79,12 @@ export class AwgInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead(this.endpoint, binaryBufferToSend, 'binary').subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.awg == undefined || data.awg[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            observer.error(data);
+                            return;
+                        }
+                    }
                     observer.next(data);
                     observer.complete();
                 },
@@ -134,10 +132,11 @@ export class AwgInstrumentComponent extends InstrumentComponent {
                         return;
                     }
                     console.log(data);
-                    if ((data.awg !== undefined && data.awg['1'][0].statusCode > 0) || data.statusCode !== undefined) {
-                        console.log('statuscode error');
-                        observer.error('Error Setting AWG Parameters. Status Code');
-                        return;
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.awg == undefined || data.awg[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            observer.error(data);
+                            return;
+                        }
                     }
                     console.log('no status code error');
                     observer.next(data);
@@ -192,7 +191,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         });
         return command;
     }
-    //TODO return objects with statusCodes in parse functions
+
     runParse(chan, responseObject) {
         return responseObject;
     }
@@ -224,10 +223,12 @@ export class AwgInstrumentComponent extends InstrumentComponent {
                         return;
                     }
                     console.log(data);
-                    if ((data.awg !== undefined && data.awg['1'][0].statusCode > 0) || data.statusCode !== undefined) {
-                        console.log('statuscode error');
-                        observer.error('Error running AWG. Status Code');
-                        return;
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.awg == undefined || data.awg[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            console.log(data);
+                            observer.error(data);
+                            return;
+                        }
                     }
                     console.log('no status code error');
                     observer.next(data);
@@ -260,14 +261,16 @@ export class AwgInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    if (data.awg === undefined || data.awg["1"] === undefined || data.awg["1"][0].statusCode > 0) {
-                        console.log(data);
-                        observer.error(data);
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.awg == undefined || data.awg[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            console.log(data);
+                            observer.error(data);
+                            return;
+                        }
                     }
-                    else {
-                        observer.next(data);
-                        observer.complete();
-                    }
+                    observer.next(data);
+                    observer.complete();
+
                 },
                 (err) => {
                     observer.error(err);

@@ -32,6 +32,7 @@ export class SimulatedDeviceComponent {
     constructor(enumeration) {
         this.descriptor = enumeration;
         this.simDevService = new SimulatedDeviceService();
+        this.simDevService.setEnumeration(this.descriptor);
         this.awg = new SimulatedAwgComponent(this.simDevService);
         this.dc = new SimulatedDcComponent(this.simDevService);
         this.osc = new SimulatedOscComponent(this.simDevService);
@@ -156,19 +157,33 @@ export class SimulatedDeviceComponent {
     }
 
     processBinaryDataAndSend(commandObject: any) {
-        let binaryDataContainer = {};
+        let binaryDataContainer: any = {};
         let binaryOffset = 0;
         for (let instrument in this.trigger.targets) {
-
-            for (let channel in commandObject[instrument]) {
-                binaryDataContainer[channel] = commandObject[instrument][channel][0].y;
-                commandObject[instrument][channel][0].binaryOffset = binaryOffset;
-                binaryOffset += commandObject[instrument][channel][0].binaryLength;
-                delete commandObject[instrument][channel][0].y;
+            if (instrument === 'osc' && commandObject[instrument] != undefined) {
+                binaryDataContainer['osc'] = {};
+                for (let channel in commandObject[instrument]) {
+                    binaryDataContainer.osc[channel] = commandObject[instrument][channel][0].y;
+                    commandObject[instrument][channel][0].binaryOffset = binaryOffset;
+                    binaryOffset += commandObject[instrument][channel][0].binaryLength;
+                    delete commandObject[instrument][channel][0].y;
+                }
+            }
+            if (instrument === 'la' && commandObject[instrument] != undefined) {
+                binaryDataContainer['la'] = {};
+                let initialIteration = true;
+                for (let channel in commandObject[instrument]) {
+                    commandObject[instrument][channel][0].binaryOffset = binaryOffset;
+                    if (initialIteration) {
+                        initialIteration = false;
+                        binaryDataContainer.la[channel] = commandObject[instrument][channel][0].y;
+                        binaryOffset += commandObject[instrument][channel][0].binaryLength;
+                    }
+                    delete commandObject[instrument][channel][0].y;
+                }
             }
 
         }
-        console.log(binaryDataContainer);
         let stringCommand = JSON.stringify(commandObject);
         let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
 
@@ -180,14 +195,17 @@ export class SimulatedDeviceComponent {
         }
         let binaryInjectorIndex = 0;
         let prevLength = 0;
-        for (let channel in binaryDataContainer) {
-            let unsignedConversion = new Uint8Array(binaryDataContainer[channel].buffer);
-            binaryInjectorIndex += prevLength + unsignedConversion.length;
-            for (let i = stringSection.length + prevLength, j = 0; i < binaryInjectorIndex + stringSection.length; i = i + 2, j = j + 2) {
-                bufView[i] = unsignedConversion[j];
-                bufView[i + 1] = unsignedConversion[j + 1];
+        for (let instrument in binaryDataContainer) {
+            for (let channel in binaryDataContainer[instrument]) {
+                let unsignedConversion = new Uint8Array(binaryDataContainer[instrument][channel].buffer);
+                binaryInjectorIndex += prevLength + unsignedConversion.length;
+                for (let i = stringSection.length + prevLength, j = 0; i < binaryInjectorIndex + stringSection.length; i = i + 2, j = j + 2) {
+                    bufView[i] = unsignedConversion[j];
+                    bufView[i + 1] = unsignedConversion[j + 1];
+                }
+                prevLength = unsignedConversion.length;
+                if (instrument === 'la') { break; }
             }
-            prevLength = unsignedConversion.length;
         }
         return bufView.buffer;
     }

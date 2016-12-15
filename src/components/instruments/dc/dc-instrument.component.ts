@@ -1,13 +1,13 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-import {InstrumentComponent} from '../instrument.component';
-import {DcChannelComponent} from './dc-channel.component';
+import { InstrumentComponent } from '../instrument.component';
+import { DcChannelComponent } from './dc-channel.component';
 
 //Services
-import {TransportService} from '../../../services/transport/transport.service';
+import { TransportService } from '../../../services/transport/transport.service';
 
 @Injectable()
 export class DcInstrumentComponent extends InstrumentComponent {
@@ -39,11 +39,11 @@ export class DcInstrumentComponent extends InstrumentComponent {
         }
         chans.forEach((element, index, array) => {
             command.dc[chans[index]] =
-            [
-                {
-                    "command": "getVoltage"
-                }
-            ]
+                [
+                    {
+                        "command": "getVoltage"
+                    }
+                ]
         });
         return command;
     }
@@ -80,11 +80,11 @@ export class DcInstrumentComponent extends InstrumentComponent {
         }
         chans.forEach((element, index, array) => {
             command.dc[chans[index]] =
-            [
-                {
-                    "command": "getVoltage"
-                }
-            ]
+                [
+                    {
+                        "command": "getVoltage"
+                    }
+                ]
         });
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
@@ -92,18 +92,19 @@ export class DcInstrumentComponent extends InstrumentComponent {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
 
-                    //Scale from mV to V                            
-                    for (let voltageRead in data.dc) {
-                        if (voltageRead !== 'statusCode') {
-                            //hopefully the voltage is located in the first object in the 0th index of the array of the channel property in the dc object in the response object.
-                            data.dc[voltageRead][0].voltage = data.dc[voltageRead][0].voltage / 1000;
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.dc == undefined || data.dc[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            console.log(data);
+                            observer.error(data);
+                            return;
                         }
+                        data.dc[chans[i]][0].voltage = data.dc[chans[i]][0].voltage / 1000;
                     }
 
                     //Return voltages and complete observer
                     observer.next(data);
                     observer.complete();
-                    
+
                 },
                 (err) => {
                     observer.error(err);
@@ -137,6 +138,12 @@ export class DcInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     //Handle device errors and warnings
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.dc == undefined || data.dc[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            observer.error(data);
+                            return;
+                        }
+                    }
                     observer.next(data);
                     observer.complete();
 
@@ -163,16 +170,18 @@ export class DcInstrumentComponent extends InstrumentComponent {
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
                     //Handle device errors and warnings
-                    if (data.statusCode < 1) {
-                        //Scale from mV to V                            
-                        data.voltages.forEach((element, index, array) => {
-                            array[index] = element / 1000;
-                        });
-                        observer.next(data.voltages);
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.dc == undefined || data.dc[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            observer.error(data);
+                            return;
+                        }
                     }
-                    else {
-                        observer.error(data.statusCode);
-                    }
+                    //Scale from mV to V                            
+                    data.voltages.forEach((element, index, array) => {
+                        array[index] = element / 1000;
+                    });
+                    observer.next(data.voltages);
+
                 },
                 (err) => {
                     observer.error(err);

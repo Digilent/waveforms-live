@@ -93,6 +93,12 @@ export class OscInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.osc == undefined || data.osc[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            observer.error(data);
+                            return;
+                        }
+                    }
                     observer.next(data);
                     //Handle device errors and warnings
                     observer.complete();
