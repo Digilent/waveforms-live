@@ -36,7 +36,7 @@ export class LaInstrumentComponent extends InstrumentComponent {
         }
 
         for (let i = 0; i < this.numDataBuffers; i++) {
-            this.dataBuffer.push([new WaveformComponent('null')]);
+            this.dataBuffer.push([]);
         }
     }
 
@@ -175,34 +175,31 @@ export class LaInstrumentComponent extends InstrumentComponent {
                         channelsObject[channel] = [];
 
                         let andVal = Math.pow(2, parseInt(channel) - 1);
+                        let pointContainer = [];
+                        let dt = 1 / (command.la[channel][0].actualSampleFreq / 1000);
                         for (let j = 0; j < untypedArray.length; j++) {
                             channelsObject[channel].push((andVal & untypedArray[j]) > 0 ? 1 : 0);
+                            pointContainer.push([j * dt, (andVal & untypedArray[j]) > 0 ? 1 : 0]);
                         }
 
-                        this.dataBuffer[this.dataBufferWriteIndex][bufferCount] = new WaveformComponent({
+                        this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel) - 1] = new WaveformComponent({
                             dt: 1 / (command.la[channel][0].actualSampleFreq / 1000),
                             t0: 0,
                             y: channelsObject[channel],
-                            pointOfInterest: command.la[channel][0].pointOfInterest,
-                            triggerPosition: command.la[channel][0].triggerDelta,
-                            seriesOffset: 500
-                            /*dt: 1 / (command.osc[channel][0].actualSampleFreq / 1000),
-                            t0: 0,
-                            y: scaledArray,
                             data: pointContainer,
-                            pointOfInterest: command.osc[channel][0].pointOfInterest,
-                            triggerPosition: command.osc[channel][0].triggerIndex,
-                            seriesOffset: command.osc[channel][0].actualVOffset / 1000*/
+                            pointOfInterest: command.la[channel][0].pointOfInterest,
+                            triggerPosition: command.la[channel][0].triggerIndex,
+                            seriesOffset: 0.5
                         });
                         bufferCount++;
-                        this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
-                        if (this.dataBufferFillSize < this.numDataBuffers) {
-                            this.dataBufferFillSize++;
-                            this.activeBuffer = this.dataBufferFillSize.toString();
-                        }
-                        else {
-                            this.activeBuffer = (this.numDataBuffers).toString();
-                        }
+                    }
+                    this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
+                    if (this.dataBufferFillSize < this.numDataBuffers) {
+                        this.dataBufferFillSize++;
+                        this.activeBuffer = this.dataBufferFillSize.toString();
+                    }
+                    else {
+                        this.activeBuffer = (this.numDataBuffers).toString();
                     }
                     let finish = performance.now();
                     console.log('Time: ' + (finish - start));

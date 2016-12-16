@@ -37,7 +37,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
             }
         }
         for (let i = 0; i < this.numDataBuffers; i++) {
-            this.dataBuffer.push([new WaveformComponent('null')]);
+            this.dataBuffer.push([]);
         }
     }
 

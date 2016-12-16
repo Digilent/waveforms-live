@@ -317,12 +317,74 @@ export class TestChartCtrlsPage {
                 if (this.running) {
                     this.runClick();
                 }
+                this.readAttemptCount = 0;
+                this.checkReadStatusAndDraw();
             },
             (err) => {
-
+                if (this.readingLa) {
+                    console.log('attempting read again');
+                    this.readAttemptCount++;
+                    let waitTime = this.readAttemptCount * 100 > 1000 ? 1000 : this.readAttemptCount * 100;
+                    setTimeout(() => {
+                        this.readLa();
+                    }, waitTime);
+                }
             },
             () => { }
         );
+    }
+
+    checkReadStatusAndDraw() {
+        if (this.readingOsc || this.readingLa) {
+            return;
+        }
+
+        let numSeries = [];
+        let oscFillerBuff = [];
+        for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+            if (this.chart1.oscopeChansActive[i]) {
+                numSeries.push(i);
+            }
+            else {
+                oscFillerBuff.push([]);
+            }
+        }
+        for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
+            if (this.gpioComponent.laActiveChans[i]) {
+                numSeries.push(i + this.chart1.oscopeChansActive.length);
+            }
+        }
+        this.chart1.clearExtraSeries(numSeries);
+
+        let currentBufferArray;
+        let oscBufferArray;
+        let laBufferArray;
+        if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
+            oscBufferArray = this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1];
+        }
+        else {
+            oscBufferArray = this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1];
+        }
+        if (this.activeDevice.instruments.la.dataBufferWriteIndex - 1 < 0) {
+            laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBuffer.length - 1];
+        }
+        else {
+            console.log(this.activeDevice.instruments.la.dataBuffer);
+            laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferWriteIndex - 1];
+        }
+        console.log('about to concat');
+        console.log(oscBufferArray);
+        currentBufferArray = oscBufferArray.concat(oscFillerBuff).concat(laBufferArray);
+        console.log(currentBufferArray);
+        this.chart1.setCurrentBuffer(currentBufferArray);
+        let start = performance.now();
+        this.chart1.flotDrawWaveform(true, false);
+        let finish = performance.now();
+        console.log('decimate and draw: ' + (finish - start));
+        this.triggerStatus = 'Idle';
+        if (this.running) {
+            this.runClick();
+        }
     }
 
     readOscope() {
@@ -340,27 +402,7 @@ export class TestChartCtrlsPage {
             (data) => {
                 this.readingOsc = false;
                 this.readAttemptCount = 0;
-                let numSeries = [];
-                for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
-                    if (this.chart1.oscopeChansActive[i]) {
-                        numSeries.push(i);
-                    }
-                }
-                this.chart1.clearExtraSeries(numSeries);
-                if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
-                    this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1]);
-                }
-                else {
-                    this.chart1.setCurrentBuffer(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1]);
-                }
-                let start = performance.now();
-                this.chart1.flotDrawWaveform(true, false);
-                let finish = performance.now();
-                console.log('decimate and draw: ' + (finish - start));
-                this.triggerStatus = 'Idle';
-                if (this.running) {
-                    this.runClick();
-                }
+                this.checkReadStatusAndDraw();
             },
             (err) => {
                 if (this.readingOsc) {

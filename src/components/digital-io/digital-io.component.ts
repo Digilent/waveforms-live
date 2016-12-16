@@ -4,6 +4,7 @@ import {AlertController, PopoverController} from 'ionic-angular';
 //Components
 import {DeviceComponent} from '../device/device.component';
 import {DigitalIoPopover} from '../digital-io-popover/digital-io-popover.component';
+import {SilverNeedleChart} from '../chart/chart.component';
 
 //Services
 import {DeviceManagerService} from '../../services/device/device-manager.service';
@@ -16,6 +17,7 @@ import { ToastService } from '../../services/toast/toast.service';
 export class DigitalIoComponent { 
     @Output() headerClicked: EventEmitter<any> = new EventEmitter();
     @Input() contentHidden: boolean;
+    @Input() chart: SilverNeedleChart;
     public alertCtrl: AlertController;
     public toastService: ToastService;
     public deviceManagerService: DeviceManagerService;
@@ -116,6 +118,8 @@ export class DigitalIoComponent {
         this.laActiveChans[channel] = !this.laActiveChans[channel];
         this.gpioDirections[channel] = false;
         this.gpioVals[channel] = false;
+        let seriesNum = channel + this.chart.oscopeChansActive.length;
+        this.chart.toggleVisibility(seriesNum);
     }
 
     getButtonState(channel: number) {

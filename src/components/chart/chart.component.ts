@@ -441,14 +441,30 @@ export class SilverNeedleChart {
 
     generateChartOptions() {
         for (let i = 0; i < this.deviceDescriptor.instruments.la.numChans + this.deviceDescriptor.instruments.osc.numChans; i++) {
+            let color;
+            let min;
+            let max;
+            if (i > this.deviceDescriptor.instruments.osc.numChans - 1) {
+                color = 'green';
+                //40V range looks good. First should range from 9 to 10 and the second from 8 to 9
+                let offset = (i - this.deviceDescriptor.instruments.osc.numChans);
+                offset *= 1.25;
+                max = 1.25 + offset;
+                min = -38.75 + offset;
+            }
+            else {
+                color = this.colorArray[i];
+                min = -1;
+                max = 1;
+            }
             let axisOptions = {
                 position: 'left',
                 axisLabel: 'Ch ' + (i + 1),
                 axisLabelColour: '#666666',
                 axisLabelUseCanvas: true,
                 show: i === 0,
-                min: -1,
-                max: 1,
+                min: min,
+                max: max,
                 ticks: this.tickGenerator,
                 tickFormatter: this.yTickFormatter,
                 tickColor: '#666666',
@@ -464,7 +480,8 @@ export class SilverNeedleChart {
                 },
                 points: {
                     show: false
-                }
+                },
+                color: color
             };
             this.seriesDataContainer.push(dataObject);
             this.yAxisOptionsContainer.push(axisOptions);
@@ -685,6 +702,7 @@ export class SilverNeedleChart {
     }
 
     setCurrentBuffer(bufferArray: WaveformComponent[]) {
+        console.log(bufferArray);
         this.currentBufferArray = bufferArray;
         if (this.deviceDescriptor !== undefined) {
             this.updateTriggerLine();
@@ -695,6 +713,8 @@ export class SilverNeedleChart {
     flotDrawWaveform(initialDraw: boolean, ignoreAutoscale?: boolean) {
         let dataObjects: any[] = [];
         let currentSeries = this.chart.getData();
+        console.log(this.numSeries);
+        console.log(this.currentBufferArray);
         for (let i = 0; i < this.numSeries.length; i++) {
             let axesInfo = this.chart.getAxes();
             let bounds = {
@@ -718,6 +738,10 @@ export class SilverNeedleChart {
             );
             this.seriesDataContainer[this.numSeries[i]].data = decimatedData;
         }
+        
+        console.log(dataObjects);
+        console.log(this.seriesDataContainer);
+        console.log(this.chart.getData());
         this.chart.setData(this.seriesDataContainer);
         this.chart.draw();
 
@@ -1294,7 +1318,10 @@ export class SilverNeedleChart {
     }
 
     toggleVisibility(seriesNum: number) {
-        this.oscopeChansActive[seriesNum] = !this.oscopeChansActive[seriesNum];
+        if (seriesNum < this.oscopeChansActive.length) {
+            this.oscopeChansActive[seriesNum] = !this.oscopeChansActive[seriesNum];
+        }
+        console.log(seriesNum);
         this.seriesDataContainer[seriesNum].lines.show = !this.seriesDataContainer[seriesNum].lines.show;
         this.chart.setData(this.seriesDataContainer);
         this.chart.draw();

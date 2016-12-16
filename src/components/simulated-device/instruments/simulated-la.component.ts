@@ -7,8 +7,6 @@ import { SimulatedDeviceService } from '../../../services/simulated-device/simul
 export class SimulatedLaComponent {
     public simulatedDeviceService: SimulatedDeviceService;
     public buffers: number[][] = [];
-    public offsets: number[] = [];
-    public gains: number[] = [];
     public sampleFreqs: number[] = [];
     public bufferSizes: number[] = [];
     public laDescriptor;
@@ -18,16 +16,12 @@ export class SimulatedLaComponent {
         this.laDescriptor = this.simulatedDeviceService.getEnumeration().la;
         for (let i = 0; i < this.laDescriptor.numChans; i++) {
             this.buffers.push([]);
-            this.offsets.push(0);
-            this.gains.push(1);
             this.sampleFreqs.push(0);
             this.bufferSizes.push(0);
         }
     }
 
     setParameters(chan, commandObject) {
-        this.offsets[chan] = commandObject.offset;
-        this.gains[chan] = commandObject.gain;
         this.sampleFreqs[chan] = commandObject.sampleFreq;
         this.bufferSizes[chan] = commandObject.bufferSize;
         this.simulatedDeviceService.setLaParameters(commandObject, chan);
@@ -40,12 +34,7 @@ export class SimulatedLaComponent {
     }
 
     read(chan) {
-        let targets = this.simulatedDeviceService.getTriggerTargets();
-        let returnInfo = {};
-        targets.la.forEach((element, index, array) => {
-            returnInfo = this.generateLaData(chan);
-        });
-        return returnInfo;
+        return this.generateLaData(chan);
     }
 
     generateLaData(channel: number) {
@@ -61,11 +50,9 @@ export class SimulatedLaComponent {
             binaryOffset: null,
             acqCount: 3,
             actualSampleFreq: this.sampleFreqs[channel],
-            actualVOffset: this.offsets[channel],
             y: typedArray,
             pointOfInterest: this.bufferSizes[channel] / 2,
-            triggerIndex: this.bufferSizes[channel] / 2,
-            actualGain: 1
+            triggerIndex: this.bufferSizes[channel] / 2
         };
     }
 
