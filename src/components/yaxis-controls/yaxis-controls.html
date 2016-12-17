@@ -17,13 +17,17 @@
                 <ion-row class="controls-container">
 
                     <ion-col text-right center class="vpd-button-col">
-                        <button ion-button [disabled]="chart.activeVPDIndex[i] == 0" (tap)="chart.decrementVPD(i)" class="icon-only-button-side disable-hover"><ion-icon name="remove"></ion-icon></button>
+                        <button ion-button [disabled]="chart.activeVPDIndex[i] == chart.voltsPerDivOpts.length-1" (tap)="chart.incrementVPD(i)" class="img-button disable-hover">
+                            <img class="custom-image-button" src="assets/img/zoom-out.png">
+                        </button>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <div class="set-darkgrey-font">{{chart.voltsPerDivOpts[chart.activeVPDIndex[i]]}}/</div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col">
-                        <button ion-button [disabled]="chart.activeVPDIndex[i] == chart.voltsPerDivOpts.length-1" (tap)="chart.incrementVPD(i)" class="icon-only-button-side disable-hover"><ion-icon name="add"></ion-icon></button>
+                        <button ion-button [disabled]="chart.activeVPDIndex[i] == 0" (tap)="chart.decrementVPD(i)" class="img-button disable-hover">
+                            <img class="custom-image-button" src="assets/img/zoom-in.png">
+                        </button>
                     </ion-col>
                 </ion-row>
 

@@ -15,10 +15,6 @@ export class AutoscaleComponent {
 
     }
 
-    toggleVisibility() {
-        this.show = !this.show;
-    }
-
     autoscaleAxis(axis: string, seriesNum: number) {
         this.chart.autoscaleAxis(axis, seriesNum);
     }

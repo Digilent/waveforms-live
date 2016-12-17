@@ -28,9 +28,9 @@ export class ChartModalPage {
         this.viewCtrl = _viewCtrl;
         this.params = _params;
         this.chart = this.params.get('chartComponent');
-        this.currentColors[0] = this.chart.chart.chartBackground.element.attributes.fill.value;
+        /*this.currentColors[0] = this.chart.chart.chartBackground.element.attributes.fill.value;
         this.currentColors[1] = this.chart.chart.options.yAxis[0].title.style.color;
-        this.currentColors[2] = this.chart.chart.options.yAxis[0].gridLineColor
+        this.currentColors[2] = this.chart.chart.options.yAxis[0].gridLineColor*/
     }
 
     ngOnInit() {
@@ -44,7 +44,7 @@ export class ChartModalPage {
     }
 
     openColorPicker(event, type: string) {
-        this.colorPickType = type;
+        /*this.colorPickType = type;
         this.colorPickerRef.removeEventListener('input', this.colorPickCallbackRef);
         this.colorPickCallbackRef = this.colorPickerRef.addEventListener('input', (event: any) => {
             let color = event.target.value;
@@ -101,7 +101,7 @@ export class ChartModalPage {
                 this.currentColors[2] = color;
             }
         });
-        this.colorPickerRef.click();
+        this.colorPickerRef.click();*/
     }
 
     close() {
@@ -109,7 +109,7 @@ export class ChartModalPage {
     }
 
     applyDefaultColors() {
-        let chartBackgroundColor = 'black';
+        /*let chartBackgroundColor = 'black';
         let everyOtherColor = '#666666';
         this.chart.chart.chartBackground.attr({
             fill: chartBackgroundColor
@@ -152,7 +152,7 @@ export class ChartModalPage {
             minorTickColor: everyOtherColor,
             lineColor: everyOtherColor
         }, true);
-        this.currentColors[2] = everyOtherColor;
+        this.currentColors[2] = everyOtherColor;*/
     } 
 
 }

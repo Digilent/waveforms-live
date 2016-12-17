@@ -29,3 +29,27 @@
 {
     padding-top: 0px;
 }
+
+.xaxis-component-wrapper .custom-image-button
+{
+    display: block;
+}
+
+.xaxis-component-wrapper .img-button
+{
+    border: solid black 1px;
+    height: 26px;
+    width: 26px;
+    padding: 0px;
+    background-color: #535353;
+    border-radius: 0px;
+    color: #CCCCCC;
+    margin: 0px;
+    box-shadow: none;
+    font-weight: 400;
+}
+
+.xaxis-component-wrapper .img-button:hover
+{
+    border: solid white 1px;
+}

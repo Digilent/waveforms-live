@@ -39,6 +39,32 @@
     background-color: black;
 }
 
+.chart-container-container .chart-button-container
+{
+    position: absolute;
+    top: 11px;
+    right: 0;
+    width: 25px;
+    height: 60px;
+}
+
+.chart-component-wrapper .chart-button
+{
+    margin: 0;
+    font-size: 8px;
+    height: 25px;
+    width: 25px;
+    background-color: #535353;
+    border: solid black 1px;
+    border-radius: 0px;
+    box-shadow: none;
+}
+
+.chart-component-wrapper .chart-button:hover
+{
+    border: solid white 1px;
+}
+
 .timeline-wrapper 
 {
     display: block;

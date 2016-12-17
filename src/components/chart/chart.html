@@ -2,6 +2,18 @@
     <div class="chart-container-container" id="chart-component-container">
         <div (pinch)="pinchEvent($event)" class="chart-component-container-div">
             <div id="flotContainer"></div>
+            <div class="chart-button-container">
+                <div>
+                    <button ion-button class="chart-button disable-hover" (click)="openChartModal($event)" [disabled]="currentBufferArray.length === 0">
+                        <ion-icon name="settings"></ion-icon>
+                    </button>
+                </div>
+                <div>
+                    <button ion-button class="chart-button disable-hover" (click)="autoscaleAllAxes()" [disabled]="currentBufferArray.length === 0">
+                        <ion-icon name="expand"></ion-icon>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     <div>

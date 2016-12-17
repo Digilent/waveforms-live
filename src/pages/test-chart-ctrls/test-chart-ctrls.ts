@@ -369,18 +369,13 @@ export class TestChartCtrlsPage {
             laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBuffer.length - 1];
         }
         else {
-            console.log(this.activeDevice.instruments.la.dataBuffer);
             laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferWriteIndex - 1];
         }
-        console.log('about to concat');
-        console.log(oscBufferArray);
         currentBufferArray = oscBufferArray.concat(oscFillerBuff).concat(laBufferArray);
-        console.log(currentBufferArray);
         this.chart1.setCurrentBuffer(currentBufferArray);
         let start = performance.now();
         this.chart1.flotDrawWaveform(true, false);
         let finish = performance.now();
-        console.log('decimate and draw: ' + (finish - start));
         this.triggerStatus = 'Idle';
         if (this.running) {
             this.runClick();

@@ -8,7 +8,7 @@
                 <button ion-button (click)="autoscaleAxis('x', 0)" class="text-button-side disable-hover">x-axis</button>
             </ion-col>
         </ion-row>
-        <ion-row *ngFor="let channel of chart.numSeries; let i = index">
+        <ion-row *ngFor="let channel of chart.oscopeChansActive; let i = index">
             <ion-col text-center>
                 <button ion-button (click)="autoscaleAxis('y', i)" class="text-button-side disable-hover">y-axis {{i + 1}}</button>
             </ion-col>

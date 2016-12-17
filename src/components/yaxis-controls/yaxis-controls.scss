@@ -239,3 +239,29 @@ ion-navbar
 {
     color: white;
 }
+
+
+
+.yaxis-component-container .custom-image-button
+{
+    display: block;
+}
+
+.yaxis-component-container .img-button
+{
+    border: solid black 1px;
+    height: 26px;
+    width: 26px;
+    padding: 0px;
+    background-color: #535353;
+    border-radius: 0px;
+    color: #CCCCCC;
+    margin: 0px;
+    box-shadow: none;
+    font-weight: 400;
+}
+
+.yaxis-component-container .img-button:hover
+{
+    border: solid white 1px;
+}

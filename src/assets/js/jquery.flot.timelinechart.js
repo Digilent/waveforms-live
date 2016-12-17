@@ -114,8 +114,11 @@
                 var leftBandPos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c((leftCor + leftCorStop) / 2) - 5);
                 var rightBandPos = timelineAxes.xaxis.c2p(timelineAxes.xaxis.p2c((rightCor + rightCorStop) / 2) + 5);
 
-                leftBandWidth = leftBandWidth < 20 ? 20 : leftBandWidth;
-                rightBandWidth = rightBandWidth < 20 ? 20 : rightBandWidth;
+                leftBandWidth = leftBandWidth < 18 ? 0 : leftBandWidth;
+                rightBandWidth = rightBandWidth < 18 ? 0 : rightBandWidth;
+                
+                var leftCurtainLineWidth = leftBandWidth === 0 ? 0 : 10;
+                var rightCurtainLineWidth = rightBandWidth === 0 ? 0 : 10;
 
                 var cursorsToUpdate = cursorRefs;
                 if (cursorRefs.length > 4) {
@@ -129,14 +132,14 @@
 
                 var optionsArray = [];
                 optionsArray[0] = {
-                    lineWidth: 10,
+                    lineWidth: leftCurtainLineWidth,
                     position: {
                         x: leftLinePos,
                         relativeY: 0.5
                     }
                 };
                 optionsArray[1] = {
-                    lineWidth: 10,
+                    lineWidth: rightCurtainLineWidth,
                     position: {
                         x: rightLinePos,
                         relativeY: 0.5

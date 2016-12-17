@@ -5,6 +5,7 @@ import { Transfer } from 'ionic-native';
 //Components
 import { DeviceComponent } from '../device/device.component';
 import { WaveformComponent } from '../data-types/waveform';
+import { GenPopover } from '../gen-popover/gen-popover.component';
 
 //Pages
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
@@ -13,6 +14,9 @@ import { ChartModalPage } from '../../pages/chart-modal/chart-modal';
 
 //Interfaces
 import { Chart, CursorPositions } from './chart.interface';
+
+//Services
+import { SettingsService } from '../../services/settings/settings.service';
 
 declare var $: any;
 declare var mathFunctions: any;
@@ -26,6 +30,7 @@ declare var cordova: any;
 
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
+    public settingsService: SettingsService;
     public platform: Platform;
     public popoverCtrl: PopoverController;
     public chart: Chart;
@@ -77,9 +82,11 @@ export class SilverNeedleChart {
     public unbindCustomEventsRef: any;
     public seriesAnchorTouchStartRef: any;
     public previousYPos: number;
+    public flotOverlayRef;
 
-    constructor(_modalCtrl: ModalController, _platform: Platform, _popoverCtrl: PopoverController) {
+    constructor(_modalCtrl: ModalController, _platform: Platform, _popoverCtrl: PopoverController, _settingsService: SettingsService) {
         this.modalCtrl = _modalCtrl;
+        this.settingsService = _settingsService;
         this.popoverCtrl = _popoverCtrl;
         this.platform = _platform;
     }
@@ -175,7 +182,7 @@ export class SilverNeedleChart {
                 margin: {
                     top: 15,
                     left: 10,
-                    right: 25,
+                    right: 27,
                     bottom: 10
                 }
             },
@@ -362,8 +369,9 @@ export class SilverNeedleChart {
     }
 
     seriesAnchorsHandler(plot: any, ctx: any) {
-        if (this.seriesAnchorContainer == undefined || this.seriesAnchorContainer.length < 1) { return; }
+        this.flotOverlayRef = ctx;
         let offsets = this.chart.offset();
+        if (this.seriesAnchorContainer == undefined || this.seriesAnchorContainer.length < 1) { return; }
         let getAxes = this.chart.getAxes();
         for (let i = 0; i < this.seriesAnchorContainer.length; i++) {
             let seriesNum = this.seriesAnchorContainer[i].seriesNum;
@@ -382,6 +390,8 @@ export class SilverNeedleChart {
             ctx.fill();
             ctx.restore();
         }
+
+
     }
 
     seriesAnchorVertPan(e) {
@@ -702,7 +712,6 @@ export class SilverNeedleChart {
     }
 
     setCurrentBuffer(bufferArray: WaveformComponent[]) {
-        console.log(bufferArray);
         this.currentBufferArray = bufferArray;
         if (this.deviceDescriptor !== undefined) {
             this.updateTriggerLine();
@@ -713,8 +722,6 @@ export class SilverNeedleChart {
     flotDrawWaveform(initialDraw: boolean, ignoreAutoscale?: boolean) {
         let dataObjects: any[] = [];
         let currentSeries = this.chart.getData();
-        console.log(this.numSeries);
-        console.log(this.currentBufferArray);
         for (let i = 0; i < this.numSeries.length; i++) {
             let axesInfo = this.chart.getAxes();
             let bounds = {
@@ -728,20 +735,18 @@ export class SilverNeedleChart {
                 bounds.max = this.currentBufferArray[this.numSeries[i]].dt * this.currentBufferArray[this.numSeries[i]].y.length;
             }
             let decimatedData = this.flotDecimateData(this.numSeries[i], bounds).data;
-            dataObjects.push(
-                {
-                    data: decimatedData,
-                    yaxis: 1,
-                    label: 'Series' + this.numSeries[i].toString(),
-                    color: currentSeries[this.numSeries[i]].color
-                }
-            );
+            if (this.numSeries[i] < this.oscopeChansActive.length || this.settingsService.drawLaOnTimeline) {
+                dataObjects.push(
+                    {
+                        data: decimatedData,
+                        yaxis: 1,
+                        label: 'Series' + this.numSeries[i].toString(),
+                        color: currentSeries[this.numSeries[i]].color
+                    }
+                );
+            }
             this.seriesDataContainer[this.numSeries[i]].data = decimatedData;
         }
-        
-        console.log(dataObjects);
-        console.log(this.seriesDataContainer);
-        console.log(this.chart.getData());
         this.chart.setData(this.seriesDataContainer);
         this.chart.draw();
 
@@ -958,27 +963,26 @@ export class SilverNeedleChart {
 
     //Exports series data from chart to a csv on client side
     exportCsv(fileName: string) {
-        if (this.chart.series.length == 0) { return; }
+        let series = this.chart.getData();
         fileName = fileName + '.csv';
         let csvContent = 'data:text/csv;charset=utf-8,';
-        let maxLength = 0;
-        for (let i = 0; i < this.chart.series.length; i++) {
-            if (this.chart.series[i].yData.length > maxLength) {
-                maxLength = this.chart.series[i].yData.length;
+        let maxLength = series[this.numSeries[0]].data.length;
+        for (let i = 0; i < this.numSeries.length; i++) {
+            if (series[this.numSeries[i]].length > maxLength) {
+                maxLength = series[this.numSeries[i]].length;
             }
         }
         for (let i = 0; i < maxLength; i++) {
-            let rowData = [];
-            rowData.push(i * this.chart.series[0].options.pointInterval);
-            for (let j = 0; j < this.chart.series.length; j++) {
-                if (this.chart.series[j].yData[i] !== undefined) {
-                    rowData.push(this.chart.series[j].yData[i]);
+            for (let j = 0; j < this.numSeries.length; j++) {
+                let seriesNum = this.numSeries[j];
+                if (series[seriesNum].data[i] != undefined) {
+                    csvContent += series[seriesNum].data[i].join(',') + ',';
                 }
                 else {
-                    rowData.push('');
+                    csvContent += ',';
                 }
             }
-            csvContent += rowData.join(',') + '\n';
+            csvContent += '\n';
         }
         let encodedUri = encodeURI(csvContent);
         let link = document.createElement("a");
@@ -1005,6 +1009,28 @@ export class SilverNeedleChart {
         if (this.currentBufferArray.length === 0) { return; }
         let popover = this.popoverCtrl.create(MathModalPage, {
             chartComponent: this
+        });
+        popover.present({
+            ev: event
+        });
+    }
+
+    openChartModal(event) {
+        /*let modal = this.modalCtrl.create(ChartModalPage, {
+            chartComponent: this
+        });
+        modal.present();*/
+        let popover = this.popoverCtrl.create(GenPopover, {
+            dataArray: ['Export CSV', 'Export PNG']
+        });
+        popover.onWillDismiss((data) => {
+            if (data == null) { return; }
+            if (data.option === 'Export CSV') {
+                this.exportCsv('WaveformsLiveData');
+            }
+            else if (data.option === 'Export PNG') {
+                this.exportCanvasAsPng();
+            }
         });
         popover.present({
             ev: event
@@ -1130,65 +1156,58 @@ export class SilverNeedleChart {
     //Autoscale all axes on chart
     autoscaleAllAxes() {
         this.autoscaleAxis('x', 0);
-        for (let i = 0; i < this.chart.yAxis.length; i++) {
-            this.autoscaleAxis('y', i);
+        for (let i = 0; i < this.oscopeChansActive.length; i++) {
+            if (this.oscopeChansActive[i]) {
+                this.autoscaleAxis('y', i);
+            }
         }
     }
 
     //Autoscales single axis
     autoscaleAxis(axis: string, axisIndex: number) {
-        /*if (axis === 'x') {
-            let secsPerDiv = (this.chart.xAxis[0].dataMax - this.chart.xAxis[0].dataMin) / 10;
+        let axes = this.chart.getAxes();
+        if (axis === 'x') {
+            let secsPerDiv = (axes.xaxis.datamax - axes.xaxis.datamin) / 10;
             let i = 0;
             while (secsPerDiv > this.secsPerDivVals[i] && i < this.secsPerDivVals.length - 1) {
                 i++;
             }
             this.activeTPDIndex = i;
+            this.chart.setActiveXIndex(this.activeTPDIndex);
             this.timeDivision = this.secsPerDivVals[i];
-            this.base = ((this.chart.xAxis[0].dataMax + this.chart.xAxis[0].dataMin) / 2);
+            this.base = ((axes.xaxis.datamax + axes.xaxis.datamin) / 2);
             this.setTimeSettings({
                 timePerDiv: this.timeDivision,
                 base: this.base
             }, true);
-            if (this.timelineView) {
-                let extremes = this.chart.xAxis[0].getExtremes();
-                this.updatePlotBands([2, 3], [[this.timelineBounds[0], extremes.dataMin], [extremes.dataMax, this.timelineBounds[1]]]);
-                let left = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(extremes.dataMin) - 5);
-                let right = this.chart.xAxis[0].toValue(this.chart.xAxis[0].toPixels(extremes.dataMax) + 5);
-                this.updatePlotLines([0, 1], [left, right]);
-            }
         }
         else if (axis === 'y') {
-            if (this.chart.yAxis[axisIndex].dataMin === null && this.chart.yAxis[axisIndex].dataMax === null) {
-                return;
-            }
             if (this.oscopeChansActive[axisIndex] === false) {
                 return;
             }
             if (this.currentBufferArray[axisIndex].y === undefined) {
                 return;
             }
-            let voltsPerDiv = (this.chart.yAxis[axisIndex].dataMax - this.chart.yAxis[axisIndex].dataMin) / 10;
+            let yAxisIndexer = 'y' + (axisIndex === 0 ? '' : (axisIndex + 1).toString()) + 'axis';
+            let voltsPerDiv = (axes[yAxisIndexer].datamax - axes[yAxisIndexer].datamin) / 10;
             let i = 0;
             while (voltsPerDiv > this.voltsPerDivVals[i] && i < this.voltsPerDivVals.length - 1) {
                 i++;
             }
             this.activeVPDIndex[axisIndex] = i;
-            this.voltBase[axisIndex] = (this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2;
-            this.voltBase[axisIndex] = this.voltBase[axisIndex] - ((this.chart.yAxis[axisIndex].dataMax + this.chart.yAxis[axisIndex].dataMin) / 2) % this.voltsPerDivVals[this.activeVPDIndex[axisIndex]];
+            this.chart.setActiveYIndices(this.activeVPDIndex);
+            this.voltBase[axisIndex] = (axes[yAxisIndexer].datamax + axes[yAxisIndexer].datamin) / 2;
+            this.voltBase[axisIndex] = this.voltBase[axisIndex] - ((axes[yAxisIndexer].datamax + axes[yAxisIndexer].datamin) / 2) % this.voltsPerDivVals[this.activeVPDIndex[axisIndex]];
             this.voltDivision[axisIndex] = this.voltsPerDivVals[i];
             this.setSeriesSettings({
                 seriesNum: axisIndex,
                 voltsPerDiv: this.voltDivision[axisIndex],
                 voltBase: this.voltBase[axisIndex]
             });
-            this.updateSeriesAnchor(axisIndex);
         }
         else {
             console.log('invalid axis');
         }
-        this.updateCursorLabels();
-        this.updateTriggerAnchor(axisIndex);*/
     }
 
     //Enables timeline view. Called when chart is initialized
@@ -1199,38 +1218,6 @@ export class SilverNeedleChart {
 
     enableMath() {
         this.mathEnabled = true;
-    }
-
-    //Determines if cursors and timeline view is enabled on chart component
-    isCursorTimeline() {
-        if (this.cursorsEnabled && this.timelineView) {
-            return true;
-        }
-        return false;
-    }
-
-    //Determines if only cursors are enabled on chart component
-    isCursorOnly() {
-        if (this.cursorsEnabled && !this.timelineView) {
-            return true;
-        }
-        return false;
-    }
-
-    //Determines if only timeline view is enabled on chart component
-    isTimelineOnly() {
-        if (!this.cursorsEnabled && this.timelineView) {
-            return true;
-        }
-        return false;
-    }
-
-    //Determines if timeline view and cursors are disabled on chart component
-    isVanilla() {
-        if (!this.cursorsEnabled && !this.timelineView) {
-            return true;
-        }
-        return false;
     }
 
     decrementVPD(seriesNum) {
@@ -1321,7 +1308,6 @@ export class SilverNeedleChart {
         if (seriesNum < this.oscopeChansActive.length) {
             this.oscopeChansActive[seriesNum] = !this.oscopeChansActive[seriesNum];
         }
-        console.log(seriesNum);
         this.seriesDataContainer[seriesNum].lines.show = !this.seriesDataContainer[seriesNum].lines.show;
         this.chart.setData(this.seriesDataContainer);
         this.chart.draw();
@@ -1361,7 +1347,13 @@ export class SilverNeedleChart {
 
     exportCanvasAsPng() {
         let canvas = this.chart.getCanvas();
+        let overlayCanvas = this.flotOverlayRef.canvas;
+        let ctx = canvas.getContext("2d");
+        ctx.save();
+        ctx.drawImage(overlayCanvas, 0, 0);
         let data = canvas.toDataURL();
+        ctx.restore();
+        
         if (this.platform.is('cordova')) {
             this.platform.ready().then(() => {
                 const fileTransfer = new Transfer();

@@ -12,6 +12,7 @@ export class SettingsService {
     public logLength: number = 50;
     public nestedChannels: boolean = false;
     public routeToStore: boolean = true;
+    public drawLaOnTimeline: boolean = false;
 
     constructor(_storageService: StorageService) {
         console.log('settings service constructor');
