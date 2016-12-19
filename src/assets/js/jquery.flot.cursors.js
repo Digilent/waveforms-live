@@ -60,6 +60,7 @@ Licensed under the MIT license.
                 lineWidth: 1,
                 movable: true,
                 fullHeight: false,
+                drawAnchor: false,
                 mouseButton: 'all',
                 dashes: 1,
                 intersectionColor: 'darkgray',
@@ -598,7 +599,7 @@ Licensed under the MIT license.
     }
 
     function dummy(e) {
-        
+
     }
 
     function mixin(source, destination) {
@@ -862,6 +863,42 @@ Licensed under the MIT license.
         }
 
         ctx.stroke();
+        if (cursor.drawAnchor) {
+            drawAnchor(plot, ctx, cursor);
+        }
+    }
+
+    function drawAnchor(plot, ctx, cursor) {
+        var canvasHeight = plot.height();
+        if (cursor.lineWidth === 0) {
+            return;
+        }
+        if (cursor.fullHeight) {
+            var canvasRef = plot.getCanvas();
+            canvasHeight = canvasRef.height;
+        }
+
+        ctx.strokeStyle = cursor.color;
+        ctx.lineWidth = 1;
+
+        ctx.beginPath();
+
+        if (cursor.mode.indexOf("x") !== -1) {
+            var drawX = Math.floor(cursor.x);
+            ctx.moveTo(drawX, 0);
+            ctx.lineTo(drawX + 5, -10);
+            ctx.lineTo(drawX - 5, -10);
+            ctx.closePath();
+        }
+
+        if (cursor.mode.indexOf("y") !== -1 && cursor.mode !== "xy") {
+            var drawY = Math.floor(cursor.y);
+            ctx.moveTo(0, drawY);
+            ctx.lineTo(-10, drawY - 5);
+            ctx.lineTo(-10, drawY + 5);
+            ctx.closePath();
+        }
+        ctx.stroke();
     }
 
     function drawManipulator(plot, ctx, cursor) {
@@ -913,18 +950,20 @@ Licensed under the MIT license.
         var offset = plot.offset();
         var mouseX = Math.max(0, Math.min(e.pageX - offset.left, plot.width()));
         var mouseY = Math.max(0, Math.min(e.pageY - offset.top, plot.height()));
+        var mouseGrabMarginY = cursor.drawAnchor ? -15 : 0; 
 
         return (hasVerticalLine(cursor) && (mouseX > cursor.x - constants.mouseGrabMargin) &&
-            (mouseX < cursor.x + constants.mouseGrabMargin) && (mouseY > 0) && (mouseY < plot.height()));
+            (mouseX < cursor.x + constants.mouseGrabMargin) && (mouseY > mouseGrabMarginY) && (mouseY < plot.height()));
     }
 
     function mouseOverCursorHorizontalLine(e, plot, cursor) {
         var offset = plot.offset();
         var mouseX = Math.max(0, Math.min(e.pageX - offset.left, plot.width()));
         var mouseY = Math.max(0, Math.min(e.pageY - offset.top, plot.height()));
+        var mouseGrabMarginX = cursor.drawAnchor ? -15 : 0;
 
         return (hasHorizontalLine(cursor) && (mouseY > cursor.y - constants.mouseGrabMargin) &&
-            (mouseY < cursor.y + constants.mouseGrabMargin) && (mouseX > 0) && (mouseY < plot.width()));
+            (mouseY < cursor.y + constants.mouseGrabMargin) && (mouseX > mouseGrabMarginX) && (mouseX < plot.width()));
     }
 
     $.plot.plugins.push({

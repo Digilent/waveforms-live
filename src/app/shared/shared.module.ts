@@ -6,6 +6,7 @@ import { IonicModule } from 'ionic-angular';
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 import { DropdownPopoverComponent } from '../../components/dropdown-popover/dropdown-popover.component';
 import { DropDownMenu } from '../../libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu.component';
+import { VoltageFormatPipe } from '../../pipes/voltage-format.pipe';
 
 @NgModule({
     imports: [
@@ -17,10 +18,12 @@ import { DropDownMenu } from '../../libs/digilent-ionic2-utilities/drop-down-men
     declarations: [
         GenPopover,
         DropDownMenu,
-        DropdownPopoverComponent
+        DropdownPopoverComponent,
+        VoltageFormatPipe
     ],
     exports: [
         GenPopover,
+        VoltageFormatPipe,
         DropDownMenu,
         DropdownPopoverComponent,
         CommonModule,

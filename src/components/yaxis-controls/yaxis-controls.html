@@ -36,7 +36,7 @@
                         <button ion-button (tap)="chart.decrementOffset(i)" class="icon-only-button-side disable-hover offset-button"><ion-icon name="remove"></ion-icon></button>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <div class="set-darkgrey-font">Offset</div>
+                        <div class="set-darkgrey-font">{{chart.voltBase[i] | voltageFormat}}</div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col">
                         <button ion-button (tap)="chart.incrementOffset(i)" class="icon-only-button-side disable-hover offset-button"><ion-icon name="add"></ion-icon></button>

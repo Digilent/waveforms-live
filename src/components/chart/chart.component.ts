@@ -1055,6 +1055,7 @@ export class SilverNeedleChart {
                     showIntersections: false,
                     showLabel: false,
                     symbol: 'none',
+                    drawAnchor: true,
                     position: {
                         relativeX: 0.25 + i * 0.5,
                         relativeY: 0
@@ -1076,6 +1077,7 @@ export class SilverNeedleChart {
                     showIntersections: false,
                     showLabel: false,
                     symbol: 'none',
+                    drawAnchor: true,
                     snapToPlot: (this.activeChannels[i] - 1),
                     position: {
                         relativeX: 0.25 + i * 0.5,
@@ -1098,6 +1100,7 @@ export class SilverNeedleChart {
                     showIntersections: false,
                     showLabel: false,
                     symbol: 'none',
+                    drawAnchor: true,
                     position: {
                         relativeX: 0.25 + i * 0.5,
                         relativeY: 0.25 + i * 0.5
