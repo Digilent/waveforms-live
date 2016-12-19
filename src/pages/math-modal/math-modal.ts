@@ -76,7 +76,6 @@ export class MathModalPage {
             dataArray: dataArray
         });
         popover.onWillDismiss((data) => {
-            console.log(data);
             if (data == null) { return; }
             this.setActiveSeries(data.option);
         });

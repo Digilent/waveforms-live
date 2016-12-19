@@ -102,8 +102,15 @@ export class DeviceManagerService {
                 let XHR = new XMLHttpRequest();
                 // We define what will happen if the data are successfully sent
                 XHR.addEventListener("load", function (event: MyEventResponse) {
-                    console.log(event.currentTarget.response);
-                    this.transport.setLocalTransport(event.currentTarget.response);
+                    let enumerationObject;
+                    try {
+                        enumerationObject = JSON.parse(event.currentTarget.response);
+                    }
+                    catch(e) {
+                        observer.error(e);
+                        return;
+                    }
+                    this.transport.setLocalTransport(enumerationObject);
                     let command = {
                         'device': [
                             {

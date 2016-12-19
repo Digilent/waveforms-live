@@ -20,7 +20,7 @@ export class SimulatedDeviceComponent {
         mode: string,
         remainingSamples: number
     };
-    public descriptor: string;
+    public descriptor: any;
     public awg: SimulatedAwgComponent;
     public dc: SimulatedDcComponent;
     public la: SimulatedLaComponent;
@@ -102,7 +102,7 @@ export class SimulatedDeviceComponent {
         switch (command) {
             //---------- Device ----------
             case 'deviceenumerate':
-                return JSON.parse(this.descriptor);
+                return this.descriptor;
 
             //---------- AWG ----------            
             case 'awgsetArbitraryWaveform':

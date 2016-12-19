@@ -3,14 +3,17 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Ionic App</title>
+  <title>Waveforms Live</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="format-detection" content="telephone=no">
   <meta name="msapplication-tap-highlight" content="no">
 
   <link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico">
-  <link rel="manifest" href="assets/manifest.json">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4e8ef7">
+
+  <!-- cordova.js required for cordova apps -->
+  <script src="cordova.js"></script>
 
   <!-- un-comment this code to enable service worker
   <script>
@@ -26,7 +29,7 @@
     $(window).load(function() {
       $(".loader").fadeOut("slow");
     });
-</script>
+  </script>
   <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.js"></script>
   <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.tooltip.js"></script>
   <script language="javascript" type="text/javascript" src="assets/js/math.functions.js"></script>
@@ -48,9 +51,6 @@
   <div class="loader" style="position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;z-index: 9999;background: url('assets/img/page-loader.gif') 50% 50% no-repeat rgb(249,249,249);"></div>
   <!-- Ionic's root component and where the app will load -->
   <ion-app></ion-app>
-
-  <!-- cordova.js required for cordova apps -->
-  <script src="cordova.js"></script>
 
   <!-- The polyfills js is generated during the build process -->
   <script src="build/polyfills.js"></script>

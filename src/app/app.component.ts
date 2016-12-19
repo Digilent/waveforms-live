@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Platform, MenuController, Nav } from 'ionic-angular';
-import { StatusBar } from 'ionic-native';
+import { StatusBar, Splashscreen } from 'ionic-native';
 
 //Pages
 import { TestChartCtrlsPage } from '../pages/test-chart-ctrls/test-chart-ctrls';
@@ -17,9 +17,8 @@ import { SettingsService } from '../services/settings/settings.service';
 export class MyApp {
     @ViewChild(Nav) nav: Nav;
 
-    // make HelloIonicPage the root (or first) page
-    rootPage: any = DeviceManagerPage;
-    pages: Array<{ title: string, component: any }>;
+    public rootPage: any = DeviceManagerPage;
+    public pages: Array<{ title: string, component: any }>;
     public settingsService: SettingsService;
 
     constructor(
@@ -45,6 +44,7 @@ export class MyApp {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
             StatusBar.styleDefault();
+            Splashscreen.hide();
         });
     }
 

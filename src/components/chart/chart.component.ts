@@ -10,7 +10,7 @@ import { GenPopover } from '../gen-popover/gen-popover.component';
 //Pages
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
-import { ChartModalPage } from '../../pages/chart-modal/chart-modal';
+//import { ChartModalPage } from '../../pages/chart-modal/chart-modal';
 
 //Interfaces
 import { Chart, CursorPositions } from './chart.interface';

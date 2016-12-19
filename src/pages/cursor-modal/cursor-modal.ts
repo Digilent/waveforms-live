@@ -66,7 +66,7 @@ export class ModalCursorPage {
         }
         else if (type === 'cursor1Chan' || 'cursor2Chan') {
             let activeChans = [];
-            for (let i = 0; i < this.chartComponent.currentBufferArray.length; i++) {
+            for (let i = 0; i < this.chartComponent.oscopeChansActive.length; i++) {
                 if (this.chartComponent.currentBufferArray[i] !== undefined && this.chartComponent.currentBufferArray[i].y !== undefined) {
                     activeChans.push('Osc ' + (i + 1));
                 }
@@ -78,11 +78,7 @@ export class ModalCursorPage {
         else {
             console.log('error in show popover');
         }
-
-        popover.present({
-            ev: event
-        });
-        popover.onWillDismiss(data => {
+        popover.onWillDismiss((data) => {
             if (data === null) { return; }
             if (type === 'cursorType') {
                 this.chartComponent.cursorType = data.option
@@ -98,6 +94,12 @@ export class ModalCursorPage {
             }
             this.chartComponent.handleCursors();
         });
+        
+        popover.present({
+            ev: event
+        });
+
+
     }
 
 }
