@@ -163,7 +163,7 @@ ion-navbar
 .controls-container
 {
     color: white;
-    font-weight: 300;
+    font-weight: 400;
     background-color: #535353;
 }
 
@@ -221,6 +221,13 @@ ion-navbar
 .yaxis-component-container .vpd-button-col
 {
     padding: 0px;
+    max-width: 32px;
+}
+
+.yaxis-component-container .vpd-label-col
+{
+    padding-left: 15px;
+    color: #CCCCCC;
 }
 
 .yaxis-component-wrapper
