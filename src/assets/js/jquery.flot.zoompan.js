@@ -158,7 +158,7 @@
                     e.preventDefault();
                     var offsets = plot.offset();
                     plot.getPlaceholder().append('<div id="plot-highlight-div"></div>').bind('mousemove', middleMouseMove);
-                    $('#plot-highlight-div').bind('mousemove', middleMouseMove);
+                    $('#plot-highlight-div').bind('mouseup', chartMouseUp);
                     highlightContainer.highlighting = true;
                     highlightContainer.start = e.clientX;
                     return;
@@ -180,10 +180,11 @@
             function middleMouseMove(e) {
                 e.preventDefault();
                 var offsets = plot.offset();
+                var margins = plot.getOptions().grid.margin;
                 $('#plot-highlight-div').css({
                     "position": "absolute",
-                    "top": 0,
-                    "bottom": 0,
+                    "top": margins.top.toString() + 'px',
+                    "bottom": (plot.getPlaceholder().height() - margins.top - plot.height()).toString() + 'px',
                     "left": (highlightContainer.start < e.clientX ? highlightContainer.start : e.clientX).toString() + 'px',
                     "width": (Math.abs(e.clientX - highlightContainer.start)).toString() + 'px',
                     "backgroundColor": 'rgba(182, 191, 190, 0.3)'
@@ -340,6 +341,11 @@
                     plot.getPlaceholder().unbind('mousemove', horPanChart);
                 }
                 else if (highlightContainer.highlighting) {
+                    if (e.type === 'mouseout' && e.clientX < plot.width() && e.clientX > 0) {
+                        //Do this because the mouse can go over the highlight div and cause a mouseout event
+                        middleMouseMove(e);
+                        return;
+                    }
                     plot.getPlaceholder().unbind('mousemove', middleMouseMove);
                     highlightContainer.highlighting = false;
                     $('#plot-highlight-div').remove();
