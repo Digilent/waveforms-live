@@ -44,18 +44,11 @@ export class SilverNeedleChart {
     public cursorsEnabled: boolean = true;
     public activeChannels = [1, 1];
     public mathEnabled: boolean = true;
-    public generalVoltsPerDivOpts: string[] = ['1 mV', '2 mV', '5 mv', '10 mV', '20 mV', '50 mV', '100 mV', '200 mV', '500 mV', '1 V', '2 V', '5 V'];
     public activeVPDIndex: number[] = [9, 9];
-    public generalVoltsPerDivVals: number[] = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5];
-    public voltsPerDivOpts: string[] = this.generalVoltsPerDivOpts;
+    public generalVoltsPerDivVals: number[];
     public voltsPerDivVals: number[] = this.generalVoltsPerDivVals;
-    public secsPerDivOpts: string[] = ['1 ns', '2 ns', '5 ns', '10 ns', '20 ns', '50 ns', '100 ns', '200 ns', '500 ns', '1 us',
-        '2 us', '5 us', '10 us', '20 us', '50 us', '100 us', '200 us', '500 us', '1 ms', '2 ms', '5 ms', '10 ms', '20 ms',
-        '50 ms', '100 ms', '200 ms', '500 ms', '1 s', '2 s', '5 s', '10 s'];
     public activeTPDIndex: number = 27;
-    public secsPerDivVals: number[] = [0.000000001, 0.000000002, 0.000000005, 0.00000001, 0.00000002, 0.00000005, 0.0000001, 0.0000002,
-        0.0000005, 0.000001, 0.000002, 0.000005, 0.00001, 0.00002, 0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01,
-        0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10];
+    public secsPerDivVals: number[];
     public timelineView: boolean = false;
     public timeDivision: number = 1;
     public base: number = 0;
@@ -89,6 +82,10 @@ export class SilverNeedleChart {
         this.settingsService = _settingsService;
         this.popoverCtrl = _popoverCtrl;
         this.platform = _platform;
+        this.secsPerDivVals = this.generateNiceNumArray(0.000000001, 10);
+        this.generalVoltsPerDivVals = this.generateNiceNumArray(0.001, 5);
+        console.log(this.secsPerDivVals);
+        console.log(this.generalVoltsPerDivVals);
     }
 
     ngAfterViewInit() {
@@ -104,6 +101,48 @@ export class SilverNeedleChart {
         this.createChart();
     }
 
+    generateNiceNumArray(min: number, max: number) {
+        let niceNumArray = [];
+        let currentPow = Math.ceil(Math.log10(min));
+        let current = min * Math.pow(10, -1 * currentPow);
+        let i = 0;
+        while (current * Math.pow(10, currentPow) <= max) {
+            niceNumArray[i] = this.decimalAdjust('round', current * Math.pow(10, currentPow), currentPow);
+            if (current === 1) {
+                current = 2;
+            }
+            else if (current === 2) {
+                current = 5;
+            }
+            else {
+                current = 1;
+                currentPow++;
+            }
+            i++;
+        }
+        return niceNumArray;
+    }
+
+    //Used to fix floating point errors when computing nicenumarray
+    decimalAdjust(type, value, exp) {
+        // If the exp is undefined or zero...
+        if (typeof exp === 'undefined' || +exp === 0) {
+            return Math[type](value);
+        }
+        value = +value;
+        exp = +exp;
+        // If the value is not a number or the exp is not an integer...
+        if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+            return NaN;
+        }
+        // Shift
+        value = value.toString().split('e');
+        value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+        // Shift back
+        value = value.toString().split('e');
+        return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+    }
+
     createTimelineChart(dataObjectArray: any) {
         if (this.timelineChart !== null) { return; }
 
@@ -116,9 +155,7 @@ export class SilverNeedleChart {
             },
             timelineChart: {
                 enabled: true,
-                secsPerDivisionValues: [0.000000001, 0.000000002, 0.000000005, 0.00000001, 0.00000002, 0.00000005, 0.0000001, 0.0000002,
-                    0.0000005, 0.000001, 0.000002, 0.000005, 0.00001, 0.00002, 0.00005, 0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01,
-                    0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10],
+                secsPerDivisionValues: this.secsPerDivVals,
                 startingXIndex: 21,
 
                 updateExistingChart: true,
@@ -580,7 +617,6 @@ export class SilverNeedleChart {
             i++;
         }
         this.voltsPerDivVals = this.generalVoltsPerDivVals.slice(i);
-        this.voltsPerDivOpts = this.generalVoltsPerDivOpts.slice(i);
 
         for (let i = 0; i < deviceComponent.instruments.osc.numChans; i++) {
             //Set the first oscope to on
@@ -989,7 +1025,9 @@ export class SilverNeedleChart {
         link.setAttribute("href", encodedUri);
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
+        console.log(link);
         link.click();
+        console.log('finished');
     }
 
     //Opens cursor modal menu and sets data on modal dismiss
@@ -1024,8 +1062,11 @@ export class SilverNeedleChart {
             dataArray: ['Export CSV', 'Export PNG']
         });
         popover.onWillDismiss((data) => {
+            console.log('onDidDismiss');
+            console.log(data);
             if (data == null) { return; }
             if (data.option === 'Export CSV') {
+                console.log('about to export');
                 this.exportCsv('WaveformsLiveData');
             }
             else if (data.option === 'Export PNG') {
@@ -1237,7 +1278,7 @@ export class SilverNeedleChart {
     }
 
     incrementVPD(seriesNum) {
-        if (this.activeVPDIndex[seriesNum] > this.voltsPerDivOpts.length - 2) {
+        if (this.activeVPDIndex[seriesNum] > this.voltsPerDivVals.length - 2) {
             return;
         }
         this.activeVPDIndex[seriesNum]++;
@@ -1280,7 +1321,7 @@ export class SilverNeedleChart {
     }
 
     incrementTPD(seriesNum) {
-        if (this.activeTPDIndex > this.secsPerDivOpts.length - 2) {
+        if (this.activeTPDIndex > this.secsPerDivVals.length - 2) {
             return;
         }
         this.activeTPDIndex++;
@@ -1356,7 +1397,7 @@ export class SilverNeedleChart {
         ctx.drawImage(overlayCanvas, 0, 0);
         let data = canvas.toDataURL();
         ctx.restore();
-        
+
         if (this.platform.is('cordova')) {
             this.platform.ready().then(() => {
                 const fileTransfer = new Transfer();

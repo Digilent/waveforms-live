@@ -42,6 +42,10 @@
         previousY2: null,
         startingMultiTouch: true
     };
+    var highlightContainer = {
+        highlighting: false,
+        start: 0
+    }
 
     //Variables exposed in options
     var selectedYAxis;
@@ -150,6 +154,16 @@
             **************************************************************/
             function chartMouseDown(e) {
 
+                if (e.button && e.button === 1 || e.which && e.which === 2) {
+                    e.preventDefault();
+                    var offsets = plot.offset();
+                    plot.getPlaceholder().append('<div id="plot-highlight-div"></div>').bind('mousemove', middleMouseMove);
+                    $('#plot-highlight-div').bind('mousemove', middleMouseMove);
+                    highlightContainer.highlighting = true;
+                    highlightContainer.start = e.clientX;
+                    return;
+                }
+
                 previousXPosition = e.clientX;
                 previousYPosition = e.clientY;
 
@@ -161,6 +175,19 @@
                     panType = 'horizontal';
                     plot.getPlaceholder().bind('mousemove', horPanChart);
                 }
+            }
+
+            function middleMouseMove(e) {
+                e.preventDefault();
+                var offsets = plot.offset();
+                $('#plot-highlight-div').css({
+                    "position": "absolute",
+                    "top": 0,
+                    "bottom": 0,
+                    "left": (highlightContainer.start < e.clientX ? highlightContainer.start : e.clientX).toString() + 'px',
+                    "width": (Math.abs(e.clientX - highlightContainer.start)).toString() + 'px',
+                    "backgroundColor": 'rgba(182, 191, 190, 0.3)'
+                });
             }
 
             function touchDown(e) {
@@ -309,8 +336,50 @@
                 if (panType === 'vertical') {
                     plot.getPlaceholder().unbind('mousemove', vertPanChart);
                 }
-                else {
+                else if (panType === 'horizontal') {
                     plot.getPlaceholder().unbind('mousemove', horPanChart);
+                }
+                else if (highlightContainer.highlighting) {
+                    plot.getPlaceholder().unbind('mousemove', middleMouseMove);
+                    highlightContainer.highlighting = false;
+                    $('#plot-highlight-div').remove();
+                    zoomOnMiddleMouseSelection(highlightContainer.start, e.clientX);
+                }
+            }
+
+            function zoomOnMiddleMouseSelection(startPx, stopPx) {
+                var xaxis = plot.getAxes().xaxis;
+                var offsets = plot.offset();
+                var startVal = xaxis.c2p(startPx - offsets.left);
+                var finishVal = xaxis.c2p(stopPx - offsets.left);
+                if (startVal > finishVal) {
+                    var tempSwap = startVal;
+                    startVal = finishVal;
+                    finishVal = tempSwap;
+                }
+                xaxis.options.min = startVal;
+                xaxis.options.max = finishVal;
+                plot.setupGrid();
+                plot.draw();
+                var timePerDiv = (xaxis.max - xaxis.min) / 10;
+                var count = 0;
+                while (secsPerDivisionValues[count] < timePerDiv && count < secsPerDivisionValues.length) {
+                    count++;
+                }
+                startingXIndex = count;
+                var infoContainer = {
+                    min: xaxis.min,
+                    max: xaxis.max,
+                    mid: (xaxis.max + xaxis.min) / 2,
+                    perDivVal: timePerDiv,
+                    perDivArrayIndex: startingXIndex,
+                    axisNum: 1,
+                    axis: 'xaxis'
+                };
+                plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
+                if (updateTimelineChart && timelineChartRef != null) {
+                    timelineChartRef.setActiveXIndex(startingXIndex);
+                    timelineChartRef.updateTimelineCurtains(infoContainer);
                 }
             }
 
