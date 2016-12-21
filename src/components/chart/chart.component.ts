@@ -84,8 +84,6 @@ export class SilverNeedleChart {
         this.platform = _platform;
         this.secsPerDivVals = this.generateNiceNumArray(0.000000001, 10);
         this.generalVoltsPerDivVals = this.generateNiceNumArray(0.001, 5);
-        console.log(this.secsPerDivVals);
-        console.log(this.generalVoltsPerDivVals);
     }
 
     ngAfterViewInit() {
@@ -1025,9 +1023,7 @@ export class SilverNeedleChart {
         link.setAttribute("href", encodedUri);
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
-        console.log(link);
         link.click();
-        console.log('finished');
     }
 
     //Opens cursor modal menu and sets data on modal dismiss
@@ -1062,11 +1058,8 @@ export class SilverNeedleChart {
             dataArray: ['Export CSV', 'Export PNG']
         });
         popover.onWillDismiss((data) => {
-            console.log('onDidDismiss');
-            console.log(data);
             if (data == null) { return; }
             if (data.option === 'Export CSV') {
-                console.log('about to export');
                 this.exportCsv('WaveformsLiveData');
             }
             else if (data.option === 'Export PNG') {

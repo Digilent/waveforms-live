@@ -1,14 +1,14 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-import {InstrumentComponent} from '../instrument.component';
-import {TriggerChannelComponent} from './trigger-channel.component';
-import {WaveformComponent} from '../../data-types/waveform';
+import { InstrumentComponent } from '../instrument.component';
+import { TriggerChannelComponent } from './trigger-channel.component';
+import { WaveformComponent } from '../../data-types/waveform';
 
 //Services
-import {TransportService} from '../../../services/transport/transport.service';
+import { TransportService } from '../../../services/transport/transport.service';
 
 @Injectable()
 export class TriggerInstrumentComponent extends InstrumentComponent {
@@ -145,6 +145,56 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                     }
                 ]
         });
+        return Observable.create((observer) => {
+            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    //Handle device errors and warnings
+                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    for (let i = 0; i < chans.length; i++) {
+                        if (data.trigger == undefined || data.trigger[chans[i]][0].statusCode > 0 || data.agent != undefined) {
+                            observer.error(data);
+                            return;
+                        }
+                    }
+                    observer.next(data);
+                    //Handle device errors and warnings
+                    observer.complete();
+                },
+                (err) => {
+                    observer.error(err);
+                },
+                () => {
+                    observer.complete();
+                }
+            )
+        });
+    }
+
+    stopJson(chans: number[]) {
+        let command = {
+            trigger: {}
+        }
+        chans.forEach((element, index, array) => {
+            command.trigger[chans[index]] = [{
+                command: "stop"
+            }]
+        });
+        return command;
+    }
+
+    stopParse(chan, command) {
+        console.log(command);
+        return 'stop done';
+    }
+
+    stop(chans: number[]): Observable<any> {
+        if (chans.length == 0) {
+            return Observable.create((observer) => {
+                observer.complete();
+            });
+        }
+
+        let command = this.stopJson(chans);
         return Observable.create((observer) => {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {

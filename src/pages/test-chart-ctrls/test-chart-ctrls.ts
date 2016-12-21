@@ -118,7 +118,15 @@ export class TestChartCtrlsPage {
     }
 
     abortSingle() {
-        console.log('abort single not implemented');
+        this.activeDevice.instruments.trigger.stop([1]).subscribe(
+            (data) => {
+                console.log(data);
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {}
+        );
     }
 
     //Toggle sidecontrols

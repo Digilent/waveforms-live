@@ -154,7 +154,7 @@
             **************************************************************/
             function chartMouseDown(e) {
 
-                if (e.button && e.button === 1 || e.which && e.which === 2) {
+                if ((e.button && e.button === 1) || (e.which && e.which === 2)) {
                     e.preventDefault();
                     var offsets = plot.offset();
                     plot.getPlaceholder().append('<div id="plot-highlight-div"></div>').bind('mousemove', middleMouseMove);
@@ -335,9 +335,11 @@
 
             function chartMouseUp(e) {
                 if (panType === 'vertical') {
+                    panType = null;
                     plot.getPlaceholder().unbind('mousemove', vertPanChart);
                 }
                 else if (panType === 'horizontal') {
+                    panType = null;
                     plot.getPlaceholder().unbind('mousemove', horPanChart);
                 }
                 else if (highlightContainer.highlighting) {
