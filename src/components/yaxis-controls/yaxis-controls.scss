@@ -25,6 +25,18 @@
     justify-content: space-between;
 }
 
+.yaxis-component-container .custom-input
+{
+    color: #CCCCCC;
+    text-align: left;
+    width: 100%;
+    background-color: #3A3A3A;
+    border: solid black 1px;
+    padding: 2px 0px 2px 4px;
+    margin: 0px;
+    border-radius: 0px;
+}
+
 .align-center-container .align-left
 {
     background-color: #535353;
@@ -216,6 +228,7 @@ ion-navbar
 .yaxis-component-container .vpd-val-col
 {
     min-width: 80px;
+    padding: 1px 4px 0px 4px;
 }
 
 .yaxis-component-container .vpd-button-col
@@ -227,6 +240,7 @@ ion-navbar
 .yaxis-component-container .vpd-label-col
 {
     padding-left: 15px;
+    padding-right: 0px;
     color: #CCCCCC;
 }
 
@@ -262,7 +276,7 @@ ion-navbar
 .yaxis-component-container .img-button
 {
     border: solid black 1px;
-    height: 26px;
+    height: 25px;
     width: 26px;
     padding: 0px;
     background-color: #535353;

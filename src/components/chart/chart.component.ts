@@ -444,6 +444,7 @@ export class SilverNeedleChart {
         getAxes[yIndexer].options.max = max;
         this.chart.setupGrid();
         this.chart.draw();
+        this.voltBase[this.activeSeries - 1] = base;
         this.previousYPos = e.clientY;
     }
 
@@ -462,6 +463,7 @@ export class SilverNeedleChart {
         getAxes[yIndexer].options.max = max;
         this.chart.setupGrid();
         this.chart.draw();
+        this.voltBase[this.activeSeries - 1] = base;
         this.previousYPos = e.originalEvent.touches[0].clientY;
     }
 

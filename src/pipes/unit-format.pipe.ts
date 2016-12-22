@@ -6,8 +6,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class UnitFormatPipe implements PipeTransform {
 
     transform(value: number, baseUnit: string): string {
-        if (value === 0) {
-            return '0.000 V';
+        if (typeof(value) === 'string') {
+            value = parseFloat(value);
+        }
+        if (value == 0 || Math.abs(value) < 1e-15) {
+            return '0.000 ' + baseUnit;
         }
         let i = 0;
         let unit: string = ' ' + baseUnit;

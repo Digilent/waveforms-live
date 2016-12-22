@@ -1,9 +1,9 @@
-import {Component, EventEmitter, Input} from '@angular/core';
-import {NavParams, ViewController, PopoverController} from 'ionic-angular';
+import { Component, EventEmitter, Input } from '@angular/core';
+import { NavParams, ViewController, PopoverController } from 'ionic-angular';
 
 //Components
-import {SilverNeedleChart} from '../chart/chart.component';
-import {SeriesPopover} from '../series-popover/series-popover.component';
+import { SilverNeedleChart } from '../chart/chart.component';
+import { SeriesPopover } from '../series-popover/series-popover.component';
 
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
@@ -25,7 +25,8 @@ export class YAxisComponent {
     public configHover: boolean = false;
     public timeoutRef: any;
     public showOscSettings: boolean = true;
-    
+    public ignoreFocusOut: boolean = false;
+
     constructor(_viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController, _settingsSrv: SettingsService) {
         this.popoverCtrl = _popoverCtrl;
         this.viewCtrl = _viewCtrl;
@@ -38,6 +39,69 @@ export class YAxisComponent {
             this.names.push('Ch ' + (i + 1));
             this.showSeriesSettings.push(this.chart.oscopeChansActive[i]);
         }
+    }
+
+    checkForEnter(event, channel: number, inputType: string) {
+        if (event.key === 'Enter') {
+            this.formatInputAndUpdate(event, channel, inputType);
+            this.ignoreFocusOut = true;
+        }
+    }
+
+    inputLeave(event, channel: number, inputType: string) {
+        if (!this.ignoreFocusOut) {
+            this.formatInputAndUpdate(event, channel, inputType);
+        }
+        this.ignoreFocusOut = false;
+    }
+
+    formatInputAndUpdate(event, channel: number, inputType: string) {
+        let value: string = event.target.value;
+        let parsedValue: number = parseFloat(value);
+
+        let trueValue: number = parsedValue;
+        if (value.indexOf('G') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 9);
+        }
+        else if (value.indexOf('M') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 6);
+        }
+        else if (value.indexOf('k') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 3);
+        }
+        else if (value.indexOf('m') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -3);
+        }
+        else if (value.indexOf('u') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -6);
+        }
+        else if (value.indexOf('n') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -9);
+        }
+
+        if (inputType === 'offset') {
+            if (trueValue > this.chart.deviceDescriptor.instruments.osc.chans[channel].inputVoltageMax / 1000) {
+                trueValue = this.chart.deviceDescriptor.instruments.osc.chans[channel].inputVoltageMax / 1000;
+            }
+            else if (trueValue < this.chart.deviceDescriptor.instruments.osc.chans[channel].inputVoltageMin / 1000) {
+                trueValue = this.chart.deviceDescriptor.instruments.osc.chans[channel].inputVoltageMin / 1000;
+            }
+            this.chart.voltBase[channel] = trueValue;
+        }
+        else if (inputType === 'vpd') {
+            if (trueValue < this.chart.voltsPerDivVals[0]) {
+                trueValue = this.chart.voltsPerDivVals[0];
+            }
+            else if (trueValue > this.chart.voltsPerDivVals[this.chart.voltsPerDivVals.length - 1]) {
+                trueValue = this.chart.voltsPerDivVals[this.chart.voltsPerDivVals.length - 1];
+            }
+            this.chart.voltDivision[channel] = trueValue;
+        }
+        this.chart.setSeriesSettings({
+            voltsPerDiv: this.chart.voltDivision[channel],
+            voltBase: this.chart.voltBase[channel],
+            seriesNum: channel
+        });
     }
 
     getSeriesColor(seriesNum: number) {

@@ -7,17 +7,20 @@
 {
     text-align: right;
     padding: 0px;
+    max-width: 32px;
 }
 
 .xaxis-component-wrapper .xaxis-right
 {
     text-align: left;
     padding: 0px;
+    max-width: 32px;
 }
 
 .xaxis-component-wrapper .xaxis-center
 {
     min-width: 80px;
+    padding: 1px 4px 0px 4px;
 }
 
 .xaxis-component-wrapper
@@ -30,15 +33,39 @@
     padding-top: 0px;
 }
 
+.xaxis-component-wrapper .tpd-label-col
+{
+    padding-left: 15px;
+    padding-right: 0px;
+    color: #CCCCCC;
+}
+
+.xaxis-component-wrapper .custom-input
+{
+    color: #CCCCCC;
+    text-align: left;
+    width: 100%;
+    background-color: #3A3A3A;
+    border: solid black 1px;
+    padding: 2px 0px 2px 4px;
+    margin: 0px;
+    border-radius: 0px;
+}
+
 .xaxis-component-wrapper .custom-image-button
 {
     display: block;
 }
 
+.xaxis-component-wrapper .time-base-row
+{
+    padding-bottom: 5px;
+}
+
 .xaxis-component-wrapper .img-button
 {
     border: solid black 1px;
-    height: 26px;
+    height: 25px;
     width: 26px;
     padding: 0px;
     background-color: #535353;
