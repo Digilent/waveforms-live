@@ -96,13 +96,15 @@ export class TestChartCtrlsPage {
                     gain: null,
                     sampleFreqMax: null,
                     bufferSizeMax: null,
-                    delay: null
+                    delay: null,
+                    active: false
                 });
             }
             for (let i = 0; i < this.activeDevice.instruments.la.numChans; i++) {
                 this.previousLaSettings.push({
                     sampleFreq: null,
-                    bufferSize: null
+                    bufferSize: null,
+                    active: false
                 });
             }
         }
@@ -125,7 +127,7 @@ export class TestChartCtrlsPage {
             (err) => {
                 console.log(err);
             },
-            () => {}
+            () => { }
         );
     }
 
@@ -179,51 +181,55 @@ export class TestChartCtrlsPage {
 
         let oscArray = [[], [], [], [], [], []];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+            let range = this.chart1.voltBase[i] * 10;
+            let j = 0;
+            while (range * this.activeDevice.instruments.osc.chans[i].gains[j] > this.activeDevice.instruments.osc.chans[i].adcVpp / 1000) {
+                j++;
+            }
+
+            if (this.previousOscSettings[i].offset !== 0 || this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
+                this.previousOscSettings[i].sampleFreqMax !== samplingParams.sampleFreq ||
+                this.previousOscSettings[i].bufferSizeMax !== samplingParams.bufferSize ||
+                this.previousOscSettings[i].delay !== parseFloat(this.triggerComponent.delay) ||
+                this.previousOscSettings[i].active !== this.chart1.oscopeChansActive[i]) {
+                setOscParams = true;
+                setTrigParams = true;
+            }
             if (this.chart1.oscopeChansActive[i]) {
-                let range = this.chart1.voltsPerDivVals[this.chart1.activeVPDIndex[i]] * 10;
-                let j = 0;
-                while (range * this.activeDevice.instruments.osc.chans[i].gains[j] > this.activeDevice.instruments.osc.chans[i].adcVpp / 1000) {
-                    j++;
-                }
-
-                if (this.previousOscSettings[i].offset !== 0 || this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
-                    this.previousOscSettings[i].sampleFreqMax !== samplingParams.sampleFreq ||
-                    this.previousOscSettings[i].bufferSizeMax !== samplingParams.bufferSize ||
-                    this.previousOscSettings[i].delay !== parseFloat(this.triggerComponent.delay)) {
-                    setOscParams = true;
-                    setTrigParams = true;
-                }
-
                 oscArray[0].push(i + 1);
                 oscArray[1].push(0);
                 oscArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
                 oscArray[3].push(samplingParams.sampleFreq);
                 oscArray[4].push(samplingParams.bufferSize);
                 oscArray[5].push(parseFloat(this.triggerComponent.delay));
-                this.previousOscSettings[i] = {
-                    offset: 0,
-                    gain: this.activeDevice.instruments.osc.chans[i].gains[j],
-                    sampleFreqMax: samplingParams.sampleFreq,
-                    bufferSizeMax: samplingParams.bufferSize,
-                    delay: parseFloat(this.triggerComponent.delay)
-                }
+            }
+            this.previousOscSettings[i] = {
+                offset: 0,
+                gain: this.activeDevice.instruments.osc.chans[i].gains[j],
+                sampleFreqMax: samplingParams.sampleFreq,
+                bufferSizeMax: samplingParams.bufferSize,
+                delay: parseFloat(this.triggerComponent.delay),
+                active: this.chart1.oscopeChansActive[i]
             }
         }
 
         let laArray = [[], [], []];
         for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
+            if (this.previousLaSettings[i].sampleFreq !== samplingParams.sampleFreq ||
+                this.previousLaSettings[i].bufferSize !== samplingParams.bufferSize ||
+                this.previousLaSettings[i].active !== this.gpioComponent.laActiveChans[i]) {
+                setLaParams = true;
+                setTrigParams = true;
+            }
             if (this.gpioComponent.laActiveChans[i]) {
-                if (this.previousLaSettings[i].sampleFreq !== samplingParams.sampleFreq || this.previousLaSettings[i].bufferSize !== samplingParams.bufferSize) {
-                    setLaParams = true;
-                    setTrigParams = true;
-                }
                 laArray[0].push(i + 1);
                 laArray[1].push(samplingParams.sampleFreq);
                 laArray[2].push(samplingParams.bufferSize);
-                this.previousLaSettings[i] = {
-                    sampleFreq: samplingParams.sampleFreq,
-                    bufferSize: samplingParams.bufferSize
-                }
+            }
+            this.previousLaSettings[i] = {
+                sampleFreq: samplingParams.sampleFreq,
+                bufferSize: samplingParams.bufferSize,
+                active: this.gpioComponent.laActiveChans[i]
             }
         }
 
@@ -348,13 +354,9 @@ export class TestChartCtrlsPage {
         }
 
         let numSeries = [];
-        let oscFillerBuff = [];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
                 numSeries.push(i);
-            }
-            else {
-                oscFillerBuff.push([]);
             }
         }
         for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
@@ -365,21 +367,37 @@ export class TestChartCtrlsPage {
         this.chart1.clearExtraSeries(numSeries);
 
         let currentBufferArray;
-        let oscBufferArray;
-        let laBufferArray;
-        if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
-            oscBufferArray = this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1];
+        let oscBufferArray = [];
+        let laBufferArray = null;
+        if (this.chart1.oscopeChansActive.indexOf(true) !== -1) {
+            if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
+                oscBufferArray = this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1];
+            }
+            else {
+                oscBufferArray = this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1];
+            }
+        }
+        for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+            if (oscBufferArray[i] == undefined) {
+                oscBufferArray[i] = [];
+            }
+        }
+        currentBufferArray = oscBufferArray;
+        if (this.gpioComponent.laActiveChans.indexOf(true) !== -1) {
+            if (this.activeDevice.instruments.la.dataBufferWriteIndex - 1 < 0) {
+                laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBuffer.length - 1];
+            }
+            else {
+                laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferWriteIndex - 1];
+            }
+            currentBufferArray = currentBufferArray.concat(laBufferArray);
+        }
+        /*if (oscBufferArray == null) {
+            currentBufferArray = oscFillerBuff.concat(laBufferArray);
         }
         else {
-            oscBufferArray = this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1];
-        }
-        if (this.activeDevice.instruments.la.dataBufferWriteIndex - 1 < 0) {
-            laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBuffer.length - 1];
-        }
-        else {
-            laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferWriteIndex - 1];
-        }
-        currentBufferArray = oscBufferArray.concat(oscFillerBuff).concat(laBufferArray);
+            currentBufferArray = laBufferArray ? oscBufferArray.concat(oscFillerBuff).concat(laBufferArray) : oscBufferArray.concat(oscFillerBuff);
+        }*/
         this.chart1.setCurrentBuffer(currentBufferArray);
         let start = performance.now();
         this.chart1.flotDrawWaveform(true, false);

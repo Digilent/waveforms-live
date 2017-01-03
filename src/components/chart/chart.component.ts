@@ -1528,6 +1528,8 @@ export class SilverNeedleChart {
     }
 
     updateTriggerLine() {
+        console.log(this.numSeries);
+        console.log(this.currentBufferArray);
         let cursors = this.chart.getCursors();
         if (cursors.length === 0) {
             this.addTriggerLine(this.numSeries[0]);

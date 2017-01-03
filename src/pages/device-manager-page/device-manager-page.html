@@ -55,7 +55,7 @@
                                     <ion-input [(ngModel)]="addDeviceIp" (keypress)="checkForEnter($event, 'network')"></ion-input>
                                     <div item-right class="connect-button-container">
                                         <button ion-button class="connect-button disable-hover" (click)="backToChooseDeviceType()">
-                                            <ion-icon name="return-left"></ion-icon>
+                                            <ion-icon name="close"></ion-icon>
                                         </button>
                                         <button ion-button class="connect-button disable-hover" (tap)="attemptConnect(addDeviceIp)">
                                             <ion-icon name="add"></ion-icon>
@@ -77,7 +77,7 @@
                                     <dropdown-popover class="dropdown-popover-selector" [dataArray]="simulatedDevices" (onSelection)="selectSimulatedDevice($event)"></dropdown-popover>
                                     <div item-right class="connect-button-container">
                                         <button ion-button class="connect-button disable-hover" (click)="backToChooseDeviceType()">
-                                            <ion-icon name="return-left"></ion-icon>
+                                            <ion-icon name="close"></ion-icon>
                                         </button>
                                         <button ion-button class="connect-button disable-hover" (tap)="openSimDevice()">
                                             <ion-icon name="add"></ion-icon>
@@ -100,7 +100,7 @@
                                     <ion-input [(ngModel)]="deviceBridgeAddress" (keypress)="checkForEnter($event, 'agent')"></ion-input>
                                     <div item-right class="connect-button-container">
                                         <button ion-button class="connect-button disable-hover" (click)="backToChooseDeviceType()">
-                                            <ion-icon name="return-left"></ion-icon>
+                                            <ion-icon name="close"></ion-icon>
                                         </button>
                                         <button ion-button class="connect-button disable-hover" (tap)="attemptBridgeConnect(deviceBridgeAddress)">
                                             <ion-icon name="add"></ion-icon>
