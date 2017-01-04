@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { PopoverController, App, NavController, ModalController, Platform, AlertController } from 'ionic-angular';
+import { PopoverController, App, NavController, ModalController, Platform, AlertController, LoadingController } from 'ionic-angular';
 
 //Pages
 import { TestChartCtrlsPage } from '../../pages/test-chart-ctrls/test-chart-ctrls';
@@ -23,6 +23,7 @@ import { ToastService } from '../../services/toast/toast.service';
 export class DeviceManagerPage {
     @Output() navToInstrumentPage: EventEmitter<any> = new EventEmitter;
     public app: App;
+    public loadingCtrl: LoadingController;
     public toastService: ToastService;
     public alertCtrl: AlertController;
     public popoverCtrl: PopoverController;
@@ -34,7 +35,6 @@ export class DeviceManagerPage {
     public settingsService: SettingsService;
     public storage: StorageService;
     public showDevMenu: boolean = false;
-    public connectingToDevice: boolean = false;
     public selectedSimulatedDevice: string = 'OpenScope-MZ';
     public deviceBridgeAddress = 'http://localhost:56089';
 
@@ -53,10 +53,12 @@ export class DeviceManagerPage {
         _platform: Platform,
         _settingsService: SettingsService,
         _alertCtrl: AlertController,
-        _toastService: ToastService
+        _toastService: ToastService,
+        _loadingCtrl: LoadingController
     ) {
         console.log('tab1 constructor');
         this.app = _app;
+        this.loadingCtrl = _loadingCtrl;
         this.toastService = _toastService;
         this.alertCtrl = _alertCtrl;
         this.settingsService = _settingsService;
@@ -81,6 +83,18 @@ export class DeviceManagerPage {
 
     dropdownPopoverSelection(event) {
         console.log(event);
+    }
+
+    displayLoading() {
+        let loading = this.loadingCtrl.create({
+            content: 'Connecting To Device...',
+            spinner: 'crescent',
+            cssClass: 'custom-loading-indicator'
+        });
+
+        loading.present();
+
+        return loading;
     }
 
     routeToStore() {
@@ -197,10 +211,11 @@ export class DeviceManagerPage {
             return;
         }
 
-        this.connectingToDevice = true;
+        let loading = this.displayLoading();
+
         this.deviceManagerService.connectBridge(deviceBridgeAddress).subscribe(
             (success) => {
-                this.connectingToDevice = false;
+                loading.dismiss();
                 console.log(success);
                 if (success.agent == undefined || success.agent[0].statusCode > 0) {
                     let message = 'Error Parsing Agent Response To Devices Enumeration';
@@ -226,7 +241,7 @@ export class DeviceManagerPage {
             },
             (err) => {
                 console.log(err);
-                this.connectingToDevice = false;
+                loading.dismiss();
                 this.toastService.createToast('agentInvalidResponse', true);
             },
             () => {
@@ -236,7 +251,9 @@ export class DeviceManagerPage {
     }
 
     bridgeDeviceSelect(data, deviceBridgeAddress: string): boolean {
-        this.connectingToDevice = false;
+        //TODO: Not sure why this is here at the moment
+        //this.connectingToDevice = false;
+
         if (data == null) { return false; }
         if (data.deviceEnum.device == undefined) {
             this.toastService.createToast('agentEnumerateError', true);
@@ -269,11 +286,12 @@ export class DeviceManagerPage {
             return;
         }
 
-        this.connectingToDevice = true;
+        //this.connectingToDevice = true;
+        let loading = this.displayLoading();
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
                 console.log(success);
-                this.connectingToDevice = false;
+                loading.dismiss();
                 this.devices.unshift(
                     {
                         deviceDescriptor: success.device[0],
@@ -289,7 +307,7 @@ export class DeviceManagerPage {
                 this.toastService.createToast('deviceAdded');
             },
             (err) => {
-                this.connectingToDevice = false;
+                loading.dismiss();
                 console.log(err);
                 this.toastService.createToast('timeout', true);
             },
@@ -304,11 +322,11 @@ export class DeviceManagerPage {
                 return;
             }
             else {
-                this.connectingToDevice = true;
+                let loading = this.displayLoading();
                 this.deviceManagerService.connectLocal(this.selectedSimulatedDevice).subscribe(
                     (success) => {
                         console.log(success);
-                        this.connectingToDevice = false;
+                        loading.dismiss();
                         this.devices.unshift(
                             {
                                 deviceDescriptor: success.device[0],
@@ -324,7 +342,7 @@ export class DeviceManagerPage {
                         this.toastService.createToast('deviceAdded');
                     },
                     (err) => {
-                        this.connectingToDevice = false;
+                        loading.dismiss();
                         this.toastService.createToast('timeout', true);
                     },
                     () => { }
@@ -363,7 +381,7 @@ export class DeviceManagerPage {
             this.navCtrl.setRoot(TestChartCtrlsPage);
             return;
         }
-        this.connectingToDevice = true;
+        let loading = this.displayLoading();
         let ipAddress = this.devices[deviceIndex].ipAddress;
         if (this.devices[deviceIndex].bridge) {
             ipAddress = this.devices[deviceIndex].deviceBridgeAddress;
@@ -390,28 +408,28 @@ export class DeviceManagerPage {
                         console.log(e);
                     }
                     console.log(data);
-                    if (data.agent[0].statusCode === 0) { this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress); }
+                    if (data.agent[0].statusCode === 0) { this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading); }
                     else {
                         this.toastService.createToast('agentConnectError', true);
-                        this.connectingToDevice = false;
+                        loading.dismiss();
                     }
                 },
                 (err) => {
                     console.log(err);
                     this.toastService.createToast('timeout', true);
-                    this.connectingToDevice = false;
+                    loading.dismiss();
                 },
                 () => { }
             );
             return;
         }
-        this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress);
+        this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading);
     }
 
-    sendEnumerationCommandAndLoadInstrumentPanel(ipAddress: string) {
+    sendEnumerationCommandAndLoadInstrumentPanel(ipAddress: string, loadingInstance) {
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
-                this.connectingToDevice = false;
+                loadingInstance.dismiss();
                 this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);
                 /*Navigate to the parents of the tab controller so they have the nav type.
                 Without navigating to the parents, the navCtrl is a 'Tab' and thus the 
@@ -421,7 +439,7 @@ export class DeviceManagerPage {
             (err) => {
                 console.log(err);
                 this.toastService.createToast('timeout', true);
-                this.connectingToDevice = false;
+                loadingInstance.dismiss();
             },
             () => { }
         );

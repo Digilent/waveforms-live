@@ -242,15 +242,16 @@ export class TestChartCtrlsPage {
             this.readingOsc = true;
         }
         if (laArray[0].length > 0) {
+            console.log('adding la');
             targetsObject['la'] = laArray[0];
             this.readingLa = true;
         }
 
-        if (setOscParams || forceWholeCommand) {
+        if ((setOscParams || forceWholeCommand) && oscArray[0].length > 0) {
             singleCommand['osc'] = {};
             singleCommand['osc']['setParameters'] = [oscArray[0], oscArray[1], oscArray[2], oscArray[3], oscArray[4], oscArray[5]];
         }
-        if (setLaParams || forceWholeCommand) {
+        if ((setLaParams || forceWholeCommand) && laArray[0].length > 0) {
             singleCommand['la'] = {};
             singleCommand['la']['setParameters'] = [laArray[0], laArray[1], laArray[2]];
         }

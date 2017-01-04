@@ -7,14 +7,6 @@
 </ion-header>
 
 <ion-content class="first-tab-container" padding>
-    <div class="connecting-to-device-loader" *ngIf="connectingToDevice">
-        <ion-row class="device-connect-row">
-            <ion-col center text-center>
-                <p class="connection-notice">Attempting to Connect to Device</p>
-                <ion-spinner class="color-spinner" name="crescent"></ion-spinner>
-            </ion-col>
-        </ion-row>
-    </div>
     <div class="align-center">
         <button ion-button icon-right (click)="toggleAddDevMenu()" clear class="dev-menu-button">
             Add a Device
