@@ -158,7 +158,23 @@ export class DeviceManagerService {
     }
 
     addDeviceFromDescriptor(uri: string, deviceDescriptor: any) {
+        let deviceExistCheck = this.deviceExists(uri, deviceDescriptor);
+        if (deviceExistCheck !== -1) {
+            this.activeDeviceIndex = deviceExistCheck;
+            return;
+        }
         let dev = new DeviceComponent(uri, deviceDescriptor.device[0]);
         this.activeDeviceIndex = this.devices.push(dev) - 1;
+    }
+
+    deviceExists(uri: string, deviceDescriptor: any) {
+        let descriptorString = JSON.stringify(deviceDescriptor.device[0]);
+        for (let i = 0; i < this.devices.length; i++) {
+            if (JSON.stringify(this.devices[i].descriptorObject) === descriptorString && this.devices[i].rootUri === uri) {
+                console.log('device exists!');
+                return i;
+            }
+        }
+        return -1;
     }
 }

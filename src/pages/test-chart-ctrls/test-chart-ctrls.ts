@@ -181,9 +181,11 @@ export class TestChartCtrlsPage {
 
         let oscArray = [[], [], [], [], [], []];
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
-            let range = this.chart1.voltBase[i] * 10;
+            let range = this.chart1.voltDivision[i] * 10;
             let j = 0;
-            while (range * this.activeDevice.instruments.osc.chans[i].gains[j] > this.activeDevice.instruments.osc.chans[i].adcVpp / 1000) {
+            while (range * this.activeDevice.instruments.osc.chans[i].gains[j] > this.activeDevice.instruments.osc.chans[i].adcVpp / 1000 &&
+                j < this.activeDevice.instruments.osc.chans[i].gains.length
+            ) {
                 j++;
             }
 

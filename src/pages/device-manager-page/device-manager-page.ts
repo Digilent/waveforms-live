@@ -168,6 +168,7 @@ export class DeviceManagerPage {
         };
         /*let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
         modal.present();*/
+        console.log('opening configure modal');
         this.navCtrl.push(DeviceConfigureModal, deviceConfigureParams);
     }
 
@@ -253,8 +254,6 @@ export class DeviceManagerPage {
     }
 
     bridgeDeviceSelect(data, deviceBridgeAddress: string): boolean {
-        //TODO: Not sure why this is here at the moment
-        //this.connectingToDevice = false;
 
         if (data == null) { return false; }
         if (data.deviceEnum.device == undefined) {

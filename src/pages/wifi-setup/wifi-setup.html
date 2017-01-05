@@ -53,32 +53,41 @@
                 <div>
                     dropdown wpa2
                 </div>
-                <div>
+                <ion-list>
                     <ion-item class="card-info">
                         <ion-label stacked>Password</ion-label>
                         <ion-input type="password"></ion-input>
                     </ion-item>
-                </div>
-                <div>
+                    
+                    <ion-item class="card-info">
+                        <ion-label>Save</ion-label>
+                        <ion-checkbox [(ngModel)]="save" (ngModelChange)="checkboxChanged('save')"></ion-checkbox>
+                    </ion-item>
+                    
                     <ion-item class="card-info">
                         <ion-label>Auto-Connect</ion-label>
-                        <ion-checkbox></ion-checkbox>
+                        <ion-checkbox [(ngModel)]="autoConnect" (ngModelChange)="checkboxChanged('autoConnect')" [disabled]="disableAutoConnect"></ion-checkbox>
                     </ion-item>
-                </div>
+                    
+                    <ion-item class="card-info">
+                        <ion-label>Connect Now</ion-label>
+                        <ion-checkbox [(ngModel)]="connectNow" (ngModelChange)="checkboxChanged('connectNow')"></ion-checkbox>
+                    </ion-item>
+
+                </ion-list>
                 <ion-row>
                     <ion-col text-left>
-                        <button ion-button>
+                        <button ion-button class="icon-only-button-side disable-hover" (click)="backToNetworks()">
+                            <ion-icon name="close"></ion-icon>
                         </button>
                     </ion-col>
                     <ion-col text-right>
-                        <button ion-button>
+                        <button ion-button class="icon-only-button-side disable-hover" (click)="addNetwork()">
+                            <ion-icon name="add"></ion-icon>
                         </button>
                     </ion-col>
                 </ion-row>
             </div>
-        </ion-slide>
-        <ion-slide>
-            <h1>Slide 3</h1>
         </ion-slide>
     </ion-slides>
 

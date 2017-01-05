@@ -1,4 +1,32 @@
 .calibration-container
 {
-    background-color: #535353;
+    background: transparent;
+    color: white;
+}
+
+.calibration-container .first-slide-container
+{
+    .slide-zoom {
+        background-color: #535353;
+        max-width: 850px;
+        overflow: auto;
+        max-height: 100%;
+    }
+}
+
+.calibration-container .second-slide-container
+{
+    .slide-zoom {
+        background-color: #535353;
+        max-width: 400px;
+        overflow: auto;
+        max-height: 100%;
+    }
+}
+
+.calibration-container .slide-header
+{
+    font-size: 16px;
+    font-weight: 500;
+    padding-top: 16px;
 }

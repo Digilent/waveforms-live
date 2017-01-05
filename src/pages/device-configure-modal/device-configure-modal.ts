@@ -63,6 +63,8 @@ export class DeviceConfigureModal {
             this.deviceConfigure = false;
         }
         if (this.deviceObject != null) {
+            let addDeviceAddress = this.deviceObject.bridge ? this.deviceObject.deviceBridgeAddress : this.deviceObject.ipAddress;
+            this.deviceManagerService.addDeviceFromDescriptor(addDeviceAddress, {device: [this.deviceObject.deviceDescriptor]});
             this.deviceConfigure = true;
             this.bridgeConfigure = this.deviceObject.bridge;
             this.deviceBridgeAddress = this.bridgeConfigure === true ? this.deviceObject.deviceBridgeAddress : this.deviceBridgeAddress;
@@ -150,7 +152,9 @@ export class DeviceConfigureModal {
                             this.devicesEnumeration = false;
                             this.deviceConfigure = true;
                             this.deviceObject = this.deviceManagerPageRef.devices[0];
-                            this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex]
+                            this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
+                            //TODO
+                            this.deviceManagerPageRef.deviceManagerService.addDeviceFromDescriptor(this.deviceBridgeAddress, {device:[this.deviceObject.deviceDescriptor]});
                         }
                     },
                     (err) => {
