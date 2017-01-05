@@ -1,8 +1,10 @@
-import { NavParams, ViewController, Platform } from 'ionic-angular';
+import { NavParams, Platform, NavController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
 
 //Components
 import { DeviceManagerPage } from '../device-manager-page/device-manager-page';
+import { CalibratePage } from '../calibrate/calibrate';
+import { WifiSetupPage } from '../wifi-setup/wifi-setup';
 
 //Interfaces
 import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
@@ -16,8 +18,9 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 
 export class DeviceConfigureModal {
     public platform: Platform;
+    public modalCtrl: ModalController;
+    public navCtrl: NavController;
     public deviceManagerService: DeviceManagerService;
-    public viewCtrl: ViewController;
     public params: NavParams;
 
     public potentialDevices: string[];
@@ -35,12 +38,14 @@ export class DeviceConfigureModal {
 
     constructor(
         _platform: Platform,
-        _viewCtrl: ViewController,
+        _modalCtrl: ModalController,
         _params: NavParams,
-        _deviceManagerService: DeviceManagerService
+        _deviceManagerService: DeviceManagerService,
+        _navCtrl: NavController
     ) {
         this.platform = _platform;
-        this.viewCtrl = _viewCtrl;
+        this.modalCtrl = _modalCtrl;
+        this.navCtrl = _navCtrl;
         this.params = _params;
         this.deviceManagerService = _deviceManagerService;
         this.potentialDevices = this.params.get('potentialDevices');
@@ -164,8 +169,28 @@ export class DeviceConfigureModal {
         );
     }
 
-    closeModal() {
-        this.viewCtrl.dismiss();
+    openCalibrateWizard() {
+        let modal = this.modalCtrl.create(CalibratePage,
+            {
+                test: 'test'
+            },
+            {
+                enableBackdropDismiss: false
+            }
+        );
+        modal.present();
+    }
+
+    openWifiWizard() {
+        let modal = this.modalCtrl.create(WifiSetupPage,
+            {
+                test: 'test'
+            },
+            {
+                enableBackdropDismiss: false
+            }
+        );
+        modal.present();
     }
 
 }

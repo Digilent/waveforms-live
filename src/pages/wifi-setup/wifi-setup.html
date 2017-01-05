@@ -1,0 +1,85 @@
+<ion-content class="wifi-setup-container">
+
+    <ion-slides #wifiSlider>
+        <ion-slide class="first-slide-container">
+            <div>
+                <div class="slide-header">Networks</div>
+                <ion-row class="network-container" wrap>
+                    <ion-col class="network-container-column" text-center>
+                        <div class="slide-header">
+                            Available Networks
+                        </div>
+                        <ion-row class="available-networks" *ngFor="let availableNetwork of availableNetworks">
+                            <ion-col>
+                                <ion-card class="network-card" (click)="routeToConfigSlide(availableNetwork)">
+                                    <ion-item class="card-info">
+                                        {{availableNetwork.ssid}}
+                                    </ion-item>
+                                </ion-card>
+                            </ion-col>
+                        </ion-row>
+                    </ion-col>
+                    <ion-col class="network-container-column" text-center>
+                        <div class="slide-header">
+                            Saved Networks
+                        </div>
+                        <ion-row class="saved-networks" *ngFor="let savedNetwork of savedNetworks">
+                            <ion-col>
+                                <ion-card class="network-card">
+                                    <ion-item class="card-info">
+                                        {{savedNetwork.ssid}}
+                                        <button item-right ion-button clear class="network-button" (click)="showPopover($event)">
+                                            <ion-icon name="more"></ion-icon>
+                                        </button>
+                                    </ion-item>
+                                </ion-card>
+                            </ion-col>
+                        </ion-row>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col text-left>
+                        <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()">
+                            <ion-icon name="close"></ion-icon>
+                            Close
+                        </button>
+                    </ion-col>
+                </ion-row>
+            </div>
+        </ion-slide>
+        <ion-slide class="second-slide-container">
+            <div>
+                <div class="slide-header">SSID: {{selectedNetwork.ssid}}</div>
+                <div>
+                    dropdown wpa2
+                </div>
+                <div>
+                    <ion-item class="card-info">
+                        <ion-label stacked>Password</ion-label>
+                        <ion-input type="password"></ion-input>
+                    </ion-item>
+                </div>
+                <div>
+                    <ion-item class="card-info">
+                        <ion-label>Auto-Connect</ion-label>
+                        <ion-checkbox></ion-checkbox>
+                    </ion-item>
+                </div>
+                <ion-row>
+                    <ion-col text-left>
+                        <button ion-button>
+                        </button>
+                    </ion-col>
+                    <ion-col text-right>
+                        <button ion-button>
+                        </button>
+                    </ion-col>
+                </ion-row>
+            </div>
+        </ion-slide>
+        <ion-slide>
+            <h1>Slide 3</h1>
+        </ion-slide>
+    </ion-slides>
+
+</ion-content>

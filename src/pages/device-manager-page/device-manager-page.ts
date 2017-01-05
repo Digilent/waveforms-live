@@ -166,8 +166,9 @@ export class DeviceManagerPage {
             deviceManagerPageRef: this,
             deviceObject: this.devices[deviceArrayIndex]
         };
-        let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
-        modal.present();
+        /*let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
+        modal.present();*/
+        this.navCtrl.push(DeviceConfigureModal, deviceConfigureParams);
     }
 
     toggleAddDevMenu() {
@@ -234,10 +235,11 @@ export class DeviceManagerPage {
                     deviceManagerPageRef: this,
                     deviceObject: null
                 };
-                let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
+                /*let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
                 modal.onWillDismiss((data) => {
                 });
-                modal.present();
+                modal.present();*/
+                this.navCtrl.push(DeviceConfigureModal, deviceConfigureParams);
             },
             (err) => {
                 console.log(err);

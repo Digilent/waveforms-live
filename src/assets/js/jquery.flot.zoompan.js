@@ -329,7 +329,7 @@
                     axis: 'xaxis'
                 };
                 plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
-                previousXPosition = e.originalEvent.touches[0].clientX;
+                if (e.originalEvent.touches.length > 0) { previousXPosition = e.originalEvent.touches[0].clientX; }
                 multiTouchEventContainer.startingMultiTouch = true;
             }
 

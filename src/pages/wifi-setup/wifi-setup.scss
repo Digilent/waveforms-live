@@ -1,0 +1,66 @@
+.wifi-setup-container
+{
+    background: transparent;
+    color: white;
+}
+
+.wifi-setup-container .first-slide-container
+{
+    .slide-zoom {
+        background-color: #535353;
+        max-width: 850px;
+        overflow: auto;
+        max-height: 100%;
+    }
+}
+
+.wifi-setup-container .second-slide-container
+{
+    .slide-zoom {
+        background-color: #535353;
+        max-width: 400px;
+        overflow: auto;
+        max-height: 100%;
+    }
+}
+
+.wifi-setup-container .slide-header
+{
+    font-size: 16px;
+    font-weight: 500;
+    padding-top: 16px;
+}
+
+.wifi-setup-container .network-container
+{
+    min-height: 500px;
+}
+
+.wifi-setup-container .network-container-column
+{
+    min-width: 200px;
+}
+
+.wifi-setup-container .network-card
+{
+    background-color: #535353;
+    color: white;
+    border-radius: 0px;
+    border: solid black 1px;
+    margin: 0px 0px 0px 10px;
+}
+
+.wifi-setup-container .card-info
+{
+    background-color: #535353;
+    color: white;
+    cursor: pointer;
+}
+
+.wifi-setup-container .network-button
+{
+    min-width: 35px;
+    color: #4487BA;
+    font-size: 18px;
+    margin-right: 0px;
+}
