@@ -45,7 +45,7 @@
             </ion-col>
             <ion-col class="controls-wrapper">
                 <xaxis-controls [chart]="chart1"></xaxis-controls>
-                <trigger #triggerComponent></trigger>
+                <trigger #triggerComponent [chart]="chart1"></trigger>
                 <yaxis-controls [chart]="chart1"></yaxis-controls>
                 <fgen></fgen>
                 <digital-io #gpioComponent [chart]="chart1"></digital-io>

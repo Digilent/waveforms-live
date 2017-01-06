@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 
 //Components 
 import { TriggerPopover } from '../trigger-popover/trigger-popover.component';
 import { GenPopover } from '../gen-popover/gen-popover.component';
 import { DeviceComponent } from '../device/device.component';
+import { SilverNeedleChart } from '../chart/chart.component';
 
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
@@ -15,6 +16,7 @@ import { ToastService } from '../../services/toast/toast.service';
     selector: 'trigger'
 })
 export class TriggerComponent {
+    @Input() chart: SilverNeedleChart;
     public toastService: ToastService;
     public delay: string = '0';
     public lowerThresh: string = '-30';

@@ -10,6 +10,7 @@ export class WaveformComponent {
     public pointOfInterest: number = 0;
     public triggerPosition: number = 0;
     public seriesOffset: number = 0;
+    public triggerDelay: number = 0;
 
     constructor(waveformDescriptor: any)
     constructor(t0: number, dt: number, y: Array<number>)
@@ -28,6 +29,7 @@ export class WaveformComponent {
             this.pointOfInterest = wfDescOrT0.pointOfInterest;
             this.triggerPosition = wfDescOrT0.triggerPosition;
             this.seriesOffset = wfDescOrT0.seriesOffset;
+            this.triggerDelay = wfDescOrT0.triggerDelay;
         }
     }
 }

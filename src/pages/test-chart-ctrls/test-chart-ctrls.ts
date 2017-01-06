@@ -203,14 +203,15 @@ export class TestChartCtrlsPage {
                 oscArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
                 oscArray[3].push(samplingParams.sampleFreq);
                 oscArray[4].push(samplingParams.bufferSize);
-                oscArray[5].push(parseFloat(this.triggerComponent.delay));
+                oscArray[5].push(parseFloat(this.chart1.base.toString()));
+                console.log(oscArray[5]);
             }
             this.previousOscSettings[i] = {
                 offset: 0,
                 gain: this.activeDevice.instruments.osc.chans[i].gains[j],
                 sampleFreqMax: samplingParams.sampleFreq,
                 bufferSizeMax: samplingParams.bufferSize,
-                delay: parseFloat(this.triggerComponent.delay),
+                delay: parseFloat(this.chart1.base.toString()),
                 active: this.chart1.oscopeChansActive[i]
             }
         }

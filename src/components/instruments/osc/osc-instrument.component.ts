@@ -189,8 +189,13 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         });
                         let dt = 1 / (command.osc[channel][0].actualSampleFreq / 1000);
                         let pointContainer = [];
+                        let triggerPosition = command.osc[chans[0]][0].triggerIndex * dt;
+                        if (triggerPosition < 0) {
+                            console.log('trigger not in buffer!');
+                            triggerPosition = command.osc[channel][0].triggerDelay;
+                        }
                         for (let i = 0; i < scaledArray.length; i++) {
-                            pointContainer.push([i * dt, scaledArray[i]]);
+                            pointContainer.push([i * dt - triggerPosition, scaledArray[i]]);
                         }
                         this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel) - 1] = new WaveformComponent({
                             dt: 1 / (command.osc[channel][0].actualSampleFreq / 1000),
@@ -199,7 +204,8 @@ export class OscInstrumentComponent extends InstrumentComponent {
                             data: pointContainer,
                             pointOfInterest: command.osc[channel][0].pointOfInterest,
                             triggerPosition: command.osc[channel][0].triggerIndex,
-                            seriesOffset: command.osc[channel][0].actualVOffset / 1000
+                            seriesOffset: command.osc[channel][0].actualVOffset / 1000,
+                            triggerDelay: command.osc[channel][0].triggerDelay
                         });
                     }
                     this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;

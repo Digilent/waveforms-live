@@ -712,7 +712,8 @@ export class SilverNeedleChart {
             data: newData,
             pointOfInterest: waveform.pointOfInterest,
             triggerPosition: waveform.triggerPosition,
-            seriesOffset: waveform.seriesOffset
+            seriesOffset: waveform.seriesOffset,
+            triggerDelay: waveform.triggerDelay
         };
         return newWaveform;
         /*console.log(mathFunctions);
@@ -1544,7 +1545,7 @@ export class SilverNeedleChart {
         let seriesNum = this.numSeries[0];
         let trigPosition = this.currentBufferArray[seriesNum].triggerPosition;
         if (trigPosition < 0 || trigPosition === undefined) { return; }
-        let initialValue = trigPosition * this.currentBufferArray[seriesNum].dt;
+        let initialValue = 0;
         //Update trigger line
         let options = {
             position: {
@@ -1571,7 +1572,7 @@ export class SilverNeedleChart {
     addTriggerLine(seriesNum) {
         let trigPosition = this.currentBufferArray[seriesNum].triggerPosition;
         if (trigPosition < 0 || trigPosition === undefined) { return; }
-        let initialValue = trigPosition * this.currentBufferArray[seriesNum].dt;
+        let initialValue = 0;
         //Add trigger line
         let options = {
             name: 'triggerLine',
@@ -1601,8 +1602,13 @@ export class SilverNeedleChart {
         if (poiIndex < 0 || poiIndex === undefined) {
             return;
         }
+        let triggerPosition = this.currentBufferArray[seriesNum].triggerPosition * this.currentBufferArray[seriesNum].dt;
+        if (triggerPosition < 0) {
+            console.log('trigger not in buffer!');
+            triggerPosition = this.currentBufferArray[seriesNum].triggerDelay;
+        }
         let getAxes = this.chart.getAxes();
-        let poi = poiIndex * this.currentBufferArray[seriesNum].dt + 0;
+        let poi = poiIndex * this.currentBufferArray[seriesNum].dt - triggerPosition;
         this.base = poi;
         let min = poi - 5 * this.timeDivision;
         let max = poi + 5 * this.timeDivision;
