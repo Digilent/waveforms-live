@@ -1,6 +1,6 @@
 .wifi-setup-container
 {
-    background: transparent;
+    background-color: transparent;
     color: white;
 }
 
@@ -63,4 +63,10 @@
     color: #4487BA;
     font-size: 18px;
     margin-right: 0px;
+}
+
+@media screen and (max-width: 768px) {
+    .wifi-setup-container {
+        background-color: rgba(0, 0, 0, 0.4);
+    }
 }

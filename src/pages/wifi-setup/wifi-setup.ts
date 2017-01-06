@@ -29,6 +29,7 @@ export class WifiSetupPage {
     public autoConnect: boolean = true;
     public disableAutoConnect: boolean = false;
     public connectNow: boolean = true;
+    public password: string = '';
 
     constructor(
         _storageService: StorageService,
@@ -53,6 +54,12 @@ export class WifiSetupPage {
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it
     ionViewDidEnter() {
         let swiperInstance: any = this.slider.getSlider();
+        if (swiperInstance == undefined) {
+            setTimeout(() => {
+                this.ionViewDidEnter();
+            }, 20);
+            return;
+        }
         swiperInstance.lockSwipes();
     }
 
@@ -202,6 +209,7 @@ export class WifiSetupPage {
 
     routeToConfigSlide(network) {
         this.disableAutoConnect = false;
+        this.password = '';
         this.save = true;
         this.autoConnect = true;
         this.connectNow = true;
@@ -213,6 +221,12 @@ export class WifiSetupPage {
     }
 
     addNetwork() {
+        for (let i = 0; i < this.savedNetworks.length; i++) {
+            if (JSON.stringify(this.selectedNetwork) === JSON.stringify(this.savedNetworks[i])) {
+                //Exists already. Modify existing?TODO
+                return;
+            }
+        }
         this.savedNetworks.unshift(this.selectedNetwork);
         this.backToNetworks();
     }
