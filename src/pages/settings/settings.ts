@@ -17,12 +17,18 @@ export class SettingsPage {
     public settingsService: SettingsService;
     public defaultConsoleLog;
     public logArguments;
+    public currentSelectedDeviceInfoArray: string[] = [];
 
     constructor(_storageService: StorageService, _popCtrl: PopoverController, _settingsService: SettingsService) {
         this.storageService = _storageService;
         this.settingsService = _settingsService;
         this.popoverCtrl = _popCtrl;
         console.log('settings constructor');
+        let currentSelectedDeviceInfo = this.settingsService.getActiveDeviceInfo();
+        if (currentSelectedDeviceInfo) {
+            this.currentSelectedDeviceInfoArray[0] = currentSelectedDeviceInfo.deviceMake + ' ' + currentSelectedDeviceInfo.deviceModel + ' Version: ' + currentSelectedDeviceInfo.firmwareVersion;
+            this.currentSelectedDeviceInfoArray[1] = currentSelectedDeviceInfo.rootUri;
+        }
     }
 
     changeConsoleLog(event) {

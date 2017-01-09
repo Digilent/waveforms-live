@@ -204,7 +204,6 @@ export class TestChartCtrlsPage {
                 oscArray[3].push(samplingParams.sampleFreq);
                 oscArray[4].push(samplingParams.bufferSize);
                 oscArray[5].push(parseFloat(this.chart1.base.toString()));
-                console.log(oscArray[5]);
             }
             this.previousOscSettings[i] = {
                 offset: 0,

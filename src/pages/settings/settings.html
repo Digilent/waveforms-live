@@ -8,9 +8,26 @@
 </ion-header>
 
 <ion-content class="settings-body" padding>
-    
+
     <button ion-button class="text-button-side disable-hover" (click)="changeConsoleLog($event)">Change Console Log</button>
     <button ion-button class="text-button-side disable-hover" (click)="exportLogFile()">Export Log</button>
     <button ion-button class="text-button-side disable-hover" (click)="clearAppLog()">Clear App Log</button>
 
 </ion-content>
+
+<ion-footer>
+    <ion-toolbar>
+        <ion-row>
+            <ion-col center>
+                Waveforms Live Version: {{settingsService.wflVersion}}
+            </ion-col>
+            <ion-col center>
+                <ion-row *ngFor="let info of currentSelectedDeviceInfoArray, let i = index;">
+                    <ion-col>
+                        {{i === 1 ? 'Address: ' : ''}} {{info}}
+                    </ion-col>
+                </ion-row>
+            </ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

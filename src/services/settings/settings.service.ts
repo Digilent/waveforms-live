@@ -2,21 +2,25 @@ import { Injectable } from '@angular/core';
 
 //Services
 import { StorageService } from '../storage/storage.service';
+import { DeviceManagerService } from '../device/device-manager.service';
 
 @Injectable()
 export class SettingsService {
 
     public storageService: StorageService;
+    public deviceManagerService: DeviceManagerService;
     public defaultConsoleLog;
     public logArguments;
     public logLength: number = 50;
     public nestedChannels: boolean = false;
     public routeToStore: boolean = true;
     public drawLaOnTimeline: boolean = false;
+    public wflVersion: string = '0.1.0';
 
-    constructor(_storageService: StorageService) {
+    constructor(_storageService: StorageService, _deviceManagerService: DeviceManagerService) {
         console.log('settings service constructor');
         this.storageService = _storageService;
+        this.deviceManagerService = _deviceManagerService;
         this.defaultConsoleLog = window.console.log;
         this.storageService.getData('routeToStore').then((data) => {
             if (data != null) {
@@ -36,6 +40,20 @@ export class SettingsService {
 
     setNestedChannels(nested: boolean) {
         this.nestedChannels = nested;
+    }
+
+    getActiveDeviceInfo() {
+        if (this.deviceManagerService.devices.length < 1 || this.deviceManagerService.activeDeviceIndex == undefined) {
+            return undefined;
+        }
+        let dev = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+        let versionArray = [dev.firmwareVersion.major.toString(), dev.firmwareVersion.minor.toString(), dev.firmwareVersion.patch.toString()];
+        return {
+            deviceMake: dev.deviceMake,
+            deviceModel: dev.deviceModel,
+            firmwareVersion:  versionArray.join('.'),
+            rootUri: dev.rootUri
+        };
     }
 
     changeConsoleLog(type: string) {

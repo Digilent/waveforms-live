@@ -175,11 +175,16 @@ export class LaInstrumentComponent extends InstrumentComponent {
                         channelsObject[channel] = [];
 
                         let andVal = Math.pow(2, parseInt(channel) - 1);
-                        let pointContainer = [];
                         let dt = 1 / (command.la[channel][0].actualSampleFreq / 1000);
+                        let pointContainer = [];
+                        let triggerPosition = command.la[chans[0]][0].triggerIndex * dt;
+                        if (triggerPosition < 0) {
+                            console.log('trigger not in la buffer!');
+                            triggerPosition = command.la[channel][0].triggerDelay;
+                        }
                         for (let j = 0; j < untypedArray.length; j++) {
                             channelsObject[channel].push((andVal & untypedArray[j]) > 0 ? 1 : 0);
-                            pointContainer.push([j * dt, (andVal & untypedArray[j]) > 0 ? 1 : 0]);
+                            pointContainer.push([j * dt - triggerPosition, (andVal & untypedArray[j]) > 0 ? 1 : 0]);
                         }
 
                         this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel) - 1] = new WaveformComponent({

@@ -17,7 +17,7 @@ export class CalibratePage {
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
     public calibrationInstructions: string = 'There was an error loading the calibration instructions for your device.\n' +
-    'Check your reference manual for correct setup before starting the calibration process.';
+        'Check your reference manual for correct setup before starting the calibration process.';
     public calibrationPretest: string = 'Running calibration pretest';
     public showCalibrationPretestClose: boolean = false;
     public calibrationStatus: string = 'Please wait...';
@@ -96,7 +96,7 @@ export class CalibratePage {
     applyCalibrationMaybeSave() {
         if (this.saveCalibrationDecision) {
             if (this.storageLocations.indexOf(this.selectedLocation) === -1) {
-                this.calibrationResultsIndicator = 'Invalid storage location';
+                this.calibrationResultsIndicator = 'Invalid storage location.';
                 return;
             }
             this.calibrationResultsIndicator = 'Saving and applying calibration.';
@@ -118,7 +118,7 @@ export class CalibratePage {
         this.applyCalibration()
             .then(() => { this.onSuccessfulCalibrationApply(); })
             .catch((err) => {
-                this.calibrationResultsIndicator = 'Error applying calibration';
+                this.calibrationResultsIndicator = 'Error applying calibration.';
             });
     }
 
