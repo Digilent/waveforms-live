@@ -4,12 +4,12 @@
             <div id="flotContainer"></div>
             <div class="chart-button-container">
                 <div>
-                    <button ion-button class="chart-button disable-hover" (click)="openChartModal($event)" [disabled]="currentBufferArray.length === 0">
+                    <button ion-button class="chart-button disable-hover" (click)="openChartModal($event)" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartSettings').message" [tooltipAnimation]="true" tooltipPlacement="left">
                         <ion-icon name="settings"></ion-icon>
                     </button>
                 </div>
                 <div>
-                    <button ion-button class="chart-button disable-hover" (click)="autoscaleAllAxes()" [disabled]="currentBufferArray.length === 0">
+                    <button ion-button class="chart-button disable-hover" (click)="autoscaleAllAxes()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartAutoscale').message" [tooltipAnimation]="true" tooltipPlacement="left">
                         <ion-icon name="expand"></ion-icon>
                     </button>
                 </div>
@@ -20,11 +20,11 @@
         <ion-row class="chart-info">
             <ion-col center *ngIf="mathEnabled" class="info-col">
                 <ion-row center class="cursor-container">
-                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openMathModal($event)" [disabled]="currentBufferArray.length === 0">
+                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openMathModal($event)" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('mathButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
                         <span class="collapse-button">Math</span>
                         <ion-icon name="ios-glasses-outline"></ion-icon>
                     </button>
-                    <button ion-button class="icon-only-button-side disable-hover" (click)="updateMath()">
+                    <button ion-button class="icon-only-button-side disable-hover" (click)="updateMath()" [tooltip]="tooltipService.getTooltip('refreshMathButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
                         <ion-icon name="refresh"></ion-icon>
                     </button>
                     <ion-col center class="cursor-info-col" id="test-test">
@@ -53,7 +53,7 @@
             </ion-col>
             <ion-col *ngIf="cursorsEnabled" center class="info-col">
                 <ion-row center class="cursor-container">
-                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openCursorModal($event)" [disabled]="currentBufferArray.length === 0">
+                    <button ion-button icon-right class="text-button-side disable-hover" (click)="openCursorModal($event)" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('cursorButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
                         <span class="collapse-button">Cursors</span>
                         <ion-icon name="md-create"></ion-icon>
                     </button>

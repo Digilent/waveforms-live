@@ -61,6 +61,53 @@ var waveformsLiveDictionary = (function() {
         agentConnectError: {
             english: 'Agent Could Not Connect To Device'
         },
+
+        //Tooltips
+        addADevice: {
+            english: 'Add A Device'
+        },
+        networkButton: {
+            english: 'Add A Network Device'
+        },
+        simulatedButton: {
+            english: 'Add A Simulated Device'
+        },
+        agentButton: {
+            english: 'Add An Agent'
+        },
+        addCurrentDevice: {
+            english: 'Add Device'
+        },
+        backToAddDevice: {
+            english: 'Select A Different Device Type'
+        },
+        deviceCardMore: {
+            english: 'More'
+        },
+        cursorButton: {
+            english: 'Open Cursor Menu'
+        },
+        mathButton: {
+            english: 'Open Math Menu'
+        },
+        refreshMathButton: {
+            english: 'Refresh Math'
+        },
+        directionButton: {
+            english: 'Change GPIO Directions'
+        },
+        refreshGpioButton: {
+            english: 'Read GPIO Inputs'
+        },
+        analyzerButton: {
+            english: 'Select Analyzer Channels'
+        },
+        chartSettings: {
+            english: 'Export Chart'
+        },
+        chartAutoscale: {
+            english: 'Autoscale Chart'
+        }
     };
     var statusCodes = {
         error: 1,

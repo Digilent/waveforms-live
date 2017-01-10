@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from 'ionic-angular';
+import { TooltipModule } from '../../directives/tooltip/tooltip.module';
 
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 import { DropdownPopoverComponent } from '../../components/dropdown-popover/dropdown-popover.component';
@@ -27,7 +28,8 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
         DropDownMenu,
         DropdownPopoverComponent,
         CommonModule,
-        FormsModule
+        FormsModule,
+        TooltipModule
     ]
 })
 export class SharedModule { }

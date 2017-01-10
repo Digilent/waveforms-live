@@ -17,6 +17,7 @@ import { Chart, CursorPositions } from './chart.interface';
 
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
+import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 declare var $: any;
 declare var mathFunctions: any;
@@ -31,6 +32,7 @@ declare var cordova: any;
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     public settingsService: SettingsService;
+    public tooltipService: TooltipService;
     public platform: Platform;
     public popoverCtrl: PopoverController;
     public chart: Chart;
@@ -77,9 +79,10 @@ export class SilverNeedleChart {
     public previousYPos: number;
     public flotOverlayRef;
 
-    constructor(_modalCtrl: ModalController, _platform: Platform, _popoverCtrl: PopoverController, _settingsService: SettingsService) {
+    constructor(_modalCtrl: ModalController, _platform: Platform, _popoverCtrl: PopoverController, _settingsService: SettingsService, _tooltipService: TooltipService) {
         this.modalCtrl = _modalCtrl;
         this.settingsService = _settingsService;
+        this.tooltipService = _tooltipService;
         this.popoverCtrl = _popoverCtrl;
         this.platform = _platform;
         this.secsPerDivVals = this.generateNiceNumArray(0.000000001, 10);
@@ -647,7 +650,7 @@ export class SilverNeedleChart {
 
             this.chart.setActiveYIndices(this.activeVPDIndex);
 
-            this.activeTPDIndex = this.secsPerDivVals.indexOf(0.01);
+            this.activeTPDIndex = this.secsPerDivVals.indexOf(0.002);
             this.chart.setActiveXIndex(this.activeTPDIndex);
             this.setTimeSettings({
                 timePerDiv: this.secsPerDivVals[this.activeTPDIndex],

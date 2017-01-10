@@ -108,6 +108,23 @@
     background-color: #535353;
 }
 
+.chart-component-wrapper .chart-button-container .tooltip.left .tooltip-arrow {
+    top: 50%;
+    right: 0;
+    margin-top: -5px;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #535353;
+}
+
+.chart-component-wrapper .chart-button-container .tooltip-inner {
+    max-width: 200px;
+    padding: 3px 8px;
+    color: #fff;
+    text-align: center;
+    background-color: #535353;
+    border-radius: 4px;
+}
+
 .flotTip
 {
     border-radius: 0px !important;

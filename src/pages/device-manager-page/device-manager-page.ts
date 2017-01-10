@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 import { PopoverController, App, NavController, ModalController, Platform, AlertController, LoadingController } from 'ionic-angular';
 
 //Pages
@@ -16,15 +16,16 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
+import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 @Component({
     templateUrl: 'device-manager-page.html'
 })
 export class DeviceManagerPage {
-    @Output() navToInstrumentPage: EventEmitter<any> = new EventEmitter;
     public app: App;
     public loadingCtrl: LoadingController;
     public toastService: ToastService;
+    public tooltipService: TooltipService;
     public alertCtrl: AlertController;
     public popoverCtrl: PopoverController;
     public platform: Platform;
@@ -48,6 +49,7 @@ export class DeviceManagerPage {
         _deviceManagerService: DeviceManagerService,
         _storage: StorageService,
         _navCtrl: NavController,
+        _tooltipSrv: TooltipService,
         _modalCtrl: ModalController,
         _app: App,
         _platform: Platform,
@@ -60,6 +62,7 @@ export class DeviceManagerPage {
         this.app = _app;
         this.loadingCtrl = _loadingCtrl;
         this.toastService = _toastService;
+        this.tooltipService = _tooltipSrv;
         this.alertCtrl = _alertCtrl;
         this.settingsService = _settingsService;
         this.platform = _platform;

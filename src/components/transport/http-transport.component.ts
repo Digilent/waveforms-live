@@ -66,22 +66,27 @@ export class HttpTransportComponent extends TransportComponent {
 
 
             // We set up our request
-            XHR.open("POST", uri);
-            if (dataType === 'json') {
-                XHR.setRequestHeader("Content-Type", "application/json");
-            }
-            else if (dataType === 'binary') {
-                XHR.setRequestHeader("Content-Type", "application/octet-stream");
-            }
+            try {
+                XHR.open("POST", uri);
+                if (dataType === 'json') {
+                    XHR.setRequestHeader("Content-Type", "application/json");
+                }
+                else if (dataType === 'binary') {
+                    XHR.setRequestHeader("Content-Type", "application/octet-stream");
+                }
 
-            XHR.timeout = 5000;
-            
-            //Set resposne type as arraybuffer to receive response as bytes
-            XHR.responseType = 'arraybuffer';
-            
-            XHR.send(body);
-            this.start = performance.now();
-            console.log('command sent');
+                XHR.timeout = 5000;
+                
+                //Set resposne type as arraybuffer to receive response as bytes
+                XHR.responseType = 'arraybuffer';
+                
+                XHR.send(body);
+                this.start = performance.now();
+                console.log('command sent');
+            }
+            catch (err) {
+                observer.error('TX Error: ', event);
+            }
         });
     }
 

@@ -1,4 +1,4 @@
-import { NavParams, Platform, NavController, ModalController } from 'ionic-angular';
+import { NavParams, Platform, NavController, ModalController, LoadingController } from 'ionic-angular';
 import { Component } from '@angular/core';
 
 //Components
@@ -18,6 +18,7 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 
 export class DeviceConfigureModal {
     public platform: Platform;
+    public loadingCtrl: LoadingController;
     public modalCtrl: ModalController;
     public navCtrl: NavController;
     public deviceManagerService: DeviceManagerService;
@@ -39,12 +40,14 @@ export class DeviceConfigureModal {
     constructor(
         _platform: Platform,
         _modalCtrl: ModalController,
+        _loadingCtrl: LoadingController,
         _params: NavParams,
         _deviceManagerService: DeviceManagerService,
         _navCtrl: NavController
     ) {
         this.platform = _platform;
         this.modalCtrl = _modalCtrl;
+        this.loadingCtrl = _loadingCtrl;
         this.navCtrl = _navCtrl;
         this.params = _params;
         this.deviceManagerService = _deviceManagerService;
@@ -109,24 +112,29 @@ export class DeviceConfigureModal {
             this.deviceManagerPageRef.toastService.createToast('deviceExists');
             return;
         }
+
+        let loading = this.deviceManagerPageRef.displayLoading();
+
         this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
             (arrayBuffer) => {
                 console.log('response to set active device');
                 console.log(this.deviceBridgeAddress);
                 let data;
                 try {
-                    let duhString = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
-                    console.log(duhString);
-                    data = JSON.parse(duhString);
+                    let stringify = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
+                    console.log(stringify);
+                    data = JSON.parse(stringify);
                 }
                 catch (e) {
                     console.log('Error Parsing Set Active Device Response');
                     console.log(e);
+                    loading.dismiss();
                 }
                 console.log(data);
 
                 this.deviceManagerService.connect(this.deviceBridgeAddress).subscribe(
                     (data) => {
+                        loading.dismiss();
                         console.log('enumeration response');
                         console.log(data);
                         if (data.device[0].statusCode == undefined || data.device[0].statusCode > 0) {
@@ -159,6 +167,7 @@ export class DeviceConfigureModal {
                     },
                     (err) => {
                         console.log(err);
+                        loading.dismiss();
                         this.deviceManagerPageRef.toastService.createToast('timeout', true);
                     },
                     () => { }
@@ -166,6 +175,7 @@ export class DeviceConfigureModal {
             },
             (err) => {
                 console.log(err);
+                loading.dismiss();
             },
             () => {
                 console.log('complete');
