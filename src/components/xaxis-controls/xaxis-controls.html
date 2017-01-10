@@ -1,12 +1,12 @@
 <div class="xaxis-component-wrapper">
-    <div (dblclick)="toggleSeriesSettings()" class="header-bar-side align-center-container" center text-center>
+    <div class="header-bar-side align-center-container" center text-center>
         <img class="custom-dropdown-img" [ngClass]="{rotateOn: showTimeSettings}" (click)="toggleSeriesSettings()" src="assets/img/arrow-right.png">
         <span class="header-bar-title instrument-header">Time Base</span>
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
     <ion-row *ngIf="showTimeSettings" class="controls-container time-base-row">
         <ion-col center class="tpd-label-col">
-            TPD
+            Time/
         </ion-col>
         <ion-col center text-center class="xaxis-left">
             <button ion-button (tap)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivVals.length-1" class="img-button disable-hover">

@@ -1,5 +1,5 @@
 <div class=fgen-container>
-    <div *ngIf="settingsService.nestedChannels" (dblclick)="toggleAwgSettings()" class="align-center-container header-bar-side awg-header">
+    <div *ngIf="settingsService.nestedChannels" class="align-center-container header-bar-side awg-header">
         <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSettings}" (click)="toggleAwgSettings()" src="assets/img/arrow-right.png">
         <div class="header-bar-title instrument-header">Wavegen</div>
         <!--<button ion-button class="align-right disable-hover" (click)="openFgen(5)"><ion-icon name="settings"></ion-icon></button>-->
@@ -7,7 +7,7 @@
     </div>
     <div *ngIf="showSettings">
         <div *ngFor="let channel of activeDevice.instruments.awg.chans, let i = index;" [ngClass]="{'awg-chan-container': settingsService.nestedChannels}">
-            <div (dblclick)="toggleChanSettings(i)" class="align-center-container header-bar-side">
+            <div class="align-center-container header-bar-side">
                 <img class="custom-dropdown-img" [ngClass]="{rotateOn: showChanSettings[i]}" (click)="toggleChanSettings(i)" src="assets/img/arrow-right.png">
                 <div class="vertical-align" [ngClass]="{'instrument-header': !settingsService.nestedChannels}">
                     {{settingsService.nestedChannels === false ? 'Wavegen' : ''}}{{activeDevice.instruments.awg.chans.length < 2 && !settingsService.nestedChannels ? ' ' : 'Ch ' + (i + 1)}}

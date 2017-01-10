@@ -1,12 +1,12 @@
 <div class="yaxis-component-container">
-    <div *ngIf="settingsService.nestedChannels" (dblclick)="toggleOscSettings()" class="header-bar-side align-center-container" center text-center>
+    <div *ngIf="settingsService.nestedChannels" class="header-bar-side align-center-container" center text-center>
         <img class="custom-dropdown-img" [ngClass]="{rotateOn: showOscSettings}" (click)="toggleOscSettings()" src="assets/img/arrow-right.png">
         <span class="header-bar-title instrument-header">Oscilloscope</span>
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
     <div *ngIf="showOscSettings">
         <div *ngFor="let series of chart.deviceDescriptor.instruments.osc.chans, let i = index;" (click)="setActiveSeries(i)" [ngClass]="{'yaxis-component-wrapper':settingsService.nestedChannels, 'set-top-border':i!=0}">
-            <div (dblclick)="toggleSeriesSettings(i)" class="align-center-container header-bar-side">
+            <div class="align-center-container header-bar-side">
                 <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSeriesSettings[i]}" (click)="toggleSeriesSettings(i)" src="assets/img/arrow-right.png">
                 <div class="vertical-align" [ngClass]="{'instrument-header': !settingsService.nestedChannels}">{{settingsService.nestedChannels === false ? 'Osc' : ''}} {{names[i]}}</div>
                 <button ion-button clear (click)="toggleVisibility(i, $event)" class="align-left disable-hover" [style.background-color]="getSeriesColor(i)" [ngClass]="{'series-on': chart.oscopeChansActive[i]}">
@@ -16,7 +16,7 @@
             <div *ngIf="showSeriesSettings[i]" class="button-info-container">
                 <ion-row class="controls-container">
                     <ion-col center class="vpd-label-col">
-                        VPD
+                        V/
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <button ion-button [disabled]="chart.activeVPDIndex[i] == chart.voltsPerDivVals.length-1" (tap)="chart.incrementVPD(i)" class="img-button disable-hover">
