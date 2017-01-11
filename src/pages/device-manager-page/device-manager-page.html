@@ -7,6 +7,13 @@
 </ion-header>
 
 <ion-content class="first-tab-container" padding>
+
+    <ion-fab right bottom>
+        <button ion-fab class="help-button" (click)="executeHelp()">
+            <ion-icon name="help"></ion-icon>
+        </button>
+    </ion-fab>
+
     <div class="align-center">
         <button ion-button icon-right (click)="toggleAddDevMenu()" clear class="dev-menu-button" [tooltip]="tooltipService.getTooltip('addADevice').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
             Add a Device

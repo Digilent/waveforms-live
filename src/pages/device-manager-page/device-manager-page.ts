@@ -100,6 +100,10 @@ export class DeviceManagerPage {
         return loading;
     }
 
+    executeHelp() {
+        console.log('nothing to see here');
+    }
+
     routeToStore() {
         let alert = this.alertCtrl.create();
         alert.setTitle('We Have An App! Would You Like to Download It?');
