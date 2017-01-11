@@ -52,7 +52,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         "command": "setParameters",
                         "offset": offsets[index] * 1000,
                         "gain": gains[index],
-                        "sampleFreq": sampleFreqs[index] * 1000,
+                        "sampleFreq": Math.round(sampleFreqs[index] * 1000),
                         "bufferSize": bufferSizes[index],
                         "triggerDelay": Math.round(delays[index] * 1000000000)
                     }
@@ -83,9 +83,9 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         "command": "setParameters",
                         "offset": offsets[index] * 1000,
                         "gain": gains[index],
-                        "sampleFreq": sampleFreqs[index] * 1000,
+                        "sampleFreq": Math.round(sampleFreqs[index] * 1000),
                         "bufferSize": bufferSizes[index],
-                        "triggerDelay": delays[index] * 1000000000
+                        "triggerDelay": Math.round(delays[index] * 1000000000)
                     }
                 ]
         });
