@@ -13,6 +13,11 @@
                         <ion-icon name="expand"></ion-icon>
                     </button>
                 </div>
+                <div>
+                    <button ion-button class="chart-button disable-hover" (click)="openDevicePinout($event)" [tooltip]="tooltipService.getTooltip('chartShowDevicePinout').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                        <ion-icon name="information-circle"></ion-icon>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

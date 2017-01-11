@@ -6,6 +6,7 @@ import { Transfer } from 'ionic-native';
 import { DeviceComponent } from '../device/device.component';
 import { WaveformComponent } from '../data-types/waveform';
 import { GenPopover } from '../gen-popover/gen-popover.component';
+import { PinoutPopover } from '../pinout-popover/pinout-popover.component';
 
 //Pages
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
@@ -1364,6 +1365,13 @@ export class SilverNeedleChart {
     getSeriesColor(seriesNum: number) {
         if (this.chart.series[seriesNum] === undefined) { return this.colorArray[seriesNum] }
         return this.chart.series[seriesNum].color;
+    }
+
+    openDevicePinout(event) {
+        let popover = this.popoverCtrl.create(PinoutPopover);
+        popover.present({
+            ev: event
+        });
     }
 
     //---------------------------------- MATH INFO ------------------------------

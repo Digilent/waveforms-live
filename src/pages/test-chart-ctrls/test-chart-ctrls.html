@@ -18,11 +18,11 @@
                 </div>
             </ion-col>
             <ion-col class="inner-ctrls" text-center center>
-                <button *ngIf="!readingLa && !readingOsc || running" ion-button icon-right class="text-button-side disable-hover main-button" (click)="singleClick()">
+                <button *ngIf="(!readingLa && !readingOsc) || running" ion-button icon-right class="text-button-side disable-hover main-button" (click)="singleClick()">
                     <span class="collapse-button">Single</span>
                     <img class="custom-image-button" src="assets/img/single.png">
                 </button>
-                <button *ngIf="readingLa || readingOsc && !running" ion-button icon-right class="text-button-side disable-hover main-button" (click)="abortSingle()">
+                <button *ngIf="(readingLa || readingOsc) && !running" ion-button icon-right class="text-button-side disable-hover main-button" (click)="abortSingle()">
                     <span class="collapse-button">Abort</span>
                     <ion-icon name="ios-square" class="red-stop remove-icon-padding"></ion-icon>
                 </button>

@@ -18,8 +18,6 @@ export class CalibratePage {
     public deviceManagerService: DeviceManagerService;
     public calibrationInstructions: string = 'There was an error loading the calibration instructions for your device.\n' +
         'Check your reference manual for correct setup before starting the calibration process.';
-    public calibrationPretest: string = 'Running calibration pretest';
-    public showCalibrationPretestClose: boolean = false;
     public calibrationStatus: string = 'Please wait...';
     public calibrationFailed: boolean = false;
     public calibrationSuccessful: boolean = false;
@@ -27,9 +25,9 @@ export class CalibratePage {
     public maxCalibrationReadAttempts: number = 20;
     public timeBetweenReadAttempts: number = 1000;
 
-    public storageLocations: string[] = ['No Locations Found'];
-    public selectedLocation: string = 'No Location Selected';
-    public saveCalibrationDecision: boolean = true;
+    /*public storageLocations: string[] = ['No Locations Found'];
+    public selectedLocation: string = 'No Location Selected';*/
+    //public saveCalibrationDecision: boolean = true;
     public calibrationResults: string = 'Results here';
     public calibrationResultsIndicator: string = '';
 
@@ -65,9 +63,9 @@ export class CalibratePage {
         this.viewCtrl.dismiss();
     }
 
-    selectStorage(event) {
+    /*selectStorage(event) {
         console.log(event);
-    }
+    }*/
 
     toSlide(slideNum: number) {
         let swiperInstance: any = this.slider.getSlider();
@@ -76,57 +74,30 @@ export class CalibratePage {
         swiperInstance.lockSwipes();
     }
 
-    toPretest() {
-        let swiperInstance: any = this.slider.getSlider();
-        swiperInstance.unlockSwipes();
-        this.slider.slideTo(1);
-        swiperInstance.lockSwipes();
-        this.runCalibrationPretest();
-    }
-
     toCalibrationSuccessPage() {
         let swiperInstance: any = this.slider.getSlider();
         swiperInstance.unlockSwipes();
-        this.slider.slideTo(3);
+        this.slider.slideTo(2);
         swiperInstance.lockSwipes();
-        this.calibrationResultsIndicator = 'Calibration successful.';
-        this.getStorageLocations();
+        this.calibrationResultsIndicator = 'Calibration was successful and was applied automatically.';
+        //this.getStorageLocations();
     }
 
-    applyCalibrationMaybeSave() {
-        if (this.saveCalibrationDecision) {
-            if (this.storageLocations.indexOf(this.selectedLocation) === -1) {
-                this.calibrationResultsIndicator = 'Invalid storage location.';
-                return;
-            }
-            this.calibrationResultsIndicator = 'Saving and applying calibration.';
-            this.saveCalibration(this.selectedLocation)
-                .then(() => {
-                    this.applyCalibration()
-                        .then(() => { this.onSuccessfulCalibrationApply(); })
-                        .catch((err) => {
-                            this.calibrationResultsIndicator = 'Error applying calibration.';
-                            return;
-                        });
-                })
-                .catch((err) => {
-                    this.calibrationResultsIndicator = 'Error saving calibration.';
-                });
-            return;
-        }
-        this.calibrationResultsIndicator = 'Applying calibration without saving.';
-        this.applyCalibration()
-            .then(() => { this.onSuccessfulCalibrationApply(); })
+    saveCalibrationToDevice() {
+        this.calibrationResultsIndicator = 'Saving calibration.';
+        this.saveCalibration('flash')
+            .then(() => {
+            })
             .catch((err) => {
-                this.calibrationResultsIndicator = 'Error applying calibration.';
-            });
+                this.calibrationResultsIndicator = 'Error saving calibration.';
+            });        
     }
 
     onSuccessfulCalibrationApply() {
         this.viewCtrl.dismiss();
     }
 
-    getStorageLocations() {
+    /*getStorageLocations() {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].storageGetLocations().subscribe(
             (data) => {
                 console.log(data);
@@ -138,7 +109,7 @@ export class CalibratePage {
             },
             () => { }
         );
-    }
+    }*/
 
     getCalibrationInstructions() {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationGetInstructions().subscribe(
@@ -154,27 +125,11 @@ export class CalibratePage {
         );
     }
 
-    runCalibrationPretest() {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationPretest().subscribe(
-            (data) => {
-                console.log(data);
-                this.onSuccessfulPretest();
-            },
-            (err) => {
-                console.log(err);
-                /*this.calibrationPretest = 'Error found in pretest. Please check your setup and try again.';
-                this.showCalibrationPretestClose = true;*/
-                this.onSuccessfulPretest();
-            },
-            () => { }
-        );
-    }
-
-    onSuccessfulPretest() {
+    runCalibration() {
         this.calibrationFailed = false;
         this.calibrationSuccessful = false;
         this.startCalibration();
-        this.toSlide(2);
+        this.toSlide(1);
     }
 
     startCalibration() {
@@ -240,24 +195,6 @@ export class CalibratePage {
                 (err) => {
                     console.log(err);
                     reject(err);
-                },
-                () => { }
-            );
-        });
-    }
-
-    applyCalibration(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationApply().subscribe(
-                (data) => {
-                    console.log(data);
-                    console.log('resolve apply');
-                    resolve();
-                },
-                (err) => {
-                    console.log(err);
-                    console.log('reject apply');
-                    reject('reject apply');
                 },
                 () => { }
             );

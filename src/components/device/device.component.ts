@@ -249,15 +249,6 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
-    calibrationPretest(): Observable<any> {
-        let command = {
-            "device": [{
-                command: "calibrationPretest"
-            }]
-        }
-        return this._genericResponseHandler(command);
-    }
-
     calibrationStart(): Observable<any> {
         let command = {
             "device": [{
@@ -345,10 +336,10 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
-    calibrationApply(): Observable<any> {
+    calibrationGetStatus(): Observable<any> {
         let command = {
             "device": [{
-                command: "calibrationApply"
+                "command": "calibrationGetStatus"
             }]
         }
         return this._genericResponseHandler(command);

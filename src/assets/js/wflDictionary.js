@@ -107,6 +107,9 @@ var waveformsLiveDictionary = (function() {
         },
         chartAutoscale: {
             english: 'Autoscale Chart'
+        },
+        chartShowDevicePinout: {
+            english: 'Show Device Pinout'
         }
     };
     var statusCodes = {

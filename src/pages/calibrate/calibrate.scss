@@ -28,10 +28,15 @@
 {
     .slide-zoom {
         background-color: #535353;
-        max-width: 400px;
+        max-width: 850px;
         overflow: auto;
         max-height: 100%;
     }
+}
+
+.calibration-container .calibration-results
+{
+    min-height: 400px;
 }
 
 .calibration-container .slide-header
@@ -56,19 +61,19 @@
     font-size: 14px;
     color: #CCCCCC;
 }
-
+/*
 .calibration-container .calibrate-item
 {
     background-color: #535353;
     color: white;
-}
+}*/
 
 .calibration-container .list-container
 {
     padding-top: 16px;
 }
 
-.calibration-container .calibration-dropdown-popover-container
+/*.calibration-container .calibration-dropdown-popover-container
 {
     font-size: 16px;
     background-color: #535353;
@@ -78,8 +83,8 @@
 {
     height: 25px;
     margin-top:3px;
-}
-
+}*/
+/*
 .calibration-container .storage-label
 {
     color: #CCCCCC;
@@ -90,7 +95,7 @@
 .calibration-container .storage-refresh-button
 {
     margin-top: 30px;
-}
+}*/
 
 .calibration-container .status-indicator
 {
