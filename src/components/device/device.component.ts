@@ -212,7 +212,16 @@ export class DeviceComponent {
         return Observable.create((observer) => {
             this.transport.writeRead('/', JSON.stringify(commandObject), 'json').subscribe(
                 (arrayBuffer) => {
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    let data;
+                    try {
+                        let stringify = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
+                        console.log(stringify);
+                        data = JSON.parse(stringify);
+                    }
+                    catch(e) {
+                        observer.error(e);
+                        return;
+                    }
                     if (data.device == undefined || data.device[0].statusCode > 0 || data.agent != undefined) {
                         observer.error(data);
                         return;

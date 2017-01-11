@@ -62,6 +62,32 @@ var waveformsLiveDictionary = (function() {
             english: 'Agent Could Not Connect To Device'
         },
 
+        //Tutorial Tooltips
+        tutorialAddADevice: {
+            english: 'Click To Add A Device'
+        },
+        tutorialNetworkButton: {
+            english: 'Click To Add A Network Device'
+        },
+        tutorialSimulatedButton: {
+            english: 'Click To Add A Simulated Device'
+        },
+        tutorialAgentButton: {
+            english: 'Click To Add An Agent'
+        },
+        tutorialAddCurrentDevice: {
+            english: 'Click To Add Device'
+        },
+        tutorialBackToAddDevice: {
+            english: 'Click To Select A Different Device Type'
+        },
+        tutorialDeviceCardMore: {
+            english: 'Click To See More Options'
+        },
+        tutorialDeviceCard: {
+            english: 'Click To Connect To Device And Navigate To Instrument Panel'
+        },
+
         //Tooltips
         addADevice: {
             english: 'Add A Device'
@@ -83,6 +109,9 @@ var waveformsLiveDictionary = (function() {
         },
         deviceCardMore: {
             english: 'More'
+        },
+        deviceCard: {
+            english: 'Connect To Device And Navigate To Instrument Panel'
         },
         cursorButton: {
             english: 'Open Cursor Menu'

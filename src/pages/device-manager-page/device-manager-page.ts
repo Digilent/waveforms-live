@@ -18,6 +18,17 @@ import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 
+interface tooltipInterface {
+    addADevice: string,
+    networkButton: string,
+    simulatedButton: string,
+    agentButton: string,
+    backToAddDevice: string,
+    addCurrentDevice: string,
+    deviceCardMore: string,
+    deviceCard: string
+}
+
 @Component({
     templateUrl: 'device-manager-page.html'
 })
@@ -45,6 +56,11 @@ export class DeviceManagerPage {
     public deviceConnectionType: string = 'network';
     public showDeviceTypeCard: boolean = true;
 
+    public tutorialMode: boolean = false;
+    public tutorialStage: number = 0;
+
+    public tooltipMessages: tooltipInterface;
+
     constructor(_popoverCtrl: PopoverController,
         _deviceManagerService: DeviceManagerService,
         _storage: StorageService,
@@ -69,6 +85,7 @@ export class DeviceManagerPage {
         this.popoverCtrl = _popoverCtrl;
         this.navCtrl = _navCtrl;
         this.modalCtrl = _modalCtrl;
+        this.loadDefaultTooltipMessages();
         this.addDeviceIp = "http://"
         this.deviceManagerService = _deviceManagerService;
         this.storage = _storage;
@@ -82,6 +99,32 @@ export class DeviceManagerPage {
                 this.routeToStore();
             }
         });
+    }
+
+    loadTutorialTooltipMessages() {
+        this.tooltipMessages = {
+            addADevice: this.tooltipService.getTooltip('tutorialAddADevice').message,
+            networkButton: this.tooltipService.getTooltip('tutorialNetworkButton').message,
+            simulatedButton: this.tooltipService.getTooltip('tutorialSimulatedButton').message,
+            agentButton: this.tooltipService.getTooltip('tutorialAgentButton').message,
+            backToAddDevice: this.tooltipService.getTooltip('tutorialBackToAddDevice').message,
+            addCurrentDevice: this.tooltipService.getTooltip('tutorialAddCurrentDevice').message,
+            deviceCardMore: this.tooltipService.getTooltip('tutorialDeviceCardMore').message,
+            deviceCard: this.tooltipService.getTooltip('tutorialDeviceCard').message
+        };
+    }
+
+    loadDefaultTooltipMessages() {
+        this.tooltipMessages = {
+            addADevice: this.tooltipService.getTooltip('addADevice').message,
+            networkButton: this.tooltipService.getTooltip('networkButton').message,
+            simulatedButton: this.tooltipService.getTooltip('simulatedButton').message,
+            agentButton: this.tooltipService.getTooltip('agentButton').message,
+            backToAddDevice: this.tooltipService.getTooltip('backToAddDevice').message,
+            addCurrentDevice: this.tooltipService.getTooltip('addCurrentDevice').message,
+            deviceCardMore: this.tooltipService.getTooltip('deviceCardMore').message,
+            deviceCard: this.tooltipService.getTooltip('deviceCard').message
+        };
     }
 
     dropdownPopoverSelection(event) {
@@ -101,7 +144,16 @@ export class DeviceManagerPage {
     }
 
     executeHelp() {
-        console.log('nothing to see here');
+        this.tutorialStage = 0;
+        this.tutorialMode = !this.tutorialMode;
+        this.showDevMenu = false;
+        this.showDeviceTypeCard = true;
+        if (this.tutorialMode) {
+            this.loadTutorialTooltipMessages();
+        }
+        else {
+            this.loadDefaultTooltipMessages();
+        }
     }
 
     routeToStore() {
@@ -181,6 +233,7 @@ export class DeviceManagerPage {
 
     toggleAddDevMenu() {
         this.showDevMenu = !this.showDevMenu;
+        this.tutorialStage = 1;
     }
 
     checkIfMatchingIp(ipAddress: string) {
@@ -280,6 +333,7 @@ export class DeviceManagerPage {
         this.storage.saveData('savedDevices', JSON.stringify(this.devices));
         this.showDevMenu = false;
         this.toastService.createToast('deviceAdded');
+        this.tutorialStage = 3;
         return true;
     }
 
@@ -313,6 +367,7 @@ export class DeviceManagerPage {
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
                 this.showDevMenu = false;
                 this.toastService.createToast('deviceAdded');
+                this.tutorialStage = 3;
             },
             (err) => {
                 loading.dismiss();
@@ -348,6 +403,7 @@ export class DeviceManagerPage {
                         this.storage.saveData('savedDevices', JSON.stringify(this.devices));
                         this.showDevMenu = false;
                         this.toastService.createToast('deviceAdded');
+                        this.tutorialStage = 3;
                     },
                     (err) => {
                         loading.dismiss();
@@ -372,11 +428,13 @@ export class DeviceManagerPage {
 
     setConnectionType(deviceConnectionType: string) {
         this.deviceConnectionType = deviceConnectionType;
+        this.tutorialStage = 2;
         this.showDeviceTypeCard = false;
     }
 
     backToChooseDeviceType() {
         this.showDeviceTypeCard = true;
+        this.tutorialStage = 1;
     }
 
     selectSimulatedDevice(event) {

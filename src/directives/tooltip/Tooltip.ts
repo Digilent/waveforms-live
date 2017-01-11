@@ -1,8 +1,6 @@
-import {
-    Directive, HostListener, ComponentRef, ViewContainerRef, Input, ComponentFactoryResolver,
-    ComponentFactory
-} from "@angular/core";
-import {TooltipContent} from "./TooltipContent";
+import { Directive, HostListener, ComponentRef, ViewContainerRef, Input, ComponentFactoryResolver, ComponentFactory } from "@angular/core";
+import { TooltipContent } from "./TooltipContent";
+import { Platform } from 'ionic-angular';
 
 @Directive({
     selector: "[tooltip]"
@@ -17,16 +15,35 @@ export class Tooltip {
 
     @Input() tooltipPlacement: "top"|"bottom"|"left"|"right" = "bottom";
 
+    @Input() forceShow: boolean = false;
+
+    @Input() forceShowDelay: number = 100;
+
     private tooltip: ComponentRef<TooltipContent>;
     private visible: boolean;
     private viewContainerRef: ViewContainerRef 
     private resolver: ComponentFactoryResolver
+    private platform: Platform;
     private timeoutRef;
     private displayDelay: number = 750;
+    private mobile: boolean;
 
-    constructor(_viewContainerRef: ViewContainerRef, _resolver: ComponentFactoryResolver) {
+    constructor(_viewContainerRef: ViewContainerRef, _resolver: ComponentFactoryResolver, _platform: Platform) {
         this.viewContainerRef = _viewContainerRef;
         this.resolver = _resolver;
+        this.platform = _platform;
+        this.mobile = this.platform.is('mobile');
+    }
+
+    ngOnChanges(changes: any) {
+        setTimeout(() => {
+            if (changes.forceShow != undefined && changes.forceShow.currentValue) {
+                this.show();
+            }
+            else if (changes.forceShow != undefined && !changes.forceShow.currentValue) {
+                this.hide();
+            }
+        }, this.forceShowDelay);
     }
 
     @HostListener("focusin")
@@ -40,7 +57,7 @@ export class Tooltip {
 
 
     show(): void {
-        if (this.tooltipDisabled || this.visible)
+        if (this.tooltipDisabled || this.visible || this.mobile)
             return;
 
         this.visible = true;
@@ -71,7 +88,7 @@ export class Tooltip {
     @HostListener("mouseleave")
     hide(): void {
         this.clearTimeout();
-        if (!this.visible)
+        if (!this.visible || this.forceShow)
             return;
 
         this.visible = false;
