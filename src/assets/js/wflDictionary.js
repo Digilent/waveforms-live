@@ -13,7 +13,7 @@ var waveformsLiveDictionary = (function() {
             english: 'No Channels Active. Please Activate a Channel and Run Again',
         },
         notImplemented: {
-            english: 'Not Implemented'
+            english: 'Not Currently Implemented'
         },
         timeout: {
             english: 'No Response Received'
@@ -23,67 +23,87 @@ var waveformsLiveDictionary = (function() {
         },
 
         //Device
+        //Appears when a device is added successfully on the device manager page.
         deviceAdded: {
             english: 'Device Added Successfully'
         },
+        //Appears when a user tries to add a device that already exists.
         deviceExists: {
             english: 'Device is Added Already'
         },
+        //Appears when a user navigates to the instrument panel without an active device (shouldn't happen).
         noActiveDevice: {
             english: 'You currently have no device connected. Please visit the settings page.'
         },
+        //Appears when an enumeration response from a device is invalid.
         enumerateError: {
             english: 'Error: Invalid Device Enumeration'
         },
+        //Appears when a trigger level value is invalid.
         invalidLevel: {
             english: 'Selected Level Value Is Not In Osc Input Voltage Range And May Not Trigger'
         },
+        //Appears when an AWG run command returns a statusCode error.
         awgRunError: {
             english: 'The AWG May Have Been Running And Has Been Stopped. Please Try Again.'
         },
+        //Appears when an AWG set parameters command returns a statusCode error.
         awgParamError: {
             english: 'Could Not Set AWG Parameters. Please Try Again. If Problem Persists, Reset The Device'
         },
+        //Appears when a user enters an invalid DC Supply value.
         dcInvalidSupply: {
             english: 'Invalid DC Supply Value'
         },
 
         //Agent
+        //Appears when a user tries to add an agent that already exists.
         agentExists: {
             english: 'Agent Is Added Already. Use Settings To Configure Current Active Device'
         },
+        //Appears when an agent responds with invalid JSON (should not appear)
         agentInvalidResponse: {
             english: 'Invalid Response From Agent'
         },
+        //Appears when the agent enumerates and does not find any devices.
         agentEnumerateError: {
             english: 'No UART Devices Found'
         },
+        //Appears when the user tries to add an agent and no response is found.
         agentConnectError: {
             english: 'Agent Could Not Connect To Device'
         },
 
         //Tutorial Tooltips
+        //Appears on main add a device button on device-manager-page
         tutorialAddADevice: {
             english: 'Click To Add A Device'
         },
+        //Appears on the network device button when adding a new device.
         tutorialNetworkButton: {
-            english: 'Click To Add A Network Device'
+            english: 'This Button Adds A Device That Is On Your WiFi Network'
         },
+        //Appears on the simulated device button when adding a new device.
         tutorialSimulatedButton: {
             english: 'Click To Add A Simulated Device'
         },
+        //Appears on the agent button when adding a new device.
         tutorialAgentButton: {
-            english: 'Click To Add An Agent'
+            english: 'This Button Adds An Agent Which Allows You To Talk To USB Devices'
         },
+        //Appears on the button used to attempt to add the current device.
         tutorialAddCurrentDevice: {
             english: 'Click To Add Device'
         },
+        //Appears on the button used to navigate backwards to the device type selection stage.
         tutorialBackToAddDevice: {
             english: 'Click To Select A Different Device Type'
         },
+        //Appears on the 'more' button on a device card.
         tutorialDeviceCardMore: {
             english: 'Click To See More Options'
         },
+        //Appears on the device card.
         tutorialDeviceCard: {
             english: 'Click To Connect To Device And Navigate To Instrument Panel'
         },
@@ -131,6 +151,9 @@ var waveformsLiveDictionary = (function() {
         analyzerButton: {
             english: 'Select Analyzer Channels'
         },
+        gpioButton: {
+            english: 'Select GPIO Channels'
+        },
         chartSettings: {
             english: 'Export Chart'
         },
@@ -139,8 +162,42 @@ var waveformsLiveDictionary = (function() {
         },
         chartShowDevicePinout: {
             english: 'Show Device Pinout'
+        },
+        sineButton: {
+            english: 'Sine Wave'
+        },
+        triangleButton: {
+            english: 'Triangle Wave'
+        },
+        sawtoothButton: {
+            english: 'Sawtooth Wave'
+        },
+        squareButton: {
+            english: 'Square Wave'
+        },
+        dcButton: {
+            english: 'DC'
+        },
+        triggerLevel: {
+            english: 'Trigger Level'
+        },
+        triggerSource: {
+            english: 'Trigger Source'
+        },
+        triggerRisingEdge: {
+            english: 'Rising Edge Trigger'
+        },
+        triggerFallingEdge: {
+            english: 'Falling Edge Trigger'
+        },
+        triggerOff: {
+            english: 'No Trigger?'
+        },
+        triggerForce: {
+            english: 'Force Trigger'
         }
     };
+
     var statusCodes = {
         error: 1,
         ok: 0

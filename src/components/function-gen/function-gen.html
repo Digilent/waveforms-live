@@ -18,20 +18,25 @@
             </div>
             <div *ngIf="showChanSettings[i]">
                 <div class="wavetype-images-container" text-center>
-                    <div (click)="toggleWave('sine')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sine'}">
-                        <img src="assets/img/sine.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}">
+                    <div (click)="toggleWave('sine')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sine','dim-image': powerOn&&waveType!=='square'}"
+                        [tooltip]="tooltipService.getTooltip('sineButton').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        <img src="assets/img/sine.png">
                     </div>
-                    <div (click)="toggleWave('triangle')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='triangle'}">
-                        <img src="assets/img/triangle.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}">
+                    <div (click)="toggleWave('triangle')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='triangle','dim-image': powerOn&&waveType!=='square'}"
+                        [tooltip]="tooltipService.getTooltip('triangleButton').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        <img src="assets/img/triangle.png">
                     </div>
-                    <div (click)="toggleWave('sawtooth')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sawtooth'}">
-                        <img src="assets/img/sawtooth.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}">
+                    <div (click)="toggleWave('sawtooth')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sawtooth','dim-image': powerOn&&waveType!=='square'}"
+                        [tooltip]="tooltipService.getTooltip('sawtoothButton').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        <img src="assets/img/sawtooth.png">
                     </div>
-                    <div (click)="toggleWave('square')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='square'}">
-                        <img src="assets/img/square.png" [ngClass]="{'dim-image': powerOn&&waveType!=='square'}">
+                    <div (click)="toggleWave('square')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='square','dim-image': powerOn&&waveType!=='square'}"
+                        [tooltip]="tooltipService.getTooltip('squareButton').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        <img src="assets/img/square.png">
                     </div>
-                    <div (click)="toggleWave('dc')" class="wavetype-image image-end" [ngClass]="{'selected-wavetype': waveType==='dc'}">
-                        <img src="assets/img/dc.png" [ngClass]="{'dim-image': powerOn&&waveType!=='dc'}">
+                    <div (click)="toggleWave('dc')" class="wavetype-image image-end" [ngClass]="{'selected-wavetype': waveType==='dc','dim-image': powerOn&&waveType!=='dc'}"
+                        [tooltip]="tooltipService.getTooltip('dcButton').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        <img src="assets/img/dc.png">
                     </div>
                 </div>
                 <ion-row>

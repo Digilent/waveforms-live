@@ -10,25 +10,33 @@
 			<ion-row class="button-row">
 				<ion-col center text-center class="interact-button-col">
 					<div class="trigger-image-container">
-						<button ion-button class="off-button disable-hover"(click)="setTrigType('rising')"  [ngClass]="{'selected-mode':edgeDirection==='rising'}">
+						<button ion-button class="off-button disable-hover"(click)="setTrigType('rising')"  [ngClass]="{'selected-mode':edgeDirection==='rising'}"
+							[tooltip]="tooltipService.getTooltip('triggerRisingEdge').message" [tooltipAnimation]="true" tooltipPlacement="right">
 							<img class="custom-image-button" src="assets/img/trigger-rising.png">
 						</button>
-						<button ion-button class="off-button disable-hover" (click)="setTrigType('falling')" [ngClass]="{'selected-mode':edgeDirection==='falling'}">
+						<button ion-button class="off-button disable-hover" (click)="setTrigType('falling')" [ngClass]="{'selected-mode':edgeDirection==='falling'}"
+							[tooltip]="tooltipService.getTooltip('triggerFallingEdge').message" [tooltipAnimation]="true" tooltipPlacement="top">
 							<img class="custom-image-button" src="assets/img/trigger-falling.png">
 						</button>
 						
-						<button ion-button class="off-button disable-hover off-button-right" (click)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}">
+						<button ion-button class="off-button disable-hover off-button-right" (click)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}"
+							[tooltip]="tooltipService.getTooltip('triggerOff').message" [tooltipAnimation]="true" tooltipPlacement="top">
 							Off
 						</button>
 					</div>
 				</ion-col>
 				<ion-col center text-center class="interact-button-col">
-					<div><button ion-button class="text-button-side disable-hover" (click)="forceTrigger()">Force</button></div>
+					<div>
+						<button ion-button class="text-button-side disable-hover" (click)="forceTrigger()"
+							[tooltip]="tooltipService.getTooltip('triggerForce').message" [tooltipAnimation]="true" tooltipPlacement="top">
+							Force
+						</button>
+					</div>
 				</ion-col>
 			</ion-row>
 			<ion-row>
 				<ion-col center class="input-label">
-					Source
+					<span [tooltip]="tooltipService.getTooltip('triggerSource').message" [tooltipAnimation]="true" tooltipPlacement="right">Source</span>
 				</ion-col>
 				<ion-col class="input-col" center>
                     <div class="label-flex">
@@ -43,7 +51,7 @@
 			</ion-row>
 			<ion-row>
 				<ion-col center class="input-label">
-					Level
+					<span [tooltip]="tooltipService.getTooltip('triggerLevel').message" [tooltipAnimation]="true" tooltipPlacement="right">Level</span>
 				</ion-col>
 				<ion-col center class="input-col">
                     <div class="label-flex">

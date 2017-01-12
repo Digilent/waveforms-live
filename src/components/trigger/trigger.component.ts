@@ -10,6 +10,7 @@ import { SilverNeedleChart } from '../chart/chart.component';
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
 import { ToastService } from '../../services/toast/toast.service';
+import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 @Component({
     templateUrl: 'trigger.html',
@@ -18,6 +19,7 @@ import { ToastService } from '../../services/toast/toast.service';
 export class TriggerComponent {
     @Input() chart: SilverNeedleChart;
     public toastService: ToastService;
+    public tooltipService: TooltipService;
     public delay: string = '0';
     public lowerThresh: string = '-30';
     public upperThresh: string = '0';
@@ -31,8 +33,14 @@ export class TriggerComponent {
     public level: number = 0;
     public ignoreFocusOut: boolean = false;
 
-    constructor(_popoverCtrl: PopoverController, _devMngSrv: DeviceManagerService, _toastService: ToastService) {
+    constructor(
+        _popoverCtrl: PopoverController,
+        _devMngSrv: DeviceManagerService,
+        _tooltipService: TooltipService,
+        _toastService: ToastService
+    ) {
         this.popoverCtrl = _popoverCtrl;
+        this.tooltipService = _tooltipService;
         this.toastService = _toastService;
         this.devMngSrv = _devMngSrv;
         this.activeDevice = this.devMngSrv.devices[this.devMngSrv.activeDeviceIndex];
@@ -85,9 +93,9 @@ export class TriggerComponent {
         console.log(trueValue);
         if (trueValue * 1000 > this.activeDevice.instruments.osc.chans[0].inputVoltageMax ||
             trueValue * 1000 - 30 < this.activeDevice.instruments.osc.chans[0].inputVoltageMin) {
-                this.toastService.createToast('invalidLevel', true);
-                this.level = 0;
-                return;
+            this.toastService.createToast('invalidLevel', true);
+            this.level = 0;
+            return;
         }
         if (this.level === trueValue) {
             console.log('the same');

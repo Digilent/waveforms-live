@@ -12,6 +12,7 @@ import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 import { DeviceManagerService } from '../../services/device/device-manager.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
+import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 //Interfaces
 import { SettingsObject } from '../instruments/awg/awg-instrument.component';
@@ -22,6 +23,7 @@ import { SettingsObject } from '../instruments/awg/awg-instrument.component';
 })
 export class FgenComponent {
     public settingsService: SettingsService;
+    public tooltipService: TooltipService;
     public showDutyCycle: boolean;
     public waveType: string;
     public frequency: number;
@@ -45,9 +47,11 @@ export class FgenComponent {
         _modalCtrl: ModalController,
         _popoverCtrl: PopoverController,
         _toastService: ToastService,
-        _settingsService: SettingsService
+        _settingsService: SettingsService,
+        _tooltipService: TooltipService
     ) {
         this.settingsService = _settingsService;
+        this.tooltipService = _tooltipService;
         this.modalCtrl = _modalCtrl;
         this.popoverCtrl = _popoverCtrl;
         this.toastService = _toastService;

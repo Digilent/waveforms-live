@@ -30,8 +30,7 @@
         <div *ngIf="showDeviceTypeCard" class="devicetype-card" text-center>
             <div class="devicetype-button-container">
                 <button icon-left ion-button class="devicetype-button disable-hover" (click)="setConnectionType('network')" [tooltip]="tooltipMessages['networkButton']" 
-                    [forceShow]="tutorialStage===1 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'left' : 'bottom'" 
-                    [ngClass]="{'move-feature-to-front':tutorialStage===1 && tutorialMode}">
+                    [forceShow]="tutorialStage===1 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'left' : 'bottom'">
                     <ion-icon name="ios-wifi"></ion-icon>
                     Network
                 </button>
@@ -46,8 +45,7 @@
             </div>
             <div class="devicetype-button-container">
                 <button icon-left ion-button class="devicetype-button disable-hover" (click)="setConnectionType('agent')" [tooltip]="tooltipMessages['agentButton']" 
-                    [forceShow]="tutorialStage===1 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'right' : 'bottom'" 
-                    [ngClass]="{'move-feature-to-front':tutorialStage===1 && tutorialMode}">
+                    [forceShow]="tutorialStage===1 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'right' : 'bottom'">
                     <ion-icon name="construct"></ion-icon>
                     Agent
                 </button>
@@ -57,7 +55,7 @@
             <div [ngSwitch]="deviceConnectionType">
                 <div *ngSwitchCase="'network'" text-center>
                     <ion-card class="device-manager-card">
-                        <ion-item class="device-card-item" [ngClass]="{'move-feature-to-front':tutorialStage===2 && tutorialMode}">
+                        <ion-item class="device-card-item">
                             <ion-icon class="add-device-icon" item-left name="ios-wifi"></ion-icon>
                             <ion-label class="add-device-label">
                                 <ion-item class="dev-menu-item">
@@ -65,7 +63,7 @@
                                     <ion-input [(ngModel)]="addDeviceIp" (keypress)="checkForEnter($event, 'network')"></ion-input>
                                     <div item-right class="connect-button-container">
                                         <button ion-button class="connect-button disable-hover" (click)="backToChooseDeviceType()" [tooltip]="tooltipMessages['backToAddDevice']" 
-                                            [forceShow]="tutorialStage===2 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'bottom' : 'left'">
+                                            [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'bottom' : 'left'">
                                             <ion-icon name="close"></ion-icon>
                                         </button>
                                         <button ion-button class="connect-button disable-hover" (tap)="attemptConnect(addDeviceIp)" [tooltip]="tooltipMessages['addCurrentDevice']" 
@@ -89,7 +87,7 @@
                                         <dropdown-popover class="dropdown-popover-selector" [dataArray]="simulatedDevices" (onSelection)="selectSimulatedDevice($event)"></dropdown-popover>
                                     <div item-right class="connect-button-container">
                                         <button ion-button class="connect-button disable-hover" (click)="backToChooseDeviceType()" [tooltip]="tooltipMessages['backToAddDevice']" 
-                                            [forceShow]="tutorialStage===2 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'bottom' : 'left'">
+                                            [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'bottom' : 'left'">
                                             <ion-icon name="close"></ion-icon>
                                         </button>
                                         <button ion-button class="connect-button disable-hover" (tap)="openSimDevice()" [tooltip]="tooltipMessages['addCurrentDevice']" 
@@ -106,7 +104,7 @@
 
                 <div *ngSwitchCase="'agent'" text-center>
                     <ion-card class="device-manager-card">
-                        <ion-item class="device-card-item" [ngClass]="{'move-feature-to-front':tutorialStage===2 && tutorialMode}">
+                        <ion-item class="device-card-item">
                             <ion-icon class="add-device-icon" item-left name="construct"></ion-icon>
                             <ion-label class="add-device-label">
                                 <ion-item class="dev-menu-item">
@@ -114,7 +112,7 @@
                                     <ion-input [(ngModel)]="deviceBridgeAddress" (keypress)="checkForEnter($event, 'agent')"></ion-input>
                                     <div item-right class="connect-button-container">
                                         <button ion-button class="connect-button disable-hover" (click)="backToChooseDeviceType()" [tooltip]="tooltipMessages['backToAddDevice']" 
-                                            [forceShow]="tutorialStage===2 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'bottom' : 'left'">
+                                            [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'bottom' : 'left'">
                                             <ion-icon name="close"></ion-icon>
                                         </button>
                                         <button ion-button class="connect-button disable-hover" (tap)="attemptBridgeConnect(deviceBridgeAddress)" [tooltip]="tooltipMessages['addCurrentDevice']" 

@@ -254,9 +254,13 @@ export class DeviceManagerPage {
         return false;
     }
 
-    checkIfMatchingLocal(device: string) {
+    checkIfMatchingLocal(device: string, deleteIfFound?: boolean) {
+        deleteIfFound = deleteIfFound || false;
         for (let i = 0; i < this.devices.length; i++) {
             if (this.devices[i].deviceDescriptor.deviceModel === device && this.devices[i].ipAddress === 'local') {
+                if (deleteIfFound) {
+                    this.devices.splice(i, 1);
+                }
                 return true;
             }
         }
@@ -380,38 +384,39 @@ export class DeviceManagerPage {
 
     openSimDevice() {
         if (this.selectedSimulatedDevice === 'OpenScope-MZ') {
-            if (this.checkIfMatchingLocal(this.selectedSimulatedDevice)) {
-                this.toastService.createToast('deviceExists', true);
-                return;
+            if (this.checkIfMatchingLocal(this.selectedSimulatedDevice, this.tutorialMode)) {
+                if (!this.tutorialMode) {
+                    this.toastService.createToast('deviceExists', true);
+                    return;
+                }
             }
-            else {
-                let loading = this.displayLoading();
-                this.deviceManagerService.connectLocal(this.selectedSimulatedDevice).subscribe(
-                    (success) => {
-                        console.log(success);
-                        loading.dismiss();
-                        this.devices.unshift(
-                            {
-                                deviceDescriptor: success.device[0],
-                                ipAddress: 'local',
-                                hostname: 'Simulated ' + this.selectedSimulatedDevice,
-                                bridge: false,
-                                deviceBridgeAddress: null,
-                                connectedDeviceAddress: null
-                            }
-                        );
-                        this.storage.saveData('savedDevices', JSON.stringify(this.devices));
-                        this.showDevMenu = false;
-                        this.toastService.createToast('deviceAdded');
-                        this.tutorialStage = 3;
-                    },
-                    (err) => {
-                        loading.dismiss();
-                        this.toastService.createToast('timeout', true);
-                    },
-                    () => { }
-                );
-            }
+            let loading = this.displayLoading();
+            this.deviceManagerService.connectLocal(this.selectedSimulatedDevice).subscribe(
+                (success) => {
+                    console.log(success);
+                    loading.dismiss();
+                    this.devices.unshift(
+                        {
+                            deviceDescriptor: success.device[0],
+                            ipAddress: 'local',
+                            hostname: 'Simulated ' + this.selectedSimulatedDevice,
+                            bridge: false,
+                            deviceBridgeAddress: null,
+                            connectedDeviceAddress: null
+                        }
+                    );
+                    this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                    this.showDevMenu = false;
+                    this.toastService.createToast('deviceAdded');
+                    this.tutorialStage = 3;
+                },
+                (err) => {
+                    loading.dismiss();
+                    this.toastService.createToast('timeout', true);
+                },
+                () => { }
+            );
+
         }
     }
 

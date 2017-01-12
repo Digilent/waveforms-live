@@ -1,25 +1,27 @@
-import {Component, Output, EventEmitter, Input} from '@angular/core';
-import {AlertController, PopoverController} from 'ionic-angular';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { AlertController, PopoverController } from 'ionic-angular';
 
 //Components
-import {DeviceComponent} from '../device/device.component';
-import {DigitalIoPopover} from '../digital-io-popover/digital-io-popover.component';
-import {SilverNeedleChart} from '../chart/chart.component';
+import { DeviceComponent } from '../device/device.component';
+import { DigitalIoPopover } from '../digital-io-popover/digital-io-popover.component';
+import { SilverNeedleChart } from '../chart/chart.component';
 
 //Services
-import {DeviceManagerService} from '../../services/device/device-manager.service';
+import { DeviceManagerService } from '../../services/device/device-manager.service';
 import { ToastService } from '../../services/toast/toast.service';
+import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 @Component({
-  templateUrl: 'digital-io.html',
-  selector: 'digital-io'
+    templateUrl: 'digital-io.html',
+    selector: 'digital-io'
 })
-export class DigitalIoComponent { 
+export class DigitalIoComponent {
     @Output() headerClicked: EventEmitter<any> = new EventEmitter();
     @Input() contentHidden: boolean;
     @Input() chart: SilverNeedleChart;
     public alertCtrl: AlertController;
     public toastService: ToastService;
+    public tooltipService: TooltipService;
     public deviceManagerService: DeviceManagerService;
     public activeDev: DeviceComponent;
     public gpioChans: number[] = [];
@@ -31,10 +33,17 @@ export class DigitalIoComponent {
     public showDigiContent: boolean = true;
     public selectedMode: string = 'io';
     public directionMode: boolean = false;
-    
-    constructor(_alertCtrl: AlertController, _devManagerService: DeviceManagerService, _popoverCtrl: PopoverController, _toastService: ToastService) {
+
+    constructor(
+        _alertCtrl: AlertController,
+        _tooltipService: TooltipService,
+        _devManagerService: DeviceManagerService,
+        _popoverCtrl: PopoverController,
+        _toastService: ToastService
+    ) {
         this.alertCtrl = _alertCtrl;
         this.toastService = _toastService;
+        this.tooltipService = _tooltipService;
         this.popoverCtrl = _popoverCtrl;
         this.deviceManagerService = _devManagerService;
         this.activeDev = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
@@ -48,9 +57,9 @@ export class DigitalIoComponent {
             this.laActiveChans.push(false);
         }
         this.contentHidden = true;
-        
+
     }
-    
+
     emitEvent() {
         this.headerClicked.emit(null);
     }
@@ -76,23 +85,17 @@ export class DigitalIoComponent {
             (err) => {
                 console.log(err);
             },
-            () => {}
+            () => { }
         );
         this.laActiveChans[channel] = false;
     }
 
     setMode(mode: string) {
-        /*if (mode === 'analyzer') {
-            let toast = this.toastCtrl.create({
-                message: 'Analyzer Currently Unsupported',
-                showCloseButton: true,
-                duration: 3000,
-                position: 'bottom'
-            });
-            toast.present();
+        if (mode === 'analyzer' && this.activeDev.rootUri !== 'local') {
+            this.toastService.createToast('notImplemented', true);
             this.selectedMode = 'io';
             return;
-        }*/
+        }
         this.selectedMode = mode;
     }
 
@@ -109,9 +112,9 @@ export class DigitalIoComponent {
             (err) => {
                 console.log(err);
             },
-            () => {}
+            () => { }
         );
-        
+
     }
 
     toggleLaChan(channel: number) {
@@ -150,10 +153,10 @@ export class DigitalIoComponent {
             (err) => {
                 console.log(err);
             },
-            () => {}
+            () => { }
         );
     }
-    
+
     //Open checkbox alert
     doCheckbox(event) {
         event.stopPropagation();
