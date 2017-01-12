@@ -63,7 +63,8 @@
     margin: 2px 0px 2px 0px;
     padding: 2px 0px 2px 0px;
     height: 25px;
-    font-size: 1.2rem;
+    font-size: 14px;
+    font-weight: 400;
     box-shadow: none;
 
     .button-inner {
@@ -94,9 +95,8 @@
  
 .trigger-container .label-left
 {
-    flex: 0 0 84px;
+    flex: 1 0 84px;
     align-self: center;
-    max-width: 84px;
 }
 
 .trigger-container .label-right
@@ -111,6 +111,7 @@
 {
     padding-left: 0px;
     padding-top: 0px;
+    padding-right: 6px;
 }
 
 .trigger-container

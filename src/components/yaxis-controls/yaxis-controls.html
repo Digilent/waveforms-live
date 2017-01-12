@@ -16,7 +16,7 @@
             <div *ngIf="showSeriesSettings[i]" class="button-info-container">
                 <ion-row class="controls-container">
                     <ion-col center class="vpd-label-col">
-                        V/
+                        Volts/
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <button ion-button [disabled]="chart.activeVPDIndex[i] == chart.voltsPerDivVals.length-1" (tap)="chart.incrementVPD(i)" class="img-button disable-hover">

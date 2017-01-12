@@ -205,22 +205,13 @@
 
 .dc-container .label-left
 {
-    flex: 0 0 84px;
+    flex: 1 0 84px;
     align-self: center;
-    max-width: 84px;
-    min-width: 84px;
-}
-
-.dc-container .label-right
-{
-    color: #CCCCCC;
-    flex: 0 0 10px;
-    align-self: center;
-    margin-left: 5px;
 }
 
 .dc-container .input-col
 {
     padding-left: 0px;
     padding-top: 0px;
+    padding-right: 6px;
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 //Components
 import { SilverNeedleChart } from '../chart/chart.component';
@@ -11,7 +11,6 @@ export class XAxisComponent {
     @Input() chart: SilverNeedleChart;
     public timePerDiv: string;
     public base: string;
-    public storageEventListener: EventEmitter<any>;
     public showTimeSettings: boolean = true;
     public ignoreFocusOut: boolean = false;
 
@@ -67,6 +66,14 @@ export class XAxisComponent {
         }
         else if (trueValue > this.chart.secsPerDivVals[this.chart.secsPerDivVals.length - 1]) {
             trueValue = this.chart.secsPerDivVals[this.chart.secsPerDivVals.length - 1];
+        }
+        if (this.chart.timeDivision === trueValue) {
+            console.log('the same');
+            this.chart.timeDivision = trueValue * 10 + 1;
+            setTimeout(() => {
+                this.chart.timeDivision = trueValue;
+            }, 1);
+            return;
         }
         this.chart.timeDivision = trueValue;
 

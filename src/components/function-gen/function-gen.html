@@ -41,10 +41,7 @@
                     <ion-col class="input-col">
                         <div class="label-flex">
                             <div class="label-left">
-                                <input class="text-input" type="number" step="any" [disabled]="powerOn || waveType==='dc'" [(ngModel)]="frequency" />
-                            </div>
-                            <div class="label-right">
-                                <span>Hz</span>
+                                <input class="text-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="frequency | unitFormat:'Hz'" (focusout)="inputLeave($event, 'frequency')" (keypress)="checkForEnter($event, 'frequency')" />
                             </div>
                         </div>
                     </ion-col>
@@ -56,10 +53,7 @@
                     <ion-col class="input-col">
                         <div class="label-flex">
                             <div class="label-left">
-                                <input class="text-input" type="number" step="any" [disabled]="powerOn || waveType==='dc'" [(ngModel)]="amplitude" />
-                            </div>
-                            <div class="label-right">
-                                <span>Vpp</span>
+                                <input class="text-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="amplitude | unitFormat:'Vpp'" (focusout)="inputLeave($event, 'amplitude')" (keypress)="checkForEnter($event, 'amplitude')" />
                             </div>
                         </div>
                     </ion-col>
@@ -71,10 +65,7 @@
                     <ion-col class="input-col">
                         <div class="label-flex">
                             <div class="label-left">
-                                <input class="text-input" type="number" step="any" [disabled]="powerOn" [(ngModel)]="offset" />
-                            </div>
-                            <div class="label-right">
-                                <span>V</span>
+                                <input class="text-input" step="any" [disabled]="powerOn" [ngModel]="offset | unitFormat:'V'" (focusout)="inputLeave($event, 'offset')" (keypress)="checkForEnter($event, 'offset')" />
                             </div>
                         </div>
                     </ion-col>
@@ -86,10 +77,7 @@
                     <ion-col class="input-col">
                         <div class="label-flex">
                             <div class="label-left">
-                                <input class="text-input" [disabled]="!isSquare() || powerOn" type="number" step="any" [(ngModel)]="dutyCycle" />
-                            </div>
-                            <div class="label-right">
-                                <span>%</span>
+                                <input class="text-input" [disabled]="!isSquare() || powerOn" step="any" [ngModel]="dutyCycle | unitFormat:'%'" (focusout)="inputLeave($event, 'dutyCycle')" (keypress)="checkForEnter($event, 'dutyCycle')" />
                             </div>
                         </div>
                     </ion-col>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 import { ModalController, PopoverController } from 'ionic-angular';
 
 //Pages
@@ -24,21 +24,21 @@ export class FgenComponent {
     public settingsService: SettingsService;
     public showDutyCycle: boolean;
     public waveType: string;
-    public frequency: string;
-    public amplitude: string;
-    public offset: string;
-    public dutyCycle: string;
+    public frequency: number;
+    public amplitude: number;
+    public offset: number;
+    public dutyCycle: number;
     public powerOn: boolean;
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
     public supportedSignalTypes: string[];
     public attemptingPowerOff: boolean = false;
-    public storageEventListener: EventEmitter<any>;
     public modalCtrl: ModalController;
     public popoverCtrl: PopoverController;
     public toastService: ToastService;
     public showSettings: boolean = true;
     public showChanSettings: boolean[] = [true];
+    public ignoreFocusOut: boolean = false;
 
     constructor(
         _deviceManagerService: DeviceManagerService,
@@ -59,11 +59,136 @@ export class FgenComponent {
         }
         this.showDutyCycle = false;
         this.waveType = 'sine';
-        this.frequency = '1000';
-        this.amplitude = '3';
-        this.offset = '0';
-        this.dutyCycle = '50';
+        this.frequency = 1000;
+        this.amplitude = 3;
+        this.offset = 0;
+        this.dutyCycle = 50;
         this.powerOn = false;
+    }
+
+    checkForEnter(event, input: string) {
+        if (event.key === 'Enter') {
+            this.formatInputAndUpdate(event, input);
+            this.ignoreFocusOut = true;
+        }
+    }
+
+    inputLeave(event, input: string) {
+        if (!this.ignoreFocusOut) {
+            this.formatInputAndUpdate(event, input);
+        }
+        this.ignoreFocusOut = false;
+    }
+
+    formatInputAndUpdate(event, input: string) {
+        let value: string = event.target.value;
+        let parsedValue: number = parseFloat(value);
+
+        let trueValue: number = parsedValue;
+        if (value.indexOf('G') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 9);
+        }
+        else if (value.indexOf('M') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 6);
+        }
+        else if (value.indexOf('k') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 3);
+        }
+        else if (value.indexOf('m') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -3);
+        }
+        else if (value.indexOf('u') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -6);
+        }
+        else if (value.indexOf('n') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -9);
+        }
+
+        if (trueValue > Math.pow(10, 9)) {
+            trueValue = Math.pow(10, 9);
+        }
+        else if (trueValue < -Math.pow(10, 9)) {
+            trueValue = -Math.pow(10, 9);
+        }
+        console.log(trueValue);
+        switch (input) {
+            case 'frequency':
+                if (trueValue < this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
+                }
+                else if (trueValue > this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
+                }
+                if (this.frequency === trueValue) {
+                    console.log('the same');
+                    this.frequency = trueValue * 10 + 1;
+                    setTimeout(() => {
+                        this.frequency = trueValue;
+                    }, 1);
+                    return;
+                }
+                this.frequency = trueValue;
+                break;
+            case 'amplitude':
+                trueValue = Math.abs(trueValue);
+                let mid = (this.activeDevice.instruments.awg.chans[0].vOutMax + this.activeDevice.instruments.awg.chans[0].vOutMin) / 2000;
+                console.log(mid);
+                if (this.offset >= mid) {
+                    if ((trueValue / 2) + this.offset > this.activeDevice.instruments.awg.chans[0].vOutMax / 1000) {
+                        trueValue = 2 * Math.abs((this.activeDevice.instruments.awg.chans[0].vOutMax / 1000) - this.offset);
+                    }
+                }
+                else {
+                    if (this.offset - (trueValue / 2) < this.activeDevice.instruments.awg.chans[0].vOutMin / 1000) {
+                        trueValue = 2 * Math.abs((this.activeDevice.instruments.awg.chans[0].vOutMin / 1000) - this.offset);
+                    }
+                }
+                if (this.amplitude === trueValue) {
+                    console.log('the same');
+                    this.amplitude = trueValue * 10 + 1;
+                    setTimeout(() => {
+                        this.amplitude = trueValue;
+                    }, 1);
+                    return;
+                }
+                this.amplitude = trueValue;
+                break;
+            case 'offset':
+                if (trueValue < this.activeDevice.instruments.awg.chans[0].vOffsetMin / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[0].vOffsetMin / 1000;
+                }
+                else if (trueValue > this.activeDevice.instruments.awg.chans[0].vOffsetMax / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[0].vOffsetMax / 1000;
+                }
+                if (this.offset === trueValue) {
+                    console.log('the same');
+                    this.offset = trueValue * 10 + 1;
+                    setTimeout(() => {
+                        this.offset = trueValue;
+                    }, 1);
+                    return;
+                }
+                this.offset = trueValue;
+                break;
+            case 'dutyCycle': 
+                if (trueValue < 0) {
+                    trueValue = 0;
+                }
+                else if (trueValue > 100) {
+                    trueValue = 100;
+                }
+                if (this.dutyCycle === trueValue) {
+                    console.log('the same');
+                    this.dutyCycle = trueValue * 10 + 1;
+                    setTimeout(() => {
+                        this.dutyCycle = trueValue;
+                    }, 1);
+                    return;
+                }
+                this.dutyCycle = trueValue;
+                break;
+            default:
+        }
     }
 
     //Toggle dropdown
@@ -91,9 +216,9 @@ export class FgenComponent {
             chans[i] = i + 1;
             settings[i] = {
                 signalType: this.waveType,
-                signalFreq: parseFloat(this.frequency),
-                vpp: parseFloat(this.amplitude),
-                vOffset: parseFloat(this.offset)
+                signalFreq: this.frequency,
+                vpp: this.amplitude,
+                vOffset: this.offset
             };
         }
         if (!this.powerOn) {

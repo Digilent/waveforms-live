@@ -86,6 +86,14 @@ export class YAxisComponent {
             else if (trueValue < this.chart.deviceDescriptor.instruments.osc.chans[channel].inputVoltageMin / 1000) {
                 trueValue = this.chart.deviceDescriptor.instruments.osc.chans[channel].inputVoltageMin / 1000;
             }
+            if (this.chart.voltBase[channel] === trueValue) {
+                console.log('the same');
+                this.chart.voltBase[channel] = trueValue * 10 + 1;
+                setTimeout(() => {
+                    this.chart.voltBase[channel] = trueValue;
+                }, 1);
+                return;
+            }
             this.chart.voltBase[channel] = trueValue;
         }
         else if (inputType === 'vpd') {
@@ -94,6 +102,14 @@ export class YAxisComponent {
             }
             else if (trueValue > this.chart.voltsPerDivVals[this.chart.voltsPerDivVals.length - 1]) {
                 trueValue = this.chart.voltsPerDivVals[this.chart.voltsPerDivVals.length - 1];
+            }
+            if (this.chart.voltDivision[channel] === trueValue) {
+                console.log('the same');
+                this.chart.voltDivision[channel] = trueValue * 10 + 1;
+                setTimeout(() => {
+                    this.chart.voltDivision[channel] = trueValue;
+                }, 1);
+                return;
             }
             this.chart.voltDivision[channel] = trueValue;
         }

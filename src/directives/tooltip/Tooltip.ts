@@ -1,4 +1,4 @@
-import { Directive, HostListener, ComponentRef, ViewContainerRef, Input, ComponentFactoryResolver, ComponentFactory } from "@angular/core";
+import { Directive, HostListener, ComponentRef, ViewContainerRef, Input, ComponentFactoryResolver } from "@angular/core";
 import { TooltipContent } from "./TooltipContent";
 import { Platform } from 'ionic-angular';
 

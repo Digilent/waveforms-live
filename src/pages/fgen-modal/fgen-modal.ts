@@ -163,16 +163,16 @@ export class ModalFgenPage {
             dt: 1,
             pointOfInterest: 0,
             triggerPosition: undefined,
-            seriesOffset: parseFloat(this.fgenComponent.offset)
+            seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
-        if (parseFloat(this.fgenComponent.frequency) != 0) {
-            period = 1 / parseFloat(this.fgenComponent.frequency);
+        if (this.fgenComponent.frequency != 0) {
+            period = 1 / this.fgenComponent.frequency;
         }
         let dt = (2 * period) / this.numPoints;
         waveform.dt = dt;
         for (let i = 0; i < this.numPoints; i++) {
-            waveform.y[i] = parseFloat(this.fgenComponent.amplitude) * Math.sin(((Math.PI * 2) / (this.numPoints / 2)) * i) + parseFloat(this.fgenComponent.offset);
+            waveform.y[i] = this.fgenComponent.amplitude * Math.sin(((Math.PI * 2) / (this.numPoints / 2)) * i) + this.fgenComponent.offset;
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.clearExtraSeries([0]);
@@ -190,14 +190,14 @@ export class ModalFgenPage {
             seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
-        if (parseFloat(this.fgenComponent.frequency) != 0) {
-            period = 1 / parseFloat(this.fgenComponent.frequency);
+        if (this.fgenComponent.frequency != 0) {
+            period = 1 / this.fgenComponent.frequency;
         }
         let dt = (2 * period) / this.numPoints;
         waveform.dt = dt;
         for (let i = 0; i < this.numPoints; i++) {
-            waveform.y[i] = (i % (this.numPoints / 2)) * (parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 2)) +
-                parseFloat(this.fgenComponent.offset);
+            waveform.y[i] = (i % (this.numPoints / 2)) * (this.fgenComponent.amplitude / (this.numPoints / 2)) +
+                this.fgenComponent.offset;
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.clearExtraSeries([0]);
@@ -216,7 +216,7 @@ export class ModalFgenPage {
         };
         waveform.dt = 1;
         for (let i = 0; i < this.numPoints; i++) {
-            waveform.y[i] = parseFloat(this.fgenComponent.offset);
+            waveform.y[i] = this.fgenComponent.offset;
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.clearExtraSeries([0]);
@@ -234,20 +234,20 @@ export class ModalFgenPage {
             seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
-        if (parseFloat(this.fgenComponent.frequency) != 0) {
-            period = 1 / parseFloat(this.fgenComponent.frequency);
+        if (this.fgenComponent.frequency != 0) {
+            period = 1 / this.fgenComponent.frequency;
         }
         let dt = (2 * period) / this.numPoints;
         waveform.dt = dt;
         for (let i = 0; i < (this.numPoints / 8); i++) {
-            waveform.y[i] = ((parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 8)) * i) + parseFloat(this.fgenComponent.offset);
+            waveform.y[i] = ((this.fgenComponent.amplitude / (this.numPoints / 8)) * i) + this.fgenComponent.offset;
         }
         for (let i = 0; i < (this.numPoints / 4); i++) {
-            waveform.y[i + (this.numPoints / 8)] = parseFloat(this.fgenComponent.amplitude) + parseFloat(this.fgenComponent.offset) -
-                ((parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 4)) * 2 * i);
+            waveform.y[i + (this.numPoints / 8)] = this.fgenComponent.amplitude + this.fgenComponent.offset -
+                ((this.fgenComponent.amplitude / (this.numPoints / 4)) * 2 * i);
         }
         for (let i = 0; i < (this.numPoints / 8); i++) {
-            waveform.y[i + (this.numPoints * 3 / 8)] = waveform.y[i] - parseFloat(this.fgenComponent.amplitude);
+            waveform.y[i + (this.numPoints * 3 / 8)] = waveform.y[i] - this.fgenComponent.amplitude;
         }
         for (let i = 0; i < (this.numPoints / 2); i++) {
             waveform.y[i + this.numPoints / 2] = (waveform.y[i]);
@@ -268,14 +268,14 @@ export class ModalFgenPage {
             seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
-        if (parseFloat(this.fgenComponent.frequency) != 0) {
-            period = 1 / parseFloat(this.fgenComponent.frequency);
+        if (this.fgenComponent.frequency != 0) {
+            period = 1 / this.fgenComponent.frequency;
         }
         let dt = (2 * period) / this.numPoints;
         waveform.dt = dt;
         for (let i = 0; i < this.numPoints; i++) {
-            waveform.y[i] = ((-1 * i) % (this.numPoints / 2)) * (parseFloat(this.fgenComponent.amplitude) / (this.numPoints / 2)) +
-                parseFloat(this.fgenComponent.amplitude) + parseFloat(this.fgenComponent.offset);
+            waveform.y[i] = ((-1 * i) % (this.numPoints / 2)) * (this.fgenComponent.amplitude / (this.numPoints / 2)) +
+                this.fgenComponent.amplitude + this.fgenComponent.offset;
         }
         this.chart.setCurrentBuffer([new WaveformComponent(waveform)]);
         this.chart.clearExtraSeries([0]);
@@ -308,17 +308,17 @@ export class ModalFgenPage {
             seriesOffset: this.fgenComponent.offset
         };
         let period = 0;
-        if (parseFloat(this.fgenComponent.frequency) != 0) {
-            period = 1 / parseFloat(this.fgenComponent.frequency);
+        if (this.fgenComponent.frequency != 0) {
+            period = 1 / this.fgenComponent.frequency;
         }
         let dt = (2 * period) / this.numPoints;
         waveform.dt = dt;
         let i = 0;
-        for (i = 0; i < (this.numPoints / 2) * (parseFloat(this.fgenComponent.dutyCycle) / 100); i++) {
-            waveform.y[i] = parseFloat(this.fgenComponent.offset) + parseFloat(this.fgenComponent.amplitude);
+        for (i = 0; i < (this.numPoints / 2) * (this.fgenComponent.dutyCycle / 100); i++) {
+            waveform.y[i] = this.fgenComponent.offset + this.fgenComponent.amplitude;
         }
         for (; i < (this.numPoints / 2); i++) {
-            waveform.y[i] = parseFloat(this.fgenComponent.offset) - parseFloat(this.fgenComponent.amplitude);
+            waveform.y[i] = this.fgenComponent.offset - this.fgenComponent.amplitude;
         }
         for (let j = 0; i < this.numPoints; i++ , j++) {
             waveform.y[i] = waveform.y[j];

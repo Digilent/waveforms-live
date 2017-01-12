@@ -28,13 +28,81 @@ export class TriggerComponent {
     public showTriggerSettings: boolean = true;
     public devMngSrv: DeviceManagerService;
     public activeDevice: DeviceComponent;
-    public level: string = '0';
+    public level: number = 0;
+    public ignoreFocusOut: boolean = false;
 
     constructor(_popoverCtrl: PopoverController, _devMngSrv: DeviceManagerService, _toastService: ToastService) {
         this.popoverCtrl = _popoverCtrl;
         this.toastService = _toastService;
         this.devMngSrv = _devMngSrv;
         this.activeDevice = this.devMngSrv.devices[this.devMngSrv.activeDeviceIndex];
+    }
+
+    checkForEnter(event) {
+        if (event.key === 'Enter') {
+            this.formatInputAndUpdate(event);
+            this.ignoreFocusOut = true;
+        }
+    }
+
+    inputLeave(event) {
+        if (!this.ignoreFocusOut) {
+            this.formatInputAndUpdate(event);
+        }
+        this.ignoreFocusOut = false;
+    }
+
+    formatInputAndUpdate(event) {
+        let value: string = event.target.value;
+        let parsedValue: number = parseFloat(value);
+
+        let trueValue: number = parsedValue;
+        if (value.indexOf('G') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 9);
+        }
+        else if (value.indexOf('M') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 6);
+        }
+        else if (value.indexOf('k') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 3);
+        }
+        else if (value.indexOf('m') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -3);
+        }
+        else if (value.indexOf('u') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -6);
+        }
+        else if (value.indexOf('n') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -9);
+        }
+
+        if (trueValue > Math.pow(10, 9)) {
+            trueValue = Math.pow(10, 9);
+        }
+        else if (trueValue < -Math.pow(10, 9)) {
+            trueValue = -Math.pow(10, 9);
+        }
+        console.log(trueValue);
+        if (trueValue * 1000 > this.activeDevice.instruments.osc.chans[0].inputVoltageMax ||
+            trueValue * 1000 - 30 < this.activeDevice.instruments.osc.chans[0].inputVoltageMin) {
+                this.toastService.createToast('invalidLevel', true);
+                this.level = 0;
+                return;
+        }
+        if (this.level === trueValue) {
+            console.log('the same');
+            this.level = trueValue * 10 + 1;
+            setTimeout(() => {
+                this.level = trueValue;
+                this.upperThresh = (this.level * 1000).toString();
+                this.lowerThresh = (parseFloat(this.upperThresh) - 30).toString();
+            }, 1);
+            return;
+        }
+        this.level = trueValue;
+        this.upperThresh = (this.level * 1000).toString();
+        this.lowerThresh = (parseFloat(this.upperThresh) - 30).toString();
+        console.log(this.upperThresh, this.lowerThresh);
     }
 
     toggleTriggerShow() {
@@ -77,18 +145,6 @@ export class TriggerComponent {
             () => { }
         );*/
         this.toastService.createToast('notImplemented', true);
-    }
-
-    setupLevel() {
-        if (parseFloat(this.level) * 1000 > this.activeDevice.instruments.osc.chans[0].inputVoltageMax ||
-            parseFloat(this.level) * 1000 - 30 < this.activeDevice.instruments.osc.chans[0].inputVoltageMin) {
-                this.toastService.createToast('invalidLevel', true);
-                this.level = '0';
-                return;
-        }
-        this.upperThresh = (parseFloat(this.level) * 1000).toString();
-        this.lowerThresh = (parseFloat(this.upperThresh) - 30).toString();
-        console.log(this.upperThresh, this.lowerThresh);
     }
 
     //Open series popover

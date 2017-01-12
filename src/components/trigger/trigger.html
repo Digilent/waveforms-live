@@ -38,8 +38,6 @@
                                 <ion-icon name="arrow-dropdown"></ion-icon>
                             </button>
                         </div>
-                        <div class="label-right">
-                        </div>
                     </div>
 				</ion-col>
 			</ion-row>
@@ -50,10 +48,7 @@
 				<ion-col center class="input-col">
                     <div class="label-flex">
                         <div class="label-left">
-                            <input class="custom-input" (focusout)="setupLevel()" type="number" step="any" [(ngModel)]="level" />
-                        </div>
-                        <div class="label-right">
-                            <span>V</span>
+                            <input class="custom-input" step="any" [ngModel]="level | unitFormat:'V'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
                         </div>
                     </div>
 				</ion-col>
