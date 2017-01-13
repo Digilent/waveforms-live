@@ -6,21 +6,23 @@
 .xaxis-component-wrapper .xaxis-left
 {
     text-align: right;
-    padding: 0px;
-    max-width: 32px;
+    padding: 0;
+    max-width: 26px;
+    font-size: 0;
 }
 
 .xaxis-component-wrapper .xaxis-right
 {
     text-align: left;
-    padding: 0px;
+    padding: 0;
     max-width: 32px;
+    font-size: 0;
 }
 
 .xaxis-component-wrapper .xaxis-center
 {
     min-width: 80px;
-    padding: 1px 4px 0px 4px;
+    padding: 0px 4px 0px 4px;
 }
 
 .xaxis-component-wrapper
@@ -38,18 +40,6 @@
     padding-left: 15px;
     padding-right: 0px;
     color: #CCCCCC;
-}
-
-.xaxis-component-wrapper .custom-input
-{
-    color: #CCCCCC;
-    text-align: left;
-    width: 100%;
-    background-color: #3A3A3A;
-    border: solid black 1px;
-    padding: 2px 0px 2px 4px;
-    margin: 0px;
-    border-radius: 0px;
 }
 
 .xaxis-component-wrapper .custom-image-button
@@ -74,6 +64,7 @@
     margin: 0px;
     box-shadow: none;
     font-weight: 400;
+    display: block;
 }
 
 .xaxis-component-wrapper .img-button:hover

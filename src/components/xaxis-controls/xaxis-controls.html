@@ -8,18 +8,24 @@
         <ion-col center class="tpd-label-col">
             Time/
         </ion-col>
-        <ion-col center text-center class="xaxis-left">
-            <button ion-button (tap)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivVals.length-1" class="img-button disable-hover">
-                <img class="custom-image-button" src="assets/img/zoom-out.png">
-            </button>
+        <ion-col center class="xaxis-left">
+            <div style="display:inline-block">
+                <button ion-button (tap)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivVals.length-1" class="img-button disable-hover">
+                    <img class="custom-image-button" src="assets/img/zoom-out.png">
+                </button>
+            </div>
         </ion-col>
         <ion-col class="xaxis-center" center text-center>
-            <input class="custom-input" step="any" [ngModel]="chart.timeDivision | unitFormat:'s/'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
+            <div style="display:inline-block;">
+                <input class="custom-input" step="any" [ngModel]="chart.timeDivision | unitFormat:'s/'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
+            </div>
         </ion-col>
-        <ion-col center text-center class="xaxis-right">
-            <button ion-button (tap)="chart.decrementTPD()" [disabled]="chart.activeTPDIndex == 0" class="img-button disable-hover">
-                <img class="custom-image-button" src="assets/img/zoom-in.png">
-            </button>
+        <ion-col center class="xaxis-right">
+            <div style="display:inline-block">
+                <button ion-button (tap)="chart.decrementTPD()" [disabled]="chart.activeTPDIndex == 0" class="img-button disable-hover">
+                    <img class="custom-image-button" src="assets/img/zoom-in.png">
+                </button>
+            </div>
         </ion-col>
     </ion-row>
 </div>

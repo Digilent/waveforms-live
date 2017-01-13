@@ -19,17 +19,21 @@
                         Volts/
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
-                        <button ion-button [disabled]="chart.activeVPDIndex[i] == chart.voltsPerDivVals.length-1" (tap)="chart.incrementVPD(i)" class="img-button disable-hover">
-                            <img class="custom-image-button" src="assets/img/zoom-out.png">
-                        </button>
+                        <div style="display:inline-block">
+                            <button ion-button [disabled]="chart.activeVPDIndex[i] == chart.voltsPerDivVals.length-1" (tap)="chart.incrementVPD(i)" class="img-button disable-hover">
+                                <img class="custom-image-button" src="assets/img/zoom-out.png">
+                            </button>
+                        </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <input class="custom-input" step="any" [ngModel]="chart.voltDivision[i] | unitFormat:'V/'" (focusout)="inputLeave($event, i, 'vpd')" (keypress)="checkForEnter($event, i, 'vpd')" />
                     </ion-col>
-                    <ion-col text-left center class="vpd-button-col">
-                        <button ion-button [disabled]="chart.activeVPDIndex[i] == 0" (tap)="chart.decrementVPD(i)" class="img-button disable-hover">
-                            <img class="custom-image-button" src="assets/img/zoom-in.png">
-                        </button>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <div style="display:inline-block">
+                            <button ion-button [disabled]="chart.activeVPDIndex[i] == 0" (tap)="chart.decrementVPD(i)" class="img-button disable-hover">
+                                <img class="custom-image-button" src="assets/img/zoom-in.png">
+                            </button>
+                        </div>
                     </ion-col>
                 </ion-row>
 
@@ -43,7 +47,7 @@
                     <ion-col class="vpd-val-col" center text-center>
                         <input class="custom-input" step="any" [ngModel]="chart.voltBase[i] | unitFormat:'V'" (focusout)="inputLeave($event, i, 'offset')" (keypress)="checkForEnter($event, i, 'offset')" />
                     </ion-col>
-                    <ion-col text-left center class="vpd-button-col">
+                    <ion-col text-left center class="vpd-button-col margin-right">
                         <button ion-button (tap)="chart.incrementOffset(i)" class="icon-only-button-side disable-hover offset-button"><ion-icon name="add"></ion-icon></button>
                     </ion-col>
                 </ion-row>

@@ -34,13 +34,13 @@
 					</div>
 				</ion-col>
 			</ion-row>
-			<ion-row>
+			<ion-row class="item-row">
 				<ion-col center class="input-label">
 					<span [tooltip]="tooltipService.getTooltip('triggerSource').message" [tooltipAnimation]="true" tooltipPlacement="right">Source</span>
 				</ion-col>
 				<ion-col class="input-col" center>
                     <div class="label-flex">
-                        <div class="label-left">
+                        <div class="label-left remove-margin">
                             <button ion-button icon-right class="source-button disable-hover" (click)="openGenPopover($event)">
                                 {{triggerSource}}
                                 <ion-icon name="arrow-dropdown"></ion-icon>
@@ -49,7 +49,7 @@
                     </div>
 				</ion-col>
 			</ion-row>
-			<ion-row>
+			<ion-row class="item-row">
 				<ion-col center class="input-label">
 					<span [tooltip]="tooltipService.getTooltip('triggerLevel').message" [tooltipAnimation]="true" tooltipPlacement="right">Level</span>
 				</ion-col>

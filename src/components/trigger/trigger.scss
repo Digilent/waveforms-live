@@ -1,6 +1,7 @@
 .ion-grid-no-padding
 {
     padding: 0px;
+    padding-bottom: 5px;
 }
 
 .trigger-container
@@ -35,18 +36,6 @@
     border-right: solid black 1px;
 }
 
-.trigger-container .custom-input
-{
-    color: #CCCCCC;
-    text-align: left;
-    width: 100%;
-    background-color: #3A3A3A;
-    border: solid black 1px;
-    padding: 2px 0px 2px 4px;
-    margin: 0px;
-    border-radius: 0px;
-}
-
 .trigger-container .image-container-div
 {
     display: inline-block;
@@ -66,6 +55,7 @@
     font-size: 14px;
     font-weight: 400;
     box-shadow: none;
+    margin: 0;
 
     .button-inner {
         justify-content: space-between;
@@ -84,6 +74,12 @@
      padding-right: 0px;
      padding-left: 15px;
      padding-top: 0px;
+     padding-bottom: 0;
+ }
+
+ .trigger-container .item-row
+ {
+     padding-top: 5px;
  }
 
  .trigger-container .label-flex
@@ -99,6 +95,11 @@
     align-self: center;
 }
 
+.trigger-container .remove-margin
+{
+    font-size: 0px;
+}
+
 .trigger-container .label-right
 {
     color: #CCCCCC;
@@ -109,8 +110,7 @@
 
 .trigger-container .input-col
 {
-    padding-left: 0px;
-    padding-top: 0px;
+    padding: 0;
     padding-right: 6px;
 }
 

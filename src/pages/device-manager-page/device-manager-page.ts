@@ -95,7 +95,7 @@ export class DeviceManagerPage {
             }
         });
         this.storage.getData('routeToStore').then((data) => {
-            if ((data == null || data === true) && (this.platform.is('android') || this.platform.is('ios'))) {
+            if ((data == null || data === true) && !this.platform.is('cordova') && (this.platform.is('android') || this.platform.is('ios'))) {
                 this.routeToStore();
             }
         });
