@@ -32,25 +32,13 @@
     overflow: visible;
 }
 
-.first-tab-container .help-button
+.custom-loading-indicator
 {
-    background-color: #4487BA;
-}
-
-.custom-backdrop
-{
-    background-color: rgba(0, 0, 0, 0.5);
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1000;
-}
-
-.first-tab-container .move-feature-to-front
-{
-    z-index: 1001;
+    .loading-wrapper {
+        color: white;
+        background-color: #535353;
+        border-radius: 0px;
+    }
 }
 
 .first-tab-container .connect-button
@@ -291,13 +279,4 @@
     color: #999;
     font-size: 1.2rem;
     margin-top: 0px;
-}
-
-.custom-loading-indicator
-{
-    .loading-wrapper {
-        color: white;
-        background-color: #535353;
-        border-radius: 0px;
-    }
 }

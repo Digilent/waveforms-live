@@ -8,7 +8,8 @@
 {
     .slide-zoom {
         background-color: #535353;
-        max-width: 850px;
+        width: 850px;
+        max-width: 100%;
         overflow: auto;
         max-height: 100%;
     }
@@ -18,7 +19,8 @@
 {
     .slide-zoom {
         background-color: #535353;
-        max-width: 400px;
+        width: 400px;
+        max-width: 100%;
         overflow: auto;
         max-height: 100%;
     }

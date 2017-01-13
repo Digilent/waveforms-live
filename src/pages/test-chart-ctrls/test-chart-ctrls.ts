@@ -1,4 +1,4 @@
-import { App, Platform } from 'ionic-angular';
+import { App, Platform, NavParams } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 
 //Components
@@ -13,6 +13,15 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 import { StorageService } from '../../services/storage/storage.service';
 import { ToastService } from '../../services/toast/toast.service';
 
+const enum TutorialStage {
+    INTRO,
+    WAVEGEN,
+    WAVETYPE,
+    WAVEPOWER,
+    OSC,
+    SINGLE
+}
+
 
 @Component({
     templateUrl: 'test-chart-ctrls.html'
@@ -23,11 +32,14 @@ export class TestChartCtrlsPage {
     @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
     public app: App;
     public platform: Platform;
+    public params: NavParams;
     public controlsVisible = false;
     public botVisible = false;
     public sideVisible = false;
     public running: boolean = false;
     public triggerStatus: string = 'Idle';
+    public tutorialMode: boolean = false;
+    public tutorialStage: TutorialStage = TutorialStage.INTRO;
 
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
@@ -51,13 +63,27 @@ export class TestChartCtrlsPage {
     public readingOsc: boolean = false;
     public readingLa: boolean = false;
 
-    constructor(_deviceManagerService: DeviceManagerService, _storage: StorageService, _toastService: ToastService, _app: App, _platform: Platform) {
+    constructor(
+        _deviceManagerService: DeviceManagerService,
+        _storage: StorageService,
+        _toastService: ToastService,
+        _app: App,
+        _params: NavParams,
+        _platform: Platform
+    ) {
         this.toastService = _toastService;
         this.app = _app;
+        this.params = _params;
+        this.tutorialMode = this.params.get('tutorialMode') || false;
         this.platform = _platform;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.storage = _storage;
+        console.log(this.tutorialMode);
+    }
+
+    executeHelp() {
+        this.tutorialMode = false;
     }
 
     requestFullscreen() {

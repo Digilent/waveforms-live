@@ -279,60 +279,12 @@ export class DeviceComponent {
     }
 
     calibrationRead(): Observable<any> {
-        let commandObject = {
+        let command = {
             "device": [{
                 command: "calibrationRead"
             }]
         }
-        return Observable.create((observer) => {
-            this.transport.writeRead('/', JSON.stringify(commandObject), 'json').subscribe(
-                (data) => {
-                    console.log('response');
-                    let count = 0;
-                    let i = 0;
-                    let stringBuffer = '';
-                    while (count < 2 && i < 2000) {
-                        let char = '';
-                        char += String.fromCharCode.apply(null, new Int8Array(data.slice(i, i + 1)));
-                        if (char === '\n') {
-                            count++;
-                        }
-                        stringBuffer += char;
-                        i++;
-                    }
-                    if (i === 2000) {
-                        console.log(stringBuffer);
-                        observer.error('Calibration Read Failed. Try Again');
-                        return;
-                    }
-                    let binaryIndexStringLength = stringBuffer.indexOf('\r\n');
-                    let binaryIndex = parseFloat(stringBuffer.substring(0, binaryIndexStringLength));
-                    let command;
-                    try {
-                        command = JSON.parse(stringBuffer.substring(binaryIndexStringLength + 2, binaryIndexStringLength + binaryIndex + 2));
-                    }
-                    catch (error) {
-                        console.log(error);
-                        console.log('Error parsing response from read. Printing entire response');
-                        console.log(String.fromCharCode.apply(null, new Int8Array(data.slice(0))));
-                        observer.error(error);
-                        observer.complete();
-                        return;
-                    }
-                    console.log(command);
-                    let binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex));
-                    observer.next(command);
-                    //Handle device errors and warnings
-                    observer.complete();
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            )
-        });
+        return this._genericResponseHandler(command);
     }
 
     calibrationSave(location: string): Observable<any> {

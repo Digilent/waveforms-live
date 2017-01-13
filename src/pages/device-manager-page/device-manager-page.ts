@@ -449,14 +449,16 @@ export class DeviceManagerPage {
     connectToDevice(deviceIndex: number) {
         if (this.devices[deviceIndex].ipAddress === 'local') {
             this.deviceManagerService.addDeviceFromDescriptor('local', { device: [this.devices[deviceIndex].deviceDescriptor] });
-            this.navCtrl.setRoot(TestChartCtrlsPage);
+            this.navCtrl.setRoot(TestChartCtrlsPage, {
+                tutorialMode: this.tutorialMode
+            });
             return;
         }
         let loading = this.displayLoading();
         let ipAddress = this.devices[deviceIndex].ipAddress;
         if (this.devices[deviceIndex].bridge) {
             ipAddress = this.devices[deviceIndex].deviceBridgeAddress;
-            this.deviceManagerService.transport.setUri(ipAddress);
+            this.deviceManagerService.transport.setHttpTransport(ipAddress);
             let command = {
                 "agent": [
                     {
@@ -479,7 +481,7 @@ export class DeviceManagerPage {
                         console.log(e);
                     }
                     console.log(data);
-                    if (data.agent[0].statusCode === 0) { this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading); }
+                    if (data.agent[0] && data.agent[0].statusCode === 0) { this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading); }
                     else {
                         this.toastService.createToast('agentConnectError', true);
                         loading.dismiss();
@@ -505,7 +507,9 @@ export class DeviceManagerPage {
                 /*Navigate to the parents of the tab controller so they have the nav type.
                 Without navigating to the parents, the navCtrl is a 'Tab' and thus the 
                 new root page will have the tab bar.*/
-                this.navCtrl.setRoot(TestChartCtrlsPage);
+                this.navCtrl.setRoot(TestChartCtrlsPage, {
+                    tutorialMode: this.tutorialMode
+                });
             },
             (err) => {
                 console.log(err);

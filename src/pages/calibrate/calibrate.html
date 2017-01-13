@@ -46,7 +46,7 @@
                     </button>
                 </ion-col>
                 <ion-col text-right>
-                    <button ion-button icon-right class="text-button-side disable-hover" (click)="toCalibrationSuccessPage()" *ngIf="calibrationSuccessful ||true">
+                    <button ion-button icon-right class="text-button-side disable-hover" (click)="toCalibrationSuccessPage()" *ngIf="calibrationSuccessful">
                         Next
                         <ion-icon name="arrow-forward"></ion-icon>
                     </button>
@@ -57,7 +57,7 @@
         <ion-slide class="third-slide-container">
             <div class="slide-header">Calibration Information</div>
             <div class="calibration-instructions calibration-results">
-                {{calibrationResults}}
+                <textarea [ngModel]="calibrationResults" class="calibration-results-container"></textarea>
             </div>
             <div class="list-container">
                 <ion-row>

@@ -22,8 +22,8 @@ export class CalibratePage {
     public calibrationFailed: boolean = false;
     public calibrationSuccessful: boolean = false;
     public calibrationReadAttempts: number = 0;
-    public maxCalibrationReadAttempts: number = 20;
-    public timeBetweenReadAttempts: number = 1000;
+    public maxCalibrationReadAttempts: number = 10;
+    public timeBetweenReadAttempts: number = 2000;
 
     /*public storageLocations: string[] = ['No Locations Found'];
     public selectedLocation: string = 'No Location Selected';*/
@@ -136,13 +136,20 @@ export class CalibratePage {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationStart().subscribe(
             (data) => {
                 console.log(data);
-                this.calibrationStatus = 'Running Calibration. This should take about ' + data.device[0].wait + ' seconds.';
+                let waitTime = data.device[0].wait < 0 ? this.timeBetweenReadAttempts : data.device[0].wait;
+                this.calibrationStatus = 'Running Calibration. This should take about ' + (data.device[0].wait / 1000) + ' seconds.';
                 this.calibrationReadAttempts = 0;
-                this.readCalibration();
+                setTimeout(() => {
+                    this.readCalibration();
+                }, waitTime);
             },
             (err) => {
                 console.log(err);
                 this.calibrationFailed = true;
+                if (err.device[0].statusCode === 2684354573) {
+                    this.calibrationStatus = 'Error starting calibration. Please follow the calibration setup.';
+                    return;
+                }
                 this.calibrationStatus = 'Error starting calibration. Please try again.';
             },
             () => { }
@@ -166,6 +173,7 @@ export class CalibratePage {
             (data) => {
                 console.log(data);
                 this.calibrationStatus = 'Calibration Successful!';
+                this.parseCalibrationInformation(data);
                 this.calibrationSuccessful = true;
             },
             (err) => {
@@ -183,6 +191,17 @@ export class CalibratePage {
             },
             () => { }
         );
+    }
+
+    parseCalibrationInformation(data: any) {
+        let calibrationDataContainer = data.device[0].calibrationData;
+        for (let instrument in calibrationDataContainer) {
+            if (calibrationDataContainer[instrument].numChans) {
+                delete calibrationDataContainer[instrument].numChans;
+            }
+        }
+        let calibrationDataAsString: string = JSON.stringify(calibrationDataContainer, undefined, 4);
+        this.calibrationResults = calibrationDataAsString;
     }
 
     saveCalibration(location: string): Promise<any> {

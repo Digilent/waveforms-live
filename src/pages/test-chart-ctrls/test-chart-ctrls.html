@@ -1,4 +1,7 @@
 <ion-content #mycontent>
+
+    <div class="custom-backdrop" *ngIf="tutorialMode"></div>
+
     <div class="chart-page-container" id="instrument-panel-container">
         <ion-row class="top-bar-container">
             <ion-col class="move-left" center text-center>
@@ -42,6 +45,11 @@
         <ion-row class="center-container">
             <ion-col class="custom-col">
                 <silverNeedleChart #chart1 (chartLoad)="initSettings()" class="chart-wrapper"></silverNeedleChart>
+                <ion-fab class="tutorial-mode-button" *ngIf="tutorialMode">
+                    <button ion-fab mini class="help-button" (click)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
+                        <ion-icon [name]="tutorialMode ? 'close' : 'help'"></ion-icon>
+                    </button>
+                </ion-fab>
             </ion-col>
             <ion-col class="controls-wrapper">
                 <xaxis-controls [chart]="chart1"></xaxis-controls>

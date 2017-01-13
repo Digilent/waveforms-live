@@ -12,8 +12,8 @@
     <div class="custom-backdrop" *ngIf="tutorialMode"></div>
 
     <ion-fab right bottom>
-        <button ion-fab mini class="help-button" (click)="executeHelp()">
-            <ion-icon name="help"></ion-icon>
+        <button ion-fab mini (click)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
+            <ion-icon [name]="tutorialMode ? 'close' : 'help'"></ion-icon>
         </button>
     </ion-fab>
 
