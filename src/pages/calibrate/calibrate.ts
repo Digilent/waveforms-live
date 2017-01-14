@@ -66,7 +66,8 @@ export class CalibratePage {
     }
 
     selectStorage(event) {
-        console.log(event);
+        this.selectedLocation = event;
+        console.log(this.selectedLocation);
     }
 
     toSlide(slideNum: number) {
@@ -91,6 +92,11 @@ export class CalibratePage {
             this.calibrationResultsIndicator = 'Error saving calibration. Choose a valid storage location.';
             return;
         }
+        if (this.calibrationResults.indexOf('IDEAL') !== -1) {
+            this.calibrationResultsIndicator = 'Error saving calibration. One or more channels fell back to ideal values. Rerun calibration.';
+            return;
+        }
+        console.log(this.selectedLocation);
         this.saveCalibration(this.selectedLocation)
             .then(() => {
                 this.calibrationResultsIndicator = 'Save successful';
@@ -109,6 +115,7 @@ export class CalibratePage {
             (data) => {
                 console.log(data);
                 this.storageLocations = data.device[0].storageTypes;
+                this.selectedLocation = this.storageLocations[0];
             },
             (err) => {
                 console.log(err);

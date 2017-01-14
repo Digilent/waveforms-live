@@ -296,11 +296,11 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
-    calibrationSave(location: string): Observable<any> {
+    calibrationSave(type: string): Observable<any> {
         let command = {
             "device": [{
                 "command": "calibrationSave",
-                "location": location
+                "type": type
             }]
         }
         return this._genericResponseHandler(command);
