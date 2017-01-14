@@ -249,6 +249,15 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
+    calibrationGetStorageTypes(): Observable<any> {
+        let command = {
+            "device": [{
+                command: "calibrationGetStorageTypes"
+            }]
+        };
+        return this._genericResponseHandler(command);
+    }
+
     calibrationGetInstructions(): Observable<any> {
         let command = {
             "device": [{

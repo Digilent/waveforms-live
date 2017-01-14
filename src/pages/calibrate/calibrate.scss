@@ -53,9 +53,9 @@
 
 .calibration-container .calibration-results-container
 {
-    max-height: 314px;
+    max-height: 230px;
     max-width: 100%;
-    height: 314px;
+    height: 230px;
     padding-left: 8px;
     width: 100%;
     color: #CCCCCC;
@@ -102,45 +102,59 @@
     padding-top: 16px;
 }
 
-/*.calibration-container .calibration-dropdown-popover-container
+.calibration-container .save-button
+{
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
+    font-size: 10px;
+    font-weight: 400;
+    background-color: #535353;
+    border: solid black 1px;
+    border-radius: 0px;
+    box-shadow: none;
+    color: #CCCCCC;
+}
+
+.calibration-container .calibration-dropdown-popover-container
 {
     font-size: 16px;
     background-color: #535353;
+}
+
+.calibration-container .dropdown-popover-container
+{
+    margin-top: 2px;
+}
+
+.calibration-container .status-indicator-col
+{
+    padding-left: 16px;
 }
 
 .calibration-container .dropdown-popover-container .popover-button
 {
     height: 25px;
     margin-top:3px;
-}*/
-/*
+}
+
 .calibration-container .storage-label
 {
     color: #CCCCCC;
     font-size: 1.2rem;
     margin-top: 8px;
+    margin-bottom:1px;
 }
 
 .calibration-container .storage-refresh-button
 {
-    margin-top: 30px;
-}*/
+    margin-top: 32px;
+}
 
 .calibration-container .status-indicator
 {
-    padding-left: 16px;
     color: white;
-}
-
-.calibration-container .status-col
-{
-    padding: 0;
-    max-width: 68px;
-}
-
-.calibration-container .indicator-col
-{
-    padding: 0;
 }
 
 .calibration-container .navigation-button-container
@@ -148,6 +162,35 @@
     position: absolute;
     width: 100%;
     bottom: 0;
+}
+
+.calibration-container .button-container-col
+{
+    max-width: 120px;
+}
+
+.calibration-container .pad-above
+{
+    padding-top: 16px;
+}
+
+.calibration-container .progress-bar
+{
+    width: 90%;
+    height: 30px;
+    background-color: #3A3A3A;
+}
+
+.calibration-container {
+    progress::-webkit-progress-bar {
+        background-color:#3A3A3A;
+    }
+    progress::-webkit-progress-value {
+        background-color:#4487BA;
+    }
+    progress::-moz-progress-bar {
+        background-color: #4487BA;
+    }
 }
 
 @media screen and (max-width: 768px) {

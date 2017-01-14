@@ -42,8 +42,11 @@
         <ion-slide class="slide-container">
             <div class="content-container">
                 <div class="slide-header">Running Calibration</div>
-                <div class="calibration-instructions">
+                <div class="calibration-instructions pad-above">
                     {{calibrationStatus}}
+                </div>
+                <div text-center class="pad-above">
+                    <progress class="progress-bar" [value]="progressBarValue" max="100"></progress>
                 </div>
                 <div class="navigation-button-container">
                     <ion-row>
@@ -58,6 +61,10 @@
                                 Next
                                 <ion-icon name="arrow-forward"></ion-icon>
                             </button>
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="startCalibration()" *ngIf="calibrationFailed">
+                                Retry
+                                <ion-icon name="redo"></ion-icon>
+                            </button>
                         </ion-col>
                     </ion-row>
                 </div>
@@ -70,44 +77,38 @@
                 <div class="calibration-instructions calibration-results">
                     <textarea [ngModel]="calibrationResults" class="calibration-results-container"></textarea>
                 </div>
-                <div class="list-container">
-                    <ion-row>
-                        <ion-col text-left class="status-col">
-                            <div class="calibration-instructions status-indicator">Status: </div>
-                        </ion-col>
-                        <ion-col text-left class="indicator-col">
-                            <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>
-                        </ion-col>
-                    </ion-row>
-
-                    <!--<div text-center>
-                        <ion-item class="calibration-dropdown-popover-container">
-                            <span class="storage-label">Storage Location</span>
-                            <dropdown-popover [dataArray]="storageLocations" (onSelection)="selectStorage($event)"></dropdown-popover>
-                            <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" item-right (click)="getStorageLocations()">
-                                <ion-icon name="refresh"></ion-icon>
-                            </button>
-                        </ion-item>
-                    </div>-->
-
-                    <!--<ion-item class="calibrate-item">
-                        <ion-label>Save Calibration To Selected Location</ion-label>
-                        <ion-checkbox [(ngModel)]="saveCalibrationDecision"></ion-checkbox>
-                    </ion-item>-->
+                <div text-center>
+                    <ion-item class="calibration-dropdown-popover-container">
+                        <span class="storage-label">Storage Location</span>
+                        <dropdown-popover [dataArray]="storageLocations" (onSelection)="selectStorage($event)"></dropdown-popover>
+                        <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" item-right (click)="getStorageLocations()">
+                            <ion-icon name="refresh"></ion-icon>
+                        </button>
+                    </ion-item>
                 </div>
                 <div class="navigation-button-container">
                     <ion-row>
-                        <ion-col text-left>
-                            <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()">
-                                <ion-icon name="close"></ion-icon>
-                                Close
-                            </button>
+                        <ion-col text-left class="status-indicator-col">
+                            <div class="calibration-instructions status-indicator">Status: </div>
+                            <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>
                         </ion-col>
-                        <ion-col text-right>
-                            <button ion-button icon-right class="text-button-side disable-hover" (click)="saveCalibrationToDevice()">
-                                Save Calibration
-                                <ion-icon name="download"></ion-icon>
-                            </button>
+                        <ion-col text-right class="button-container-col">
+                            <div>
+                                <button class="save-button disable-hover" (click)="saveCalibrationToDevice()">
+                                    <div>
+                                        <img class="svg-in-img" src="assets/img/save.svg" />
+                                    </div>
+                                    <div>
+                                        SAVE
+                                    </div>
+                                </button>
+                            </div>
+                            <div>
+                                <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()">
+                                    Done
+                                    <ion-icon name="checkmark"></ion-icon>
+                                </button>
+                            </div>
                         </ion-col>
                     </ion-row>
                 </div>

@@ -54,7 +54,7 @@
         <div *ngIf="!showDeviceTypeCard">
             <div [ngSwitch]="deviceConnectionType">
                 <div *ngSwitchCase="'network'" text-center>
-                    <ion-card class="device-manager-card">
+                    <ion-card class="device-manager-card select-device-card">
                         <ion-item class="device-card-item">
                             <ion-icon class="add-device-icon" item-left name="ios-wifi"></ion-icon>
                             <ion-label class="add-device-label">
@@ -78,7 +78,7 @@
                 </div>
 
                 <div *ngSwitchCase="'simulated'" text-center>
-                    <ion-card class="device-manager-card">
+                    <ion-card class="device-manager-card select-device-card">
                         <ion-item class="device-card-item" [ngClass]="{'move-feature-to-front':tutorialStage===2 && tutorialMode}">
                             <ion-icon class="add-device-icon" item-left name="ionitron"></ion-icon>
                             <ion-label class="add-device-label">
@@ -103,7 +103,7 @@
                 </div>
 
                 <div *ngSwitchCase="'agent'" text-center>
-                    <ion-card class="device-manager-card">
+                    <ion-card class="device-manager-card select-device-card">
                         <ion-item class="device-card-item">
                             <ion-icon class="add-device-icon" item-left name="construct"></ion-icon>
                             <ion-label class="add-device-label">

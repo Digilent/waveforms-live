@@ -25,9 +25,11 @@ export class CalibratePage {
     public maxCalibrationReadAttempts: number = 10;
     public timeBetweenReadAttempts: number = 2000;
 
-    /*public storageLocations: string[] = ['No Locations Found'];
-    public selectedLocation: string = 'No Location Selected';*/
-    //public saveCalibrationDecision: boolean = true;
+    public progressBarValue: number = 0;
+    public progressBarIntervalRef;
+
+    public storageLocations: string[] = ['No Locations Found'];
+    public selectedLocation: string = 'No Location Selected';
     public calibrationResults: string = 'Results here';
     public calibrationResultsIndicator: string = '';
 
@@ -63,9 +65,9 @@ export class CalibratePage {
         this.viewCtrl.dismiss();
     }
 
-    /*selectStorage(event) {
+    selectStorage(event) {
         console.log(event);
-    }*/
+    }
 
     toSlide(slideNum: number) {
         let swiperInstance: any = this.slider.getSlider();
@@ -79,14 +81,19 @@ export class CalibratePage {
         swiperInstance.unlockSwipes();
         this.slider.slideTo(2);
         swiperInstance.lockSwipes();
-        this.calibrationResultsIndicator = 'Calibration was successful and was applied automatically.';
-        //this.getStorageLocations();
+        this.calibrationResultsIndicator = 'Calibration was successful and was applied automatically but will be lost when powered down.\nPress save to have this calibration load at startup.';
+        this.getStorageLocations();
     }
 
     saveCalibrationToDevice() {
         this.calibrationResultsIndicator = 'Saving calibration.';
-        this.saveCalibration('flash')
+        if (this.selectedLocation === 'No Location Selected') {
+            this.calibrationResultsIndicator = 'Error saving calibration. Choose a valid storage location.';
+            return;
+        }
+        this.saveCalibration(this.selectedLocation)
             .then(() => {
+                this.calibrationResultsIndicator = 'Save successful';
             })
             .catch((err) => {
                 this.calibrationResultsIndicator = 'Error saving calibration.';
@@ -97,8 +104,8 @@ export class CalibratePage {
         this.viewCtrl.dismiss();
     }
 
-    /*getStorageLocations() {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].storageGetLocations().subscribe(
+    getStorageLocations() {
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationGetStorageTypes().subscribe(
             (data) => {
                 console.log(data);
                 this.storageLocations = data.device[0].storageLocations;
@@ -109,7 +116,7 @@ export class CalibratePage {
             },
             () => { }
         );
-    }*/
+    }
 
     getCalibrationInstructions() {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationGetInstructions().subscribe(
@@ -133,27 +140,43 @@ export class CalibratePage {
     }
 
     startCalibration() {
+        this.calibrationFailed = false;
+        this.calibrationSuccessful = false;
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationStart().subscribe(
             (data) => {
                 console.log(data);
                 let waitTime = data.device[0].wait < 0 ? this.timeBetweenReadAttempts : data.device[0].wait;
                 this.calibrationStatus = 'Running Calibration. This should take about ' + (data.device[0].wait / 1000) + ' seconds.';
                 this.calibrationReadAttempts = 0;
-                setTimeout(() => {
-                    this.readCalibration();
-                }, waitTime);
+                this.runProgressBar(waitTime);
+                this.setMainReadTimeout(waitTime);
             },
             (err) => {
                 console.log(err);
                 this.calibrationFailed = true;
                 if (err.device[0].statusCode === 2684354573) {
-                    this.calibrationStatus = 'Error starting calibration. Please follow the calibration setup.';
+                    this.calibrationStatus = 'Error running calibration. Please check your setup and try again.';
                     return;
                 }
                 this.calibrationStatus = 'Error starting calibration. Please try again.';
             },
             () => { }
         );
+    }
+
+    runProgressBar(waitTime: number) {
+        let progressStartTime = performance.now();
+        this.progressBarIntervalRef = setInterval(() => {
+            this.progressBarValue = (performance.now() - progressStartTime) / (waitTime) * 100;
+        }, 50);
+    }
+
+    setMainReadTimeout(waitTime: number) {
+        setTimeout(() => {
+            clearInterval(this.progressBarIntervalRef);
+            this.progressBarValue = 100;
+            this.readCalibration();
+        }, waitTime);
     }
 
     loadCalibration(location: string, fileName: string) {
@@ -175,18 +198,29 @@ export class CalibratePage {
                 this.calibrationStatus = 'Calibration Successful!';
                 this.parseCalibrationInformation(data);
                 this.calibrationSuccessful = true;
+                this.toCalibrationSuccessPage();
             },
             (err) => {
                 console.log(err);
-                if (this.calibrationReadAttempts < this.maxCalibrationReadAttempts) {
-                    this.calibrationReadAttempts++;
-                    setTimeout(() => {
-                        this.readCalibration();
-                    }, this.timeBetweenReadAttempts);
+                if (err.device[0].statusCode === 8) {
+                    if (this.calibrationReadAttempts < this.maxCalibrationReadAttempts) {
+                        this.calibrationReadAttempts++;
+                        setTimeout(() => {
+                            this.readCalibration();
+                        }, this.timeBetweenReadAttempts);
+                    }
+                    else {
+                        this.calibrationFailed = true;
+                        this.calibrationStatus = 'Timeout attempting to read calibration. Check your calibration setup and try again.';
+                    }
                 }
-                else {
+                else if (err.device[0].statusCode === 2684354578) {
+                    //Bad setup
+                    clearInterval(this.progressBarIntervalRef);
                     this.calibrationFailed = true;
-                    this.calibrationStatus = 'Timeout attempting to read calibration. Please try again.';
+                    this.progressBarValue = 100;
+                    this.calibrationStatus = 'Error starting calibration. Please follow the calibration setup.';
+                    return;
                 }
             },
             () => { }
