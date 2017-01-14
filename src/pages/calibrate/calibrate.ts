@@ -108,7 +108,7 @@ export class CalibratePage {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationGetStorageTypes().subscribe(
             (data) => {
                 console.log(data);
-                this.storageLocations = data.device[0].storageLocations;
+                this.storageLocations = data.device[0].storageTypes;
             },
             (err) => {
                 console.log(err);
