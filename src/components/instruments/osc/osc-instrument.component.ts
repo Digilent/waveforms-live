@@ -54,7 +54,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         "gain": gains[index],
                         "sampleFreq": Math.round(sampleFreqs[index] * 1000),
                         "bufferSize": bufferSizes[index],
-                        "triggerDelay": Math.round(delays[index] * 1000000000)
+                        "triggerDelay": Math.round(delays[index] * 1000000000000)
                     }
                 ]
         });
@@ -85,7 +85,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         "gain": gains[index],
                         "sampleFreq": Math.round(sampleFreqs[index] * 1000),
                         "bufferSize": bufferSizes[index],
-                        "triggerDelay": Math.round(delays[index] * 1000000000)
+                        "triggerDelay": Math.round(delays[index] * 1000000000000)
                     }
                 ]
         });

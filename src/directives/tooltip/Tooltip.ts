@@ -8,16 +8,12 @@ import { Platform } from 'ionic-angular';
 export class Tooltip {
 
     @Input("tooltip") content: string|TooltipContent;
-
     @Input() tooltipDisabled: boolean;
-
     @Input() tooltipAnimation: boolean = true;
-
     @Input() tooltipPlacement: "top"|"bottom"|"left"|"right" = "bottom";
-
     @Input() forceShow: boolean = false;
-
     @Input() forceShowDelay: number = 100;
+    @Input() onlyForceShow: boolean = false;
 
     private tooltip: ComponentRef<TooltipContent>;
     private visible: boolean;
@@ -49,6 +45,7 @@ export class Tooltip {
     @HostListener("focusin")
     @HostListener("mouseenter")
     setTimeout() {
+        if (this.onlyForceShow) { return; }
         clearTimeout(this.timeoutRef);
         this.timeoutRef = setTimeout(() => {
             this.show();

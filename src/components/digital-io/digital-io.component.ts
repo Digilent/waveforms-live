@@ -57,11 +57,31 @@ export class DigitalIoComponent {
             this.laActiveChans.push(false);
         }
         this.contentHidden = true;
-
+        this.setAll('input');
     }
 
     emitEvent() {
         this.headerClicked.emit(null);
+    }
+
+    setAll(direction: 'output' | 'input') {
+        let chanArray = [];
+        let valArray = [];
+        for (let i = 0; i < this.gpioChans.length; i++) {
+            chanArray.push(i + 1);
+            valArray.push(direction);
+        }
+        this.activeDev.instruments.gpio.setParameters(chanArray, valArray).subscribe(
+            (data) => {
+                console.log('set direction');
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => {
+                
+            }
+        );
     }
 
     toggleDigiSettings() {

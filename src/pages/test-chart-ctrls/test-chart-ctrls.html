@@ -55,7 +55,7 @@
                 <xaxis-controls [chart]="chart1"></xaxis-controls>
                 <trigger #triggerComponent [chart]="chart1"></trigger>
                 <yaxis-controls [chart]="chart1"></yaxis-controls>
-                <fgen></fgen>
+                <fgen #fgenComponent (fgenTutorialFinish)="fgenTutorialFinished($event)"></fgen>
                 <digital-io #gpioComponent [chart]="chart1"></digital-io>
                 <dc-supply></dc-supply>
             </ion-col>

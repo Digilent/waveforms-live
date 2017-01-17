@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ModalController, PopoverController } from 'ionic-angular';
 
 //Pages
@@ -17,11 +17,18 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
 //Interfaces
 import { SettingsObject } from '../instruments/awg/awg-instrument.component';
 
+const enum TutorialStage {
+    IDLE,
+    WAVETYPE,
+    POWER
+}
+
 @Component({
     templateUrl: 'function-gen.html',
     selector: 'fgen'
 })
 export class FgenComponent {
+    @Output() fgenTutorialFinish: EventEmitter<any> = new EventEmitter();
     public settingsService: SettingsService;
     public tooltipService: TooltipService;
     public showDutyCycle: boolean;
@@ -41,6 +48,8 @@ export class FgenComponent {
     public showSettings: boolean = true;
     public showChanSettings: boolean[] = [true];
     public ignoreFocusOut: boolean = false;
+    public tutorialStage: TutorialStage = TutorialStage.IDLE;
+    public tutorialMode: boolean = true;
 
     constructor(
         _deviceManagerService: DeviceManagerService,
@@ -68,6 +77,22 @@ export class FgenComponent {
         this.offset = 0;
         this.dutyCycle = 50;
         this.powerOn = false;
+    }
+
+    startTutorial() {
+        this.tutorialMode = true;
+        this.tutorialStage = TutorialStage.WAVETYPE;
+    }
+
+    finishTutorial() {
+        this.fgenTutorialFinish.emit('Fgen Tutorial Finished');
+        this.tutorialMode = false;
+        this.tutorialStage = TutorialStage.IDLE;
+    }
+
+    highlightPower() {
+        this.tutorialStage = TutorialStage.POWER;
+        console.log(this.tutorialStage);
     }
 
     checkForEnter(event, input: string) {
@@ -174,7 +199,7 @@ export class FgenComponent {
                 }
                 this.offset = trueValue;
                 break;
-            case 'dutyCycle': 
+            case 'dutyCycle':
                 if (trueValue < 0) {
                     trueValue = 0;
                 }
@@ -201,6 +226,9 @@ export class FgenComponent {
             return;
         }
         this.waveType = waveType;
+        if (this.tutorialMode) {
+            this.highlightPower();
+        }
     }
 
     toggleChanSettings(channel: number) {

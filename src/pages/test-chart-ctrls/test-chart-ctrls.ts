@@ -5,6 +5,7 @@ import { ViewChild, Component } from '@angular/core';
 import { SilverNeedleChart } from '../../components/chart/chart.component';
 import { DeviceComponent } from '../../components/device/device.component';
 import { TriggerComponent } from '../../components/trigger/trigger.component';
+import { FgenComponent } from '../../components/function-gen/function-gen.component';
 import { DigitalIoComponent } from '../../components/digital-io/digital-io.component';
 
 
@@ -30,6 +31,7 @@ export class TestChartCtrlsPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
     @ViewChild('triggerComponent') triggerComponent: TriggerComponent;
     @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
+    @ViewChild('fgenComponent') fgenComponent: FgenComponent;
     public app: App;
     public platform: Platform;
     public params: NavParams;
@@ -84,6 +86,15 @@ export class TestChartCtrlsPage {
 
     executeHelp() {
         this.tutorialMode = false;
+    }
+
+    tutorialIntro() {
+        this.tutorialStage = TutorialStage.INTRO;
+        this.fgenComponent.startTutorial();
+    }
+
+    fgenTutorialFinished(event) {
+        console.log(event);
     }
 
     requestFullscreen() {
@@ -142,6 +153,9 @@ export class TestChartCtrlsPage {
             //Have to create bind reference to remove listener since .bind creates new function reference
             this.clickBindReference = this.requestFullscreen.bind(this);
             document.getElementById('instrument-panel-container').addEventListener('click', this.clickBindReference);
+        }
+        if (this.tutorialMode) {
+            this.tutorialIntro();
         }
     }
 
@@ -218,7 +232,7 @@ export class TestChartCtrlsPage {
             if (this.previousOscSettings[i].offset !== 0 || this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
                 this.previousOscSettings[i].sampleFreqMax !== samplingParams.sampleFreq ||
                 this.previousOscSettings[i].bufferSizeMax !== samplingParams.bufferSize ||
-                this.previousOscSettings[i].delay !== parseFloat(this.triggerComponent.delay) ||
+                this.previousOscSettings[i].delay !== parseFloat(this.chart1.base.toString()) ||
                 this.previousOscSettings[i].active !== this.chart1.oscopeChansActive[i]) {
                 setOscParams = true;
                 setTrigParams = true;

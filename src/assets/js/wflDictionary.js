@@ -107,6 +107,15 @@ var waveformsLiveDictionary = (function() {
         tutorialDeviceCard: {
             english: 'Click To Connect To Device And Navigate To Instrument Panel'
         },
+        tutorialWaveSelectButton: {
+            english: 'Use These Buttons To Select A Wave Type'
+        },
+        tutorialFgenPower: {
+            english: 'Click To Toggle Wavegen Power'
+        },
+        tutorialTriangleButton: {
+            english: 'Select A Triangle Wave'
+        },
 
         //Tooltips
         addADevice: {
@@ -174,6 +183,9 @@ var waveformsLiveDictionary = (function() {
         },
         squareButton: {
             english: 'Square Wave'
+        },
+        fgenPower: {
+            english: 'Toggle Wavegen Power'
         },
         dcButton: {
             english: 'DC'
