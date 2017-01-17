@@ -59,6 +59,7 @@
     font-size: 12px;
     margin-right: 0.5rem;
     margin-top:2px;
+    position: relative;
 }
 
 .fgen-container .awg-chan-container
@@ -172,6 +173,7 @@ ion-list .item-input.input-has-focus:last-child {
     border-top: solid black 1px;
     border-bottom: solid black 1px;
     width: 35px;
+    position: relative;
 }
 
 .fgen-container .image-end

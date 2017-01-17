@@ -179,7 +179,6 @@
 .move-feature-to-front
 {
     z-index: 1001;
-    position: relative;
 }
 
 .end-tutorial 
@@ -201,4 +200,8 @@
     right: 0;
     bottom: 0;
     z-index: 500;
+}
+
+html input[disabled] {
+    opacity: 0.4;
 }

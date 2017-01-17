@@ -14,7 +14,7 @@
                 </div>
                 <button ion-button clear (click)="togglePower($event)" class="powerOff" [ngClass]="{powerOn: powerOn,'move-feature-to-front':tutorialStage === 2}"
                     [tooltip]="tooltipService.getTooltip(tutorialMode ? 'tutorialFgenPower' : 'fgenPower').message" [tooltipAnimation]="true" tooltipPlacement="left" 
-                    [forceShow]="tutorialStage === 2">
+                    [forceShow]="tutorialStage === 2" onlyForceShow="true">
                     <ion-icon name="power"></ion-icon>
                 </button>
             </div>

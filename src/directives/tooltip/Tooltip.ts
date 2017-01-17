@@ -54,7 +54,7 @@ export class Tooltip {
 
 
     show(): void {
-        if ((this.tooltipDisabled || this.visible || this.mobile) && !this.forceShow)
+        if (this.tooltipDisabled || this.visible || (this.mobile && !this.forceShow))
             return;
 
         this.visible = true;
