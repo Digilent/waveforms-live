@@ -17,7 +17,7 @@ export class CalibratePage {
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
     public calibrationInstructions: string = 'There was an error loading the calibration instructions for your device.\n' +
-        'Check your reference manual for correct setup before starting the calibration process.';
+    'Check your reference manual for correct setup before starting the calibration process.';
     public calibrationStatus: string = 'Please wait...';
     public calibrationFailed: boolean = false;
     public calibrationSuccessful: boolean = false;
@@ -103,7 +103,7 @@ export class CalibratePage {
             })
             .catch((err) => {
                 this.calibrationResultsIndicator = 'Error saving calibration.';
-            });        
+            });
     }
 
     onSuccessfulCalibrationApply() {
@@ -182,23 +182,66 @@ export class CalibratePage {
         setTimeout(() => {
             clearInterval(this.progressBarIntervalRef);
             this.progressBarValue = 100;
-            this.readCalibration();
+            this.readCalibrationAfterCalibrating();
         }, waitTime);
     }
 
-    loadCalibration(location: string, fileName: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationLoad(location, fileName).subscribe(
+    loadCalibration(type: string) {
+        this.calibrationResultsIndicator = 'Loading calibration.';
+        if (this.selectedLocation === 'No Location Selected') {
+            this.calibrationResultsIndicator = 'Error loading calibration. Choose a valid storage location.';
+            return;
+        }
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationLoad(type).subscribe(
             (data) => {
                 console.log(data);
+                this.readCalibration();
+                this.calibrationResultsIndicator = 'Loaded calibration successfully.';
             },
             (err) => {
                 console.log(err);
+                this.calibrationResultsIndicator = 'Error loading calibration.';
             },
             () => { }
         );
     }
 
-    readCalibration() {
+    loadSelectedCalibration() {
+        this.loadCalibration(this.selectedLocation);
+    }
+
+    readCalibration(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationRead().subscribe(
+                (data) => {
+                    console.log(data);
+                    this.calibrationStatus = 'Loaded current calibration data.';
+                    this.parseCalibrationInformation(data);
+                    resolve();
+                },
+                (err) => {
+                    console.log(err);
+                    this.calibrationStatus = 'Error loading current calibration.';
+                    reject();
+                },
+                () => { }
+            );
+        });
+    }
+
+    toLoadExistingPage() {
+        let swiperInstance: any = this.slider.getSlider();
+        swiperInstance.unlockSwipes();
+        this.slider.slideTo(3);
+        swiperInstance.lockSwipes();
+        this.calibrationResultsIndicator = 'Select a storage location and click load.';
+        this.calibrationResults = '';
+        this.readCalibration().then(() => {
+            this.getStorageLocations();
+        }).catch((e) => { });
+    }
+
+    readCalibrationAfterCalibrating() {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationRead().subscribe(
             (data) => {
                 console.log(data);
@@ -213,7 +256,7 @@ export class CalibratePage {
                     if (this.calibrationReadAttempts < this.maxCalibrationReadAttempts) {
                         this.calibrationReadAttempts++;
                         setTimeout(() => {
-                            this.readCalibration();
+                            this.readCalibrationAfterCalibrating();
                         }, this.timeBetweenReadAttempts);
                     }
                     else {

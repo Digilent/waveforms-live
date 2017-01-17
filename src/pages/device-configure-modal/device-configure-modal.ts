@@ -67,7 +67,10 @@ export class DeviceConfigureModal {
         }
         if (this.deviceObject != null) {
             let addDeviceAddress = this.deviceObject.bridge ? this.deviceObject.deviceBridgeAddress : this.deviceObject.ipAddress;
-            this.deviceManagerService.addDeviceFromDescriptor(addDeviceAddress, {device: [this.deviceObject.deviceDescriptor]});
+            this.deviceManagerService.addDeviceFromDescriptor(addDeviceAddress, { device: [this.deviceObject.deviceDescriptor] });
+            if (this.deviceObject.bridge) {
+                this.setAgentActiveDeviceFromExisting();
+            }
             this.deviceConfigure = true;
             this.bridgeConfigure = this.deviceObject.bridge;
             this.deviceBridgeAddress = this.bridgeConfigure === true ? this.deviceObject.deviceBridgeAddress : this.deviceBridgeAddress;
@@ -96,6 +99,41 @@ export class DeviceConfigureModal {
             () => {
 
             }
+        );
+    }
+
+    setAgentActiveDeviceFromExisting() {
+        //Used to have agent set the device in JSON mode for serial communication.
+        let command = {
+            "agent": [
+                {
+                    "command": "setActiveDevice",
+                    "device": this.deviceObject.connectedDeviceAddress
+                }
+            ]
+        };
+
+        this.deviceManagerService.transport.setUri(this.deviceObject.deviceBridgeAddress);
+
+        this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
+            (arrayBuffer) => {
+                console.log('active device set');
+                let data;
+                try {
+                    let stringify = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
+                    console.log(stringify);
+                    data = JSON.parse(stringify);
+                }
+                catch (e) {
+                    console.log('Error Parsing Set Active Device Response');
+                    console.log(e);
+                }
+                console.log(data);
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => { }
         );
     }
 
@@ -162,7 +200,7 @@ export class DeviceConfigureModal {
                             this.deviceObject = this.deviceManagerPageRef.devices[0];
                             this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
                             //TODO
-                            this.deviceManagerPageRef.deviceManagerService.addDeviceFromDescriptor(this.deviceBridgeAddress, {device:[this.deviceObject.deviceDescriptor]});
+                            this.deviceManagerPageRef.deviceManagerService.addDeviceFromDescriptor(this.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                         }
                     },
                     (err) => {

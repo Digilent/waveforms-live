@@ -276,12 +276,11 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
-    calibrationLoad(location: string, fileName: string): Observable<any> {
+    calibrationLoad(type: string): Observable<any> {
         let command = {
             "device": [{
                 "command": "calibrationLoad",
-                "location": location,
-                "name": fileName
+                "type": type
             }]
         }
         return this._genericResponseHandler(command);
