@@ -1,23 +1,30 @@
 <div class=fgen-container>
-    <div *ngIf="settingsService.nestedChannels" class="align-center-container header-bar-side awg-header">
+    <div *ngIf="settingsService.nestedChannels" class="header-bar-side awg-header">
         <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSettings}" (click)="toggleAwgSettings()" src="assets/img/arrow-right.png">
         <div class="header-bar-title instrument-header">Wavegen</div>
-        <!--<button ion-button class="align-right disable-hover" (click)="openFgen(5)"><ion-icon name="settings"></ion-icon></button>-->
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
     <div *ngIf="showSettings">
         <div *ngFor="let channel of activeDevice.instruments.awg.chans, let i = index;" [ngClass]="{'awg-chan-container': settingsService.nestedChannels}">
-            <div class="align-center-container header-bar-side">
-                <img class="custom-dropdown-img" [ngClass]="{rotateOn: showChanSettings[i]}" (click)="toggleChanSettings(i)" src="assets/img/arrow-right.png">
-                <div class="vertical-align" [ngClass]="{'instrument-header': !settingsService.nestedChannels}">
-                    {{settingsService.nestedChannels === false ? 'Wavegen' : ''}}{{activeDevice.instruments.awg.chans.length < 2 && !settingsService.nestedChannels ? ' ' : 'Ch ' + (i + 1)}}
-                </div>
-                <button ion-button clear (click)="togglePower($event)" class="powerOff" [ngClass]="{powerOn: powerOn,'move-feature-to-front':tutorialStage === 2}"
-                    [tooltip]="tooltipService.getTooltip(tutorialMode ? 'tutorialFgenPower' : 'fgenPower').message" [tooltipAnimation]="true" tooltipPlacement="left" 
-                    [forceShow]="tutorialStage === 2" onlyForceShow="true">
-                    <ion-icon name="power"></ion-icon>
-                </button>
-            </div>
+            <ion-row>
+                <ion-col class="header-side-col" center text-left>
+                    <button ion-button clear class="dropdown-image-button" (click)="toggleChanSettings(i)">
+                        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showChanSettings[i]}" src="assets/img/arrow-right.png">
+                    </button>
+                </ion-col>
+                <ion-col center text-center>
+                    <div [ngClass]="{'instrument-header': !settingsService.nestedChannels}">
+                        {{settingsService.nestedChannels === false ? 'Wavegen' : ''}}{{activeDevice.instruments.awg.chans.length < 2 && !settingsService.nestedChannels ? ' ' : 'Ch ' + (i + 1)}}
+                    </div>
+                </ion-col>
+                <ion-col class="header-side-col" center text-right>
+                    <button ion-button clear (click)="togglePower($event)" class="powerOff" [ngClass]="{powerOn: powerOn,'move-feature-to-front':tutorialStage === 2}"
+                        [tooltip]="tooltipService.getTooltip(tutorialMode ? 'tutorialFgenPower' : 'fgenPower').message" [tooltipAnimation]="true" tooltipPlacement="left" 
+                        [forceShow]="tutorialStage === 2" onlyForceShow="true">
+                        <ion-icon name="power"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
             <div *ngIf="showChanSettings[i]">
                 <div class="wavetype-images-container" text-center [tooltip]="tooltipService.getTooltip('tutorialWaveSelectButton').message" 
                     [forceShow]="tutorialStage === 1" [tooltipAnimation]="true" tooltipPlacement="bottom" onlyForceShow="true">

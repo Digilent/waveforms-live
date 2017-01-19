@@ -1,17 +1,32 @@
 <div class="yaxis-component-container">
-    <div *ngIf="settingsService.nestedChannels" class="header-bar-side align-center-container" center text-center>
+    <div *ngIf="settingsService.nestedChannels" class="header-bar-side" center text-center>
         <img class="custom-dropdown-img" [ngClass]="{rotateOn: showOscSettings}" (click)="toggleOscSettings()" src="assets/img/arrow-right.png">
         <span class="header-bar-title instrument-header">Oscilloscope</span>
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
     <div *ngIf="showOscSettings">
         <div *ngFor="let series of chart.deviceDescriptor.instruments.osc.chans, let i = index;" (click)="setActiveSeries(i)" [ngClass]="{'yaxis-component-wrapper':settingsService.nestedChannels, 'set-top-border':i!=0}">
-            <div class="align-center-container header-bar-side">
-                <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSeriesSettings[i]}" (click)="toggleSeriesSettings(i)" src="assets/img/arrow-right.png">
-                <div class="vertical-align" [ngClass]="{'instrument-header': !settingsService.nestedChannels}">{{settingsService.nestedChannels === false ? 'Osc' : ''}} {{names[i]}}</div>
+            <div class="header-bar-side">
+                <ion-row>
+                    <ion-col class="header-side-col" center text-left>
+                        <button ion-button clear class="dropdown-image-button" (click)="toggleSeriesSettings(i)">
+                            <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSeriesSettings[i]}" src="assets/img/arrow-right.png">
+                        </button>
+                    </ion-col>
+                    <ion-col center text-center>
+                        <div [ngClass]="{'instrument-header': !settingsService.nestedChannels}">{{settingsService.nestedChannels === false ? 'Osc' : ''}} {{names[i]}}</div>
+                    </ion-col>
+                    <ion-col class="header-side-col" center text-right>
+                        <button ion-button clear (click)="toggleVisibility(i, $event)" class="header-button disable-hover" [style.background-color]="getSeriesColor(i)" [ngClass]="{'series-on': chart.oscopeChansActive[i]}">
+                            <ion-icon name="power"></ion-icon>
+                        </button>
+                    </ion-col>
+                </ion-row>
+                
+                <!--<div [ngClass]="{'instrument-header': !settingsService.nestedChannels}">{{settingsService.nestedChannels === false ? 'Osc' : ''}} {{names[i]}}</div>
                 <button ion-button clear (click)="toggleVisibility(i, $event)" class="align-left disable-hover" [style.background-color]="getSeriesColor(i)" [ngClass]="{'series-on': chart.oscopeChansActive[i]}">
                     <ion-icon name="power"></ion-icon>
-                </button>
+                </button>-->
             </div>
             <div *ngIf="showSeriesSettings[i]" class="button-info-container">
                 <ion-row class="controls-container">

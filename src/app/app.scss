@@ -67,6 +67,40 @@
     border-radius: 0px;
 }
 
+.header-side-col
+{
+    padding: 0;
+    height: 30px;
+    max-width: 35px;
+}
+
+.dropdown-image-button
+{
+    height: 25px;
+    font-size: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.header-button
+{
+    background-color: #535353;
+    color: #CCCCCC;
+    border-radius: 0px;
+    margin: 0px;
+    border: solid #535353 1px;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    margin-right: 6px;
+    position: relative;
+}
+
+.header-button:hover
+{
+    border: solid white 1px;
+}
+
 .tooltip.bottom {
     padding: 5px 0;
     margin-top: 3px;

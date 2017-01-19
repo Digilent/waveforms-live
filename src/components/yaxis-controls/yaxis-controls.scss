@@ -19,62 +19,9 @@
     text-align: center;
 }
 
-.align-center-container
-{
-    display: flex;
-    justify-content: space-between;
-}
-
-.align-center-container .align-left
-{
-    background-color: #535353;
-    color: #CCCCCC;
-    border-radius: 0px;
-    margin: 0px;
-    border: solid #535353 1px;
-    width: 25px;
-    height: 25px;
-    font-size: 12px;
-    margin-right: 0.5rem;
-    margin-top:2px;
-}
-
-.align-center-container .align-left:hover
-{
-    border: solid white 1px;
-}
-
 .yaxis-component-container .set-top-border
 {
     border-top: solid black 1px;
-}
-
-.align-center-container .align-right
-{
-    margin-top: 0.1rem;
-    margin-right: 0.5rem;
-    margin-bottom: 0.1rem;
-    margin-left: 0.1rem;
-    height: 25px;
-    font-size: 8px;
-    background-color: #535353;
-    border: solid black 1px;
-    border-radius: 0px;
-    box-shadow: none;
-}
-
-.align-center-container .align-right:hover
-{
-    border: solid white 1px;
-}
-
-.align-center-container .vertical-align
-{
-    margin-top: 0.1rem;
-    margin-right: 0.1rem;
-    margin-bottom: 0.1rem;
-    margin-left: 0.1rem;
-    padding-top: 4px;
 }
 
 .header-bar-side .header-bar-title
@@ -188,10 +135,7 @@ ion-navbar
 .custom-dropdown-img
 {
     cursor: pointer;
-    margin-top: 0.1rem;
-    margin-right: 0.1rem;
-    margin-bottom: 0.1rem;
-    margin-left: 0.5rem;
+    margin-left: 6px;
     background-color: transparent;
     -webkit-transform: rotate(0deg);
     -moz-transform: rotate(0deg);

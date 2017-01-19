@@ -1,10 +1,18 @@
 <div class="digi-container">
     <div class="title" (click)="emitEvent()">
-        <div class="align-center-container header-bar">
-            <img class="custom-dropdown-img" [ngClass]="{rotateOn: showDigiContent}" (click)="toggleDigiSettings()" src="assets/img/arrow-right.png">
-            <div class="title-container instrument-header">Digital</div>
-            <!--<button ion-button class="align-right disable-hover" (click)="doCheckbox($event)"><ion-icon name="settings"></ion-icon></button>-->
-            <div style="width:26px;height:26px;display:inline-block;"></div>
+        <div class="header-bar">
+            <ion-row>
+                <ion-col class="header-side-col" center text-left>
+                    <button ion-button clear class="dropdown-image-button" (click)="toggleDigiSettings()">
+                        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showDigiContent}" src="assets/img/arrow-right.png">
+                    </button>
+                </ion-col>
+                <ion-col center text-center>
+                    <span class="header-bar-title instrument-header">Digital</span>
+                </ion-col>
+                <ion-col class="header-side-col" center text-right>
+                </ion-col>
+            </ion-row>
         </div>
     </div>
     <div *ngIf="showDigiContent">
