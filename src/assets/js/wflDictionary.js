@@ -116,6 +116,12 @@ var waveformsLiveDictionary = (function() {
         tutorialTriangleButton: {
             english: 'Select A Triangle Wave'
         },
+        tutorialTimeline: {
+            english: 'This Is The Timeline. It Shows Your Window In The Current Buffer. Click And Drag To Pan And Mousewheel To Zoom.'
+        },
+        tutorialChart: {
+            english: 'This Is The Chart. Click And Drag To Pan And Mousewheel To Zoom.'
+        },
 
         //Tooltips
         addADevice: {

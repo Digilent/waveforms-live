@@ -87,18 +87,20 @@
     
     background-color: #535353;
     border-left: solid black 1px;
+    border-top: solid black 1px;
 }
 
 .chart-page-container .tutorial-mode-button
 {
     bottom: 32px;
-    right: 235px;
+    right: 0px;
 }
 
 .chart-page-container .custom-col
 {
     padding: 0;
     height: 100%;
+    position: relative;
 }
 
 .chart-page-container .move-left

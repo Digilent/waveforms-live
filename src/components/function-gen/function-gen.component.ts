@@ -49,7 +49,7 @@ export class FgenComponent {
     public showChanSettings: boolean[] = [true];
     public ignoreFocusOut: boolean = false;
     public tutorialStage: TutorialStage = TutorialStage.IDLE;
-    public tutorialMode: boolean = true;
+    public tutorialMode: boolean = false;
 
     constructor(
         _deviceManagerService: DeviceManagerService,
@@ -241,6 +241,9 @@ export class FgenComponent {
 
     //Toggle power to awg
     togglePower(event) {
+        if (this.tutorialMode) {
+            this.finishTutorial();
+        }
         event.stopPropagation();
         let chans = [];
         let settings = [];

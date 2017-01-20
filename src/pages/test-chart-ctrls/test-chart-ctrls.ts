@@ -13,15 +13,7 @@ import { DigitalIoComponent } from '../../components/digital-io/digital-io.compo
 import { DeviceManagerService } from '../../services/device/device-manager.service';
 import { StorageService } from '../../services/storage/storage.service';
 import { ToastService } from '../../services/toast/toast.service';
-
-const enum TutorialStage {
-    INTRO,
-    WAVEGEN,
-    WAVETYPE,
-    WAVEPOWER,
-    OSC,
-    SINGLE
-}
+import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 
 @Component({
@@ -35,13 +27,14 @@ export class TestChartCtrlsPage {
     public app: App;
     public platform: Platform;
     public params: NavParams;
+    public tooltipService: TooltipService;
     public controlsVisible = false;
     public botVisible = false;
     public sideVisible = false;
     public running: boolean = false;
     public triggerStatus: string = 'Idle';
     public tutorialMode: boolean = false;
-    public tutorialStage: TutorialStage = TutorialStage.INTRO;
+    public tutorialStage: number = 0;
 
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceComponent;
@@ -69,11 +62,13 @@ export class TestChartCtrlsPage {
         _deviceManagerService: DeviceManagerService,
         _storage: StorageService,
         _toastService: ToastService,
+        _tooltipService: TooltipService,
         _app: App,
         _params: NavParams,
         _platform: Platform
     ) {
         this.toastService = _toastService;
+        this.tooltipService = _tooltipService;
         this.app = _app;
         this.params = _params;
         this.tutorialMode = this.params.get('tutorialMode') || false;
@@ -88,13 +83,27 @@ export class TestChartCtrlsPage {
         this.tutorialMode = false;
     }
 
-    tutorialIntro() {
-        this.tutorialStage = TutorialStage.INTRO;
+    startTutorial() {
+        this.tutorialStage = 1;
+    }
+
+    startFgenTutorial() {
+        this.tutorialStage = 0;
         this.fgenComponent.startTutorial();
     }
 
     fgenTutorialFinished(event) {
         console.log(event);
+        this.tutorialFinished();
+    }
+
+    tutorialFinished() {
+        this.tutorialMode = false;
+        this.tutorialStage = 0;
+    }
+
+    proceedToNextStage() {
+        this.tutorialStage++;
     }
 
     requestFullscreen() {
@@ -155,7 +164,7 @@ export class TestChartCtrlsPage {
             document.getElementById('instrument-panel-container').addEventListener('click', this.clickBindReference);
         }
         if (this.tutorialMode) {
-            this.tutorialIntro();
+            this.startTutorial();
         }
     }
 

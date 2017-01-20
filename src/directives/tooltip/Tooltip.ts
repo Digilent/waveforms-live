@@ -44,7 +44,7 @@ export class Tooltip {
 
     @HostListener("focusin")
     @HostListener("mouseenter")
-    setTimeout() {
+    setShowTimeout() {
         if (this.onlyForceShow) { return; }
         clearTimeout(this.timeoutRef);
         this.timeoutRef = setTimeout(() => {

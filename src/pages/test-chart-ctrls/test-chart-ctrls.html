@@ -11,7 +11,27 @@
             </ion-col>
 
             <ion-col width-30 text-center center>
-                <div class="timeline-chart-wrapper">
+
+                <tooltip-content #okButton [animation]="true" class="tutorial-ok-button">
+                    <div>
+                        {{tooltipService.getTooltip('tutorialTimeline').message}}
+                    </div>
+                    <div>
+                        <button ion-button class="text-button-side disable-hover" (click)="proceedToNextStage()">ok</button>
+                    </div>
+                </tooltip-content>
+
+                <tooltip-content #okButton2 [animation]="true" class="tutorial-ok-button">
+                    <div>
+                        {{tooltipService.getTooltip('tutorialChart').message}}
+                    </div>
+                    <div>
+                        <button ion-button class="text-button-side disable-hover" (click)="startFgenTutorial()">ok</button>
+                    </div>
+                </tooltip-content>
+
+                <div class="timeline-chart-wrapper" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 1}"
+                    [tooltip]="okButton" [forceShow]="tutorialMode && tutorialStage === 1" tooltipPlacement="bottom" onlyForceShow="true">
                     <timeline-chart></timeline-chart>
                 </div>
             </ion-col>
@@ -43,7 +63,8 @@
             </ion-col>
         </ion-row>
         <ion-row class="center-container">
-            <ion-col class="custom-col">
+            <ion-col class="custom-col" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 2}"
+                [tooltip]="okButton2" [forceShow]="tutorialMode && tutorialStage === 2" tooltipPlacement="right" onlyForceShow="true"> 
                 <silverNeedleChart #chart1 (chartLoad)="initSettings()" class="chart-wrapper"></silverNeedleChart>
                 <ion-fab class="tutorial-mode-button" *ngIf="tutorialMode">
                     <button ion-fab mini class="help-button" (click)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">

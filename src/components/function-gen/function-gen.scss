@@ -32,6 +32,7 @@
 .fgen-container
 {
     border-bottom: solid black 1px;
+    border-top: solid #686868 1px;
 }
 
 .fgen-container .input-col
@@ -161,7 +162,7 @@ ion-list .item-input.input-has-focus:last-child {
 
 .fgen-container .selected-wavetype
 {
-    background-color: #4487BA;
+    background-color: #4487BA !important;
 }
 
 .fgen-container .wavetype-image
@@ -171,6 +172,7 @@ ion-list .item-input.input-has-focus:last-child {
     border-left: solid black 1px;
     border-top: solid black 1px;
     border-bottom: solid black 1px;
+    background-color: #535353;
     width: 35px;
     position: relative;
 }

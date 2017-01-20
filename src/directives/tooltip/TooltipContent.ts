@@ -23,17 +23,13 @@ export class TooltipContent implements AfterViewInit {
     // Inputs / Outputs 
     // -------------------------------------------------------------------------
 
-    @Input()
-    hostElement: HTMLElement;
+    @Input() hostElement: HTMLElement;
 
-    @Input()
-    content: string;
+    @Input() content: string;
 
-    @Input()
-    placement: "top"|"bottom"|"left"|"right" = "bottom";
+    @Input() placement: "top"|"bottom"|"left"|"right" = "bottom";
 
-    @Input()
-    animation: boolean = true;
+    @Input() animation: boolean = true;
 
     // -------------------------------------------------------------------------
     // Properties

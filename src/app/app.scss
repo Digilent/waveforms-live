@@ -72,6 +72,8 @@
     padding: 0;
     height: 30px;
     max-width: 35px;
+    align-items: center;
+    display: flex;
 }
 
 .dropdown-image-button
@@ -213,6 +215,29 @@
 .move-feature-to-front
 {
     z-index: 1001;
+    position: relative;
+}
+
+.tutorial-ok-button .tooltip.bottom .tooltip-arrow
+{
+    border-bottom-color: #535353 !important;
+}
+.tutorial-ok-button .tooltip.left .tooltip-arrow
+{
+    border-left-color: #535353 !important;
+}
+.tutorial-ok-button .tooltip.top .tooltip-arrow
+{
+    border-top-color: #535353 !important;
+}
+.tutorial-ok-button .tooltip.right .tooltip-arrow
+{
+    border-right-color: #535353 !important;
+}
+
+.tutorial-ok-button .tooltip-inner
+{
+    background-color: #535353;
 }
 
 .end-tutorial 

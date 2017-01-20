@@ -588,7 +588,13 @@ export class SilverNeedleChart {
         }
         val = (parseFloat(val) * Math.pow(1000, i));
         let numDigits = val.toFixed(0).length;
-        let fixedDigits = numDigits < 4 ? 4 - numDigits : 0;
+        let fixedDigits;
+        if (val < 0) {
+        fixedDigits = numDigits < 5 ? 5 - numDigits : 0;
+        }
+        else {
+            fixedDigits = numDigits < 4 ? 4 - numDigits : 0;
+        }
         val = val.toFixed(fixedDigits);
         if (i == 0) {
             unit = ' s';
