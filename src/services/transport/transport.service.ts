@@ -21,6 +21,11 @@ export class TransportService {
         this.transport.setUri(uri);
     }
 
+    //Get request on the specified url
+    getRequest(requestUrl: string): Observable<any> {
+        return this.transport.getRequest(requestUrl);
+    }
+
     //Call writeRead on transport component
     writeRead(endpoint: string, sendData: any, dataType: string): Observable<any> {
         return this.transport.writeRead(endpoint, sendData, dataType);

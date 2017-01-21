@@ -38,6 +38,8 @@ export class DeviceComponent {
         gpio: null
     };
 
+    public firmwareRepositoryUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent-test/';
+
     constructor(_rootUri: string, deviceDescriptor: any) {
         console.log('Device Contructor');
         //TODO If deviceDescriptor is empty, attempt to enumerate the deviceDescriptor [?]
@@ -58,6 +60,18 @@ export class DeviceComponent {
         this.instruments.osc = new OscInstrumentComponent(this.transport, deviceDescriptor.osc);
         this.instruments.trigger = new TriggerInstrumentComponent(this.transport, 'deviceDescriptor.trigger');
         this.instruments.gpio = new GpioInstrumentComponent(this.transport, deviceDescriptor.gpio);
+    }
+
+    getFirmwareVersions() {
+        this.transport.getRequest(this.firmwareRepositoryUrl).subscribe(
+            (event) => {
+                console.log(event);
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => { }
+        );
     }
 
     multiCommand(commandObject: any): Observable<any> {

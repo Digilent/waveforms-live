@@ -112,6 +112,7 @@ export class YAxisComponent {
                 return;
             }
             this.chart.voltDivision[channel] = trueValue;
+            this.chart.setNearestPresetVoltsPerDivVal(trueValue, channel);
         }
         this.chart.setSeriesSettings({
             voltsPerDiv: this.chart.voltDivision[channel],

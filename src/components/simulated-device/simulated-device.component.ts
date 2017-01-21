@@ -185,8 +185,6 @@ export class SimulatedDeviceComponent {
 
         }
         let stringCommand = JSON.stringify(commandObject);
-        console.log('command object');
-        console.log(commandObject);
         let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
 
         let stringSection = binaryIndex + stringCommand + '\r\n';

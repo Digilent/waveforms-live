@@ -33,6 +33,38 @@ export class HttpTransportComponent extends TransportComponent {
         }
     }
 
+    getRequest(requestUrl: string): Observable<any> {
+        return Observable.create((observer) => {
+            let XHR = new XMLHttpRequest();
+
+            XHR.addEventListener("load", (event: MyEventResponse) => {
+                console.log('from start to fin');
+                console.log(this.finish - this.start);
+                observer.next(event.currentTarget.response);
+                observer.complete();
+            });
+
+            XHR.addEventListener("error", (event) => {
+                observer.error('Get Request Error', event);
+            });
+
+            XHR.addEventListener("timeout", (event) => {
+                observer.error('Timeout', event);
+            });
+
+            try {
+                XHR.open("GET", requestUrl);
+
+                XHR.timeout = 5000;
+                
+                XHR.send();
+            }
+            catch (err) {
+                observer.error('TX Error: ', event);
+            }
+        });
+    }
+
     //Data transmission wrapper to avoid duplicate code. 
     writeRead(endpoint: string, sendData: any, dataType: string): Observable<any> {
         return this.writeReadHelper(this.rootUri, endpoint, sendData, dataType);

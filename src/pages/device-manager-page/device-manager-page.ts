@@ -504,9 +504,6 @@ export class DeviceManagerPage {
             (success) => {
                 loadingInstance.dismiss();
                 this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);
-                /*Navigate to the parents of the tab controller so they have the nav type.
-                Without navigating to the parents, the navCtrl is a 'Tab' and thus the 
-                new root page will have the tab bar.*/
                 this.navCtrl.setRoot(TestChartCtrlsPage, {
                     tutorialMode: this.tutorialMode
                 });

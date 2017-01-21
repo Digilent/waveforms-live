@@ -100,7 +100,28 @@ export class SilverNeedleChart {
             width: '100%',
             height: '100%'
         });
-        this.createChart();
+        if (!this.chart) {
+            this.createChart();
+        }
+    }
+
+    setNearestPresetSecPerDivVal(newSecPerDivVal: number) {
+        let count = 0;
+        while (this.secsPerDivVals[count] < newSecPerDivVal && count < this.secsPerDivVals.length) {
+            count++;
+        }
+        this.activeTPDIndex = count;
+        this.chart.setActiveXIndex(count);
+    }
+
+    setNearestPresetVoltsPerDivVal(newVoltsPerDivVal: number, seriesNum: number) {
+        if (seriesNum > this.oscopeChansActive.length - 1) { return; }
+        let count = 0;
+        while (this.voltsPerDivVals[count] < newVoltsPerDivVal && count < this.voltsPerDivVals.length) {
+            count++;
+        }
+        this.activeVPDIndex[newVoltsPerDivVal] = count;
+        this.chart.setActiveYIndices(this.activeVPDIndex);
     }
 
     generateNiceNumArray(min: number, max: number) {
@@ -590,7 +611,7 @@ export class SilverNeedleChart {
         let numDigits = val.toFixed(0).length;
         let fixedDigits;
         if (val < 0) {
-        fixedDigits = numDigits < 5 ? 5 - numDigits : 0;
+            fixedDigits = numDigits < 5 ? 5 - numDigits : 0;
         }
         else {
             fixedDigits = numDigits < 4 ? 4 - numDigits : 0;
@@ -1546,8 +1567,6 @@ export class SilverNeedleChart {
     }
 
     updateTriggerLine() {
-        console.log(this.numSeries);
-        console.log(this.currentBufferArray);
         let cursors = this.chart.getCursors();
         if (cursors.length === 0) {
             this.addTriggerLine(this.numSeries[0]);

@@ -25,6 +25,12 @@ export class LocalTransportComponent extends TransportComponent {
         this.simulatedDevice = new SimulatedDeviceComponent(deviceEnumeration);
     }
 
+    getRequest(requestUrl: string) {
+        return Observable.create((observer) => {
+            observer.error('Local transport does not support get requests');
+        });
+    }
+
     //Data transmission wrapper to avoid duplicate code. 
     writeRead(endpoint: string, sendData: any, dataType: string): Observable<any> {
         return this.writeReadHelper(this.rootUri, endpoint, sendData, dataType);

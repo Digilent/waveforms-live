@@ -76,6 +76,7 @@ export class XAxisComponent {
             return;
         }
         this.chart.timeDivision = trueValue;
+        this.chart.setNearestPresetSecPerDivVal(trueValue);
 
         this.chart.setTimeSettings({
             timePerDiv: this.chart.timeDivision,
