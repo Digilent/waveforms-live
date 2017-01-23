@@ -9,6 +9,8 @@ import { BridgeModalPage } from '../bridge-modal/bridge-modal';
 //Modules
 import { CalibrateModule } from '../calibrate/calibrate.module';
 import { WifiSetupModule } from '../wifi-setup/wifi-setup.module';
+import { LoadFirmwareModule } from '../load-firmware/load-firmware.module';
+import { UpdateFirmwareModule } from '../update-firmware/update-firmware.module';
 
 @NgModule({
     imports: [
@@ -17,7 +19,9 @@ import { WifiSetupModule } from '../wifi-setup/wifi-setup.module';
         IonicModule.forRoot(DeviceConfigureModal),
         IonicModule.forRoot(BridgeModalPage),
         CalibrateModule,
-        WifiSetupModule
+        WifiSetupModule,
+        LoadFirmwareModule,
+        UpdateFirmwareModule
     ],
     declarations: [
         DeviceManagerPage,

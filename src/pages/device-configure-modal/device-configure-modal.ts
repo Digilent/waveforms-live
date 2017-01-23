@@ -32,7 +32,6 @@ export class DeviceConfigureModal {
     //Content controllers
     public bridgeConfigure: boolean = false;
     public deviceConfigure: boolean = false;
-    public devicesEnumeration: boolean = false;
 
     //Leftovers from transfer. TODO wade through this
     public hostname: string = 'test';
@@ -57,13 +56,7 @@ export class DeviceConfigureModal {
         this.deviceObject = this.params.get('deviceObject');
         if (this.params.get('bridge')) {
             this.bridgeConfigure = true;
-        }
-        if (this.potentialDevices == null || this.potentialDevices.length < 1) {
-            this.devicesEnumeration = false;
-        }
-        else {
-            this.devicesEnumeration = true;
-            this.deviceConfigure = false;
+            this.reEnumerateAgent();
         }
         if (this.deviceObject != null) {
             let addDeviceAddress = this.deviceObject.bridge ? this.deviceObject.deviceBridgeAddress : this.deviceObject.ipAddress;
@@ -90,7 +83,9 @@ export class DeviceConfigureModal {
                     return;
                 }
                 this.potentialDevices = success.agent[0].devices;
-                this.devicesEnumeration = true;
+                if (success.agent[0].devices.length === 1 && !this.deviceObject) {
+                    this.dropdownDeviceChange(success.agent[0].devices[0]);
+                }
             },
             (err) => {
                 console.log(err);
@@ -181,11 +176,9 @@ export class DeviceConfigureModal {
                         }
 
                         if (this.deviceObject != undefined) {
-                            console.log
                             this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
                             this.deviceObject.ipAddress = this.deviceObject.deviceBridgeAddress + ' - ' + this.deviceObject.connectedDeviceAddress;
                             this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices));
-                            this.devicesEnumeration = false;
                             this.deviceConfigure = true;
                             return;
                         }
@@ -195,7 +188,6 @@ export class DeviceConfigureModal {
                             deviceEnum: data
                         }, this.deviceBridgeAddress);
                         if (validDevice) {
-                            this.devicesEnumeration = false;
                             this.deviceConfigure = true;
                             this.deviceObject = this.deviceManagerPageRef.devices[0];
                             this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
@@ -219,6 +211,11 @@ export class DeviceConfigureModal {
                 console.log('complete');
             }
         );
+    }
+
+    dropdownDeviceChange(event) {
+        console.log(event);
+        this.selectDevice(this.potentialDevices.indexOf(event));
     }
 
     openCalibrateWizard() {

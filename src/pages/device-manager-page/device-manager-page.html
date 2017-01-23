@@ -144,9 +144,18 @@
                         <p class="turn-white">{{device.deviceDescriptor.deviceModel}}</p>
                     </ion-label>
 
-                    <button ion-button class="card-button" clear item-right (click)="openPopover($event, i)" [tooltip]="tooltipMessages['deviceCardMore']" [tooltipAnimation]="true" tooltipPlacement="left">
-                        <ion-icon name="more"></ion-icon>
-                    </button>
+                    <div item-right class="button-container">
+                        <div>
+                            <button ion-button class="card-button alert-button" clear (click)="openUpdateFirmware()" *ngIf="true">
+                                <ion-icon name="alert"></ion-icon>
+                            </button>
+                        </div>
+                        <div>
+                            <button ion-button class="card-button" clear (click)="openPopover($event, i)" [tooltip]="tooltipMessages['deviceCardMore']" [tooltipAnimation]="true" tooltipPlacement="left">
+                                <ion-icon name="more"></ion-icon>
+                            </button>
+                        </div>
+                    </div>
                 </ion-item>
 
             </ion-card>

@@ -1,0 +1,58 @@
+<ion-content class="update-firmware-container">
+
+    <ion-slides #updateFirmwareSlider>
+
+        <ion-slide class="slide-container">
+            <div class="content-container">
+                <div class="slide-header">Update Firmware</div>
+                <ion-list class="firmware-list">
+                    <ion-item class="firmware-item">
+                        <ion-label fixed>Current Firmware Version</ion-label>
+                        <div item-right class="general-content">1.0.0</div>
+                    </ion-item>
+                    <ion-item class="firmware-item">
+                        <ion-label fixed>Available Firmware Version</ion-label>
+                        <div item-right class="general-content">2.0.0</div>
+                    </ion-item>
+                </ion-list>
+
+                <div class="navigation-button-container">
+                    <ion-row>
+                        <ion-col text-left>
+                            <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()">
+                                <ion-icon name="close"></ion-icon>
+                                Close
+                            </button>
+                        </ion-col>
+                        <ion-col text-right>
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="toProgressBar()">
+                                Update
+                                <ion-icon name="arrow-forward"></ion-icon>
+                            </button>
+                        </ion-col>
+                    </ion-row>
+                </div>
+            </div>
+        </ion-slide>
+
+        <ion-slide class="slide-container">
+            <div class="content-container">
+                <div class="slide-header">Updating Firmware</div>
+                <digilent-progress-bar #digilentProgressBar (progressBarDone)="doneUpdating()"></digilent-progress-bar>
+
+                <div class="navigation-button-container">
+                    <ion-row>
+                        <ion-col text-right>
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()" *ngIf="updateComplete">
+                                Done
+                                <ion-icon name="checkmark"></ion-icon>
+                            </button>
+                        </ion-col>
+                    </ion-row>
+                </div>
+            </div>
+        </ion-slide>
+
+    </ion-slides>
+
+</ion-content>

@@ -4,7 +4,8 @@ export interface DeviceCardInfo {
     hostname: string,
     bridge: boolean,
     deviceBridgeAddress: string,
-    connectedDeviceAddress: string
+    connectedDeviceAddress: string,
+    outdatedFirmware: boolean
 }
 
 export interface DeviceConfigureParams {

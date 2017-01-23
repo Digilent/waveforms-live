@@ -16,6 +16,7 @@ export class DropdownPopoverComponent {
     public platform: Platform;
     public isMobile: boolean;
     public currentlySelected: string;
+    public noArrayMessage: string = 'None';
 
     constructor(
         _popoverCtrl: PopoverController,
@@ -26,8 +27,19 @@ export class DropdownPopoverComponent {
         this.isMobile = this.platform.is('android') || this.platform.is('ios');
     }
 
-    ngOnInit() {
-        this.currentlySelected = this.dataArray[0];
+    ngAfterViewInit() {
+        if (this.dataArray) {
+            this.currentlySelected = this.dataArray[0]
+            return;
+        }
+        this.currentlySelected = this.noArrayMessage;
+        this.dataArray = [this.noArrayMessage];
+    }
+
+    ngOnChanges(changes: any) {
+        if (changes.dataArray && changes.dataArray.currentValue && changes.dataArray.currentValue.length > 0) {
+            this.currentlySelected = changes.dataArray.currentValue[0];
+        }
     }
 
     selectionChange(event) {

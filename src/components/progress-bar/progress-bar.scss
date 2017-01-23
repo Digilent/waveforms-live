@@ -1,0 +1,24 @@
+.progress-bar-container
+{
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.progress-bar-container .progress-bar
+{
+    width: 90%;
+    height: 30px;
+    background-color: #3A3A3A;
+}
+
+.progress-bar-container {
+    progress::-webkit-progress-bar {
+        background-color:#3A3A3A;
+    }
+    progress::-webkit-progress-value {
+        background-color:#4487BA;
+    }
+    progress::-moz-progress-bar {
+        background-color: #4487BA;
+    }
+}

@@ -4,6 +4,8 @@ import { PopoverController, App, NavController, ModalController, Platform, Alert
 //Pages
 import { TestChartCtrlsPage } from '../../pages/test-chart-ctrls/test-chart-ctrls';
 import { DeviceConfigureModal } from '../../pages/device-configure-modal/device-configure-modal';
+import { LoadFirmwarePage } from '../../pages/load-firmware/load-firmware';
+import { UpdateFirmwarePage } from '../../pages/update-firmware/update-firmware';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
@@ -220,8 +222,8 @@ export class DeviceManagerPage {
     openConfigureModal(deviceArrayIndex: number) {
         let deviceConfigureParams: DeviceConfigureParams = {
             potentialDevices: null,
-            deviceBridgeAddress: null,
-            bridge: false,
+            deviceBridgeAddress: this.devices[deviceArrayIndex].deviceBridgeAddress,
+            bridge: this.devices[deviceArrayIndex].bridge,
             deviceManagerPageRef: this,
             deviceObject: this.devices[deviceArrayIndex]
         };
@@ -331,7 +333,8 @@ export class DeviceManagerPage {
                 hostname: 'Hostname',
                 bridge: true,
                 deviceBridgeAddress: deviceBridgeAddress,
-                connectedDeviceAddress: data.selectedDevice
+                connectedDeviceAddress: data.selectedDevice,
+                outdatedFirmware: false // TODO
             }
         );
         this.storage.saveData('savedDevices', JSON.stringify(this.devices));
@@ -365,7 +368,8 @@ export class DeviceManagerPage {
                         hostname: 'Hostname',
                         bridge: false,
                         deviceBridgeAddress: null,
-                        connectedDeviceAddress: null
+                        connectedDeviceAddress: null,
+                        outdatedFirmware: false //TODO
                     }
                 );
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
@@ -402,7 +406,8 @@ export class DeviceManagerPage {
                             hostname: 'Simulated ' + this.selectedSimulatedDevice,
                             bridge: false,
                             deviceBridgeAddress: null,
-                            connectedDeviceAddress: null
+                            connectedDeviceAddress: null,
+                            outdatedFirmware: false // TODO
                         }
                     );
                     this.storage.saveData('savedDevices', JSON.stringify(this.devices));
@@ -418,6 +423,20 @@ export class DeviceManagerPage {
             );
 
         }
+    }
+
+    openUpdateFirmware() {
+        let modal = this.modalCtrl.create(UpdateFirmwarePage, undefined, {
+            enableBackdropDismiss: false
+        });
+        modal.present();
+    }
+
+    openLoadFirmware() {
+        let modal = this.modalCtrl.create(LoadFirmwarePage, undefined, {
+            enableBackdropDismiss: false
+        });
+        modal.present();
     }
 
     checkForEnter(event, deviceType: string) {

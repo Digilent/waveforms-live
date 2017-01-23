@@ -1,6 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { NavParams, Slides, ViewController } from 'ionic-angular';
 
+//Components
+import { ProgressBarComponent } from  '../../components/progress-bar/progress-bar.component';
+
 //Services
 import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
@@ -11,6 +14,7 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 })
 export class CalibratePage {
     @ViewChild('calibrationSlider') slider: Slides;
+    @ViewChild('digilentProgressBar') digilentProgressBar: ProgressBarComponent;
     public storageService: StorageService;
     public settingsService: SettingsService;
     public params: NavParams;
@@ -24,9 +28,6 @@ export class CalibratePage {
     public calibrationReadAttempts: number = 0;
     public maxCalibrationReadAttempts: number = 10;
     public timeBetweenReadAttempts: number = 2000;
-
-    public progressBarValue: number = 0;
-    public progressBarIntervalRef;
 
     public storageLocations: string[] = ['No Locations Found'];
     public selectedLocation: string = 'No Location Selected';
@@ -156,7 +157,6 @@ export class CalibratePage {
                 this.calibrationStatus = 'Running Calibration. This should take about ' + (data.device[0].wait / 1000) + ' seconds.';
                 this.calibrationReadAttempts = 0;
                 this.runProgressBar(waitTime);
-                this.setMainReadTimeout(waitTime);
             },
             (err) => {
                 console.log(err);
@@ -172,18 +172,11 @@ export class CalibratePage {
     }
 
     runProgressBar(waitTime: number) {
-        let progressStartTime = performance.now();
-        this.progressBarIntervalRef = setInterval(() => {
-            this.progressBarValue = (performance.now() - progressStartTime) / (waitTime) * 100;
-        }, 50);
+        this.digilentProgressBar.start(waitTime);
     }
 
-    setMainReadTimeout(waitTime: number) {
-        setTimeout(() => {
-            clearInterval(this.progressBarIntervalRef);
-            this.progressBarValue = 100;
-            this.readCalibrationAfterCalibrating();
-        }, waitTime);
+    progressBarFinished() {
+        this.readCalibrationAfterCalibrating();
     }
 
     loadCalibration(type: string) {
@@ -266,9 +259,8 @@ export class CalibratePage {
                 }
                 else if (err.device[0].statusCode === 2684354578) {
                     //Bad setup
-                    clearInterval(this.progressBarIntervalRef);
+                    this.digilentProgressBar.stop();
                     this.calibrationFailed = true;
-                    this.progressBarValue = 100;
                     this.calibrationStatus = 'Error starting calibration. Please follow the calibration setup.';
                     return;
                 }

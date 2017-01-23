@@ -52,7 +52,7 @@
                     {{calibrationStatus}}
                 </div>
                 <div text-center class="pad-above">
-                    <progress class="progress-bar" [value]="progressBarValue" max="100"></progress>
+                    <digilent-progress-bar #digilentProgressBar (progressBarDone)="progressBarFinished()"></digilent-progress-bar>
                 </div>
                 <div class="navigation-button-container">
                     <ion-row>

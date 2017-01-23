@@ -263,6 +263,17 @@
     overflow: visible;
 }
 
+.first-tab-container .button-container
+{
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.first-tab-container .device-manager-card .button-container .alert-button
+{
+    color: yellow;
+}
+
 .first-tab-container .device-manager-card .card-label
 {
     margin: 1px 0px 1px 0px;
