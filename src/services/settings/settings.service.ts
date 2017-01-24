@@ -17,6 +17,13 @@ export class SettingsService {
     public drawLaOnTimeline: boolean = false;
     public wflVersion: string = '0.1.0';
 
+    public knownFirmwareUrls: { openscopeMz: { prettyName: string, firmwareUrl: string } } = {
+        openscopeMz: {
+            prettyName: 'OpenScope-MZ',
+            firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent-test'
+        }
+    };
+
     constructor(_storageService: StorageService, _deviceManagerService: DeviceManagerService) {
         console.log('settings service constructor');
         this.storageService = _storageService;
@@ -51,7 +58,7 @@ export class SettingsService {
         return {
             deviceMake: dev.deviceMake,
             deviceModel: dev.deviceModel,
-            firmwareVersion:  versionArray.join('.'),
+            firmwareVersion: versionArray.join('.'),
             rootUri: dev.rootUri
         };
     }
@@ -68,7 +75,7 @@ export class SettingsService {
             window.console.log = this.bothLog.bind(this);
         }
         else if (type === 'none') {
-            window.console.log = function() {};
+            window.console.log = function () { };
         }
     }
 

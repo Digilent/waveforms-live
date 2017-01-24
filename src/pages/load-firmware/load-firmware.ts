@@ -10,12 +10,17 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
     templateUrl: 'load-firmware.html',
 })
 export class LoadFirmwarePage {
-    @ViewChild('calibrationSlider') slider: Slides;
+    @ViewChild('loadFirmwareSlider') slider: Slides;
     public storageService: StorageService;
     public settingsService: SettingsService;
     public params: NavParams;
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
+
+    public knownDevicePrettyNames: string[] = ['Other'];
+    public selectedDevice: string;
+
+    public arrayBufferFirmware: ArrayBuffer;
 
     constructor(
         _storageService: StorageService,
@@ -30,6 +35,11 @@ export class LoadFirmwarePage {
         this.viewCtrl = _viewCtrl;
         this.params = _params;
         console.log('load firmware constructor');
+        for (let device in this.settingsService.knownFirmwareUrls) {
+            console.log(device);
+            this.knownDevicePrettyNames.unshift(this.settingsService.knownFirmwareUrls[device].prettyName);
+        }
+        this.selectedDevice = this.knownDevicePrettyNames[0];
     }
 
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it
@@ -42,6 +52,36 @@ export class LoadFirmwarePage {
             return;
         }
         swiperInstance.lockSwipes();
+    }
+
+    openFileInput() {
+        document.getElementById('firmwareFileSelect').click();
+    }
+
+    fileChange(event) {
+        if (event.target.files.length === 0) { return; }
+        let fileReader = new FileReader();
+        let fileName = event.target.files[0].name;
+        let fileEnding = fileName.slice(fileName.indexOf('.') + 1);
+        if (fileEnding === 'hex') {
+            fileReader.onload = ((file: any) => {
+                this.arrayBufferFirmware = file.target.result;
+            });
+            fileReader.readAsArrayBuffer(event.target.files[0]);
+        }
+        else {
+            alert('You Must Upload A Hex File');
+        }
+        
+    }
+
+    toProgressBar() {
+        console.log(this.arrayBufferFirmware);
+    }
+
+    dropdownDeviceChange(event) {
+        console.log(event);
+        this.selectedDevice = event;
     }
 
     closeModal() {

@@ -5,6 +5,8 @@ import { Component } from '@angular/core';
 import { DeviceManagerPage } from '../device-manager-page/device-manager-page';
 import { CalibratePage } from '../calibrate/calibrate';
 import { WifiSetupPage } from '../wifi-setup/wifi-setup';
+import { LoadFirmwarePage } from '../load-firmware/load-firmware';
+import { UpdateFirmwarePage } from '../update-firmware/update-firmware';
 
 //Interfaces
 import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
@@ -25,6 +27,7 @@ export class DeviceConfigureModal {
     public params: NavParams;
 
     public potentialDevices: string[];
+    public selectedPotentialDeviceIndex: number = 0;
     public deviceBridgeAddress: string;
     public deviceManagerPageRef: DeviceManagerPage;
     public deviceObject: DeviceCardInfo;
@@ -32,6 +35,7 @@ export class DeviceConfigureModal {
     //Content controllers
     public bridgeConfigure: boolean = false;
     public deviceConfigure: boolean = false;
+    public invalidEnumeration: boolean = true;
 
     //Leftovers from transfer. TODO wade through this
     public hostname: string = 'test';
@@ -59,6 +63,7 @@ export class DeviceConfigureModal {
             this.reEnumerateAgent();
         }
         if (this.deviceObject != null) {
+            this.invalidEnumeration = false;
             let addDeviceAddress = this.deviceObject.bridge ? this.deviceObject.deviceBridgeAddress : this.deviceObject.ipAddress;
             this.deviceManagerService.addDeviceFromDescriptor(addDeviceAddress, { device: [this.deviceObject.deviceDescriptor] });
             if (this.deviceObject.bridge) {
@@ -123,6 +128,11 @@ export class DeviceConfigureModal {
                     console.log('Error Parsing Set Active Device Response');
                     console.log(e);
                 }
+                if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
+                    this.deviceManagerPageRef.toastService.createToast('agentConnectError', true);
+                    this.invalidEnumeration = true;
+                    return;
+                }
                 console.log(data);
             },
             (err) => {
@@ -130,6 +140,10 @@ export class DeviceConfigureModal {
             },
             () => { }
         );
+    }
+
+    retryDeviceEnumeration() {
+        this.selectDevice(this.selectedPotentialDeviceIndex);
     }
 
     selectDevice(selectedIndex: number) {
@@ -141,10 +155,6 @@ export class DeviceConfigureModal {
                 }
             ]
         };
-        if (this.deviceObject != null && this.potentialDevices[selectedIndex] === this.deviceObject.connectedDeviceAddress) {
-            this.deviceManagerPageRef.toastService.createToast('deviceExists');
-            return;
-        }
 
         let loading = this.deviceManagerPageRef.displayLoading();
 
@@ -163,6 +173,12 @@ export class DeviceConfigureModal {
                     console.log(e);
                     loading.dismiss();
                 }
+                if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
+                    console.log('Agent StatusCode Error');
+                    this.invalidEnumeration = true;
+                    this.deviceManagerPageRef.toastService.createToast('agentConnectError', true);
+                    return;
+                }
                 console.log(data);
 
                 this.deviceManagerService.connect(this.deviceBridgeAddress).subscribe(
@@ -172,8 +188,10 @@ export class DeviceConfigureModal {
                         console.log(data);
                         if (data.device[0].statusCode == undefined || data.device[0].statusCode > 0) {
                             this.deviceManagerPageRef.toastService.createToast('enumerateError', true);
+                            this.invalidEnumeration = true;
                             return;
                         }
+                        this.invalidEnumeration = false;
 
                         if (this.deviceObject != undefined) {
                             this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
@@ -191,13 +209,17 @@ export class DeviceConfigureModal {
                             this.deviceConfigure = true;
                             this.deviceObject = this.deviceManagerPageRef.devices[0];
                             this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
-                            //TODO
+                            
+                            if (this.potentialDevices[selectedIndex] === this.deviceObject.connectedDeviceAddress) {
+                                return;
+                            }
                             this.deviceManagerPageRef.deviceManagerService.addDeviceFromDescriptor(this.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                         }
                     },
                     (err) => {
                         console.log(err);
                         loading.dismiss();
+                        this.invalidEnumeration = true;
                         this.deviceManagerPageRef.toastService.createToast('timeout', true);
                     },
                     () => { }
@@ -215,7 +237,16 @@ export class DeviceConfigureModal {
 
     dropdownDeviceChange(event) {
         console.log(event);
-        this.selectDevice(this.potentialDevices.indexOf(event));
+        this.selectedPotentialDeviceIndex = this.potentialDevices.indexOf(event);
+        this.selectDevice(this.selectedPotentialDeviceIndex);
+
+    }
+
+    openCorrectFirmwareModal() {
+        let modal = this.modalCtrl.create(this.invalidEnumeration ? LoadFirmwarePage : UpdateFirmwarePage, undefined, {
+            enableBackdropDismiss: false
+        });
+        modal.present();
     }
 
     openCalibrateWizard() {

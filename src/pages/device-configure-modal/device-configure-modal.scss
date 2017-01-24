@@ -45,11 +45,36 @@
 {
     min-width: 250px;
     padding-right: 0px;
+    max-width: 35%;
 }
 
 .device-configure-modal-container .dropdown-popover-item-right
 {
-    min-width: 100px;
+    min-width: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    dropdown-popover {
+        width: 100%;
+        .dropdown-select {
+            cursor: pointer;
+            height: 25px;
+        }
+    }
+}
+
+.device-configure-modal-container .invalid-enumeration {
+    dropdown-popover {
+        width: 80%;
+    }
+}
+
+.device-configure-modal-container .alert-button 
+{
+    font-size: 10px;
+    height: 25px;
+    width: 26px;
+    margin: 0px 0px 0px 2px;
 }
 
 .device-configure-modal-container .list-header

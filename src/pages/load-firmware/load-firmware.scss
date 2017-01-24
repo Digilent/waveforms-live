@@ -1,0 +1,97 @@
+.load-firmware-container
+{
+    background-color: transparent;
+    color: white;
+}
+
+.load-firmware-container .configure-item
+{
+    background-color: #535353;
+    color: white;
+    font-size: 14px;
+}
+
+.load-firmware-container .content-container
+{
+    position: relative;
+    height: 100%;
+}
+
+.load-firmware-container .slide-container
+{
+    .slide-zoom {
+        background-color: #535353;
+        width: 800px;
+        height: 450px;
+        max-width: 100%;
+        overflow: auto;
+        max-height: 100%;
+    }
+}
+
+.load-firmware-container .firmware-list
+{
+    margin-top: 16px;
+}
+
+.load-firmware-container .slide-header
+{
+    font-size: 16px;
+    font-weight: 500;
+    padding-top: 16px;
+}
+
+.load-firmware-container .navigation-button-container
+{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+
+.load-firmware-container .item-content-right
+{
+    color: #CCCCCC;
+}
+
+.load-firmware-container .item-button
+{
+    font-size: 10px;
+    margin: 0;
+}
+
+.load-firmware-container .hidden-file-input
+{
+     opacity: 0;
+     max-height: 0px;
+}
+
+.load-firmware-container .dropdown-popover-item-right
+{
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    dropdown-popover {
+        width: 100%;
+        .dropdown-select {
+            cursor: pointer;
+            height: 25px;
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .load-firmware-container {
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .load-firmware-container .slide-container .slide-zoom {
+        background-color: #535353;
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        overflow: auto;
+        max-height: 100%;
+    }
+
+}
