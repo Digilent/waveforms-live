@@ -4,7 +4,7 @@
 
         <ion-slide class="slide-container">
             <div class="content-container">
-                <div class="slide-header">Update Firmware</div>
+                <div class="slide-header">Load Firmware</div>
                 <ion-list class="firmware-list">
                     <ion-item class="configure-item">
                         <ion-label>Device</ion-label>
@@ -15,8 +15,14 @@
                     <ion-item class="configure-item">
                         <ion-label>Firmware</ion-label>
                         <div item-right class="item-content-right">
-                            <span *ngIf="selectedDevice !== 'Other'">1.0.0</span>
+                            <span *ngIf="selectedDevice !== 'Other'">{{deviceFirmwareVersionDictionary[selectedDevice].latest}}</span>
                             <button ion-button class="text-button-side disable-hover item-button" *ngIf="selectedDevice === 'Other'" (click)="openFileInput()">Browse</button>
+                        </div>
+                    </ion-item>
+                    <ion-item class="configure-item">
+                        <ion-label>Status</ion-label>
+                        <div item-right class="item-content-right">
+                            {{firmwareStatus}}
                         </div>
                     </ion-item>
                 </ion-list>
@@ -43,9 +49,21 @@
             </div>
         </ion-slide>
 
-        <ion-slide>
-            <div>
-                Hey
+        <ion-slide class="slide-container">
+            <div class="content-container">
+                <div class="slide-header">Updating Firmware</div>
+                <digilent-progress-bar #digilentProgressBar (progressBarDone)="doneUpdating()"></digilent-progress-bar>
+
+                <div class="navigation-button-container">
+                    <ion-row>
+                        <ion-col text-right>
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()" *ngIf="updateComplete">
+                                Done
+                                <ion-icon name="checkmark"></ion-icon>
+                            </button>
+                        </ion-col>
+                    </ion-row>
+                </div>
             </div>
         </ion-slide>
 

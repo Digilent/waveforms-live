@@ -9,6 +9,9 @@ import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { DeviceManagerService } from '../../services/device/device-manager.service';
 
+//Interfaaces
+import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
+
 @Component({
     templateUrl: 'update-firmware.html',
 })
@@ -22,6 +25,14 @@ export class UpdateFirmwarePage {
     public deviceManagerService: DeviceManagerService;
     public updateComplete: boolean = false;
 
+    public deviceFirmwareVersion: string = '';
+    public latestFirmwareVersion: string = '';
+    public updateStatus: string = 'Ready';
+
+    public deviceObject: DeviceCardInfo;
+    public agentAddress: string;
+    public firmwareUpToDate: boolean = false;
+
     constructor(
         _storageService: StorageService,
         _settingsService: SettingsService,
@@ -34,7 +45,31 @@ export class UpdateFirmwarePage {
         this.settingsService = _settingsService;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
+        this.agentAddress = this.params.get('agentAddress');
+        this.deviceObject = this.params.get('deviceObject');
         console.log('update firmware constructor');
+        this.getDeviceFirmware();
+        this.getLatestFirmware();
+    }
+
+    getDeviceFirmware() {
+        let firmwareVersionObject = this.deviceObject.deviceDescriptor.firmwareVersion;
+        let deviceFirmwareVersion = [firmwareVersionObject.major, firmwareVersionObject.minor, firmwareVersionObject.patch].join('.');
+        this.deviceFirmwareVersion = deviceFirmwareVersion;
+    }
+
+    getLatestFirmware() {
+        //TODO: read device enum for ip address and then call device man service getFirmwareVersionsFromUrl
+        this.deviceManagerService.getLatestFirmwareVersionFromUrl('https://s3-us-west-2.amazonaws.com/digilent-test').then((latestFirmwareVersion) => {
+            this.latestFirmwareVersion = latestFirmwareVersion;
+            this.firmwareUpToDate = this.latestFirmwareVersion === this.deviceFirmwareVersion;
+            if (this.firmwareUpToDate) {
+                this.updateStatus = 'Your device firmware is up to date';
+            }
+        })
+        .catch((e) => {
+            console.log(e);
+        });
     }
 
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it

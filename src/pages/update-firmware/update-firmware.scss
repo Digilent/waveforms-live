@@ -38,14 +38,16 @@
 {
     background-color: #535353;
     color: white;
+    font-size: 14px;
     ion-label {
-        flex: 1 0 100px;
+        flex: 1 0;
     }
 }
 
 .update-firmware-container .general-content
 {
     color: #CCCCCC;
+    max-width: 70%;
 }
 
 .update-firmware-container .navigation-button-container
@@ -69,4 +71,10 @@
         max-height: 100%;
     }
 
+}
+
+@media screen and (max-height: 599px) {
+    .update-firmware-container {
+        background-color: rgba(0, 0, 0, 0.4);
+    }
 }

@@ -58,6 +58,9 @@ export class TestChartCtrlsPage {
     public readingOsc: boolean = false;
     public readingLa: boolean = false;
 
+    public currentOscReadArray: number[];
+    public currentLaReadArray: number[];
+
     constructor(
         _deviceManagerService: DeviceManagerService,
         _storage: StorageService,
@@ -284,6 +287,8 @@ export class TestChartCtrlsPage {
             }
         }
 
+        this.currentLaReadArray = laArray[0];
+        this.currentOscReadArray = oscArray[0];
 
         let singleCommand = {}
 
@@ -343,13 +348,13 @@ export class TestChartCtrlsPage {
                 if (this.activeDevice.transport.getType() !== 'local') {
 
                     setTimeout(() => {
-                        this.readOscope();
-                        this.readLa();
+                        this.readOscope(oscArray[0]);
+                        this.readLa(laArray[0]);
                     }, this.theoreticalAcqTime);
                 }
                 else {
-                    this.readOscope();
-                    this.readLa();
+                    this.readOscope(oscArray[0]);
+                    this.readLa(laArray[0]);
                 }
             }
         );
@@ -365,13 +370,12 @@ export class TestChartCtrlsPage {
 
     }
 
-    readLa() {
-        let readArray = [];
-        for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
+    readLa(readArray: number[]) {
+        /*for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
             if (this.gpioComponent.laActiveChans[i]) {
                 readArray.push(i + 1);
             }
-        }
+        }*/
         if (readArray.length < 1) {
             this.readingLa = false;
             return;
@@ -392,7 +396,7 @@ export class TestChartCtrlsPage {
                     this.readAttemptCount++;
                     let waitTime = this.readAttemptCount * 100 > 1000 ? 1000 : this.readAttemptCount * 100;
                     setTimeout(() => {
-                        this.readLa();
+                        this.readLa(readArray);
                     }, waitTime);
                 }
             },
@@ -405,16 +409,19 @@ export class TestChartCtrlsPage {
             return;
         }
 
-        let numSeries = [];
-        for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
-            if (this.chart1.oscopeChansActive[i]) {
-                numSeries.push(i);
+        if (this.chart1.oscopeChansActive.indexOf(true) === -1 && this.gpioComponent.laActiveChans.indexOf(true) === -1) {
+            if (this.running) {
+                this.running = false;
             }
+            return;
         }
-        for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
-            if (this.gpioComponent.laActiveChans[i]) {
-                numSeries.push(i + this.chart1.oscopeChansActive.length);
-            }
+
+        let numSeries = [];
+        for (let i = 0; i < this.currentOscReadArray.length; i++) {
+            numSeries.push(this.currentOscReadArray[i] - 1);
+        }
+        for (let i = 0; i < this.currentLaReadArray.length; i++) {
+            numSeries.push(this.currentLaReadArray[i] - 1 + this.chart1.oscopeChansActive.length);
         }
         this.chart1.clearExtraSeries(numSeries);
 
@@ -461,13 +468,13 @@ export class TestChartCtrlsPage {
         }
     }
 
-    readOscope() {
-        let readArray = [];
-        for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+    readOscope(readArray: number[]) {
+        /*let readArray = [];*/
+        /*for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
                 readArray.push(i + 1);
             }
-        }
+        }*/
         if (readArray.length < 1) {
             this.readingOsc = false;
             return;
@@ -484,7 +491,7 @@ export class TestChartCtrlsPage {
                     this.readAttemptCount++;
                     let waitTime = this.readAttemptCount * 100 > 1000 ? 1000 : this.readAttemptCount * 100;
                     setTimeout(() => {
-                        this.readOscope();
+                        this.readOscope(readArray);
                     }, waitTime);
                 }
             },
@@ -525,8 +532,8 @@ export class TestChartCtrlsPage {
                     }
                 }
                 setTimeout(() => {
-                    this.readOscope();
-                    this.readLa();
+                    this.readOscope(this.currentOscReadArray);
+                    this.readLa(this.currentLaReadArray);
                 }, this.theoreticalAcqTime);
 
             }

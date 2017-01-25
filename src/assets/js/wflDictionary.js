@@ -213,6 +213,9 @@ var waveformsLiveDictionary = (function() {
         },
         triggerForce: {
             english: 'Force Trigger'
+        },
+        configDeviceRetryEnumerate: {
+            english: 'Retry Enumeration'
         }
     };
 

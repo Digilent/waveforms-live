@@ -8,7 +8,8 @@
 {
     .slide-zoom {
         background-color: #535353;
-        width: 850px;
+        width: 800px;
+        height: 450px;
         max-width: 100%;
         overflow: auto;
         max-height: 100%;
@@ -33,9 +34,14 @@
     padding-top: 16px;
 }
 
+.wifi-setup-container .slide-wrapper
+{
+    min-height: calc(100% - 43px);
+}
+
 .wifi-setup-container .network-container
 {
-    min-height: 500px;
+    //min-height: 500px;
 }
 
 .wifi-setup-container .network-container-column
@@ -68,6 +74,13 @@
 }
 
 @media screen and (max-width: 768px) {
+    .wifi-setup-container {
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+}
+
+
+@media screen and (max-height: 599px) {
     .wifi-setup-container {
         background-color: rgba(0, 0, 0, 0.4);
     }

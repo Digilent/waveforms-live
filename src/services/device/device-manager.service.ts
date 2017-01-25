@@ -106,7 +106,7 @@ export class DeviceManagerService {
                     try {
                         enumerationObject = JSON.parse(event.currentTarget.response);
                     }
-                    catch(e) {
+                    catch (e) {
                         observer.error(e);
                         return;
                     }
@@ -176,5 +176,65 @@ export class DeviceManagerService {
             }
         }
         return -1;
+    }
+
+    xmlToJson(data) {
+        let parser = new DOMParser();
+        let xmlDoc;
+        let contents;
+        try {
+            xmlDoc = parser.parseFromString(data, "text/xml");
+            contents = xmlDoc.getElementsByTagName("Contents");
+        }
+        catch (e) {
+            return e;
+        }
+        let returnArray: any[] = [];
+        for (let i = 0; i < contents.length; i++) {
+            returnArray.push({});
+            for (let j = 0; j < contents[i].childNodes.length; j++) {
+                try {
+                    returnArray[i][contents[i].childNodes[j].tagName] = contents[i].childNodes[j].textContent;
+                }
+                catch (e) {
+                    return e;
+                }
+            }
+        }
+        return returnArray;
+    }
+
+    getLatestFirmwareVersionFromArray(firmwareVersionsArray: any) {
+        let arrayToSort: string[] = [];
+        for (let i = 0; i < firmwareVersionsArray.length; i++) {
+            arrayToSort.push(firmwareVersionsArray[i].Key);
+        }
+        arrayToSort.sort();
+        return arrayToSort[arrayToSort.length - 1].substring(0, arrayToSort[arrayToSort.length - 1].indexOf('.hex'));
+    }
+
+    getLatestFirmwareVersionFromUrl(firmwareUrl: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            this.getFirmwareVersionsFromUrl(firmwareUrl).then((firmwareVersionsArray) => {
+                resolve(this.getLatestFirmwareVersionFromArray(firmwareVersionsArray));
+            });
+        });
+    }
+
+    getFirmwareVersionsFromUrl(firmwareUrl: string) {
+        return new Promise((resolve, reject) => {
+            this.transport.getRequest(firmwareUrl).subscribe(
+                (data) => {
+                    if (data.indexOf('xml') === -1) {
+                        reject('Error');
+                    }
+                    resolve(this.xmlToJson(data));
+                },
+                (err) => {
+                    console.log(err);
+                },
+                () => { }
+            );
+        });
     }
 }

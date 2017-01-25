@@ -51,6 +51,7 @@
 .load-firmware-container .item-content-right
 {
     color: #CCCCCC;
+    max-width: 70%;
 }
 
 .load-firmware-container .item-button
@@ -94,4 +95,11 @@
         max-height: 100%;
     }
 
+}
+
+
+@media screen and (max-height: 599px) {
+    .load-firmware-container {
+        background-color: rgba(0, 0, 0, 0.4);
+    }
 }

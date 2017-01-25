@@ -150,8 +150,8 @@
 }
 
 //Disables scroll for all pages
-.scroll-content {
-    overflow-y: auto;
+.instrument-panel-content .scroll-content {
+    overflow: hidden;
 }
 
 //Remove text from collapse buttons also this is cool

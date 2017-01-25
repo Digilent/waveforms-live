@@ -2,7 +2,7 @@
 
     <ion-slides #wifiSlider>
         <ion-slide class="first-slide-container">
-            <div>
+            <div class="slide-wrapper">
                 <div class="slide-header">Networks</div>
                 <ion-row class="network-container" wrap>
                     <ion-col class="network-container-column" text-center>
@@ -37,16 +37,17 @@
                         </ion-row>
                     </ion-col>
                 </ion-row>
-                <ion-row>
-                    <ion-col text-left>
-                        <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()">
-                            <ion-icon name="close"></ion-icon>
-                            Close
-                        </button>
-                    </ion-col>
-                </ion-row>
             </div>
+            <ion-row>
+                <ion-col text-left>
+                    <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()">
+                        <ion-icon name="close"></ion-icon>
+                        Close
+                    </button>
+                </ion-col>
+            </ion-row>
         </ion-slide>
+
         <ion-slide class="second-slide-container">
             <div>
                 <div class="slide-header">SSID: {{selectedNetwork.ssid}}</div>

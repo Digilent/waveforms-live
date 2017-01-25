@@ -104,7 +104,8 @@
                     <ion-label>Selected Device</ion-label>
                     <div item-right class="item-content-right dropdown-popover-item-right" [ngClass]="{'invalid-enumeration':invalidEnumeration}">
                         <dropdown-popover [dataArray]="potentialDevices" (onSelection)="dropdownDeviceChange($event)"></dropdown-popover>
-                        <button ion-button class="icon-only-button-side disable-hover alert-button" (click)="retryDeviceEnumeration()" *ngIf="invalidEnumeration">
+                        <button ion-button class="icon-only-button-side disable-hover alert-button" (click)="retryDeviceEnumeration()" *ngIf="invalidEnumeration"
+                            [tooltip]="tooltipService.getTooltip('configDeviceRetryEnumerate').message" [tooltipAnimation]="true" tooltipPlacement="left">
                             <ion-icon name="alert"></ion-icon>
                         </button>
                     </div>

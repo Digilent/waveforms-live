@@ -94,6 +94,7 @@ export class DeviceManagerPage {
         this.storage.getData('savedDevices').then((data) => {
             if (data !== null) {
                 this.devices = JSON.parse(data);
+                this.getFirmwareVersionsForDevices();
             }
         });
         this.storage.getData('routeToStore').then((data) => {
@@ -101,6 +102,26 @@ export class DeviceManagerPage {
                 this.routeToStore();
             }
         });
+    }
+
+    getFirmwareVersionsForDevices() {
+        for (let i = 0; i < this.devices.length; i++) {
+            if (this.devices[i].ipAddress !== 'local') {
+                //TODO: read device enum for ip address and then call device man service getFirmwareVersionsFromUrl
+                this.deviceManagerService.getLatestFirmwareVersionFromUrl('https://s3-us-west-2.amazonaws.com/digilent-test').then((latestFirmwareVersion) => {
+                    this.determineIfOutdatedFirmware(latestFirmwareVersion, i);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+            }
+        }
+    }
+
+    determineIfOutdatedFirmware(latestFirmwareVersion: string, deviceIndex: number) {
+        let firmwareVersionObject = this.devices[deviceIndex].deviceDescriptor.firmwareVersion;
+        let deviceFirmwareVersion = [firmwareVersionObject.major, firmwareVersionObject.minor, firmwareVersionObject.patch].join('.');
+        this.devices[deviceIndex].outdatedFirmware = latestFirmwareVersion !== deviceFirmwareVersion;
     }
 
     loadTutorialTooltipMessages() {

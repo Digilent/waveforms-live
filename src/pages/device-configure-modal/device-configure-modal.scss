@@ -45,7 +45,12 @@
 {
     min-width: 250px;
     padding-right: 0px;
-    max-width: 35%;
+    max-width: 520px;
+}
+
+.device-configure-modal-container .dropdown-popover-item-right .dropdown-popover-container .popover-button
+{
+    height: 25px;
 }
 
 .device-configure-modal-container .dropdown-popover-item-right

@@ -22,28 +22,6 @@
     }
 }
 
-.calibration-container .second-slide-container
-{
-    .slide-zoom {
-        background-color: #535353;
-        width: 400px;
-        max-width: 100%;
-        overflow: auto;
-        max-height: 100%;
-    }
-}
-
-.calibration-container .third-slide-container
-{
-    .slide-zoom {
-        background-color: #535353;
-        width: 850px;
-        max-width: 100%;
-        overflow: auto;
-        max-height: 100%;
-    }
-}
-
 .calibration-container .calibration-results
 {
     //min-height: 400px;
@@ -78,11 +56,6 @@
 .calibration-container .instructions-col
 {
     padding-left: 16px;
-}
-
-.calibration-container .instructions-container
-{
-    height: 200px;
 }
 
 .calibration-container .calibration-instructions
@@ -214,4 +187,10 @@
         max-height: 100%;
     }
 
+}
+
+@media screen and (max-height: 599px) {
+    .calibration-container {
+        background-color: rgba(0, 0, 0, 0.4);
+    }
 }

@@ -102,6 +102,11 @@
     border: solid white 1px;
 }
 
+.scroll-content 
+{
+    overflow: auto;
+}
+
 .tooltip.bottom {
     padding: 5px 0;
     margin-top: 3px;

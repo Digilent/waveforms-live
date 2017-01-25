@@ -38,6 +38,7 @@ export class HttpTransportComponent extends TransportComponent {
             let XHR = new XMLHttpRequest();
 
             XHR.addEventListener("load", (event: MyEventResponse) => {
+                this.finish = performance.now();
                 console.log('from start to fin');
                 console.log(this.finish - this.start);
                 observer.next(event.currentTarget.response);
@@ -58,6 +59,8 @@ export class HttpTransportComponent extends TransportComponent {
                 XHR.timeout = 5000;
                 
                 XHR.send();
+                this.start = performance.now();
+                console.log('command sent');
             }
             catch (err) {
                 observer.error('TX Error: ', event);

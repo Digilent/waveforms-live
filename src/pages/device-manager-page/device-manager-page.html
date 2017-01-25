@@ -145,8 +145,8 @@
                     </ion-label>
 
                     <div item-right class="button-container">
-                        <div>
-                            <button ion-button class="card-button alert-button" clear (click)="openUpdateFirmware()" *ngIf="true">
+                        <div *ngIf="device.outdatedFirmware">
+                            <button ion-button class="card-button alert-button" clear (click)="openUpdateFirmware()">
                                 <ion-icon name="alert"></ion-icon>
                             </button>
                         </div>
