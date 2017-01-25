@@ -19,6 +19,7 @@ import { SettingsObject } from '../instruments/awg/awg-instrument.component';
 
 const enum TutorialStage {
     IDLE,
+    LOOPBACK,
     WAVETYPE,
     POWER
 }
@@ -81,7 +82,7 @@ export class FgenComponent {
 
     startTutorial() {
         this.tutorialMode = true;
-        this.tutorialStage = TutorialStage.WAVETYPE;
+        this.tutorialStage = TutorialStage.LOOPBACK;
     }
 
     finishTutorial() {
@@ -100,6 +101,10 @@ export class FgenComponent {
             this.formatInputAndUpdate(event, input);
             this.ignoreFocusOut = true;
         }
+    }
+
+    proceedToNextStage() {
+        this.tutorialStage = TutorialStage.WAVETYPE;
     }
 
     inputLeave(event, input: string) {

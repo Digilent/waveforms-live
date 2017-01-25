@@ -122,6 +122,12 @@ var waveformsLiveDictionary = (function() {
         tutorialChart: {
             english: 'This Is The Chart. Click And Drag To Pan And Mousewheel To Zoom.'
         },
+        tutorialLoopBack: {
+            english: 'For The Simulated Device, The AWG Is Connected To The Oscilloscope.'
+        },
+        tutorialSingleButton: {
+            english: 'Click To Get A Buffer Of Data.'
+        },
 
         //Tooltips
         addADevice: {

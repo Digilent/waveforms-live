@@ -41,7 +41,10 @@
                 </div>
             </ion-col>
             <ion-col class="inner-ctrls" text-center center>
-                <button *ngIf="(!readingLa && !readingOsc) || running" ion-button icon-right class="text-button-side disable-hover main-button" (click)="singleClick()">
+                <button *ngIf="(!readingLa && !readingOsc) || running" ion-button icon-right class="text-button-side disable-hover main-button" (click)="singleClick()"
+                    [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 3}"
+                    [tooltip]="tooltipService.getTooltip('tutorialSingleButton').message" [tooltipAnimation]="true" tooltipPlacement="bottom" 
+                    [forceShow]="tutorialStage === 3 && tutorialMode" onlyForceShow="true">
                     <span class="collapse-button">Single</span>
                     <img class="custom-image-button" src="assets/img/single.png">
                 </button>

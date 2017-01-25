@@ -1,7 +1,18 @@
 <div class=fgen-container>
+    <tooltip-content #okButton [animation]="true" class="tutorial-ok-button">
+        <div>
+            {{tooltipService.getTooltip('tutorialLoopBack').message}}
+        </div>
+        <div>
+            <button ion-button class="text-button-side disable-hover" (click)="proceedToNextStage()">ok</button>
+        </div>
+    </tooltip-content>
+
     <div *ngIf="settingsService.nestedChannels" class="header-bar-side awg-header">
         <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSettings}" (click)="toggleAwgSettings()" src="assets/img/arrow-right.png">
-        <div class="header-bar-title instrument-header">Wavegen</div>
+        <div class="header-bar-title instrument-header" [tooltip]="okButton" [forceShow]="tutorialMode && tutorialStage === 1" tooltipPlacement="top" onlyForceShow="true">
+            Wavegen
+        </div>
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
     <div *ngIf="showSettings">
@@ -13,28 +24,28 @@
                     </button>
                 </ion-col>
                 <ion-col center text-center>
-                    <div [ngClass]="{'instrument-header': !settingsService.nestedChannels}">
+                    <div [ngClass]="{'instrument-header': !settingsService.nestedChannels}"  [tooltip]="okButton" [forceShow]="tutorialMode && tutorialStage === 1" tooltipPlacement="top" onlyForceShow="true">
                         {{settingsService.nestedChannels === false ? 'Wavegen' : ''}}{{activeDevice.instruments.awg.chans.length < 2 && !settingsService.nestedChannels ? ' ' : 'Ch ' + (i + 1)}}
                     </div>
                 </ion-col>
                 <ion-col class="header-side-col" center text-right>
-                    <button ion-button clear (click)="togglePower($event)" class="powerOff" [ngClass]="{powerOn: powerOn,'move-feature-to-front':tutorialStage === 2 && tutorialMode}"
+                    <button ion-button clear (click)="togglePower($event)" class="powerOff" [ngClass]="{powerOn: powerOn,'move-feature-to-front':tutorialStage === 3 && tutorialMode}"
                         [tooltip]="tooltipService.getTooltip(tutorialMode ? 'tutorialFgenPower' : 'fgenPower').message" [tooltipAnimation]="true" tooltipPlacement="left" 
-                        [forceShow]="tutorialStage === 2 && tutorialMode" onlyForceShow="true">
+                        [forceShow]="tutorialStage === 3 && tutorialMode" onlyForceShow="true">
                         <ion-icon name="power"></ion-icon>
                     </button>
                 </ion-col>
             </ion-row>
             <div *ngIf="showChanSettings[i]">
                 <div class="wavetype-images-container" text-center [tooltip]="tooltipService.getTooltip('tutorialWaveSelectButton').message" 
-                    [forceShow]="tutorialStage === 1 && tutorialMode" [tooltipAnimation]="true" tooltipPlacement="bottom" onlyForceShow="true">
+                    [forceShow]="tutorialStage === 2 && tutorialMode" [tooltipAnimation]="true" tooltipPlacement="bottom" onlyForceShow="true">
                     <div (click)="toggleWave('sine')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sine','dim-image': powerOn&&waveType!=='square'}"
                         [tooltip]="tooltipService.getTooltip('sineButton').message" [tooltipAnimation]="true" tooltipPlacement="top">
                         <img src="assets/img/sine.png">
                     </div>
-                    <div (click)="toggleWave('triangle')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='triangle','dim-image': powerOn&&waveType!=='square','move-feature-to-front':tutorialStage === 1}"
-                        [tooltip]="tooltipService.getTooltip(tutorialStage === 1 ? 'tutorialTriangleButton' : 'triangleButton').message" [tooltipAnimation]="true" tooltipPlacement="top"
-                        [forceShow]="tutorialStage === 1 && tutorialMode">
+                    <div (click)="toggleWave('triangle')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='triangle','dim-image': powerOn&&waveType!=='square','move-feature-to-front':tutorialStage === 2}"
+                        [tooltip]="tooltipService.getTooltip(tutorialStage === 2 ? 'tutorialTriangleButton' : 'triangleButton').message" [tooltipAnimation]="true" tooltipPlacement="top"
+                        [forceShow]="tutorialStage === 2 && tutorialMode">
                         <img src="assets/img/triangle.png">
                     </div>
                     <div (click)="toggleWave('sawtooth')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sawtooth','dim-image': powerOn&&waveType!=='square'}"

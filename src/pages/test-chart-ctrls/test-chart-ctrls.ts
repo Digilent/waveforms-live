@@ -84,6 +84,7 @@ export class TestChartCtrlsPage {
 
     executeHelp() {
         this.tutorialMode = false;
+        this.fgenComponent.finishTutorial();
     }
 
     startTutorial() {
@@ -97,7 +98,7 @@ export class TestChartCtrlsPage {
 
     fgenTutorialFinished(event) {
         console.log(event);
-        this.tutorialFinished();
+        this.tutorialStage = 3;
     }
 
     tutorialFinished() {
@@ -199,7 +200,10 @@ export class TestChartCtrlsPage {
 
     //Run osc single
     singleClick(forceWholeCommand?: boolean) {
-
+        if (this.tutorialMode) {
+            this.tutorialMode = false;
+            this.tutorialStage = 0;
+        }
         this.readAttemptCount = 0;
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
 
