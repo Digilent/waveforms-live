@@ -63,7 +63,7 @@ export class SettingsService {
         };
     }
 
-    changeConsoleLog(type: string) {
+    changeConsoleLog(type: 'local storage' | 'both' | 'none' | 'console') {
         if (type === 'console') {
             console.log('hey');
             window.console.log = this.defaultConsoleLog;

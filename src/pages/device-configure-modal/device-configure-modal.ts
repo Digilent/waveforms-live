@@ -83,14 +83,12 @@ export class DeviceConfigureModal {
             this.deviceBridgeAddress = this.bridgeConfigure === true ? this.deviceObject.deviceBridgeAddress : this.deviceBridgeAddress;
         }
         else if (this.deviceObject == undefined && this.bridgeConfigure) {
-            let loading = this.deviceManagerPageRef.displayLoading();
-            this.reEnumerateAgent().then(() => {
-                loading.dismiss();
-            });
+            this.reEnumerateAgent(true);
         }
     }
 
-    reEnumerateAgent(): Promise<null> {
+    reEnumerateAgent(autoConnectToFirst?: boolean): Promise<null> {
+        autoConnectToFirst = autoConnectToFirst || false;
         return new Promise((resolve, reject) => {
             this.deviceManagerService.connectBridge(this.deviceBridgeAddress).subscribe(
                 (success) => {
@@ -106,6 +104,9 @@ export class DeviceConfigureModal {
                     }
                     this.potentialDevices = success.agent[0].devices;
                     if (success.agent[0].devices.length === 1 && !this.deviceObject) {
+                        this.dropdownDeviceChange(success.agent[0].devices[0]);
+                    }
+                    else if (success.agent[0].devices.length > 0 && autoConnectToFirst) {
                         this.dropdownDeviceChange(success.agent[0].devices[0]);
                     }
                 },

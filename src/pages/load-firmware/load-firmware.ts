@@ -88,7 +88,6 @@ export class LoadFirmwarePage {
         let fileEnding = fileName.slice(fileName.indexOf('.') + 1);
         if (fileEnding === 'hex') {
             fileReader.onload = ((file: any) => {
-                console.log(file);
                 this.firmwareStatus += '\r\nFile size is ' + file.loaded + ' bytes.';
                 this.selectedFileInfo.size = parseInt(file.loaded);
                 this.arrayBufferFirmware = file.target.result;
