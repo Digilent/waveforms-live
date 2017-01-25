@@ -201,8 +201,7 @@ export class TestChartCtrlsPage {
     //Run osc single
     singleClick(forceWholeCommand?: boolean) {
         if (this.tutorialMode) {
-            this.tutorialMode = false;
-            this.tutorialStage = 0;
+            this.tutorialFinished();
         }
         this.readAttemptCount = 0;
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
