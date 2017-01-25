@@ -1,9 +1,6 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { ModalController, PopoverController } from 'ionic-angular';
 
-//Pages
-import { ModalFgenPage } from '../../pages/fgen-modal/fgen-modal';
-
 //Components
 import { DeviceComponent } from '../../components/device/device.component';
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
@@ -358,20 +355,6 @@ export class FgenComponent {
             () => {
 
             });
-    }
-
-    //Open function generator / awg modal
-    openFgen(num) {
-        let modal = this.modalCtrl.create(ModalFgenPage, {
-            value: num,
-            waveType: this.waveType,
-            frequency: this.frequency,
-            amplitude: this.amplitude,
-            offset: this.offset,
-            dutyCycle: this.dutyCycle,
-            fgenComponent: this
-        });
-        modal.present();
     }
 
     openPopover(event) {

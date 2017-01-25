@@ -3,7 +3,6 @@ import { NavParams, ViewController, PopoverController } from 'ionic-angular';
 
 //Components
 import { SilverNeedleChart } from '../chart/chart.component';
-import { SeriesPopover } from '../series-popover/series-popover.component';
 
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
@@ -144,19 +143,6 @@ export class YAxisComponent {
     toggleVisibility(seriesNum: number, event) {
         event.stopPropagation();
         this.chart.toggleVisibility(seriesNum);
-    }
-
-    //Open series popover
-    openSeriesPopover(seriesNum) {
-        let popover = this.popoverCtrl.create(SeriesPopover, {
-            chart: this.chart,
-            yComponent: this,
-            seriesNum: seriesNum
-        });
-
-        popover.present({
-            ev: event
-        });
     }
 
     //Called when series settings are changed. Updates chart series settings

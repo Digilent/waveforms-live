@@ -3,7 +3,6 @@ import { AlertController, PopoverController } from 'ionic-angular';
 
 //Components
 import { DeviceComponent } from '../device/device.component';
-import { DigitalIoPopover } from '../digital-io-popover/digital-io-popover.component';
 import { SilverNeedleChart } from '../chart/chart.component';
 
 //Services
@@ -175,16 +174,5 @@ export class DigitalIoComponent {
             },
             () => { }
         );
-    }
-
-    //Open checkbox alert
-    doCheckbox(event) {
-        event.stopPropagation();
-        let popover = this.popoverCtrl.create(DigitalIoPopover, {
-            digitalComponent: this
-        });
-        popover.present({
-            ev: event
-        });
     }
 }

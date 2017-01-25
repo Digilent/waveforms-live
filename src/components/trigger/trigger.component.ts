@@ -1,8 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 
-//Components 
-import { TriggerPopover } from '../trigger-popover/trigger-popover.component';
+//Components
 import { GenPopover } from '../gen-popover/gen-popover.component';
 import { DeviceComponent } from '../device/device.component';
 import { SilverNeedleChart } from '../chart/chart.component';
@@ -153,18 +152,6 @@ export class TriggerComponent {
             () => { }
         );*/
         this.toastService.createToast('notImplemented', true);
-    }
-
-    //Open series popover
-    openTriggerPopover(event) {
-        let popover = this.popoverCtrl.create(TriggerPopover, {
-            triggerComponent: this,
-        });
-        popover.present({
-            ev: event
-        });
-        popover.onWillDismiss(data => {
-        });
     }
 
     setTrigType(type: string) {
