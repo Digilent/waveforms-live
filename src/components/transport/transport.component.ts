@@ -21,6 +21,10 @@ export abstract class TransportComponent {
     {
         this.rootUri = _rootUri;
     }
+
+    getUri() {
+        return this.rootUri;
+    }
     
     //Get type of transport component (parent)
     getType() {

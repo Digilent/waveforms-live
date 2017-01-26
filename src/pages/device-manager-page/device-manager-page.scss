@@ -18,7 +18,8 @@
 
 .first-tab-container .dev-menu-button
 {
-    width: 100%;
+    width: 75%;
+    min-width: 125px;
     color: white;
     background-color: #535353;
 }
@@ -267,6 +268,25 @@
 {
     margin-top: 0;
     margin-bottom: 0;
+}
+
+.first-tab-container .custom-menu-button
+{
+    background-color: transparent;
+    width: 42px;
+    box-shadow: none;
+
+    ion-icon {
+        font-size: 24px;
+    }
+}
+
+.first-tab-container .menu-button-container
+{
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    z-index: 99;
 }
 
 .first-tab-container .device-manager-card .button-container .alert-button

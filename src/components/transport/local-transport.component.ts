@@ -25,6 +25,10 @@ export class LocalTransportComponent extends TransportComponent {
         this.simulatedDevice = new SimulatedDeviceComponent(deviceEnumeration);
     }
 
+    getUri() {
+        return this.rootUri;
+    }
+
     getRequest(requestUrl: string) {
         return Observable.create((observer) => {
             observer.error('Local transport does not support get requests');

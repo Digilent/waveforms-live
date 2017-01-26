@@ -222,6 +222,7 @@ export class DeviceManagerService {
     }
 
     getFirmwareVersionsFromUrl(firmwareUrl: string) {
+        this.transport.setHttpTransport(this.transport.getUri());
         return new Promise((resolve, reject) => {
             this.transport.getRequest(firmwareUrl).subscribe(
                 (data) => {

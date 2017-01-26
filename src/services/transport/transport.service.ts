@@ -21,6 +21,10 @@ export class TransportService {
         this.transport.setUri(uri);
     }
 
+    getUri() {
+        return this.transport.getUri();
+    }
+
     //Get request on the specified url
     getRequest(requestUrl: string): Observable<any> {
         return this.transport.getRequest(requestUrl);

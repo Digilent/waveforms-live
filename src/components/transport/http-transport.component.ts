@@ -33,6 +33,10 @@ export class HttpTransportComponent extends TransportComponent {
         }
     }
 
+    getUri() {
+        return this.rootUri;
+    }
+
     getRequest(requestUrl: string): Observable<any> {
         return Observable.create((observer) => {
             let XHR = new XMLHttpRequest();

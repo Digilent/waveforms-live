@@ -111,9 +111,9 @@ export class WifiSetupPage {
         );
     }
 
-    wifiSetParameters(ssid: string, securityType: string, passphraseOrKey: string, wepKeys: string[], wepKeyIndex: number, autoConnect: boolean) {
+    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40'|'wep104'|'wpa'|'wpa2', autoConnect: boolean, passphrase?: string, key?: string, wepKeys?: string[], wepKeyIndex?: number) {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSetParameters(
-            ssid, securityType, passphraseOrKey, wepKeys, wepKeyIndex, autoConnect
+            adapter, ssid, securityType, autoConnect, passphrase, key, wepKeys, wepKeyIndex
         ).subscribe(
             (data) => {
                 console.log(data);
@@ -150,7 +150,7 @@ export class WifiSetupPage {
     }
 
     connectToNetwork(adapter: string, ssid: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].networkConnect(adapter, ssid).subscribe(
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicConnect(adapter).subscribe(
             (data) => {
                 console.log(data);
             },
@@ -162,7 +162,7 @@ export class WifiSetupPage {
     }
 
     disconnectFromNetwork(adapter) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiDisconnect(adapter).subscribe(
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicDisconnect(adapter).subscribe(
             (data) => {
                 console.log(data);
             },
@@ -185,8 +185,8 @@ export class WifiSetupPage {
         );
     }
 
-    loadWifiNetwork(ssid: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiLoadNetwork(ssid).subscribe(
+    loadWifiNetwork(adapter: string, ssid: string) {
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiLoadNetwork(adapter, ssid).subscribe(
             (data) => {
                 console.log(data);
             },

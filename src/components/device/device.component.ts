@@ -347,6 +347,26 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
+    nicConnect(adapter: string): Observable<any> {
+        let command = {
+            "device": [{
+                command: "nicConnect",
+                adapter: adapter
+            }]
+        }
+        return this._genericResponseHandler(command);
+    }
+
+    nicDisconnect(adapter: string): Observable<any> {
+        let command = {
+            "device": [{
+                command: "nicDisconnect",
+                adapter: adapter
+            }]
+        }
+        return this._genericResponseHandler(command);
+    }
+
     wifiScan(adapter: string): Observable<any> {
         let command = {
             "device": [{
@@ -367,17 +387,26 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
-    wifiSetParameters(ssid: string, securityType: string, passphraseOrKey: string, wepKeys: string[], wepKeyIndex: number, autoConnect: boolean): Observable<any> {
+    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40'|'wep104'|'wpa'|'wpa2', autoConnect: boolean, passphrase?: string, key?: string, wepKeys?: string[], wepKeyIndex?: number): Observable<any> {
         let command = {
             "device": [{
                 "command": "wifiSetParameters",
                 "ssid": ssid,
                 "securityType": securityType,
-                "passphraseOrKey": passphraseOrKey,
-                "wepKeys": wepKeys,
-                "wepKeyIndex": wepKeyIndex,
                 "autoConnect": autoConnect
             }]
+        }
+        if (securityType === 'wep40' || securityType === 'wep104') {
+            command.device[0]['wepKeys'] = wepKeys;
+            command.device[0]['wepKeyIndex'] = wepKeyIndex;
+        }
+        else if (securityType === 'wpa' || securityType === 'wpa2') {
+            if (passphrase) {
+                command.device[0]['passphrase'] = passphrase;
+            }
+            else {
+                command.device[0]['key'] = key;
+            }
         }
         return this._genericResponseHandler(command);
     }
@@ -402,41 +431,21 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
-    networkConnect(adapter: string, ssid: string): Observable<any> {
-        let command = {
-            "device": [{
-                command: "networkConnect",
-                adapter: adapter,
-                ssid: ssid
-            }]
-        }
-        return this._genericResponseHandler(command);
-    }
-
-    wifiDisconnect(adapter: string): Observable<any> {
-        let command = {
-            "device": [{
-                command: "wifiDisconnect",
-                adapter: adapter
-            }]
-        }
-        return this._genericResponseHandler(command);
-    }
-
-    wifiSaveNetwork(ssid: string): Observable<any> {
+    wifiSaveNetwork(storageLocation: string): Observable<any> {
         let command = {
             "device": [{
                 command: "wifiSaveNetwork",
-                ssid: ssid
+                storageLocation: storageLocation
             }]
         }
         return this._genericResponseHandler(command);
     }
 
-    wifiLoadNetwork(ssid: string): Observable<any> {
+    wifiLoadNetwork(adapter: string, ssid: string): Observable<any> {
         let command = {
             "device": [{
                 command: "wifiLoadNetwork",
+                adapter: adapter,
                 ssid: ssid
             }]
         }

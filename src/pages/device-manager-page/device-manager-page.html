@@ -1,15 +1,12 @@
-<ion-header>
-    <div class="custom-backdrop" *ngIf="tutorialMode"></div>
-    <ion-navbar>
-        <button ion-button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-        </button>
-    </ion-navbar>
-</ion-header>
-
 <ion-content class="first-tab-container" padding>
 
     <div class="custom-backdrop" *ngIf="tutorialMode"></div>
+
+    <div class="menu-button-container">
+        <button ion-button menuToggle class="custom-menu-button disable-hover">
+            <ion-icon name="menu"></ion-icon>
+        </button>
+    </div>
 
     <ion-fab right bottom>
         <button ion-fab mini (click)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
