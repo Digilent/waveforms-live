@@ -27,6 +27,34 @@
     }
 }
 
+.wifi-setup-container .dropdown-popover-item-right
+{
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    dropdown-popover {
+        width: 100%;
+        .dropdown-select {
+            cursor: pointer;
+            height: 25px;
+        }
+    }
+}
+
+.wifi-setup-container .configure-item
+{
+    background-color: #535353;
+    color: white;
+    font-size: 14px;
+}
+
+.wifi-setup-container .item-content-right
+{
+    color: #CCCCCC;
+    max-width: 70%;
+}
+
 .wifi-setup-container .slide-header
 {
     font-size: 16px;

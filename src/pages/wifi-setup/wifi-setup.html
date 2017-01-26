@@ -4,6 +4,12 @@
         <ion-slide class="first-slide-container">
             <div class="slide-wrapper">
                 <div class="slide-header">Networks</div>
+                <ion-item class="configure-item">
+                    <ion-label>NIC</ion-label>
+                    <div item-right class="item-content-right dropdown-popover-item-right">
+                        <dropdown-popover [dataArray]="availableNics" (onSelection)="nicSelection($event)"></dropdown-popover>
+                    </div>
+                </ion-item>
                 <ion-row class="network-container" wrap>
                     <ion-col class="network-container-column" text-center>
                         <div class="slide-header">

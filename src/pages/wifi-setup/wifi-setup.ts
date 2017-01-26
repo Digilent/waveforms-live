@@ -31,6 +31,9 @@ export class WifiSetupPage {
     public connectNow: boolean = true;
     public password: string = '';
 
+    public availableNics: string[] = ['None'];
+    public selectedNic: string = 'None';
+
     constructor(
         _storageService: StorageService,
         _settingsService: SettingsService,
@@ -49,6 +52,8 @@ export class WifiSetupPage {
         for (let i = 0; i < 5; i++) {
             this.availableNetworks.push({ ssid: 'Available Cool Router ' + i });
         }
+
+        this.getNicList();
     }
 
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it
@@ -63,10 +68,18 @@ export class WifiSetupPage {
         swiperInstance.lockSwipes();
     }
 
+    nicSelection(event) {
+        console.log(event);
+        this.selectedNic = event;
+    }
+
     getNicList() {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicList().subscribe(
             (data) => {
                 console.log(data);
+                this.availableNics = data.device[0].nics;
+                this.selectedNic = data.device[0].nics[0];
+                this.getNicStatus(this.selectedNic);
             },
             (err) => {
                 console.log(err);

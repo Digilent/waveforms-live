@@ -259,7 +259,6 @@ export class CalibratePage {
                 }
                 else if (err.device[0].statusCode === 2684354578) {
                     //Bad setup
-                    this.digilentProgressBar.stop();
                     this.calibrationFailed = true;
                     this.calibrationStatus = 'Error starting calibration. Please follow the calibration setup.';
                     return;
