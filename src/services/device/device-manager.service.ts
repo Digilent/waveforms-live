@@ -178,7 +178,7 @@ export class DeviceManagerService {
         return -1;
     }
 
-    xmlToJson(data) {
+    xmlToJson(data): string[] {
         let parser = new DOMParser();
         let xmlDoc;
         let contents;
@@ -201,21 +201,24 @@ export class DeviceManagerService {
                 }
             }
         }
-        return returnArray;
-    }
-
-    getLatestFirmwareVersionFromArray(firmwareVersionsArray: any) {
         let arrayToSort: string[] = [];
-        for (let i = 0; i < firmwareVersionsArray.length; i++) {
-            arrayToSort.push(firmwareVersionsArray[i].Key);
+        for (let i = 0; i < returnArray.length; i++) {
+            arrayToSort.push(returnArray[i].Key.substring(0, returnArray[i].Key.indexOf('.hex')));
         }
         arrayToSort.sort();
-        return arrayToSort[arrayToSort.length - 1].substring(0, arrayToSort[arrayToSort.length - 1].indexOf('.hex'));
+        arrayToSort.reverse();
+        return arrayToSort;
+    }
+
+    getLatestFirmwareVersionFromArray(firmwareVersionsArray: string[]) {
+        firmwareVersionsArray.sort();
+        firmwareVersionsArray.reverse();
+        return firmwareVersionsArray[0];
     }
 
     getLatestFirmwareVersionFromUrl(firmwareUrl: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            this.getFirmwareVersionsFromUrl(firmwareUrl).then((firmwareVersionsArray) => {
+            this.getFirmwareVersionsFromUrl(firmwareUrl).then((firmwareVersionsArray: string[]) => {
                 resolve(this.getLatestFirmwareVersionFromArray(firmwareVersionsArray));
             });
         });

@@ -11,14 +11,28 @@
                         <div item-right class="general-content">{{deviceFirmwareVersion}}</div>
                     </ion-item>
                     <ion-item class="firmware-item">
-                        <ion-label fixed>Available Firmware Version</ion-label>
+                        <ion-label fixed>Latest Firmware Version</ion-label>
                         <div item-right class="general-content">{{latestFirmwareVersion}}</div>
+                    </ion-item>
+                    <ion-item class="configure-item">
+                        <ion-label>Available Firmware Versions</ion-label>
+                        <div item-right class="item-content-right dropdown-popover-item-right">
+                            <dropdown-popover [dataArray]="availableFirmwareVersions" (onSelection)="availableFirmwareVersionsChange($event)"></dropdown-popover>
+                        </div>
+                    </ion-item>
+                    <ion-item class="configure-item" *ngIf="hexFileStaged">
+                        <ion-label>Upload Firmware</ion-label>
+                        <div item-right class="item-content-right">
+                            <button ion-button class="text-button-side disable-hover item-button" (click)="openFileInput()">Browse</button>
+                        </div>
                     </ion-item>
                     <ion-item class="firmware-item">
                         <ion-label fixed>Status</ion-label>
                         <div item-right class="general-content">{{updateStatus}}</div>
                     </ion-item>
                 </ion-list>
+                
+                <input class="hidden-file-input" type="file" id="updateFileSelect" name="firmwareFileSelect" (change)="fileChange($event)" />
 
                 <div class="navigation-button-container">
                     <ion-row>

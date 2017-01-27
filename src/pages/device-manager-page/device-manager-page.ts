@@ -111,9 +111,9 @@ export class DeviceManagerPage {
                 this.deviceManagerService.getLatestFirmwareVersionFromUrl('https://s3-us-west-2.amazonaws.com/digilent-test').then((latestFirmwareVersion) => {
                     this.determineIfOutdatedFirmware(latestFirmwareVersion, i);
                 })
-                .catch((e) => {
-                    console.log(e);
-                });
+                    .catch((e) => {
+                        console.log(e);
+                    });
             }
         }
     }
@@ -446,10 +446,13 @@ export class DeviceManagerPage {
         }
     }
 
-    openUpdateFirmware() {
-        let modal = this.modalCtrl.create(UpdateFirmwarePage, undefined, {
-            enableBackdropDismiss: false
-        });
+    openUpdateFirmware(deviceIndex: number) {
+        let modal = this.modalCtrl.create(UpdateFirmwarePage, {
+            agentAddress: this.devices[deviceIndex].deviceBridgeAddress,
+            deviceObject: this.devices[deviceIndex]
+        }, {
+                enableBackdropDismiss: false
+            });
         modal.present();
     }
 

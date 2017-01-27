@@ -74,6 +74,9 @@ export class DeviceConfigureModal {
                 this.setAgentActiveDeviceFromExisting().then(() => {
                     return this.reEnumerateAgent();
                 })
+                .catch((e) => {
+                    loading.dismiss();
+                })
                 .then(() => {
                     loading.dismiss();
                 });
@@ -160,6 +163,7 @@ export class DeviceConfigureModal {
                 },
                 (err) => {
                     console.log(err);
+                    reject(err);
                 },
                 () => { }
             );
@@ -199,6 +203,7 @@ export class DeviceConfigureModal {
                 }
                 if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
                     console.log('Agent StatusCode Error');
+                    loading.dismiss();
                     this.invalidEnumeration = true;
                     this.deviceManagerPageRef.toastService.createToast('agentConnectError', true);
                     return;
@@ -264,6 +269,7 @@ export class DeviceConfigureModal {
     }
 
     openCorrectFirmwareModal() {
+        if (!this.potentialDevices) { return; }
         let page;
         let params;
         if (this.invalidEnumeration || this.deviceObject == undefined) {

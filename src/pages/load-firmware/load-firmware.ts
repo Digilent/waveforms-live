@@ -141,7 +141,8 @@ export class LoadFirmwarePage {
     }
 
     postHexFile() {
-        this.deviceManagerService.transport.writeRead('/config', new Uint8Array(this.arrayBufferFirmware), 'binary').subscribe(
+        //this.processBinaryDataAndSend(this.arrayBufferFirmware);
+        this.deviceManagerService.transport.writeRead('/config', this.generateOsjb(this.arrayBufferFirmware), 'binary').subscribe(
             (data) => {
                 console.log(this.arrayBufferToObject(data));
             },
@@ -150,6 +151,31 @@ export class LoadFirmwarePage {
             },
             () => { }
         );
+    }
+    
+    generateOsjb(firmwareArrayBuffer: ArrayBuffer) {
+        let commandObject = {
+            agent: [{
+                command: 'uploadFirmware',
+                enterBootloader: false
+            }]
+        };
+        let stringCommand = JSON.stringify(commandObject);
+        let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
+
+        let stringSection = binaryIndex + stringCommand + '\r\n';
+        let binaryBufferStringSectionArrayBuf = new ArrayBuffer(stringSection.length);
+        let binaryBufferStringSection = new Uint8Array(binaryBufferStringSectionArrayBuf);
+        for (let i = 0; i < stringSection.length; i++) {
+            binaryBufferStringSection[i] = stringSection.charCodeAt(i);
+        }
+
+        let temp = new Uint8Array(stringSection.length + firmwareArrayBuffer.byteLength);
+        temp.set(new Uint8Array(binaryBufferStringSection), 0);
+        temp.set(new Uint8Array(firmwareArrayBuffer), binaryBufferStringSection.byteLength);
+        console.log('temp');
+        console.log(temp);
+        return temp;
     }
 
     sendFirmwareUrl() {

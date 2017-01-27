@@ -19,6 +19,7 @@
         max-width: 100%;
         overflow: auto;
         max-height: 100%;
+        border: solid black 1px;
     }
 }
 
@@ -29,9 +30,36 @@
     padding-top: 16px;
 }
 
+.update-firmware-container .dropdown-popover-item-right
+{
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    dropdown-popover {
+        width: 100%;
+        .dropdown-select {
+            cursor: pointer;
+            height: 25px;
+        }
+    }
+}
+
 .update-firmware-container .firmware-list
 {
     margin-top: 5px;
+}
+
+.update-firmware-container .hidden-file-input
+{
+     opacity: 0;
+     max-height: 0px;
+}
+
+.update-firmware-container .item-button
+{
+    font-size: 10px;
+    margin: 0;
 }
 
 .update-firmware-container .firmware-item
@@ -39,8 +67,13 @@
     background-color: #535353;
     color: white;
     font-size: 14px;
+    border: none !important;
     ion-label {
         flex: 1 0;
+        color: #CCCCCC;
+    }
+    .item-inner {
+        border: none !important;
     }
 }
 

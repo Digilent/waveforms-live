@@ -9,9 +9,11 @@
 
 <ion-content class="device-configure-modal-container">    
 
-    <ion-row wrap class="section-col-container">
-        <ion-col class="section-col" *ngIf="bridgeConfigure">
-
+    <!--<ion-row wrap class="section-col-container">
+        <ion-col class="section-col" *ngIf="bridgeConfigure">-->
+    <div text-center>
+    <div class="configure-item-wrapper">
+        <div *ngIf="bridgeConfigure">
             <ion-list class="section-list">
                 <ion-item-divider class="list-header">Agent</ion-item-divider>
                 <ion-item class="configure-item">
@@ -28,40 +30,50 @@
                     <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update / Load Firmware</button>
                 </ion-item>
             </ion-list>
+        </div>
 
-        </ion-col>
-        <ion-col class="section-col" *ngIf="deviceConfigure && !invalidEnumeration">
+        <!--</ion-col>
+        <ion-col class="section-col" *ngIf="deviceConfigure && !invalidEnumeration">-->
 
-            <ion-list class="section-list">
-                <ion-item-divider class="list-header">WiFi Settings</ion-item-divider>
-                <ion-item class="configure-item first-item">
-                    <ion-label stacked>Hostname</ion-label>
-                    <ion-input [(ngModel)]=deviceObject.hostname></ion-input>
-                </ion-item>
-                <ion-item class="configure-item">
-                    <ion-label>Device Address</ion-label>
-                    <div item-right class="item-content-right">{{deviceObject.connectedDeviceAddress || deviceObject.ipAddress}}</div>
-                </ion-item>
-                <ion-item class="configure-item">
-                    <button ion-button class="text-button-side item-button disable-hover" clear (click)="openWifiWizard()">Setup Wifi</button>
-                </ion-item>
-            </ion-list>
 
-        </ion-col>
-        <ion-col class="section-col" *ngIf="deviceConfigure && !invalidEnumeration">
+            <div *ngIf="deviceConfigure && !invalidEnumeration">
+                <ion-list class="section-list">
+                    <ion-item-divider class="list-header">WiFi Settings</ion-item-divider>
+                    <ion-item class="configure-item first-item">
+                        <ion-label>Hostname</ion-label>
+                        <div item-right class="item-content-right hostname-input-wrapper">
+                            <input class="custom-input" [(ngModel)]="deviceObject.hostname" />
+                        </div>
+                    </ion-item>
+                    <ion-item class="configure-item">
+                        <ion-label>Device Address</ion-label>
+                        <div item-right class="item-content-right">{{deviceObject.connectedDeviceAddress || deviceObject.ipAddress}}</div>
+                    </ion-item>
+                    <ion-item class="configure-item">
+                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="openWifiWizard()">Setup Wifi</button>
+                    </ion-item>
+                </ion-list>
+            </div>
 
-            <ion-list class="section-list">
-                <ion-item-divider class="list-header">Calibration</ion-item-divider>
-                <ion-item class="configure-item">
-                    <ion-label fixed>Current Calibration</ion-label>
-                    <div item-right class="item-content-right">USER</div>
-                </ion-item>
-                <ion-item class="configure-item">
-                    <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCalibrateWizard()">Calibrate</button>
-                </ion-item>
-            </ion-list>
+        <!--</ion-col>
+        <ion-col class="section-col" *ngIf="deviceConfigure && !invalidEnumeration">-->
 
-        </ion-col>
-    </ion-row>
+            <div *ngIf="deviceConfigure && !invalidEnumeration">
+                <ion-list class="section-list">
+                    <ion-item-divider class="list-header">Calibration</ion-item-divider>
+                    <ion-item class="configure-item">
+                        <ion-label fixed>Current Calibration</ion-label>
+                        <div item-right class="item-content-right">USER</div>
+                    </ion-item>
+                    <ion-item class="configure-item">
+                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCalibrateWizard()">Calibrate</button>
+                    </ion-item>
+                </ion-list>
+            </div>
+    </div>
+    </div>
+
+        <!--</ion-col>
+    </ion-row>-->
 
 </ion-content>

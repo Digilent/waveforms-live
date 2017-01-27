@@ -10,18 +10,30 @@
 
 .configure-item
 {
-    background-color: #3A3A3A;
+    background-color: #535353;
     color: white;
     font-size: 14px;
+    border: none !important;
+
+    .item-inner {
+        border: none !important;
+    }
 
     ion-label {
         flex: 1 0;
+        color: #CCCCCC;
     }
 }
 
 .device-configure-modal-container .section-col-container
 {
     background-color: #535353;
+}
+
+.device-configure-modal-container .hostname-input-wrapper
+{
+    max-width: 60%;
+    width: 200px;
 }
 
 .device-configure-modal-container .set-white-font
@@ -37,8 +49,19 @@
 .device-configure-modal-container .section-list
 {
     margin: 0;
-    border-left: solid #686868 1px;
-    border-right: solid #686868 1px;
+    border-left: solid black 1px;
+    border-right: solid black 1px;
+    border-bottom: solid black 1px;
+    border-top: solid #686868 1px;
+    max-width: 500px;
+}
+
+.device-configure-modal-container .configure-item-wrapper
+{
+    display: inline-block;
+    width: 100%;
+    max-width: 500px;
+    border-top: solid black 1px;
 }
 
 .device-configure-modal-container .section-col
@@ -84,10 +107,16 @@
 
 .device-configure-modal-container .list-header
 {
-    background-color: #3A3A3A;
+    background-color: #535353;
     color: white;
     font-size: 14px;
     font-weight: 600;
+    text-align: center;
+    border: none !important;
+
+    ion-label {
+        margin-bottom: 0;
+    }
 }
 
 .device-configure-modal-container .first-item.item:first-child,
