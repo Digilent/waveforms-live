@@ -347,11 +347,13 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
-    nicConnect(adapter: string): Observable<any> {
+    nicConnect(adapter: string, parameterSet: 'activeParameterSet'|'workingParameterSet', force: boolean): Observable<any> {
         let command = {
             "device": [{
                 command: "nicConnect",
-                adapter: adapter
+                adapter: adapter,
+                parameterSet: parameterSet,
+                force: force
             }]
         }
         return this._genericResponseHandler(command);
@@ -387,7 +389,7 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
-    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40'|'wep104'|'wpa'|'wpa2', autoConnect: boolean, passphrase?: string, key?: string, wepKeys?: string[], wepKeyIndex?: number): Observable<any> {
+    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40'|'wep104'|'wpa'|'wpa2', autoConnect: boolean, passphrase?: string, keys?: string, keyIndex?: number): Observable<any> {
         let command = {
             "device": [{
                 "command": "wifiSetParameters",
@@ -397,34 +399,35 @@ export class DeviceComponent {
             }]
         }
         if (securityType === 'wep40' || securityType === 'wep104') {
-            command.device[0]['wepKeys'] = wepKeys;
-            command.device[0]['wepKeyIndex'] = wepKeyIndex;
+            command.device[0]['keys'] = keys;
+            command.device[0]['keyIndex'] = keyIndex;
         }
         else if (securityType === 'wpa' || securityType === 'wpa2') {
             if (passphrase) {
                 command.device[0]['passphrase'] = passphrase;
             }
             else {
-                command.device[0]['key'] = key;
+                command.device[0]['keys'] = keys;
             }
         }
         return this._genericResponseHandler(command);
     }
 
-    wifiListSavedNetworks(adapter: string): Observable<any> {
+    wifiListSavedNetworks(storageLocation: string): Observable<any> {
         let command = {
             "device": [{
                 command: "wifiListSavedNetworks",
-                adapter: adapter
+                storageLocation: storageLocation
             }]
         }
         return this._genericResponseHandler(command);
     }
 
-    wifiDeleteNetwork(ssid: string): Observable<any> {
+    wifiDeleteParameters(storageLocation: string, ssid: string): Observable<any> {
         let command = {
             "device": [{
-                command: "wifiDeleteNetwork",
+                command: "wifiDeleteParameters",
+                storageLocation: storageLocation,
                 ssid: ssid
             }]
         }
@@ -441,11 +444,11 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
-    wifiLoadNetwork(adapter: string, ssid: string): Observable<any> {
+    wifiLoadParameters(storageLocation: string, ssid: string): Observable<any> {
         let command = {
             "device": [{
-                command: "wifiLoadNetwork",
-                adapter: adapter,
+                command: "wifiLoadParameters",
+                storageLocation: storageLocation,
                 ssid: ssid
             }]
         }

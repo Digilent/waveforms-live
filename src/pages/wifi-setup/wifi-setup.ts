@@ -124,9 +124,9 @@ export class WifiSetupPage {
         );
     }
 
-    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40'|'wep104'|'wpa'|'wpa2', autoConnect: boolean, passphrase?: string, key?: string, wepKeys?: string[], wepKeyIndex?: number) {
+    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40'|'wep104'|'wpa'|'wpa2', autoConnect: boolean, passphrase?: string, keys?: string, keyIndex?: number) {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSetParameters(
-            adapter, ssid, securityType, autoConnect, passphrase, key, wepKeys, wepKeyIndex
+            adapter, ssid, securityType, autoConnect, passphrase, keys, keyIndex
         ).subscribe(
             (data) => {
                 console.log(data);
@@ -138,8 +138,8 @@ export class WifiSetupPage {
             );
     }
 
-    getSavedWifiNetworks(adapter: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiListSavedNetworks(adapter).subscribe(
+    getSavedWifiNetworks(storageLocation: string) {
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiListSavedNetworks(storageLocation).subscribe(
             (data) => {
                 console.log(data);
             },
@@ -150,8 +150,8 @@ export class WifiSetupPage {
         );
     }
 
-    deleteSavedWifiNetwork(ssid: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiDeleteNetwork(ssid).subscribe(
+    deleteSavedWifiNetwork(storageLocation: string, ssid: string) {
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiDeleteParameters(storageLocation, ssid).subscribe(
             (data) => {
                 console.log(data);
             },
@@ -162,8 +162,8 @@ export class WifiSetupPage {
         );
     }
 
-    connectToNetwork(adapter: string, ssid: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicConnect(adapter).subscribe(
+    connectToNetwork(adapter: string, parameterSet: 'activeParameterSet'|'workingParameterSet', force: boolean) {
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicConnect(adapter, parameterSet, force).subscribe(
             (data) => {
                 console.log(data);
             },
@@ -186,8 +186,8 @@ export class WifiSetupPage {
         );
     }
 
-    saveWifiNetwork(ssid: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSaveNetwork(ssid).subscribe(
+    saveWifiNetwork(storageLocation: string) {
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSaveNetwork(storageLocation).subscribe(
             (data) => {
                 console.log(data);
             },
@@ -198,8 +198,8 @@ export class WifiSetupPage {
         );
     }
 
-    loadWifiNetwork(adapter: string, ssid: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiLoadNetwork(adapter, ssid).subscribe(
+    loadWifiNetwork(storageLocation: string, ssid: string) {
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiLoadParameters(storageLocation, ssid).subscribe(
             (data) => {
                 console.log(data);
             },
