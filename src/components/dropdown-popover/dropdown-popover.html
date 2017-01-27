@@ -6,7 +6,7 @@
         </button>
     </div>
     <div *ngIf="!isMobile">
-        <select (change)="selectionChange($event)" class="dropdown-select">
+        <select (change)="selectionChange($event)" class="dropdown-select" #selectElement>
             <option *ngFor="let option of dataArray" [value]="option">{{option}}</option>
         </select>
     </div>

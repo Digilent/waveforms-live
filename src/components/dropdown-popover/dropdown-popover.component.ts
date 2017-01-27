@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ElementRef } from '@angular/core';
 import { PopoverController, Platform } from 'ionic-angular';
 
 //Components
@@ -17,34 +17,68 @@ export class DropdownPopoverComponent {
     public isMobile: boolean;
     public currentlySelected: string;
     public noArrayMessage: string = 'None';
+    public elementRef: ElementRef;
+    public viewInitialized: boolean = false;
+    public awaitingViewInit: {waiting: boolean, value: string} = {waiting: false, value: ''};
 
     constructor(
         _popoverCtrl: PopoverController,
+        _elementRef: ElementRef,
         _platform: Platform
     ) {
         this.popoverCtrl = _popoverCtrl;
         this.platform = _platform;
+        this.elementRef = _elementRef;
         this.isMobile = this.platform.is('android') || this.platform.is('ios');
     }
 
     ngAfterViewInit() {
+        this.viewInitialized = true;
         if (this.dataArray) {
-            this.currentlySelected = this.dataArray[0]
-            return;
+            this.currentlySelected = this.dataArray[0];
         }
-        this.currentlySelected = this.noArrayMessage;
-        this.dataArray = [this.noArrayMessage];
+        else {
+            this.currentlySelected = this.noArrayMessage;
+            this.dataArray = [this.noArrayMessage];
+        }
+        if (this.awaitingViewInit.waiting && this.currentlySelected !== this.noArrayMessage) {
+            this._applyActiveSelection(this.awaitingViewInit.value);
+        }
     }
 
     ngOnChanges(changes: any) {
         if (changes.dataArray && changes.dataArray.currentValue && changes.dataArray.currentValue.length > 0) {
             this.currentlySelected = changes.dataArray.currentValue[0];
+            if (this.awaitingViewInit.waiting) {
+                setTimeout(() => {
+                    //Let ngfor propagate select options
+                    this._applyActiveSelection(this.awaitingViewInit.value);
+                }, 20);
+            }
         }
     }
 
     selectionChange(event) {
         this.onSelection.emit(event.target.value);
         this.currentlySelected = event.target.value;
+    }
+
+    setActiveSelection(value: string) {
+        if (this.viewInitialized && this.currentlySelected !== this.noArrayMessage) {
+            this._applyActiveSelection(value);
+        }
+        else {
+            this.awaitingViewInit.value = value;
+            this.awaitingViewInit.waiting = true;
+        }
+    }
+
+    _applyActiveSelection(value: string) {
+        this.awaitingViewInit.waiting = false;
+        this.currentlySelected = value;
+        if (!this.isMobile) {
+            this.elementRef.nativeElement.children[0].children[0].children[0].value = value;
+        }
     }
 
     openGenPopover(event) {

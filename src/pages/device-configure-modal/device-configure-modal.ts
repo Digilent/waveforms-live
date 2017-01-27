@@ -1,5 +1,5 @@
 import { NavParams, Platform, NavController, ModalController, LoadingController } from 'ionic-angular';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
 //Components
 import { DeviceManagerPage } from '../device-manager-page/device-manager-page';
@@ -7,6 +7,7 @@ import { CalibratePage } from '../calibrate/calibrate';
 import { WifiSetupPage } from '../wifi-setup/wifi-setup';
 import { LoadFirmwarePage } from '../load-firmware/load-firmware';
 import { UpdateFirmwarePage } from '../update-firmware/update-firmware';
+import { DropdownPopoverComponent } from '../../components/dropdown-popover/dropdown-popover.component';
 
 //Interfaces
 import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
@@ -20,6 +21,7 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
 })
 
 export class DeviceConfigureModal {
+    @ViewChild('dropdownPop') dropdownPopRef: DropdownPopoverComponent;
     public platform: Platform;
     public loadingCtrl: LoadingController;
     public modalCtrl: ModalController;
@@ -79,6 +81,9 @@ export class DeviceConfigureModal {
                 })
                 .then(() => {
                     loading.dismiss();
+                    if (this.potentialDevices.indexOf(this.deviceObject.connectedDeviceAddress) !== -1) {
+                        this.dropdownPopRef.setActiveSelection(this.deviceObject.connectedDeviceAddress);
+                    }
                 });
             }
             this.deviceConfigure = true;
