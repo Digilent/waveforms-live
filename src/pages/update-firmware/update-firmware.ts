@@ -26,7 +26,7 @@ export class UpdateFirmwarePage {
     public updateComplete: boolean = false;
 
     public deviceFirmwareVersion: string = '';
-    public latestFirmwareVersion: string = '';
+    public latestFirmwareVersion: string = 'Unable to load latest firmware version.';
     public updateStatus: string = 'Ready';
 
     public deviceObject: DeviceCardInfo;
@@ -74,6 +74,11 @@ export class UpdateFirmwarePage {
             this.availableFirmwareVersions = firmwareVersionArray;
             this.getLatestFirmware();
             this.availableFirmwareVersions.push('Other');
+        }).catch((e) => {
+            console.log(e);
+            this.availableFirmwareVersions = ['Other'];
+            this.availableFirmwareVersionsChange('Other');
+            this.updateStatus = 'Unable to get firmware versions. Please upload a local hex file.';
         });
     }
 

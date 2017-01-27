@@ -220,6 +220,8 @@ export class DeviceManagerService {
         return new Promise((resolve, reject) => {
             this.getFirmwareVersionsFromUrl(firmwareUrl).then((firmwareVersionsArray: string[]) => {
                 resolve(this.getLatestFirmwareVersionFromArray(firmwareVersionsArray));
+            }).catch((e) => {
+                reject(e);
             });
         });
     }
@@ -235,6 +237,7 @@ export class DeviceManagerService {
                     resolve(this.xmlToJson(data));
                 },
                 (err) => {
+                    reject(err);
                     console.log(err);
                 },
                 () => { }

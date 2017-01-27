@@ -50,13 +50,15 @@ export class LoadFirmwarePage {
 
         this.deviceManagerService.transport.setHttpTransport(this.agentAddress);
         for (let device in this.settingsService.knownFirmwareUrls) {
-            this.knownDevicePrettyNames.unshift(this.settingsService.knownFirmwareUrls[device].prettyName);
             this.deviceFirmwareVersionDictionary[this.settingsService.knownFirmwareUrls[device].prettyName] = {
                 firmwareUrl: this.settingsService.knownFirmwareUrls[device].firmwareUrl,
-                latest: 'unknown'
+                latest: 'Unable to load latest firmware version.'
             };
             this.deviceManagerService.getLatestFirmwareVersionFromUrl(this.settingsService.knownFirmwareUrls[device].firmwareUrl).then((latestFirmwareVersion) => {
+                this.knownDevicePrettyNames.unshift(this.settingsService.knownFirmwareUrls[device].prettyName);
                 this.deviceFirmwareVersionDictionary[this.settingsService.knownFirmwareUrls[device].prettyName].latest = latestFirmwareVersion;
+            }).catch((e) => {
+                console.log(e);
             });
         }
 
