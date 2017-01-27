@@ -217,8 +217,9 @@ export class UpdateFirmwarePage {
     sendFirmwareUrl() {
         let command = {
             agent: [{
-                command: 'uploadFirmwareFromUrl',
-                firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent-test' + '/' + this.selectedFirmwareVersion + '.hex'
+                command: 'uploadFirmware',
+                firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent-test' + '/' + this.selectedFirmwareVersion + '.hex',
+                enterBootloader: true
             }]
         };
         this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
