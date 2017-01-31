@@ -99,14 +99,14 @@ export class DeviceManagerPage {
         });
         this.storage.getData('routeToStore').then((data) => {
             if ((data == null || data === true) && !this.platform.is('cordova') && (this.platform.is('android') || this.platform.is('ios'))) {
-                this.routeToStore();
+                //this.routeToStore();
             }
         });
     }
 
     getFirmwareVersionsForDevices() {
         for (let i = 0; i < this.devices.length; i++) {
-            if (this.devices[i].ipAddress !== 'local') {
+            if (this.devices[i].bridge) {
                 //TODO: read device enum for ip address and then call device man service getFirmwareVersionsFromUrl
                 this.deviceManagerService.getLatestFirmwareVersionFromUrl('https://s3-us-west-2.amazonaws.com/digilent-test').then((latestFirmwareVersion) => {
                     this.determineIfOutdatedFirmware(latestFirmwareVersion, i);
@@ -489,6 +489,47 @@ export class DeviceManagerPage {
         this.selectedSimulatedDevice = event;
     }
 
+    enterJsonMode(): Promise<any> {
+        let command = {
+            "agent": [
+                {
+                    "command": "enterJsonMode"
+                }
+            ]
+        };
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    console.log('enter json mode');
+                    let data;
+                    try {
+                        let stringify = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
+                        console.log(stringify);
+                        data = JSON.parse(stringify);
+                    }
+                    catch (e) {
+                        console.log('Error Parsing JSON mode Device Response');
+                        console.log(e);
+                        reject(e);
+                    }
+                    if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
+                        this.toastService.createToast('agentConnectError', true);
+                        reject();
+                        return;
+                    }
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+
+        });
+    }
+
     connectToDevice(deviceIndex: number) {
         if (this.devices[deviceIndex].ipAddress === 'local') {
             this.deviceManagerService.addDeviceFromDescriptor('local', { device: [this.devices[deviceIndex].deviceDescriptor] });
@@ -524,11 +565,18 @@ export class DeviceManagerPage {
                         console.log(e);
                     }
                     console.log(data);
-                    if (data.agent[0] && data.agent[0].statusCode === 0) { this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading); }
-                    else {
+                    if (!data.agent[0] || data.agent[0].statusCode > 0) {
                         this.toastService.createToast('agentConnectError', true);
                         loading.dismiss();
                     }
+                    this.enterJsonMode()
+                        .then(() => {
+                            this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading);
+                        })
+                        .catch((e) => {
+                            this.toastService.createToast('agentConnectError', true);
+                            loading.dismiss();
+                        });
                 },
                 (err) => {
                     console.log(err);

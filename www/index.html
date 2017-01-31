@@ -2,20 +2,20 @@
 <html lang="en" dir="ltr">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Waveforms Live</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="format-detection" content="telephone=no">
-  <meta name="msapplication-tap-highlight" content="no">
+    <meta charset="UTF-8">
+    <title>Waveforms Live</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
 
-  <link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4e8ef7">
+    <link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4e8ef7">
 
-  <!-- cordova.js required for cordova apps -->
-  <script src="cordova.js"></script>
+    <!-- cordova.js required for cordova apps -->
+    <script src="cordova.js"></script>
 
-  <!-- un-comment this code to enable service worker
+    <!-- un-comment this code to enable service worker
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('assets/service-worker.js')
@@ -24,39 +24,54 @@
     }
   </script>-->
 
-  <script language="javascript" type="text/javascript" src="assets/js/jquery1.8.3.min.js"></script>
-  <script type="text/javascript">
-    $(window).load(function() {
-      $(".loader").fadeOut("slow");
+    <script language="javascript" type="text/javascript" src="assets/js/jquery1.8.3.min.js"></script>
+    <script type="text/javascript">
+    $(window).load(function () {
+        $(".loader").fadeOut("slow");
     });
-  </script>
-  <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.tooltip.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/math.functions.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/decimateData.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/wflDictionary.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.symbol.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.zoompan.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.cursors.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.axislabels.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.resize.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.timelinechart.js"></script>
-  <script language="javascript" type="text/javascript" src="assets/js/jquery.flot.canvas.js"></script>
+</script>
+<script language="javascript" type="text/javascript" src="assets/js/jquery.flot.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/jquery.flot.tooltip.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/math.functions.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/decimateData.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/wflDictionary.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/jquery.flot.symbol.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/jquery.flot.zoompan.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/jquery.flot.cursors.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/jquery.flot.axislabels.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/jquery.flot.resize.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/jquery.flot.timelinechart.js"></script>
+<script language="javascript" type="text/javascript" src="assets/js/jquery.flot.canvas.js"></script>
 
-  <link href="build/main.css" rel="stylesheet">
+<script>
+    (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-1206804-12', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+<link href="build/main.css" rel="stylesheet">
 
 </head>
 
 <body>
-  <div class="loader" style="position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;z-index: 9999;background: url('assets/img/page-loader.gif') 50% 50% no-repeat rgb(249,249,249);"></div>
-  <!-- Ionic's root component and where the app will load -->
-  <ion-app></ion-app>
+    <div class="loader" style="position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;z-index: 9999;background-color:#535353;justify-content:center;display:flex;align-items:center;">
+        <img src="assets/img/waveforms-live.svg" style="width: 60%;max-width: 640px;" />
+    </div>
+    <!-- Ionic's root component and where the app will load -->
+    <ion-app></ion-app>
 
-  <!-- The polyfills js is generated during the build process -->
-  <script src="build/polyfills.js"></script>
+    <!-- The polyfills js is generated during the build process -->
+    <script src="build/polyfills.js"></script>
 
-  <!-- The bundle js is generated during the build process -->
-  <script src="build/main.js"></script>
+    <!-- The bundle js is generated during the build process -->
+    <script src="build/main.js"></script>
 
 </body>
 

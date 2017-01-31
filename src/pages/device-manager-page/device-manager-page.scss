@@ -289,6 +289,15 @@
     z-index: 99;
 }
 
+.first-tab-container .beta-container
+{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200px;
+    max-width: 33%;
+}
+
 .first-tab-container .device-manager-card .button-container .alert-button
 {
     color: yellow;

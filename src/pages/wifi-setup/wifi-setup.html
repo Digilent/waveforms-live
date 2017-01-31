@@ -1,8 +1,8 @@
 <ion-content class="wifi-setup-container">
 
     <ion-slides #wifiSlider>
-        <ion-slide class="first-slide-container">
-            <div class="slide-wrapper">
+        <ion-slide class="slide-container">
+            <div class="content-container wifi-content-container">
                 <div class="slide-header">Networks</div>
                 <ion-item class="configure-item">
                     <ion-label>NIC</ion-label>
@@ -12,35 +12,34 @@
                 </ion-item>
                 <ion-row class="network-container" wrap>
                     <ion-col class="network-container-column" text-center>
-                        <div class="slide-header">
+                        <div class="network-header">
                             Available Networks
                         </div>
-                        <ion-row class="available-networks" *ngFor="let availableNetwork of availableNetworks">
-                            <ion-col>
-                                <ion-card class="network-card" (click)="routeToConfigSlide(availableNetwork)">
-                                    <ion-item class="card-info">
-                                        {{availableNetwork.ssid}}
-                                    </ion-item>
-                                </ion-card>
-                            </ion-col>
-                        </ion-row>
+                        <div text-center class="spinner-container">
+                            <ion-spinner name="crescent" *ngIf="scanningForNetworks"></ion-spinner>
+                        </div>
+                        <div *ngFor="let availableNetwork of availableNetworks">
+                            <ion-card class="network-card" (click)="routeToConfigSlide(availableNetwork)">
+                                <ion-item class="card-info">
+                                    {{availableNetwork.ssid}}
+                                </ion-item>
+                            </ion-card>
+                        </div>
                     </ion-col>
                     <ion-col class="network-container-column" text-center>
-                        <div class="slide-header">
+                        <div class="network-header">
                             Saved Networks
                         </div>
-                        <ion-row class="saved-networks" *ngFor="let savedNetwork of savedNetworks">
-                            <ion-col>
-                                <ion-card class="network-card">
-                                    <ion-item class="card-info">
-                                        {{savedNetwork.ssid}}
-                                        <button item-right ion-button clear class="network-button" (click)="showPopover($event)">
-                                            <ion-icon name="more"></ion-icon>
-                                        </button>
-                                    </ion-item>
-                                </ion-card>
-                            </ion-col>
-                        </ion-row>
+                        <div *ngFor="let savedNetwork of savedNetworks">
+                            <ion-card class="network-card">
+                                <ion-item class="card-info">
+                                    {{savedNetwork.ssid}}
+                                    <button item-right ion-button clear class="network-button" (click)="showPopover($event)">
+                                        <ion-icon name="more"></ion-icon>
+                                    </button>
+                                </ion-item>
+                            </ion-card>
+                        </div>
                     </ion-col>
                 </ion-row>
             </div>
@@ -54,8 +53,8 @@
             </ion-row>
         </ion-slide>
 
-        <ion-slide class="second-slide-container">
-            <div>
+        <ion-slide class="slide-container">
+            <div class="content-container wifi-content-container">
                 <div class="slide-header">SSID: {{selectedNetwork.ssid}}</div>
                 <div>
                     dropdown wpa2
@@ -82,19 +81,19 @@
                     </ion-item>
 
                 </ion-list>
-                <ion-row>
-                    <ion-col text-left>
-                        <button ion-button class="icon-only-button-side disable-hover" (click)="backToNetworks()">
-                            <ion-icon name="close"></ion-icon>
-                        </button>
-                    </ion-col>
-                    <ion-col text-right>
-                        <button ion-button class="icon-only-button-side disable-hover" (click)="addNetwork()">
-                            <ion-icon name="add"></ion-icon>
-                        </button>
-                    </ion-col>
-                </ion-row>
             </div>
+            <ion-row>
+                <ion-col text-left>
+                    <button ion-button class="icon-only-button-side disable-hover" (click)="backToNetworks()">
+                        <ion-icon name="close"></ion-icon>
+                    </button>
+                </ion-col>
+                <ion-col text-right>
+                    <button ion-button class="icon-only-button-side disable-hover" (click)="addNetwork()">
+                        <ion-icon name="add"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
         </ion-slide>
     </ion-slides>
 

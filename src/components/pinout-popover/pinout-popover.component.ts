@@ -23,7 +23,7 @@ export class PinoutPopover {
         switch (devModel) {
             case 'OpenScope-MZ': 
                 console.log('openscope in get pinout');
-                this.pinoutAddress = 'assets/img/appicon.png';
+                this.pinoutAddress = 'assets/img/osmz-pinout.svg';
                 break;
             default:
                 console.log('No pinout found');

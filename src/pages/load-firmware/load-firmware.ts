@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavParams, Slides, ViewController } from 'ionic-angular';
+import { NavParams, Slides, ViewController, LoadingController } from 'ionic-angular';
 
 //Components
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar.component';
@@ -17,6 +17,7 @@ export class LoadFirmwarePage {
     @ViewChild('digilentProgressBar') progressBarComponent: ProgressBarComponent;
     public storageService: StorageService;
     public settingsService: SettingsService;
+    public loadingCtrl: LoadingController;
     public params: NavParams;
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
@@ -36,12 +37,14 @@ export class LoadFirmwarePage {
         _storageService: StorageService,
         _settingsService: SettingsService,
         _params: NavParams,
+        _loadingCtrl: LoadingController,
         _viewCtrl: ViewController,
         _deviceManagerService: DeviceManagerService
     ) {
         this.deviceManagerService = _deviceManagerService;
         this.storageService = _storageService;
         this.settingsService = _settingsService;
+        this.loadingCtrl = _loadingCtrl;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
         console.log('load firmware constructor');
@@ -81,6 +84,35 @@ export class LoadFirmwarePage {
         document.getElementById('firmwareFileSelect').click();
     }
 
+    getFirmwareFromUrl(firmwareUrl: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.transport.getRequest(firmwareUrl).subscribe(
+                (data) => {
+                    console.log(data);
+                    let buf = new ArrayBuffer(data.length);
+                    let bufView = new Uint8Array(buf);
+                    for (var i = 0; i < data.length; i < i++) {
+                        bufView[i] = data.charCodeAt(i);
+                    }
+                    this.arrayBufferFirmware = buf;
+                    this.postHexFile()
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch((e) => {
+                            reject(e);
+                        });
+                },
+                (err) => {
+                    reject(err);
+                    console.log(err);
+                },
+                () => { }
+            );
+        });
+
+    }
+
     fileChange(event) {
         if (event.target.files.length === 0) { return; }
         let fileReader = new FileReader();
@@ -103,21 +135,60 @@ export class LoadFirmwarePage {
     }
 
     toProgressBar() {
-        if (this.selectedDevice === 'Other' && !this.arrayBufferFirmware) {
-            this.firmwareStatus = 'Please select a hex file to upload or choose from the default firmware.';
-            return;
-        }
-        if (this.selectedDevice === 'Other' && this.arrayBufferFirmware) {
-            this.postHexFile();
-        }
-        else {
-            this.sendFirmwareUrl();
-        }
-        let swiperInstance: any = this.slider.getSlider();
-        swiperInstance.unlockSwipes();
-        this.slider.slideTo(1);
-        swiperInstance.lockSwipes();
-        this.progressBarComponent.start(10000);
+        let loading = this.displayLoading();
+        this.sendHexFile()
+            .then(() => {
+                let swiperInstance: any = this.slider.getSlider();
+                swiperInstance.unlockSwipes();
+                this.slider.slideTo(1);
+                swiperInstance.lockSwipes();
+                this.progressBarComponent.start(10000);
+                loading.dismiss();
+            })
+            .catch((e) => {
+                console.log('Error caught trying to upload the firmware');
+                this.firmwareStatus = 'Error uploading firmware. Please try again.';
+                loading.dismiss();
+            });
+    }
+
+    displayLoading() {
+        let loading = this.loadingCtrl.create({
+            content: 'Attempting To Upload...',
+            spinner: 'crescent',
+            cssClass: 'custom-loading-indicator'
+        });
+
+        loading.present();
+
+        return loading;
+    }
+
+    sendHexFile(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (this.selectedDevice === 'Other' && !this.arrayBufferFirmware) {
+                this.firmwareStatus = 'Please select a hex file to upload or choose from the default firmware.';
+                reject();
+            }
+            else if (this.selectedDevice === 'Other' && this.arrayBufferFirmware) {
+                this.postHexFile()
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((e) => {
+                        reject(e);
+                    });
+            }
+            else {
+                this.getFirmwareFromUrl(this.deviceFirmwareVersionDictionary[this.selectedDevice].firmwareUrl + '/' + this.deviceFirmwareVersionDictionary[this.selectedDevice].latest + '.hex')
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((e) => {
+                        reject(e);
+                    });
+            }
+        });
     }
 
     doneUpdating() {
@@ -142,19 +213,23 @@ export class LoadFirmwarePage {
         this.viewCtrl.dismiss();
     }
 
-    postHexFile() {
+    postHexFile(): Promise<any> {
         //this.processBinaryDataAndSend(this.arrayBufferFirmware);
-        this.deviceManagerService.transport.writeRead('/config', this.generateOsjb(this.arrayBufferFirmware), 'binary').subscribe(
-            (data) => {
-                console.log(this.arrayBufferToObject(data));
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.transport.writeRead('/config', this.generateOsjb(this.arrayBufferFirmware), 'binary').subscribe(
+                (data) => {
+                    data = this.arrayBufferToObject(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
-    
+
     generateOsjb(firmwareArrayBuffer: ArrayBuffer) {
         let commandObject = {
             agent: [{
@@ -178,24 +253,6 @@ export class LoadFirmwarePage {
         console.log('temp');
         console.log(temp);
         return temp;
-    }
-
-    sendFirmwareUrl() {
-        let command = {
-            agent: [{
-                command: 'uploadFirmwareFromUrl',
-                firmwareUrl: this.deviceFirmwareVersionDictionary[this.selectedDevice].firmwareUrl + '/' + this.deviceFirmwareVersionDictionary[this.selectedDevice].latest
-            }]
-        };
-        this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
-            (data) => {
-                console.log(this.arrayBufferToObject(data));
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
     }
 
     arrayBufferToObject(arrayBuffer) {

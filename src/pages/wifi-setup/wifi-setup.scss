@@ -4,28 +4,9 @@
     color: white;
 }
 
-.wifi-setup-container .first-slide-container
+.wifi-setup-container .wifi-content-container
 {
-    .slide-zoom {
-        background-color: #535353;
-        width: 800px;
-        height: 450px;
-        max-width: 100%;
-        overflow: auto;
-        max-height: 100%;
-        border: solid black 1px;
-    }
-}
-
-.wifi-setup-container .second-slide-container
-{
-    .slide-zoom {
-        background-color: #535353;
-        width: 400px;
-        max-width: 100%;
-        overflow: auto;
-        max-height: 100%;
-    }
+    min-height: calc(100% - 43px);
 }
 
 .wifi-setup-container .dropdown-popover-item-right
@@ -63,9 +44,24 @@
     padding-top: 16px;
 }
 
+.wifi-setup-container .network-header
+{
+    font-size: 14px;
+    font-weight: 500;
+}
+
 .wifi-setup-container .slide-wrapper
 {
     min-height: calc(100% - 43px);
+}
+
+.wifi-setup-container ion-spinner * {
+    stroke: #4487BA;
+}
+
+.wifi-setup-container .spinner-container
+{
+    margin-top: 16px;
 }
 
 .wifi-setup-container .network-container
@@ -84,7 +80,7 @@
     color: white;
     border-radius: 0px;
     border: solid black 1px;
-    margin: 0px 0px 0px 10px;
+    margin: 0px 0px 4px 10px;
 }
 
 .wifi-setup-container .card-info
@@ -92,6 +88,11 @@
     background-color: #535353;
     color: white;
     cursor: pointer;
+    font-size: 14px;
+
+    ion-label {
+        margin: 8px 8px 8px 0;
+    }
 }
 
 .wifi-setup-container .network-button

@@ -9,6 +9,9 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
+//Interfaces
+import { WifiInfoContainer } from './wifi-setup.interface';
+
 @Component({
     templateUrl: 'wifi-setup.html',
 })
@@ -20,16 +23,23 @@ export class WifiSetupPage {
     public params: NavParams;
     public popoverCtrl: PopoverController;
     public viewCtrl: ViewController;
-    public savedNetworks: any[] = [];
-    public availableNetworks: any[] = [];
-    public selectedNetwork = {
-        ssid: 'cool router'
+    public savedNetworks: WifiInfoContainer[] = [];
+    public availableNetworks: WifiInfoContainer[] = [];
+    public selectedNetwork: WifiInfoContainer = {
+        ssid: null,
+        bssid: null,
+        securityType: null,
+        channel: null,
+        signalStrength: null
     };
     public save: boolean = true;
     public autoConnect: boolean = true;
     public disableAutoConnect: boolean = false;
     public connectNow: boolean = true;
     public password: string = '';
+    public scanningForNetworks: boolean = false;
+    public maxAttemptCount: number = 20;
+    public currentAttemptCount: number = 0;
 
     public availableNics: string[] = ['None'];
     public selectedNic: string = 'None';
@@ -49,9 +59,6 @@ export class WifiSetupPage {
         this.params = _params;
         this.viewCtrl = _viewCtrl;
         console.log('calibrate constructor');
-        for (let i = 0; i < 5; i++) {
-            this.availableNetworks.push({ ssid: 'Available Cool Router ' + i });
-        }
 
         this.getNicList();
     }
@@ -79,7 +86,22 @@ export class WifiSetupPage {
                 console.log(data);
                 this.availableNics = data.device[0].nics;
                 this.selectedNic = data.device[0].nics[0];
-                this.getNicStatus(this.selectedNic);
+                this.getNicStatus(this.selectedNic)
+                    .then((data) => {
+                        if (data.device[0].status === 'connected') {
+                            this.disconnectFromNetwork(this.selectedNic)
+                                .then(() => {
+                                    this.scanWifi(this.selectedNic);
+                                }).catch((e) => {
+                                    console.log(e);
+                                });
+                            return;
+                        }
+                        this.scanWifi(this.selectedNic);
+                    })
+                    .catch((e) => {
+                        this.scanWifi(this.selectedNic);
+                    });
             },
             (err) => {
                 console.log(err);
@@ -88,22 +110,46 @@ export class WifiSetupPage {
         );
     }
 
-    getNicStatus(adapter: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicGetStatus(adapter).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    populateListFromCommand(networks: any) {
+        for (let network in networks) {
+            let networkInfoContainer: WifiInfoContainer = {
+                ssid: networks[network].ssid || null,
+                bssid: networks[network].bssid || null,
+                securityType: networks[network].securityType || null,
+                channel: networks[network].channel || null,
+                signalStrength: networks[network].signalStrength || null
+            };
+            this.availableNetworks.push(networkInfoContainer);
+        }
+        console.log(this.availableNetworks);
+    }
+
+    getNicStatus(adapter: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicGetStatus(adapter).subscribe(
+                (data) => {
+                    resolve(data);
+                    console.log(data);
+                },
+                (err) => {
+                    reject(err);
+                    console.log(err);
+                },
+                () => { }
+            );
+
+        });
     }
 
     scanWifi(adapter: string) {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiScan(adapter).subscribe(
             (data) => {
                 console.log(data);
+                this.scanningForNetworks = true;
+                this.currentAttemptCount = 0;
+                setTimeout(() => {
+                    this.readScannedWifiNetworks(adapter);
+                }, 500);
             },
             (err) => {
                 console.log(err);
@@ -116,15 +162,26 @@ export class WifiSetupPage {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiReadScannedNetworks(adapter).subscribe(
             (data) => {
                 console.log(data);
+                this.scanningForNetworks = false;
+                this.populateListFromCommand(data.device[0].networks);
             },
             (err) => {
                 console.log(err);
+                if (err.device !== undefined && err.device[0].statusCode === 2684354573 && this.currentAttemptCount < this.maxAttemptCount) {
+                    this.currentAttemptCount++;
+                    setTimeout(() => {
+                        this.readScannedWifiNetworks(adapter);
+                    }, 500);
+                }
+                else {
+                    this.scanningForNetworks = false;
+                }
             },
             () => { }
         );
     }
 
-    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40'|'wep104'|'wpa'|'wpa2', autoConnect: boolean, passphrase?: string, keys?: string, keyIndex?: number) {
+    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40' | 'wep104' | 'wpa' | 'wpa2', autoConnect: boolean, passphrase?: string, keys?: string, keyIndex?: number) {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSetParameters(
             adapter, ssid, securityType, autoConnect, passphrase, keys, keyIndex
         ).subscribe(
@@ -162,7 +219,7 @@ export class WifiSetupPage {
         );
     }
 
-    connectToNetwork(adapter: string, parameterSet: 'activeParameterSet'|'workingParameterSet', force: boolean) {
+    connectToNetwork(adapter: string, parameterSet: 'activeParameterSet' | 'workingParameterSet', force: boolean) {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicConnect(adapter, parameterSet, force).subscribe(
             (data) => {
                 console.log(data);
@@ -174,16 +231,20 @@ export class WifiSetupPage {
         );
     }
 
-    disconnectFromNetwork(adapter) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicDisconnect(adapter).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    disconnectFromNetwork(adapter): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicDisconnect(adapter).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     saveWifiNetwork(storageLocation: string) {

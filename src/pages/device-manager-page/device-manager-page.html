@@ -14,6 +14,10 @@
         </button>
     </ion-fab>
 
+    <div class="beta-container">
+        <img src="assets/img/beta.svg" />
+    </div>
+
     <div class="align-center">
         <button ion-button icon-right (click)="toggleAddDevMenu()" clear class="dev-menu-button" [tooltip]="tooltipMessages['addADevice']" 
             [forceShow]="tutorialStage===0 && tutorialMode" [tooltipAnimation]="true" tooltipPlacement="bottom" 
@@ -133,7 +137,7 @@
                 <ion-item class="card-item" [ngClass]="{'move-feature-to-front':tutorialStage===3 && tutorialMode && i === 0}" [tooltip]="tooltipMessages['deviceCard']" 
                     [forceShow]="tutorialStage===3 && tutorialMode && i===0" [tooltipAnimation]="true" tooltipPlacement="bottom" forceShowDelay="500">
                     <ion-avatar item-left (click)="connectToDevice(i)">
-                        <img src="assets/img/osmz.png">
+                        <img src="assets/img/osmz.svg">
                     </ion-avatar>
                     <ion-label class="card-label" (click)="connectToDevice(i)">
                         <h2 class="turn-white">{{device.hostname}}</h2>

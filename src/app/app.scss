@@ -54,6 +54,19 @@
     max-height: 100%;
 }
 
+.slide-container
+{
+    .slide-zoom {
+        background-color: #535353;
+        width: 800px;
+        height: 450px;
+        max-width: 100%;
+        overflow: auto;
+        max-height: 100%;
+        border: solid black 1px;
+    }
+}
+
 .custom-input
 {
     color: #CCCCCC;
@@ -267,4 +280,16 @@
 
 html input[disabled] {
     opacity: 0.4;
+}
+
+@media screen and (max-width: 768px) {
+    .slide-container .slide-zoom {
+        background-color: #535353;
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        overflow: auto;
+        max-height: 100%;
+    }
+
 }

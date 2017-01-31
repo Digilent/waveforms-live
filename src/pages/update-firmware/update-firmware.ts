@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavParams, Slides, ViewController } from 'ionic-angular';
+import { NavParams, Slides, ViewController, LoadingController } from 'ionic-angular';
 
 //Components
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar.component';
@@ -20,6 +20,7 @@ export class UpdateFirmwarePage {
     @ViewChild('digilentProgressBar') progressBarComponent: ProgressBarComponent;
     public storageService: StorageService;
     public settingsService: SettingsService;
+    public loadingCtrl: LoadingController;
     public params: NavParams;
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
@@ -47,10 +48,12 @@ export class UpdateFirmwarePage {
         _settingsService: SettingsService,
         _params: NavParams,
         _viewCtrl: ViewController,
+        _loadingCtrl: LoadingController,
         _deviceManagerService: DeviceManagerService
     ) {
         this.deviceManagerService = _deviceManagerService;
         this.storageService = _storageService;
+        this.loadingCtrl = _loadingCtrl;
         this.settingsService = _settingsService;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
@@ -79,6 +82,35 @@ export class UpdateFirmwarePage {
             this.availableFirmwareVersions = ['Other'];
             this.availableFirmwareVersionsChange('Other');
             this.updateStatus = 'Unable to get firmware versions. Please upload a local hex file.';
+        });
+    }
+
+    getFirmwareFromUrl(firmwareUrl: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.transport.getRequest(firmwareUrl).subscribe(
+                (data) => {
+                    //console.log(data);
+                    console.log('got hex file');
+                    let buf = new ArrayBuffer(data.length);
+                    let bufView = new Uint8Array(buf);
+                    for (var i = 0; i < data.length; i < i++) {
+                        bufView[i] = data.charCodeAt(i);
+                    }
+                    this.arrayBufferFirmware = buf;
+                    this.postHexFile()
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch((e) => {
+                            reject(e);
+                        });
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
         });
     }
 
@@ -142,6 +174,18 @@ export class UpdateFirmwarePage {
         this.selectedFirmwareVersion = this.latestFirmwareVersion;
     }
 
+    displayLoading() {
+        let loading = this.loadingCtrl.create({
+            content: 'Attempting To Upload...',
+            spinner: 'crescent',
+            cssClass: 'custom-loading-indicator'
+        });
+
+        loading.present();
+
+        return loading;
+    }
+
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it
     ionViewDidEnter() {
         let swiperInstance: any = this.slider.getSlider();
@@ -156,21 +200,48 @@ export class UpdateFirmwarePage {
 
     toProgressBar() {
         console.log(this.selectedFirmwareVersion);
-        if (this.selectedFirmwareVersion === 'Other' && !this.arrayBufferFirmware) {
-            this.updateStatus = 'Please select a hex file to upload or choose from the default firmware.';
-            return;
-        }
-        else if (this.selectedFirmwareVersion === 'Other' && this.arrayBufferFirmware) {
-            this.postHexFile();
-        }
-        else {
-            this.sendFirmwareUrl();
-        }
-        let swiperInstance: any = this.slider.getSlider();
-        swiperInstance.unlockSwipes();
-        this.slider.slideTo(1);
-        swiperInstance.lockSwipes();
-        this.progressBarComponent.start(10000);
+        let loading = this.displayLoading();
+        this.sendHexFile()
+            .then(() => {
+                let swiperInstance: any = this.slider.getSlider();
+                swiperInstance.unlockSwipes();
+                this.slider.slideTo(1);
+                swiperInstance.lockSwipes();
+                this.progressBarComponent.start(10000);
+                loading.dismiss();
+            })
+            .catch((e) => { 
+                console.log('Error caught trying to upload the firmware');
+                this.updateStatus = 'Error uploading firmware. Please try again.';
+                loading.dismiss();
+            });
+    }
+
+    sendHexFile(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (this.selectedFirmwareVersion === 'Other' && !this.arrayBufferFirmware) {
+                this.updateStatus = 'Please select a hex file to upload or choose from the default firmware.';
+                reject();
+            }
+            else if (this.selectedFirmwareVersion === 'Other' && this.arrayBufferFirmware) {
+                this.postHexFile()
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((e) => {
+                        reject(e);
+                    });
+            }
+            else {
+                this.getFirmwareFromUrl('https://s3-us-west-2.amazonaws.com/digilent-test' + '/' + this.selectedFirmwareVersion + '.hex')
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((e) => {
+                        reject(e);
+                    });
+            }
+        });
     }
 
     doneUpdating() {
@@ -180,20 +251,24 @@ export class UpdateFirmwarePage {
     closeModal() {
         this.viewCtrl.dismiss();
     }
-    
-    postHexFile() {
+
+    postHexFile(): Promise<any> {
         //this.processBinaryDataAndSend(this.arrayBufferFirmware);
-        this.deviceManagerService.transport.writeRead('/config', this.generateOsjb(this.arrayBufferFirmware), 'binary').subscribe(
-            (data) => {
-                console.log(this.arrayBufferToObject(data));
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.transport.writeRead('/config', this.generateOsjb(this.arrayBufferFirmware), 'binary').subscribe(
+                (data) => {
+                    data = this.arrayBufferToObject(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
-    
+
     generateOsjb(firmwareArrayBuffer: ArrayBuffer) {
         let commandObject = {
             agent: [{
@@ -214,28 +289,7 @@ export class UpdateFirmwarePage {
         let temp = new Uint8Array(stringSection.length + firmwareArrayBuffer.byteLength);
         temp.set(new Uint8Array(binaryBufferStringSection), 0);
         temp.set(new Uint8Array(firmwareArrayBuffer), binaryBufferStringSection.byteLength);
-        console.log('temp');
-        console.log(temp);
         return temp;
-    }
-
-    sendFirmwareUrl() {
-        let command = {
-            agent: [{
-                command: 'uploadFirmware',
-                firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent-test' + '/' + this.selectedFirmwareVersion + '.hex',
-                enterBootloader: true
-            }]
-        };
-        this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
-            (data) => {
-                console.log(this.arrayBufferToObject(data));
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
     }
 
     arrayBufferToObject(arrayBuffer) {

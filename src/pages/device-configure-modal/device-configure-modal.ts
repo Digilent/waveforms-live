@@ -76,15 +76,16 @@ export class DeviceConfigureModal {
                 this.setAgentActiveDeviceFromExisting().then(() => {
                     return this.reEnumerateAgent();
                 })
-                .catch((e) => {
-                    loading.dismiss();
-                })
-                .then(() => {
-                    loading.dismiss();
-                    if (this.potentialDevices.indexOf(this.deviceObject.connectedDeviceAddress) !== -1) {
-                        this.dropdownPopRef.setActiveSelection(this.deviceObject.connectedDeviceAddress);
-                    }
-                });
+                    .catch((e) => {
+                        loading.dismiss();
+                    })
+                    .then(() => {
+                        loading.dismiss();
+                        if (this.potentialDevices && this.potentialDevices.indexOf(this.deviceObject.connectedDeviceAddress) !== -1) {
+                            this.dropdownPopRef.setActiveSelection(this.deviceObject.connectedDeviceAddress);
+                            this.selectedPotentialDeviceIndex = this.potentialDevices.indexOf(this.deviceObject.connectedDeviceAddress);
+                        }
+                    });
             }
             this.deviceConfigure = true;
             this.bridgeConfigure = this.deviceObject.bridge;
@@ -147,7 +148,6 @@ export class DeviceConfigureModal {
         return new Promise((resolve, reject) => {
             this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
-                    resolve();
                     console.log('active device set');
                     let data;
                     try {
@@ -162,9 +162,15 @@ export class DeviceConfigureModal {
                     if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
                         this.deviceManagerPageRef.toastService.createToast('agentConnectError', true);
                         this.invalidEnumeration = true;
+                        reject();
                         return;
                     }
                     console.log(data);
+                    this.enterJsonMode().then(() => {
+                        resolve();
+                    }).catch((e) => {
+                        resolve();
+                    });
                 },
                 (err) => {
                     console.log(err);
@@ -172,6 +178,48 @@ export class DeviceConfigureModal {
                 },
                 () => { }
             );
+        });
+    }
+
+    enterJsonMode(): Promise<any> {
+        let command = {
+            "agent": [
+                {
+                    "command": "enterJsonMode"
+                }
+            ]
+        };
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    console.log('enter json mode');
+                    let data;
+                    try {
+                        let stringify = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
+                        console.log(stringify);
+                        data = JSON.parse(stringify);
+                    }
+                    catch (e) {
+                        console.log('Error Parsing JSON mode Device Response');
+                        console.log(e);
+                        reject(e);
+                    }
+                    if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
+                        this.deviceManagerPageRef.toastService.createToast('agentConnectError', true);
+                        this.invalidEnumeration = true;
+                        reject();
+                        return;
+                    }
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+
         });
     }
 
@@ -214,47 +262,52 @@ export class DeviceConfigureModal {
                     return;
                 }
                 console.log(data);
+                this.enterJsonMode().then(() => {
+                    this.deviceManagerService.connect(this.deviceBridgeAddress).subscribe(
+                        (data) => {
+                            loading.dismiss();
+                            console.log('enumeration response');
+                            console.log(data);
+                            if (data.device[0].statusCode == undefined || data.device[0].statusCode > 0) {
+                                this.deviceManagerPageRef.toastService.createToast('enumerateError', true);
+                                this.invalidEnumeration = true;
+                                return;
+                            }
+                            this.invalidEnumeration = false;
 
-                this.deviceManagerService.connect(this.deviceBridgeAddress).subscribe(
-                    (data) => {
-                        loading.dismiss();
-                        console.log('enumeration response');
-                        console.log(data);
-                        if (data.device[0].statusCode == undefined || data.device[0].statusCode > 0) {
-                            this.deviceManagerPageRef.toastService.createToast('enumerateError', true);
+                            if (this.deviceObject != undefined) {
+                                this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
+                                this.deviceObject.ipAddress = this.deviceObject.deviceBridgeAddress + ' - ' + this.deviceObject.connectedDeviceAddress;
+                                this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices));
+                                this.deviceManagerService.addDeviceFromDescriptor(this.deviceObject.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
+                                this.deviceConfigure = true;
+                                return;
+                            }
+
+                            let validDevice = this.deviceManagerPageRef.bridgeDeviceSelect({
+                                selectedDevice: this.potentialDevices[selectedIndex],
+                                deviceEnum: data
+                            }, this.deviceBridgeAddress);
+                            if (validDevice) {
+                                this.deviceConfigure = true;
+                                this.deviceObject = this.deviceManagerPageRef.devices[0];
+                                this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
+                                this.deviceManagerPageRef.deviceManagerService.addDeviceFromDescriptor(this.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
+                            }
+                        },
+                        (err) => {
+                            console.log(err);
+                            loading.dismiss();
                             this.invalidEnumeration = true;
-                            return;
-                        }
-                        this.invalidEnumeration = false;
+                            this.deviceManagerPageRef.toastService.createToast('timeout', true);
+                        },
+                        () => { }
+                    );
+                }).catch((e) => {
+                    loading.dismiss();
+                });
 
-                        if (this.deviceObject != undefined) {
-                            this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
-                            this.deviceObject.ipAddress = this.deviceObject.deviceBridgeAddress + ' - ' + this.deviceObject.connectedDeviceAddress;
-                            this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices));
-                            this.deviceManagerService.addDeviceFromDescriptor(this.deviceObject.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
-                            this.deviceConfigure = true;
-                            return;
-                        }
 
-                        let validDevice = this.deviceManagerPageRef.bridgeDeviceSelect({
-                            selectedDevice: this.potentialDevices[selectedIndex],
-                            deviceEnum: data
-                        }, this.deviceBridgeAddress);
-                        if (validDevice) {
-                            this.deviceConfigure = true;
-                            this.deviceObject = this.deviceManagerPageRef.devices[0];
-                            this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
-                            this.deviceManagerPageRef.deviceManagerService.addDeviceFromDescriptor(this.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
-                        }
-                    },
-                    (err) => {
-                        console.log(err);
-                        loading.dismiss();
-                        this.invalidEnumeration = true;
-                        this.deviceManagerPageRef.toastService.createToast('timeout', true);
-                    },
-                    () => { }
-                );
             },
             (err) => {
                 console.log(err);

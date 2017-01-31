@@ -1395,7 +1395,9 @@ export class SilverNeedleChart {
     }
 
     openDevicePinout(event) {
-        let popover = this.popoverCtrl.create(PinoutPopover);
+        let popover = this.popoverCtrl.create(PinoutPopover, undefined, {
+            cssClass: 'pinoutPopover'
+        });
         popover.present({
             ev: event
         });

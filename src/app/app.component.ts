@@ -32,7 +32,7 @@ export class MyApp {
         this.pages = [
             //{ title: 'Instrument Panel', component: TestChartCtrlsPage },
             { title: 'Settings', component: SettingsPage },
-            { title: 'Test Panel', component: ProtocolTestPanel },
+            /*{ title: 'Test Panel', component: ProtocolTestPanel },*/
             { title: 'Device Manager', component: DeviceManagerPage }
         ];
         this.settingsService = _settingsService;
