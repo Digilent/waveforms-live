@@ -162,7 +162,7 @@ export class TestChartCtrlsPage {
 
     ionViewDidEnter() {
         this.app.setTitle('Instrument Panel');
-        if (this.platform.is('android') && !this.platform.is('cordova')) {
+        if (this.platform.is('android') && this.platform.is('mobileweb')) {
             //Have to create bind reference to remove listener since .bind creates new function reference
             this.clickBindReference = this.requestFullscreen.bind(this);
             document.getElementById('instrument-panel-container').addEventListener('click', this.clickBindReference);
