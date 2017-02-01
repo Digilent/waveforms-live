@@ -155,7 +155,6 @@ export class DigitalIoComponent {
     }
 
     readAllIo(event) {
-        event.stopPropagation();
         let inputChans = [];
         for (let i = 0; i < this.gpioChans.length; i++) {
             if (this.gpioDirections[i] !== true && this.laActiveChans[i] !== true) {

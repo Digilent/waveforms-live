@@ -9,7 +9,7 @@
     </div>
 
     <ion-fab right bottom>
-        <button ion-fab mini (click)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
+        <button ion-fab mini (tap)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
             <ion-icon [name]="tutorialMode ? 'close' : 'help'"></ion-icon>
         </button>
     </ion-fab>
@@ -19,7 +19,7 @@
     </div>
 
     <div class="align-center">
-        <button ion-button icon-right (click)="toggleAddDevMenu()" clear class="dev-menu-button" [tooltip]="tooltipMessages['addADevice']" 
+        <button ion-button icon-right (tap)="toggleAddDevMenu()" clear class="dev-menu-button" [tooltip]="tooltipMessages['addADevice']" 
             [forceShow]="tutorialStage===0 && tutorialMode" [tooltipAnimation]="true" tooltipPlacement="bottom" 
             [ngClass]="{'move-feature-to-front':tutorialStage===0 && tutorialMode}">
             Add a Device

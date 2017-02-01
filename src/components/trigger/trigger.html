@@ -2,7 +2,7 @@
 	<div class="header-bar-side">
 		<ion-row>
 			<ion-col class="header-side-col" center text-left>
-				<button ion-button clear class="dropdown-image-button" (click)="toggleTriggerShow()">
+				<button ion-button clear class="dropdown-image-button" (tap)="toggleTriggerShow()">
 					<img class="custom-dropdown-img" [ngClass]="{rotateOn: showTriggerSettings}" src="assets/img/arrow-right.png">
 				</button>
 			</ion-col>
@@ -18,16 +18,16 @@
 			<ion-row class="button-row">
 				<ion-col center text-center class="interact-button-col">
 					<div class="trigger-image-container">
-						<button ion-button class="off-button disable-hover"(click)="setTrigType('rising')"  [ngClass]="{'selected-mode':edgeDirection==='rising'}"
+						<button ion-button class="off-button disable-hover"(tap)="setTrigType('rising')"  [ngClass]="{'selected-mode':edgeDirection==='rising'}"
 							[tooltip]="tooltipService.getTooltip('triggerRisingEdge').message" [tooltipAnimation]="true" tooltipPlacement="right">
 							<img class="custom-image-button" src="assets/img/trigger-rising.png">
 						</button>
-						<button ion-button class="off-button disable-hover" (click)="setTrigType('falling')" [ngClass]="{'selected-mode':edgeDirection==='falling'}"
+						<button ion-button class="off-button disable-hover" (tap)="setTrigType('falling')" [ngClass]="{'selected-mode':edgeDirection==='falling'}"
 							[tooltip]="tooltipService.getTooltip('triggerFallingEdge').message" [tooltipAnimation]="true" tooltipPlacement="top">
 							<img class="custom-image-button" src="assets/img/trigger-falling.png">
 						</button>
 						
-						<button ion-button class="off-button disable-hover off-button-right" (click)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}"
+						<button ion-button class="off-button disable-hover off-button-right" (tap)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}"
 							[tooltip]="tooltipService.getTooltip('triggerOff').message" [tooltipAnimation]="true" tooltipPlacement="top">
 							Off
 						</button>
@@ -35,7 +35,7 @@
 				</ion-col>
 				<ion-col center text-center class="interact-button-col">
 					<div>
-						<button ion-button class="text-button-side disable-hover" (click)="forceTrigger()"
+						<button ion-button class="text-button-side disable-hover" (tap)="forceTrigger()"
 							[tooltip]="tooltipService.getTooltip('triggerForce').message" [tooltipAnimation]="true" tooltipPlacement="top">
 							Force
 						</button>

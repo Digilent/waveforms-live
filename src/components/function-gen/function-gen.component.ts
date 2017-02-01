@@ -248,7 +248,6 @@ export class FgenComponent {
         if (this.tutorialMode) {
             this.finishTutorial();
         }
-        event.stopPropagation();
         let chans = [];
         let settings = [];
         for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {

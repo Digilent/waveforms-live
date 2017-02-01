@@ -9,7 +9,7 @@
             <div class="header-bar-side">
                 <ion-row>
                     <ion-col class="header-side-col" center text-left>
-                        <button ion-button clear class="dropdown-image-button" (click)="toggleSeriesSettings(i)">
+                        <button ion-button clear class="dropdown-image-button" (tap)="toggleSeriesSettings(i)">
                             <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSeriesSettings[i]}" src="assets/img/arrow-right.png">
                         </button>
                     </ion-col>
@@ -17,7 +17,7 @@
                         <div [ngClass]="{'instrument-header': !settingsService.nestedChannels}">{{settingsService.nestedChannels === false ? 'Osc' : ''}} {{names[i]}}</div>
                     </ion-col>
                     <ion-col class="header-side-col" center text-right>
-                        <button ion-button clear (click)="toggleVisibility(i, $event)" class="header-button disable-hover" [style.background-color]="getSeriesColor(i)" [ngClass]="{'series-on': chart.oscopeChansActive[i]}">
+                        <button ion-button clear (tap)="toggleVisibility(i, $event)" class="header-button disable-hover" [style.background-color]="getSeriesColor(i)" [ngClass]="{'series-on': chart.oscopeChansActive[i]}">
                             <ion-icon name="power"></ion-icon>
                         </button>
                     </ion-col>
