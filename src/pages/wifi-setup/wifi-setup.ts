@@ -44,6 +44,8 @@ export class WifiSetupPage {
     public availableNics: string[] = ['None'];
     public selectedNic: string = 'None';
 
+    public wifiStatus: string = 'Ready';
+
     constructor(
         _storageService: StorageService,
         _settingsService: SettingsService,
@@ -119,6 +121,9 @@ export class WifiSetupPage {
                 channel: networks[network].channel || null,
                 signalStrength: networks[network].signalStrength || null
             };
+            if (!networks[network].ssid || networks[network].ssid === "") {
+                networkInfoContainer.ssid = networkInfoContainer.bssid;
+            }
             this.availableNetworks.push(networkInfoContainer);
         }
         console.log(this.availableNetworks);
@@ -181,18 +186,22 @@ export class WifiSetupPage {
         );
     }
 
-    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40' | 'wep104' | 'wpa' | 'wpa2', autoConnect: boolean, passphrase?: string, keys?: string, keyIndex?: number) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSetParameters(
-            adapter, ssid, securityType, autoConnect, passphrase, keys, keyIndex
-        ).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
+    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40' | 'wep104' | 'wpa' | 'wpa2',
+        autoConnect: boolean, passphrase?: string, keys?: string, keyIndex?: number): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSetParameters(adapter, ssid, securityType, autoConnect, passphrase, keys, keyIndex).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
             );
+        });
+
     }
 
     getSavedWifiNetworks(storageLocation: string) {
@@ -219,16 +228,20 @@ export class WifiSetupPage {
         );
     }
 
-    connectToNetwork(adapter: string, parameterSet: 'activeParameterSet' | 'workingParameterSet', force: boolean) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicConnect(adapter, parameterSet, force).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    connectToNetwork(adapter: string, parameterSet: 'activeParameterSet' | 'workingParameterSet', force: boolean): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicConnect(adapter, parameterSet, force).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     disconnectFromNetwork(adapter): Promise<any> {
@@ -301,8 +314,18 @@ export class WifiSetupPage {
                 return;
             }
         }
-        this.savedNetworks.unshift(this.selectedNetwork);
-        this.backToNetworks();
+        this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, this.autoConnect, this.password)
+            .then(() => {
+                return this.connectToNetwork(this.selectedNic, "workingParameterSet", true)
+            })
+            .then(() => {
+                this.savedNetworks.unshift(this.selectedNetwork);
+                this.backToNetworks();
+            })
+            .catch((e) => {
+                console.log('error setting parameters');
+                this.wifiStatus = 'Error setting wifi parameters.';
+            });
     }
 
     backToNetworks() {

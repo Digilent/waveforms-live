@@ -81,14 +81,19 @@
     border-radius: 0px;
     border: solid black 1px;
     margin: 0px 0px 4px 10px;
+    cursor: pointer;
 }
 
 .wifi-setup-container .card-info
 {
     background-color: #535353;
-    color: white;
-    cursor: pointer;
+    color: #CCCCCC;
     font-size: 14px;
+    border: none !important;
+
+    .item-inner {
+        border: none !important;
+    }
 
     ion-label {
         margin: 8px 8px 8px 0;

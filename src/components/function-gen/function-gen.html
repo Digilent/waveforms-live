@@ -29,7 +29,7 @@
                     </div>
                 </ion-col>
                 <ion-col class="header-side-col" center text-right>
-                    <button ion-button clear (click)="togglePower($event)" class="powerOff" [ngClass]="{powerOn: powerOn,'move-feature-to-front':tutorialStage === 3 && tutorialMode}"
+                    <button ion-button clear (click)="togglePower($event)" class="powerOff" [disabled]="awaitingResponse" [ngClass]="{powerOn: powerOn,'move-feature-to-front':tutorialStage === 3 && tutorialMode}"
                         [tooltip]="tooltipService.getTooltip(tutorialMode ? 'tutorialFgenPower' : 'fgenPower').message" [tooltipAnimation]="true" tooltipPlacement="left" 
                         [forceShow]="tutorialStage === 3 && tutorialMode" onlyForceShow="true">
                         <ion-icon name="power"></ion-icon>

@@ -48,6 +48,7 @@ export class FgenComponent {
     public ignoreFocusOut: boolean = false;
     public tutorialStage: TutorialStage = TutorialStage.IDLE;
     public tutorialMode: boolean = false;
+    public awaitingResponse: boolean = false;
 
     constructor(
         _deviceManagerService: DeviceManagerService,
@@ -243,6 +244,7 @@ export class FgenComponent {
 
     //Toggle power to awg
     togglePower(event) {
+        this.awaitingResponse = true;
         if (this.tutorialMode) {
             this.finishTutorial();
         }
@@ -268,9 +270,11 @@ export class FgenComponent {
             this.activeDevice.multiCommand(singleCommand).subscribe(
                 (data) => {
                     //console.log(data);
+                    this.awaitingResponse = false;
                 },
                 (err) => {
                     console.log(err);
+                    this.awaitingResponse = false;
                     console.log('AWG Set Regular and Run Failed');
                     this.stop(chans);
                     this.toastService.createToast('awgRunError', true);
@@ -340,8 +344,10 @@ export class FgenComponent {
 
     //Stop awg
     stop(chans: number[]) {
+        this.awaitingResponse = true;
         this.activeDevice.instruments.awg.stop(chans).subscribe(
             (data) => {
+                this.awaitingResponse = false;
                 //console.log(data);
                 this.powerOn = false;
                 if (data.awg['1'][0].statusCode === 0 && this.attemptingPowerOff) {
@@ -350,6 +356,7 @@ export class FgenComponent {
                 }
             },
             (err) => {
+                this.awaitingResponse = false;
                 console.log('AWG Stop Failed');
             },
             () => {

@@ -55,29 +55,49 @@
 
         <ion-slide class="slide-container">
             <div class="content-container wifi-content-container">
-                <div class="slide-header">SSID: {{selectedNetwork.ssid}}</div>
-                <div>
-                    dropdown wpa2
-                </div>
+                <div class="slide-header">Setup Wifi</div>
                 <ion-list>
+
                     <ion-item class="card-info">
-                        <ion-label stacked>Password</ion-label>
-                        <ion-input type="password" [(ngModel)]="password"></ion-input>
+                        <ion-label>NIC</ion-label>
+                        <div item-right class="item-content-right">{{selectedNic}}</div>
+                    </ion-item>
+
+                    <ion-item class="card-info">
+                        <ion-label>SSID</ion-label>
+                        <div item-right class="item-content-right">{{selectedNetwork.ssid}}</div>
+                    </ion-item>
+
+                    <ion-item class="card-info">
+                        <ion-label>Security Type</ion-label>
+                        <div item-right class="item-content-right">{{selectedNetwork.securityType}}</div>
+                    </ion-item>
+
+                    <ion-item class="card-info">
+                        <ion-label>Password</ion-label>
+                        <div item-right class="item-content-right hostname-input-wrapper">
+                            <input type="password" class="custom-input" [(ngModel)]="password" />
+                        </div>
                     </ion-item>
                     
                     <ion-item class="card-info">
                         <ion-label>Save</ion-label>
-                        <ion-checkbox [(ngModel)]="save" (ngModelChange)="checkboxChanged('save')"></ion-checkbox>
+                        <ion-checkbox item-right [(ngModel)]="save" (ngModelChange)="checkboxChanged('save')"></ion-checkbox>
                     </ion-item>
                     
                     <ion-item class="card-info">
                         <ion-label>Auto-Connect</ion-label>
-                        <ion-checkbox [(ngModel)]="autoConnect" (ngModelChange)="checkboxChanged('autoConnect')" [disabled]="disableAutoConnect"></ion-checkbox>
+                        <ion-checkbox item-right [(ngModel)]="autoConnect" (ngModelChange)="checkboxChanged('autoConnect')" [disabled]="disableAutoConnect"></ion-checkbox>
                     </ion-item>
                     
                     <ion-item class="card-info">
                         <ion-label>Connect Now</ion-label>
-                        <ion-checkbox [(ngModel)]="connectNow" (ngModelChange)="checkboxChanged('connectNow')"></ion-checkbox>
+                        <ion-checkbox item-right [(ngModel)]="connectNow" (ngModelChange)="checkboxChanged('connectNow')"></ion-checkbox>
+                    </ion-item>
+                    
+                    <ion-item class="card-info">
+                        <ion-label>Status</ion-label>
+                        <div item-right class="item-content-right">{{wifiStatus}}</div>
                     </ion-item>
 
                 </ion-list>
