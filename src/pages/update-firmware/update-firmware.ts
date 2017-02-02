@@ -176,9 +176,10 @@ export class UpdateFirmwarePage {
         this.selectedFirmwareVersion = this.latestFirmwareVersion;
     }
 
-    displayLoading() {
+    displayLoading(message?: string) {
+        message = message || 'Attempting To Upload...';
         let loading = this.loadingCtrl.create({
-            content: 'Attempting To Upload...',
+            content: message,
             spinner: 'crescent',
             cssClass: 'custom-loading-indicator'
         });
@@ -290,7 +291,70 @@ export class UpdateFirmwarePage {
     }
 
     doneUpdating() {
-        this.updateComplete = true;
+        let loading = this.displayLoading('Reconnecting To Device');
+        this.uploadStatusAttemptCount = 0;
+        this.enterJsonModeAttemptWrapper(loading);
+    }
+
+    enterJsonModeAttemptWrapper(loadingRef: any) {
+        setTimeout(() => {
+            this.enterJsonMode()
+                .then(() => {
+                    console.log('entered json mode');
+                    this.updateComplete = true;
+                    loadingRef.dismiss();
+                })
+                .catch((e) => {
+                    console.log(e);
+                    if (this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
+                        this.uploadStatusAttemptCount++;
+                        this.enterJsonModeAttemptWrapper(loadingRef);
+                    }
+                    else {
+                        loadingRef.dismiss();
+                    }
+                });
+        }, 1000);
+    }
+
+    enterJsonMode(): Promise<any> {
+        let command = {
+            "agent": [
+                {
+                    "command": "enterJsonMode"
+                }
+            ]
+        };
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    console.log('enter json mode');
+                    let data;
+                    try {
+                        let stringify = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
+                        console.log(stringify);
+                        data = JSON.parse(stringify);
+                    }
+                    catch (e) {
+                        console.log('Error Parsing JSON mode Device Response');
+                        console.log(e);
+                        reject(e);
+                    }
+                    if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
+                        reject(data);
+                        return;
+                    }
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+
+        });
     }
 
     closeModal() {
