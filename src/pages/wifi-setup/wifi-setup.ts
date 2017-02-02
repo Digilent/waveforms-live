@@ -46,6 +46,9 @@ export class WifiSetupPage {
 
     public wifiStatus: string = 'Ready';
 
+    public selectedStorageLocation: string = 'None';
+    public storageLocations: string[] = ['None'];
+
     constructor(
         _storageService: StorageService,
         _settingsService: SettingsService,
@@ -62,7 +65,38 @@ export class WifiSetupPage {
         this.viewCtrl = _viewCtrl;
         console.log('calibrate constructor');
 
-        this.getNicList();
+        this.getNicList()
+            .then(() => {
+                console.log('get nic list done');
+                return this.getNicStatus(this.selectedNic);
+            })
+            .then((data) => {
+                console.log('get nic status done');
+                console.log(data);
+                if (data.device[0].status === 'connected') {
+                    console.log('disconnectFromNetwork');
+                    return this.disconnectFromNetwork(this.selectedNic)
+                }
+                else {
+                    console.log('auto resolve');
+                    return new Promise((resolve, reject) => { resolve() });
+                }
+            })
+            .then(() => {
+                console.log('disconnect done or autoresolve');
+                return this.getStorageLocations();
+            })
+            .then(() => {
+                return this.getSavedWifiNetworks(this.selectedStorageLocation)
+            })
+            .then(() => {
+                console.log('get saved locations done');
+                this.scanWifi(this.selectedNic);
+            })
+            .catch((e) => {
+                console.log('caught error');
+                console.log(e);
+            });
     }
 
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it
@@ -82,37 +116,45 @@ export class WifiSetupPage {
         this.selectedNic = event;
     }
 
-    getNicList() {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicList().subscribe(
-            (data) => {
-                console.log(data);
-                this.availableNics = data.device[0].nics;
-                this.selectedNic = data.device[0].nics[0];
-                this.getNicStatus(this.selectedNic)
-                    .then((data) => {
-                        if (data.device[0].status === 'connected') {
-                            this.disconnectFromNetwork(this.selectedNic)
-                                .then(() => {
-                                    this.scanWifi(this.selectedNic);
-                                }).catch((e) => {
-                                    console.log(e);
-                                });
-                            return;
-                        }
-                        this.scanWifi(this.selectedNic);
-                    })
-                    .catch((e) => {
-                        this.scanWifi(this.selectedNic);
-                    });
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    getNicList(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicList().subscribe(
+                (data) => {
+                    console.log(data);
+                    this.availableNics = data.device[0].nics;
+                    this.selectedNic = data.device[0].nics[0];
+                    resolve(data);
+                },
+                (err) => {
+                    reject(err);
+                    console.log(err);
+                },
+                () => { }
+            );
+        });
+    }
+
+    getStorageLocations(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].storageGetLocations().subscribe(
+                (data) => {
+                    this.storageLocations = data.device[0].storageLocations;
+                    this.selectedStorageLocation = this.storageLocations[0];
+                    resolve(data);
+                    console.log(data);
+                },
+                (err) => {
+                    reject(err);
+                    console.log(err);
+                },
+                () => { }
+            );
+
+        });
     }
 
     populateListFromCommand(networks: any) {
+        let networkList: WifiInfoContainer[] = [];
         for (let network in networks) {
             let networkInfoContainer: WifiInfoContainer = {
                 ssid: networks[network].ssid || null,
@@ -124,9 +166,12 @@ export class WifiSetupPage {
             if (!networks[network].ssid || networks[network].ssid === "") {
                 networkInfoContainer.ssid = networkInfoContainer.bssid;
             }
-            this.availableNetworks.push(networkInfoContainer);
+            networkList.push(networkInfoContainer);
         }
-        console.log(this.availableNetworks);
+        networkList.sort((a: WifiInfoContainer, b: WifiInfoContainer) => {
+            return b.signalStrength - a.signalStrength;
+        });
+        this.availableNetworks = networkList;
     }
 
     getNicStatus(adapter: string): Promise<any> {
@@ -204,28 +249,36 @@ export class WifiSetupPage {
 
     }
 
-    getSavedWifiNetworks(storageLocation: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiListSavedNetworks(storageLocation).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    getSavedWifiNetworks(storageLocation: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiListSavedNetworks(storageLocation).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
-    deleteSavedWifiNetwork(storageLocation: string, ssid: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiDeleteParameters(storageLocation, ssid).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    deleteSavedWifiNetwork(storageLocation: string, ssid: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiDeleteParameters(storageLocation, ssid).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     connectToNetwork(adapter: string, parameterSet: 'activeParameterSet' | 'workingParameterSet', force: boolean): Promise<any> {
@@ -260,28 +313,36 @@ export class WifiSetupPage {
         });
     }
 
-    saveWifiNetwork(storageLocation: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSaveNetwork(storageLocation).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    saveWifiNetwork(storageLocation: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSaveNetwork(storageLocation).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
-    loadWifiNetwork(storageLocation: string, ssid: string) {
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiLoadParameters(storageLocation, ssid).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    loadWifiNetwork(storageLocation: string, ssid: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiLoadParameters(storageLocation, ssid).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     checkboxChanged(checkboxName: string) {

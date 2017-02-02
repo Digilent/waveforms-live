@@ -32,6 +32,20 @@ export class ProgressBarComponent {
         }, updateInterval);
     }
 
+    manualStart(startingVal?: number, max?: number) {
+        startingVal = startingVal || 0;
+        max = max || 100;
+        this.progressBarValue = startingVal;
+        this.maxValue = max;
+    }
+
+    manualUpdateVal(newVal: number) {
+        this.progressBarValue = newVal;
+        if (this.progressBarValue >= this.maxValue) {
+            this.stop();
+        }
+    }
+
     stop() {
         clearInterval(this.intervalRef);
         this.progressBarDone.emit('Done');

@@ -31,9 +31,9 @@ export class MyApp {
         // set our app's pages
         this.pages = [
             //{ title: 'Instrument Panel', component: TestChartCtrlsPage },
+            { title: 'Device Manager', component: DeviceManagerPage },
             { title: 'Settings', component: SettingsPage },
-            { title: 'Test Panel', component: ProtocolTestPanel },
-            { title: 'Device Manager', component: DeviceManagerPage }
+            { title: 'Test Panel', component: ProtocolTestPanel }
         ];
         this.settingsService = _settingsService;
         //this.settingsService.changeConsoleLog('none');
@@ -46,6 +46,12 @@ export class MyApp {
             StatusBar.styleDefault();
             Splashscreen.hide();
         });
+    }
+
+    toFeedBack() {
+        this.menu.close();
+        let openTab = window.open('https://forum.digilentinc.com/forum/30-waveforms-live-and-openscope-feedback/', '_blank');
+        openTab.location;
     }
 
     openPage(page) {

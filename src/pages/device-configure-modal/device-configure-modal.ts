@@ -173,6 +173,7 @@ export class DeviceConfigureModal {
                     });
                 },
                 (err) => {
+                    this.deviceManagerPageRef.toastService.createToast('timeout', true);
                     console.log(err);
                     reject(err);
                 },

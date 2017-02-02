@@ -365,6 +365,56 @@ export class DeviceManagerPage {
         return true;
     }
 
+    agentSetActiveDeviceAndEnterJson(device: DeviceCardInfo): Promise<any> {
+        //Used to have agent set the device in JSON mode for serial communication.
+        let command = {
+            "agent": [
+                {
+                    "command": "setActiveDevice",
+                    "device": device.connectedDeviceAddress
+                }
+            ]
+        };
+
+        this.deviceManagerService.transport.setHttpTransport(device.deviceBridgeAddress);
+
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    console.log('active device set');
+                    let data;
+                    try {
+                        let stringify = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
+                        console.log(stringify);
+                        data = JSON.parse(stringify);
+                    }
+                    catch (e) {
+                        console.log('Error Parsing Set Active Device Response');
+                        console.log(e);
+                        reject();
+                        return;
+                    }
+                    if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
+                        reject();
+                        return;
+                    }
+                    console.log(data);
+                    this.enterJsonMode().then(() => {
+                        resolve();
+                    }).catch((e) => {
+                        resolve();
+                    });
+                },
+                (err) => {
+                    this.toastService.createToast('timeout', true);
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
+    }
+
     attemptConnect(ipAddress: string) {
         if (ipAddress.indexOf('http://') === -1) {
             ipAddress = 'http://' + ipAddress;
@@ -447,13 +497,23 @@ export class DeviceManagerPage {
     }
 
     openUpdateFirmware(deviceIndex: number) {
-        let modal = this.modalCtrl.create(UpdateFirmwarePage, {
-            agentAddress: this.devices[deviceIndex].deviceBridgeAddress,
-            deviceObject: this.devices[deviceIndex]
-        }, {
-                enableBackdropDismiss: false
+        if (!this.devices[deviceIndex].bridge) { 
+            this.toastService.createToast('agentConnectError', true);
+            return; 
+        }
+        this.agentSetActiveDeviceAndEnterJson(this.devices[deviceIndex])
+            .then(() => {
+                let modal = this.modalCtrl.create(UpdateFirmwarePage, {
+                    agentAddress: this.devices[deviceIndex].deviceBridgeAddress,
+                    deviceObject: this.devices[deviceIndex]
+                }, {
+                        enableBackdropDismiss: false
+                    });
+                modal.present();
+            })
+            .catch((e) => { 
+                this.toastService.createToast('agentConnectError', true);
             });
-        modal.present();
     }
 
     openLoadFirmware() {
@@ -571,7 +631,7 @@ export class DeviceManagerPage {
                     }
                     this.enterJsonMode()
                         .then(() => {
-                            this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading);
+                            this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading, deviceIndex);
                         })
                         .catch((e) => {
                             this.toastService.createToast('agentConnectError', true);
@@ -587,13 +647,15 @@ export class DeviceManagerPage {
             );
             return;
         }
-        this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading);
+        this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading, deviceIndex);
     }
 
-    sendEnumerationCommandAndLoadInstrumentPanel(ipAddress: string, loadingInstance) {
+    sendEnumerationCommandAndLoadInstrumentPanel(ipAddress: string, loadingInstance, deviceIndex) {
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
                 loadingInstance.dismiss();
+                this.devices[deviceIndex].deviceDescriptor = success.device[0];
+                this.storage.saveData('savedDevices', JSON.stringify(this.devices));
                 this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);
                 this.navCtrl.setRoot(TestChartCtrlsPage, {
                     tutorialMode: this.tutorialMode
