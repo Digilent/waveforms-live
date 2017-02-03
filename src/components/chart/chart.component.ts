@@ -67,6 +67,7 @@ export class SilverNeedleChart {
     public selectedMathInfo: any = [];
     public seriesDataContainer: any = [];
     public yAxisOptionsContainer: any = [];
+    public activeOscChannel: number = 1;
 
     public overSeriesAnchor: any = {
         over: false,
@@ -354,6 +355,7 @@ export class SilverNeedleChart {
             if (this.overSeriesAnchor.over) {
                 this.chart.unbindMoveEvents();
                 this.setActiveSeries(this.overSeriesAnchor.seriesNum + 1);
+                this.chart.triggerRedrawOverlay();
                 $("#flotContainer").bind("mousemove", this.seriesAnchorVertPanRef);
                 $("#flotContainer").bind("mouseup", this.unbindCustomEventsRef);
                 $("#flotContainer").bind("mouseout", this.unbindCustomEventsRef);
@@ -415,6 +417,7 @@ export class SilverNeedleChart {
                 }
                 this.chart.unbindMoveEvents();
                 this.setActiveSeries(this.overSeriesAnchor.seriesNum + 1);
+                this.chart.triggerRedrawOverlay();
                 $("#flotContainer").bind("touchmove", this.seriesAnchorTouchVertPanRef);
                 $("#flotContainer").bind("touchend", this.unbindCustomEventsRef);
                 $("#flotContainer").bind("touchleave", this.unbindCustomEventsRef);
@@ -434,6 +437,12 @@ export class SilverNeedleChart {
         if (this.seriesAnchorContainer == undefined || this.seriesAnchorContainer.length < 1) { return; }
         let getAxes = this.chart.getAxes();
         for (let i = 0; i < this.seriesAnchorContainer.length; i++) {
+            let strokeColor = 'black';
+            let lineWidth = 1;
+            if (this.activeSeries - 1 === this.seriesAnchorContainer[i].seriesNum) {
+                strokeColor = 'white';
+                lineWidth = 2;
+            }
             let seriesNum = this.seriesAnchorContainer[i].seriesNum;
             let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
             let offsetVal = this.currentBufferArray[seriesNum].seriesOffset;
@@ -445,9 +454,16 @@ export class SilverNeedleChart {
             ctx.lineTo(0, 10);
             ctx.lineTo(10, 5);
             ctx.closePath();
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = lineWidth;
             ctx.stroke();
             ctx.fillStyle = this.seriesAnchorContainer[i].color;
             ctx.fill();
+            if (this.seriesAnchorContainer[i].seriesNum > this.oscopeChansActive.length - 1) {
+                ctx.font = '10pt Calibri';
+                ctx.fillStyle = 'white';
+                ctx.fillText('A' + (this.seriesAnchorContainer[i].seriesNum + 1 - this.oscopeChansActive.length).toString(), 14, 9);
+            }
             ctx.restore();
         }
 
@@ -694,7 +710,7 @@ export class SilverNeedleChart {
         if (newActiveSeries > this.oscopeChansActive.length || newActiveSeries === this.activeSeries) { return; }
         let axes = this.chart.getAxes();
         let yIndexer1 = 'y' + ((newActiveSeries - 1 === 0) ? '' : newActiveSeries.toString()) + 'axis';
-        let yIndexer0 = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
+        let yIndexer0 = 'y' + ((this.activeOscChannel - 1 === 0) ? '' : this.activeOscChannel.toString()) + 'axis';
         axes[yIndexer0].options.show = false;
         axes[yIndexer1].options.show = true;
         this.chart.setupGrid();
@@ -1222,6 +1238,9 @@ export class SilverNeedleChart {
         this.updateYAxisLabels(seriesNum);
         this.chart.setActiveYAxis(seriesNum);
         this.activeSeries = seriesNum;
+        if (seriesNum < this.oscopeChansActive.length + 1) {
+            this.activeOscChannel = seriesNum;
+        }
     }
 
     //Autoscale all axes on chart
