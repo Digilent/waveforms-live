@@ -5,17 +5,19 @@
     "deviceMake": "Digilent",
     "deviceModel": "OpenScope-MZ",
     "firmwareVersion": {
-        "major": 1,
-        "minor": 0,
+        "major": 0,
+        "minor": 13,
         "patch": 0
     },
     "awg": {
+        "numChans": 1,
         "1": {
             "signalTypes": [
                 "sine",
                 "square",
                 "sawtooth",
-                "triangle"
+                "triangle",
+                "dc"
             ],
             "signalFreqMin": 1000,
             "signalFreqMax": 1000000000,
@@ -28,10 +30,10 @@
             "vOffsetMax": 1500,
             "vOutMin": -3000,
             "vOutMax": 3000
-        },
-        "numChans": 1
+        }
     },
     "dc": {
+        "numChans": 2,
         "1": {
             "voltageMin": -4000,
             "voltageMax": 4000,
@@ -47,25 +49,27 @@
             "currentMin": 0,
             "currentMax": 50,
             "currentIncrement": 0
-        },
-        "numChans": 2
+        }
     },
     "gpio": {
         "numChans": 10,
-        "sourceCurrentMax": 200000000000000000,
-        "sinkCurrentMax": 1
+        "sourceCurrentMax": 7000,
+        "sinkCurrentMax": 12000
     },
     "la": {
         "numChans": 10
     },
     "osc": {
+        "numChans": 2,
         "1": {
             "resolution": 12,
             "effectiveBits": 11,
             "bufferSizeMax": 32640,
             "bufferDataType": "I16",
-            "sampleFreqMin": 3052000,
+            "sampleFreqMin": 6000,
             "sampleFreqMax": 6250000000,
+            "delayMax": 4611686018427387904,
+            "delayMin": -32640000000000000,
             "adcVpp": 3000,
             "inputVoltageMax": 20000,
             "inputVoltageMin": -20000,
@@ -81,8 +85,10 @@
             "effectiveBits": 11,
             "bufferSizeMax": 32640,
             "bufferDataType": "I16",
-            "sampleFreqMin": 3052000,
+            "sampleFreqMin": 6000,
             "sampleFreqMax": 6250000000,
+            "delayMax": 4611686018427387904,
+            "delayMin": -32640000000000000,
             "adcVpp": 3000,
             "inputVoltageMax": 20000,
             "inputVoltageMin": -20000,
@@ -92,7 +98,6 @@
                 0.125,
                 0.075
             ]
-        },
-        "numChans": 2
+        }
     }
 }

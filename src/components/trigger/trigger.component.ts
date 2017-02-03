@@ -124,7 +124,7 @@ export class TriggerComponent {
         /*for (let i = 0; i < this.triggerComponent.activeDevice.instruments.la.numChans; i++) {
             chanArray.push('La ' + (i + 1));
         }*/
-        chanArray.push('Ext');
+        /*chanArray.push('Ext');*/
 
         let genPopover = this.popoverCtrl.create(GenPopover, {
             dataArray: chanArray

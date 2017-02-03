@@ -141,7 +141,6 @@ export class YAxisComponent {
     }
 
     toggleVisibility(seriesNum: number, event) {
-        event.stopPropagation();
         this.chart.toggleVisibility(seriesNum);
     }
 
