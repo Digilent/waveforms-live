@@ -32,6 +32,8 @@ export class LoadFirmwarePage {
 
     public firmwareStatus: string = 'Select a default device or upload your own hex file.';
     public updateComplete: boolean = false;
+    public uploadStatusAttemptCount: number = 0;
+    public maxUploadStatusAttempts: number = 20;
 
     constructor(
         _storageService: StorageService,
@@ -89,6 +91,7 @@ export class LoadFirmwarePage {
             this.deviceManagerService.transport.getRequest(firmwareUrl).subscribe(
                 (data) => {
                     console.log(data);
+                    if (data.indexOf('Error') !== -1) { reject('Error getting file'); return; }
                     let buf = new ArrayBuffer(data.length);
                     let bufView = new Uint8Array(buf);
                     for (var i = 0; i < data.length; i < i++) {
@@ -136,20 +139,64 @@ export class LoadFirmwarePage {
 
     toProgressBar() {
         let loading = this.displayLoading();
+        this.uploadStatusAttemptCount = 0;
         this.sendHexFile()
             .then(() => {
                 let swiperInstance: any = this.slider.getSlider();
                 swiperInstance.unlockSwipes();
                 this.slider.slideTo(1);
                 swiperInstance.lockSwipes();
-                this.progressBarComponent.start(10000);
+                this.progressBarComponent.manualStart();
                 loading.dismiss();
             })
             .catch((e) => {
                 console.log('Error caught trying to upload the firmware');
-                this.firmwareStatus = 'Error uploading firmware. Please try again.';
                 loading.dismiss();
+                if (e === 'HTTP Timeout: ') {
+                    let swiperInstance: any = this.slider.getSlider();
+                    swiperInstance.unlockSwipes();
+                    this.slider.slideTo(1);
+                    swiperInstance.lockSwipes();
+                    this.progressBarComponent.manualStart();
+                    this.getUploadStatus();
+                    return;
+                }
+                this.firmwareStatus = 'Error uploading firmware. Please try again.';
             });
+    }
+
+    getUploadStatus() {
+        let command = {
+            "agent": [
+                {
+                    "command": "updateFirmwareGetStatus"
+                }
+            ]
+        };
+        this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
+            (data) => {
+                data = this.arrayBufferToObject(data);
+                if (data.agent && data.agent[0].status && data.agent[0].status === 'uploading' && data.agent[0].progress) {
+                    this.progressBarComponent.manualUpdateVal(data.agent[0].progress);
+                }
+                if (data.agent == undefined || data.agent[0].statusCode > 0 || data.agent[0].status !== 'idle' && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
+                    console.log('statusCode error');
+                    this.uploadStatusAttemptCount++;
+                    setTimeout(() => {
+                        this.getUploadStatus();
+                    }, 1000);
+                    return;
+                }
+                if (data.agent[0].status === 'idle') {
+                    this.progressBarComponent.manualUpdateVal(100);
+                }
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => { }
+        );
+
     }
 
     displayLoading() {
@@ -180,7 +227,7 @@ export class LoadFirmwarePage {
                     });
             }
             else {
-                this.getFirmwareFromUrl(this.deviceFirmwareVersionDictionary[this.selectedDevice].firmwareUrl + '/' + this.deviceFirmwareVersionDictionary[this.selectedDevice].latest + '.hex')
+                this.getFirmwareFromUrl(this.deviceFirmwareVersionDictionary[this.selectedDevice].firmwareUrl + '/OpenScopeMZ-' + this.deviceFirmwareVersionDictionary[this.selectedDevice].latest + '.hex')
                     .then(() => {
                         resolve();
                     })
@@ -193,6 +240,7 @@ export class LoadFirmwarePage {
 
     doneUpdating() {
         this.updateComplete = true;
+        this.uploadStatusAttemptCount = 0;
     }
 
     dropdownDeviceChange(event) {

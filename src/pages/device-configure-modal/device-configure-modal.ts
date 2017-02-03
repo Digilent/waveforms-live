@@ -11,6 +11,7 @@ import { DropdownPopoverComponent } from '../../components/dropdown-popover/drop
 
 //Interfaces
 import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
+import { NicStatusContainer } from '../wifi-setup/wifi-setup.interface';
 
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
@@ -43,6 +44,13 @@ export class DeviceConfigureModal {
 
     //Leftovers from transfer. TODO wade through this
     public hostname: string = 'test';
+    public nicStatusContainer: NicStatusContainer = {
+        adapter: '',
+        securityType: null,
+        status: null,
+        ssid: '',
+        ipAddress: ''
+    }
 
     constructor(
         _platform: Platform,
@@ -73,11 +81,16 @@ export class DeviceConfigureModal {
             this.deviceManagerService.addDeviceFromDescriptor(addDeviceAddress, { device: [this.deviceObject.deviceDescriptor] });
             if (this.deviceObject.bridge) {
                 let loading = this.deviceManagerPageRef.displayLoading();
-                this.setAgentActiveDeviceFromExisting().then(() => {
-                    return this.reEnumerateAgent();
-                })
+                this.setAgentActiveDeviceFromExisting()
+                    .then(() => {
+                        this.deviceConfigure = true;
+                        return this.getNicStatus('wlan0');
+                    })
+                    .then(() => {
+                        return this.reEnumerateAgent();
+                    })
                     .catch((e) => {
-                        loading.dismiss();
+                        return this.reEnumerateAgent();
                     })
                     .then(() => {
                         loading.dismiss();
@@ -85,15 +98,57 @@ export class DeviceConfigureModal {
                             this.dropdownPopRef.setActiveSelection(this.deviceObject.connectedDeviceAddress);
                             this.selectedPotentialDeviceIndex = this.potentialDevices.indexOf(this.deviceObject.connectedDeviceAddress);
                         }
+                    })
+                    .catch((e) => {
+                        console.log('Error setting active from existing');
+                        loading.dismiss();
                     });
             }
-            this.deviceConfigure = true;
+            else {
+                if (this.deviceObject.ipAddress === 'local') {
+                    this.deviceConfigure = true;
+                    return;
+                }
+                this.deviceManagerService.connect(this.deviceObject.ipAddress).subscribe(
+                    (data) => {
+                        console.log(data);
+                        if (data.device && data.device[0].statusCode === 0) {
+                            this.deviceConfigure = true;
+                            this.getNicStatus('wlan0');
+                        }
+                    },
+                    (err) => {
+                        console.log(err);
+                    },
+                    () => { }
+                );
+            }
             this.bridgeConfigure = this.deviceObject.bridge;
             this.deviceBridgeAddress = this.bridgeConfigure === true ? this.deviceObject.deviceBridgeAddress : this.deviceBridgeAddress;
         }
         else if (this.deviceObject == undefined && this.bridgeConfigure) {
             this.reEnumerateAgent(true);
         }
+    }
+
+    getNicStatus(adapter: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicGetStatus(adapter).subscribe(
+                (data) => {
+                    this.nicStatusContainer.ipAddress = data.device[0].ipAddress;
+                    this.nicStatusContainer.ssid = data.device[0].ssid;
+                    this.nicStatusContainer.status = data.device[0].status;
+                    resolve(data);
+                    console.log(data);
+                },
+                (err) => {
+                    reject(err);
+                    console.log(err);
+                },
+                () => { }
+            );
+
+        });
     }
 
     reEnumerateAgent(autoConnectToFirst?: boolean): Promise<null> {
@@ -116,6 +171,12 @@ export class DeviceConfigureModal {
                         this.dropdownDeviceChange(success.agent[0].devices[0]);
                     }
                     else if (success.agent[0].devices.length > 0 && autoConnectToFirst) {
+                        this.dropdownDeviceChange(success.agent[0].devices[0]);
+                    }
+                    if (success.agent[0].devices.length > 0 && this.deviceObject && success.agent[0].devices.indexOf(this.deviceObject.connectedDeviceAddress) !== -1) {
+                        this.dropdownPopRef.setActiveSelection(this.deviceObject.connectedDeviceAddress);
+                    }
+                    else if (success.agent[0].devices.length > 0 && this.deviceObject && success.agent[0].devices.indexOf(this.deviceObject.connectedDeviceAddress) === -1) {
                         this.dropdownDeviceChange(success.agent[0].devices[0]);
                     }
                 },
@@ -282,6 +343,7 @@ export class DeviceConfigureModal {
                                 this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices));
                                 this.deviceManagerService.addDeviceFromDescriptor(this.deviceObject.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                                 this.deviceConfigure = true;
+                                this.getNicStatus('wlan0');
                                 return;
                             }
 
@@ -295,6 +357,7 @@ export class DeviceConfigureModal {
                                 this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
                                 this.deviceManagerPageRef.deviceManagerService.addDeviceFromDescriptor(this.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                             }
+                            this.getNicStatus('wlan0');
                         },
                         (err) => {
                             console.log(err);

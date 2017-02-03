@@ -573,7 +573,6 @@ export class DeviceManagerPage {
                         reject(e);
                     }
                     if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
-                        this.toastService.createToast('agentConnectError', true);
                         reject();
                         return;
                     }
@@ -588,6 +587,11 @@ export class DeviceManagerPage {
             );
 
         });
+    }
+
+    supportKickstarter() {
+        let openTab = window.open('https://www.kickstarter.com/projects/342199468/openscope-instrumentation-for-everyone/', '_blank');
+        openTab.location;
     }
 
     connectToDevice(deviceIndex: number) {
@@ -628,6 +632,7 @@ export class DeviceManagerPage {
                     if (!data.agent[0] || data.agent[0].statusCode > 0) {
                         this.toastService.createToast('agentConnectError', true);
                         loading.dismiss();
+                        return;
                     }
                     this.enterJsonMode()
                         .then(() => {

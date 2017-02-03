@@ -226,7 +226,8 @@ export class TestChartCtrlsPage {
             default: trigType = 'risingEdge';
         }
         let samplingParams = this.chart1.calculateDataFromWindow();
-        this.theoreticalAcqTime = 2 * 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
+        this.theoreticalAcqTime = 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
+        console.log(this.theoreticalAcqTime);
 
         if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[2]) ||
             this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== parseInt(this.triggerComponent.lowerThresh) ||

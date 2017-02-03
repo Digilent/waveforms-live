@@ -93,6 +93,8 @@ export class UpdateFirmwarePage {
                 (data) => {
                     //console.log(data);
                     console.log('got hex file');
+                    console.log(data);
+                    if (data.indexOf('Error') !== -1) { reject('Error getting file'); return; }
                     let buf = new ArrayBuffer(data.length);
                     let bufView = new Uint8Array(buf);
                     for (var i = 0; i < data.length; i < i++) {
@@ -246,7 +248,7 @@ export class UpdateFirmwarePage {
                     });
             }
             else {
-                this.getFirmwareFromUrl('https://s3-us-west-2.amazonaws.com/digilent-test' + '/' + this.selectedFirmwareVersion + '.hex')
+                this.getFirmwareFromUrl('https://s3-us-west-2.amazonaws.com/digilent-test' + '/OpenScopeMZ-' + this.selectedFirmwareVersion + '.hex')
                     .then(() => {
                         resolve();
                     })

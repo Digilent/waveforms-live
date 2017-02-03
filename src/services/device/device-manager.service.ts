@@ -45,6 +45,7 @@ export class DeviceManagerService {
                     }
                     catch (error) {
                         observer.error(error);
+                        return;
                     }
                     console.log(response);
 
@@ -203,16 +204,26 @@ export class DeviceManagerService {
         }
         let arrayToSort: string[] = [];
         for (let i = 0; i < returnArray.length; i++) {
-            arrayToSort.push(returnArray[i].Key.substring(0, returnArray[i].Key.indexOf('.hex')));
+            arrayToSort.push(returnArray[i].Key.substring(returnArray[i].Key.indexOf('-') + 1, returnArray[i].Key.indexOf('.hex')));
         }
-        arrayToSort.sort();
-        arrayToSort.reverse();
+        arrayToSort.sort((a, b) => {
+            let aSplit = a.split('.');
+            let bSplit = b.split('.');
+            let aPriority = parseInt(aSplit[0]) * 100000 + parseInt(aSplit[1]) * 1000 + parseInt(aSplit[2]);
+            let bPriority = parseInt(bSplit[0]) * 100000 + parseInt(bSplit[1]) * 1000 + parseInt(bSplit[2]);
+            return aPriority - bPriority;
+        });
         return arrayToSort;
     }
 
     getLatestFirmwareVersionFromArray(firmwareVersionsArray: string[]) {
-        firmwareVersionsArray.sort();
-        firmwareVersionsArray.reverse();
+        firmwareVersionsArray.sort((a, b) => {
+            let aSplit = a.split('.');
+            let bSplit = b.split('.');
+            let aPriority = parseInt(aSplit[0]) * 100000 + parseInt(aSplit[1]) * 1000 + parseInt(aSplit[2]);
+            let bPriority = parseInt(bSplit[0]) * 100000 + parseInt(bSplit[1]) * 1000 + parseInt(bSplit[2]);
+            return bPriority - aPriority;
+        });
         return firmwareVersionsArray[0];
     }
 

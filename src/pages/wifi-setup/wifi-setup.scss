@@ -44,10 +44,31 @@
     padding-top: 16px;
 }
 
+.wifi-setup-container .available-network-button
+{
+    font-size: 14px;
+}
+
+.wifi-setup-container .available-button-container
+{
+    padding-bottom: 8px;
+}
+
+.wifi-setup-container .advanced-button
+{
+    font-size: 14px;
+    color: white;
+}
+
 .wifi-setup-container .network-header
 {
     font-size: 14px;
     font-weight: 500;
+}
+
+.wifi-setup-container .wifi-list
+{
+    margin: 0;
 }
 
 .wifi-setup-container .slide-wrapper
@@ -98,6 +119,12 @@
     ion-label {
         margin: 8px 8px 8px 0;
     }
+}
+
+.wifi-setup-container .collapse-card
+{
+    min-height: 0;
+    transition: 0.09s all linear;
 }
 
 .wifi-setup-container .network-button

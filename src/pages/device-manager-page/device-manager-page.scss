@@ -294,8 +294,22 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 200px;
+    width: 150px;
     max-width: 33%;
+}
+
+.first-tab-container .kickstarter-button
+{
+    background-color: #4487BA;
+    font-size: 10px;
+    border: solid black 1px;
+    color: white;
+    border-radius: 0;
+}
+
+.first-tab-container .kickstarter-button:hover
+{
+    border-color: white;
 }
 
 .first-tab-container .device-manager-card .button-container .alert-button

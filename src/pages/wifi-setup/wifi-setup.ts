@@ -1,5 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
-import { NavParams, Slides, ViewController, PopoverController } from 'ionic-angular';
+import { Component, ViewChild, trigger, state, animate, transition, style } from '@angular/core';
+import { NavParams, Slides, ViewController, PopoverController, LoadingController } from 'ionic-angular';
 
 //Services
 import { StorageService } from '../../services/storage/storage.service';
@@ -10,10 +10,18 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Interfaces
-import { WifiInfoContainer } from './wifi-setup.interface';
+import { WifiInfoContainer, NicStatusContainer } from './wifi-setup.interface';
 
 @Component({
     templateUrl: 'wifi-setup.html',
+    animations: [
+        trigger('expand', [
+            state('true', style({ height: '45px' })),
+            state('false', style({ height: '0' })),
+            transition('void => *', animate('0s')),
+            transition('* <=> *', animate('250ms ease-in-out'))
+        ])
+    ]
 })
 export class WifiSetupPage {
     @ViewChild('wifiSlider') slider: Slides;
@@ -21,6 +29,7 @@ export class WifiSetupPage {
     public settingsService: SettingsService;
     public deviceManagerService: DeviceManagerService;
     public params: NavParams;
+    public loadingCtrl: LoadingController;
     public popoverCtrl: PopoverController;
     public viewCtrl: ViewController;
     public savedNetworks: WifiInfoContainer[] = [];
@@ -43,11 +52,23 @@ export class WifiSetupPage {
 
     public availableNics: string[] = ['None'];
     public selectedNic: string = 'None';
+    public currentNicStatus: NicStatusContainer = {
+        adapter: null,
+        securityType: null,
+        status: null,
+        ssid: null
+    }
 
     public wifiStatus: string = 'Ready';
 
     public selectedStorageLocation: string = 'None';
     public storageLocations: string[] = ['None'];
+
+    public showAdvancedSettings: boolean = false;
+
+    public wepKeyIndex: number = 0;
+    public wepKeyArray: string[] = [];
+    public wepKeyEntryArray: number[] = [0, 1, 2, 3];
 
     constructor(
         _storageService: StorageService,
@@ -55,48 +76,49 @@ export class WifiSetupPage {
         _deviceManagerService: DeviceManagerService,
         _params: NavParams,
         _viewCtrl: ViewController,
+        _loadingCtrl: LoadingController,
         _popoverCtrl: PopoverController
     ) {
         this.storageService = _storageService;
         this.settingsService = _settingsService;
         this.deviceManagerService = _deviceManagerService;
         this.popoverCtrl = _popoverCtrl;
+        this.loadingCtrl = _loadingCtrl;
         this.params = _params;
         this.viewCtrl = _viewCtrl;
-        console.log('calibrate constructor');
+        console.log('wifi constructor');
 
         this.getNicList()
             .then(() => {
                 console.log('get nic list done');
                 return this.getNicStatus(this.selectedNic);
             })
-            .then((data) => {
-                console.log('get nic status done');
-                console.log(data);
-                if (data.device[0].status === 'connected') {
-                    console.log('disconnectFromNetwork');
-                    return this.disconnectFromNetwork(this.selectedNic)
-                }
-                else {
-                    console.log('auto resolve');
-                    return new Promise((resolve, reject) => { resolve() });
-                }
-            })
-            .then(() => {
+            .then((data: NicStatusContainer) => {
                 console.log('disconnect done or autoresolve');
+                this.currentNicStatus = data;
                 return this.getStorageLocations();
-            })
-            .then(() => {
-                return this.getSavedWifiNetworks(this.selectedStorageLocation)
-            })
-            .then(() => {
-                console.log('get saved locations done');
-                this.scanWifi(this.selectedNic);
             })
             .catch((e) => {
                 console.log('caught error');
                 console.log(e);
             });
+    }
+
+    toggleAdvancedSettings() {
+        this.showAdvancedSettings = !this.showAdvancedSettings;
+    }
+
+    displayLoading(message?: string) {
+        message = message || 'Loading...';
+        let loading = this.loadingCtrl.create({
+            content: message,
+            spinner: 'crescent',
+            cssClass: 'custom-loading-indicator'
+        });
+
+        loading.present();
+
+        return loading;
     }
 
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it
@@ -114,6 +136,30 @@ export class WifiSetupPage {
     nicSelection(event) {
         console.log(event);
         this.selectedNic = event;
+    }
+
+    storageSelection(event) {
+        console.log(event);
+        this.selectedStorageLocation = event;
+    }
+
+    refreshAvailableNetworks() {
+        if (this.currentNicStatus.status === 'connected' || this.currentNicStatus.status === 'connecting') {
+            this.disconnectFromNetwork(this.selectedNic)
+                .then(() => {
+                    return this.scanWifi(this.selectedNic);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        }
+        else {
+            this.scanWifi(this.selectedNic);
+        }
+    }
+
+    addCustomNetwork() {
+
     }
 
     getNicList(): Promise<any> {
@@ -178,7 +224,16 @@ export class WifiSetupPage {
         return new Promise((resolve, reject) => {
             this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].nicGetStatus(adapter).subscribe(
                 (data) => {
-                    resolve(data);
+                    let nicStatusContainer = {
+                        adapter: data.device[0].adapter,
+                        securityType: data.device[0].securityType,
+                        status: data.device[0].status,
+                        ssid: data.device[0].ssid
+                    };
+                    if (data.device[0].ipAddress) {
+                        nicStatusContainer['ipAddress'] = data.device[0].ipAddress;
+                    }
+                    resolve(nicStatusContainer);
                     console.log(data);
                 },
                 (err) => {
@@ -249,6 +304,10 @@ export class WifiSetupPage {
 
     }
 
+    refreshSavedNetworks() {
+        this.getSavedWifiNetworks(this.selectedStorageLocation);
+    }
+
     getSavedWifiNetworks(storageLocation: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiListSavedNetworks(storageLocation).subscribe(
@@ -315,7 +374,7 @@ export class WifiSetupPage {
 
     saveWifiNetwork(storageLocation: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSaveNetwork(storageLocation).subscribe(
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSaveParameters(storageLocation).subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);
@@ -375,18 +434,59 @@ export class WifiSetupPage {
                 return;
             }
         }
-        this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, this.autoConnect, this.password)
-            .then(() => {
-                return this.connectToNetwork(this.selectedNic, "workingParameterSet", true)
-            })
-            .then(() => {
-                this.savedNetworks.unshift(this.selectedNetwork);
-                this.backToNetworks();
-            })
-            .catch((e) => {
-                console.log('error setting parameters');
-                this.wifiStatus = 'Error setting wifi parameters.';
-            });
+        let loading = this.displayLoading('Connecting To Network');
+        if (this.selectedNetwork.securityType === 'wpa' || this.selectedNetwork.securityType === 'wpa2') {
+            this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, this.autoConnect, this.password)
+                .then(() => {
+                    if (this.save) {
+                        return this.saveWifiNetwork(this.selectedStorageLocation);
+                    }
+                    else {
+                        return new Promise((resolve, reject) => { resolve(); });
+                    }
+                })
+                .then(() => {
+                    if (this.connectNow) {
+                        return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
+                    }
+                    else {
+                        return new Promise((resolve, reject) => { resolve(); });
+                    }
+                })
+                .then(() => {
+                    loading.dismiss();
+                    if (this.save) {
+                        this.savedNetworks.unshift(this.selectedNetwork);
+                    }
+                    this.backToNetworks();
+                })
+                .catch((e) => {
+                    console.log('error setting parameters');
+                    this.wifiStatus = 'Error setting wifi parameters.';
+                    loading.dismiss();
+                });
+        }
+        else {
+            let formattedKeyArray = this.wepKeyArray.join(':');
+            console.log(formattedKeyArray);
+            this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, this.autoConnect, undefined, formattedKeyArray, this.wepKeyIndex)
+                .then(() => {
+                    if (this.connectNow) {
+                        return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
+                    }
+                    else {
+                        return new Promise((resolve, reject) => { resolve(); });
+                    }
+                })
+                .then(() => {
+                    this.savedNetworks.unshift(this.selectedNetwork);
+                    this.backToNetworks();
+                })
+                .catch((e) => {
+                    console.log('error setting parameters');
+                    this.wifiStatus = 'Error setting wifi parameters.';
+                });
+        }
     }
 
     backToNetworks() {

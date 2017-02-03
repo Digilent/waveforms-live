@@ -27,6 +27,9 @@
                         </div>
                     </ion-item>
                     <ion-item class="configure-item">
+                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="reEnumerateAgent()">Re-Enumerate</button>
+                    </ion-item>
+                    <ion-item class="configure-item" *ngIf="potentialDevices && potentialDevices.length > 0">
                         <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update / Load Firmware</button>
                     </ion-item>
                 </ion-list>
@@ -44,6 +47,18 @@
                     <ion-item class="configure-item">
                         <ion-label>Device Address</ion-label>
                         <div item-right class="item-content-right">{{deviceObject.connectedDeviceAddress || deviceObject.ipAddress}}</div>
+                    </ion-item>
+                    <ion-item class="configure-item">
+                        <ion-label>WiFi Status</ion-label>
+                        <div item-right class="item-content-right">{{nicStatusContainer.status}}</div>
+                    </ion-item>
+                    <ion-item class="configure-item">
+                        <ion-label>SSID</ion-label>
+                        <div item-right class="item-content-right">{{nicStatusContainer.ssid}}</div>
+                    </ion-item>
+                    <ion-item class="configure-item" *ngIf="deviceObject.bridge">
+                        <ion-label>Device IP Address</ion-label>
+                        <div item-right class="item-content-right">{{nicStatusContainer.ipAddress}}</div>
                     </ion-item>
                     <ion-item class="configure-item" *ngIf="deviceObject.ipAddress !== 'local'">
                         <button ion-button class="text-button-side item-button disable-hover" clear (click)="openWifiWizard()">Setup Wifi</button>
