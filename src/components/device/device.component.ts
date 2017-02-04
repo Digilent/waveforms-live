@@ -413,10 +413,10 @@ export class DeviceComponent {
         return this._genericResponseHandler(command);
     }
 
-    wifiListSavedNetworks(storageLocation: string): Observable<any> {
+    wifiListSavedParameters(storageLocation: string): Observable<any> {
         let command = {
             "device": [{
-                command: "wifiListSavedNetworks",
+                command: "wifiListSavedParameters",
                 storageLocation: storageLocation
             }]
         }

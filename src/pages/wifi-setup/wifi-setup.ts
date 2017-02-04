@@ -10,7 +10,7 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Interfaces
-import { WifiInfoContainer, NicStatusContainer } from './wifi-setup.interface';
+import { SavedWifiInfoContainer, WifiInfoContainer, NicStatusContainer } from './wifi-setup.interface';
 
 @Component({
     templateUrl: 'wifi-setup.html',
@@ -32,7 +32,7 @@ export class WifiSetupPage {
     public loadingCtrl: LoadingController;
     public popoverCtrl: PopoverController;
     public viewCtrl: ViewController;
-    public savedNetworks: WifiInfoContainer[] = [];
+    public savedNetworks: SavedWifiInfoContainer[] = [];
     public availableNetworks: WifiInfoContainer[] = [];
     public selectedNetwork: WifiInfoContainer = {
         ssid: null,
@@ -101,6 +101,13 @@ export class WifiSetupPage {
             .catch((e) => {
                 console.log('caught error');
                 console.log(e);
+            })
+            .then(() => {
+                return this.getSavedWifiNetworks(this.selectedStorageLocation);
+            })
+            .catch((e) => {
+                console.log('caught error');
+                console.log(e);
             });
     }
 
@@ -141,21 +148,45 @@ export class WifiSetupPage {
     storageSelection(event) {
         console.log(event);
         this.selectedStorageLocation = event;
+        this.getSavedWifiNetworks(event);
+    }
+
+    loadAndConnect(savedDeviceIndex: number) {
+        let loading = this.displayLoading('Connecting To Saved Network...');
+        this.loadWifiNetwork(this.savedNetworks[savedDeviceIndex].storageLocation, this.savedNetworks[savedDeviceIndex].ssid)
+            .then(() => {
+                return this.connectToNetwork(this.selectedNic, 'workingParameterSet', true);
+            })
+            .then(() => {
+                loading.dismiss();
+            })
+            .catch((e) => {
+                console.log('error loading and connecting to network');
+                loading.dismiss();
+            });
     }
 
     refreshAvailableNetworks() {
-        if (this.currentNicStatus.status === 'connected' || this.currentNicStatus.status === 'connecting') {
-            this.disconnectFromNetwork(this.selectedNic)
-                .then(() => {
-                    return this.scanWifi(this.selectedNic);
-                })
-                .catch((e) => {
-                    console.log(e);
-                });
-        }
-        else {
-            this.scanWifi(this.selectedNic);
-        }
+        this.getNicStatus(this.selectedNic)
+            .then((data) => {
+                console.log(data);
+                this.currentNicStatus = data;
+                if (this.currentNicStatus.status === 'connected' || this.currentNicStatus.status === 'connecting') {
+                    return this.disconnectFromNetwork(this.selectedNic);
+                }
+                else {
+                    return new Promise((resolve, reject) => { resolve(); });
+                }
+            })
+            .catch((e) => {
+                console.log('error getting nic status');
+            })
+            .then(() => {
+                return this.scanWifi(this.selectedNic);
+            })
+            .catch((e) => {
+                console.log('caught error disconnecting or scanning');
+            });
     }
 
     addCustomNetwork() {
@@ -305,14 +336,17 @@ export class WifiSetupPage {
     }
 
     refreshSavedNetworks() {
+        console.log(this.selectedStorageLocation);
         this.getSavedWifiNetworks(this.selectedStorageLocation);
     }
 
     getSavedWifiNetworks(storageLocation: string): Promise<any> {
+        this.savedNetworks = [];
         return new Promise((resolve, reject) => {
-            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiListSavedNetworks(storageLocation).subscribe(
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiListSavedParameters(storageLocation).subscribe(
                 (data) => {
                     console.log(data);
+                    this.parseSavedParameters(data.device[0].parameterSets, storageLocation);
                     resolve(data);
                 },
                 (err) => {
@@ -322,6 +356,19 @@ export class WifiSetupPage {
                 () => { }
             );
         });
+    }
+
+    parseSavedParameters(parameterSets, storageLocation: string) {
+        console.log(parameterSets);
+        if (parameterSets.length < 1) { return; }
+        for (let i = 0; i < parameterSets.length; i++) {
+            this.savedNetworks.push({
+                ssid: parameterSets[i].ssid,
+                bssid: '',
+                securityType: parameterSets[i].securityType,
+                storageLocation: storageLocation
+            });
+        }
     }
 
     deleteSavedWifiNetwork(storageLocation: string, ssid: string): Promise<any> {
@@ -447,7 +494,16 @@ export class WifiSetupPage {
                 })
                 .then(() => {
                     if (this.connectNow) {
-                        return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
+                        if (this.save) {
+                            setTimeout(() => {
+                                console.log('return promise');
+                                return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
+                            }, 500);
+                        }
+                        else {
+                            console.log('not saving connect immediately');
+                            return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
+                        }
                     }
                     else {
                         return new Promise((resolve, reject) => { resolve(); });
@@ -456,7 +512,9 @@ export class WifiSetupPage {
                 .then(() => {
                     loading.dismiss();
                     if (this.save) {
-                        this.savedNetworks.unshift(this.selectedNetwork);
+                        //TODO
+                        /*this.savedNetworks.unshift(this.selectedNetwork);*/
+                        this.getSavedWifiNetworks(this.selectedStorageLocation).then(() => { }).catch((e) => { });
                     }
                     this.backToNetworks();
                 })
@@ -479,7 +537,8 @@ export class WifiSetupPage {
                     }
                 })
                 .then(() => {
-                    this.savedNetworks.unshift(this.selectedNetwork);
+                    /*this.savedNetworks.unshift(this.selectedNetwork);*/
+                    //TODO
                     this.backToNetworks();
                 })
                 .catch((e) => {
@@ -496,7 +555,8 @@ export class WifiSetupPage {
         swiperInstance.lockSwipes();
     }
 
-    showPopover(event) {
+    showPopover(event, savedNetworkIndex: number) {
+        event.stopPropagation();
         let popover = this.popoverCtrl.create(GenPopover, {
             dataArray: ['Forget', 'Modify']
         });
@@ -504,9 +564,18 @@ export class WifiSetupPage {
             if (data == null) { return; }
             if (data.option === 'Forget') {
                 console.log('forget');
+                this.deleteSavedWifiNetwork(this.savedNetworks[savedNetworkIndex].storageLocation, this.savedNetworks[savedNetworkIndex].ssid)
+                    .then(() => {
+                        this.wifiStatus = 'Done deleting saved network.';
+                        this.getSavedWifiNetworks(this.selectedStorageLocation);
+                    })
+                    .catch((e) => {
+                        this.wifiStatus = 'Error deleting saved network.';
+                    });
             }
             else if (data.option === 'Modify') {
                 console.log('modify');
+                this.routeToConfigSlide(this.savedNetworks[savedNetworkIndex]);
             }
         });
         popover.present({

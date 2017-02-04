@@ -388,9 +388,6 @@ export class TestChartCtrlsPage {
             (data) => {
                 this.readingLa = false;
                 console.log(data);
-                if (this.running) {
-                    this.runClick();
-                }
                 this.readAttemptCount = 0;
                 this.checkReadStatusAndDraw();
             },

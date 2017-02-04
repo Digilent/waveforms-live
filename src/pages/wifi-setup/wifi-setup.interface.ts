@@ -13,3 +13,10 @@ export interface NicStatusContainer {
     ssid: string | null,
     ipAddress?: string
 }
+
+export interface SavedWifiInfoContainer {
+    ssid: string | null,
+    bssid: string | null,
+    securityType: 'wep40' | 'wep104' | 'wpa' | 'wpa2' | null,
+    storageLocation: string
+}
