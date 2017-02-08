@@ -176,9 +176,15 @@ export class TestChartCtrlsPage {
         this.activeDevice.instruments.trigger.stop([1]).subscribe(
             (data) => {
                 console.log(data);
+                if (this.running) {
+                    this.running = false;
+                }
+                this.readingLa = false;
+                this.readingOsc = false;
             },
             (err) => {
                 console.log(err);
+                this.toastService.createToast('triggerStopError', true);
             },
             () => { }
         );
@@ -227,7 +233,9 @@ export class TestChartCtrlsPage {
         }
         let samplingParams = this.chart1.calculateDataFromWindow();
         this.theoreticalAcqTime = 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
+        let triggerDelay = Math.max(Math.min(parseFloat(this.chart1.base.toString()), this.activeDevice.instruments.osc.chans[0].delayMax / Math.pow(10, 12)), this.activeDevice.instruments.osc.chans[0].delayMin / Math.pow(10, 12));
         console.log(this.theoreticalAcqTime);
+        console.log(triggerDelay);
 
         if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[2]) ||
             this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== parseInt(this.triggerComponent.lowerThresh) ||
@@ -248,7 +256,7 @@ export class TestChartCtrlsPage {
             if (this.previousOscSettings[i].offset !== 0 || this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
                 this.previousOscSettings[i].sampleFreqMax !== samplingParams.sampleFreq ||
                 this.previousOscSettings[i].bufferSizeMax !== samplingParams.bufferSize ||
-                this.previousOscSettings[i].delay !== parseFloat(this.chart1.base.toString()) ||
+                this.previousOscSettings[i].delay !== triggerDelay ||
                 this.previousOscSettings[i].active !== this.chart1.oscopeChansActive[i]) {
                 setOscParams = true;
                 setTrigParams = true;
@@ -259,14 +267,14 @@ export class TestChartCtrlsPage {
                 oscArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
                 oscArray[3].push(samplingParams.sampleFreq);
                 oscArray[4].push(samplingParams.bufferSize);
-                oscArray[5].push(parseFloat(this.chart1.base.toString()));
+                oscArray[5].push(triggerDelay);
             }
             this.previousOscSettings[i] = {
                 offset: 0,
                 gain: this.activeDevice.instruments.osc.chans[i].gains[j],
                 sampleFreqMax: samplingParams.sampleFreq,
                 bufferSizeMax: samplingParams.bufferSize,
-                delay: parseFloat(this.chart1.base.toString()),
+                delay: triggerDelay,
                 active: this.chart1.oscopeChansActive[i]
             }
         }

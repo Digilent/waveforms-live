@@ -192,7 +192,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         let triggerPosition = command.osc[chans[0]][0].triggerIndex * dt;
                         if (triggerPosition < 0) {
                             console.log('trigger not in buffer!');
-                            triggerPosition = command.osc[channel][0].triggerDelay;
+                            triggerPosition = -1 * command.osc[channel][0].triggerDelay / Math.pow(10, 12);
                         }
                         for (let i = 0; i < scaledArray.length; i++) {
                             pointContainer.push([i * dt - triggerPosition, scaledArray[i]]);

@@ -13,9 +13,10 @@ export class OscChannelComponent {
     public inputVoltageMax: number;
     public inputVoltageMin: number;
     public gains: number[];
+    public delayMax: number;
+    public delayMin: number;
 
     constructor(oscChannelDescriptor: any) {       
-
         
         this.effectiveBits = oscChannelDescriptor.effectiveBits;
         this.bufferSizeMax = oscChannelDescriptor.bufferSizeMax;
@@ -27,6 +28,8 @@ export class OscChannelComponent {
         this.inputVoltageMax = oscChannelDescriptor.inputVoltageMax;
         this.inputVoltageMin = oscChannelDescriptor.inputVoltageMin;
         this.gains = oscChannelDescriptor.gains;
+        this.delayMax = oscChannelDescriptor.delayMax;
+        this.delayMin = oscChannelDescriptor.delayMin;
         
     }
 

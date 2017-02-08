@@ -9,7 +9,7 @@ import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 
 @Component({
-    templateUrl: 'settings.html',
+    templateUrl: 'settings.html'
 })
 export class SettingsPage {
     public storageService: StorageService;
@@ -18,6 +18,7 @@ export class SettingsPage {
     public defaultConsoleLog;
     public logArguments;
     public currentSelectedDeviceInfoArray: string[] = [];
+    public showAdvancedSettings: boolean = false;
 
     constructor(_storageService: StorageService, _popCtrl: PopoverController, _settingsService: SettingsService) {
         this.storageService = _storageService;
@@ -29,6 +30,10 @@ export class SettingsPage {
             this.currentSelectedDeviceInfoArray[0] = currentSelectedDeviceInfo.deviceMake + ' ' + currentSelectedDeviceInfo.deviceModel + ' Version: ' + currentSelectedDeviceInfo.firmwareVersion;
             this.currentSelectedDeviceInfoArray[1] = currentSelectedDeviceInfo.rootUri;
         }
+    }
+
+    toggleAdvancedSettings() {
+        this.showAdvancedSettings = !this.showAdvancedSettings;
     }
 
     changeConsoleLog(event) {

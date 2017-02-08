@@ -19,9 +19,14 @@ import { Chart, CursorPositions } from './chart.interface';
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { FftService } from '../../services/math/fft.service';
+
+//Pipes
+import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 
 declare var $: any;
 declare var mathFunctions: any;
+declare var fftLibrary: any;
 declare var decimateModule: any;
 declare var cordova: any;
 
@@ -34,6 +39,8 @@ export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     public settingsService: SettingsService;
     public tooltipService: TooltipService;
+    public fftService: FftService;
+    public unitFormatPipeInstance = new UnitFormatPipe();
     public platform: Platform;
     public popoverCtrl: PopoverController;
     public chart: Chart;
@@ -81,14 +88,70 @@ export class SilverNeedleChart {
     public previousYPos: number;
     public flotOverlayRef;
 
-    constructor(_modalCtrl: ModalController, _platform: Platform, _popoverCtrl: PopoverController, _settingsService: SettingsService, _tooltipService: TooltipService) {
+    constructor(
+        _modalCtrl: ModalController,
+        _platform: Platform,
+        _popoverCtrl: PopoverController,
+        _fftService: FftService,
+        _settingsService: SettingsService,
+        _tooltipService: TooltipService
+    ) {
         this.modalCtrl = _modalCtrl;
+        this.fftService = _fftService;
         this.settingsService = _settingsService;
         this.tooltipService = _tooltipService;
         this.popoverCtrl = _popoverCtrl;
         this.platform = _platform;
         this.secsPerDivVals = this.generateNiceNumArray(0.000000001, 10);
         this.generalVoltsPerDivVals = this.generateNiceNumArray(0.001, 5);
+        this.TODORemove();
+    }
+
+    TODORemove() {
+        let real = [];
+        let imaginary = [];
+        let numSamples = 100000;
+        let sigFreq = 1000000; //in mHz
+        let sampleRate = 1000000000; //in mHz
+        let t0 = 0;
+        let vOffset = 0; //in mV
+        let vpp = 3000; //mV
+
+        //Calculate dt - time between data points
+        let dt = 1000 / sampleRate;
+
+        //Build Y point arrays
+        for (let j = 0; j < numSamples; j++) {
+            real[j] = (vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j + t0)) + vOffset;
+            imaginary[j] = 0;
+        }
+        this.fftService.calculateFft(real, sampleRate / 1000)
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+        console.log(fftLibrary.transformBluestein(real, imaginary));
+        let maxMag = Math.sqrt(Math.pow(real[0], 2) + Math.pow(imaginary[0], 2));
+        let maxIndex = 0;
+        for (let i = 0; i < real.length; i++) {
+            let magnitude = Math.sqrt(Math.pow(real[i], 2) + Math.pow(imaginary[i], 2));
+            if (magnitude > maxMag) {
+                maxMag = magnitude;
+                maxIndex = i;
+            }
+        }
+        console.log(maxMag);
+        console.log(maxIndex);
+        let sampleRateHz = (sampleRate / 1000);
+        let step = sampleRateHz / numSamples;
+        let frequency = maxIndex * step;
+        let amplitude = maxMag / numSamples * 2;
+        console.log('freq');
+        console.log(frequency);
+        console.log('amp');
+        console.log(amplitude);
     }
 
     ngAfterViewInit() {
@@ -386,13 +449,17 @@ export class SilverNeedleChart {
         let cursors = this.chart.getCursors();
         let cursorsToUpdate = [];
         let newOptions = [];
+        if (this.cursorType === 'Voltage') {
+            return;
+        }
         for (let i = 0; i < cursors.length; i++) {
             if (cursors[i].name !== 'triggerLine') {
                 cursorsToUpdate.push(cursors[i]);
                 let cursorNum = parseInt(cursors[i].name.slice(-1)) - 1;
                 newOptions.push({
                     position: {
-                        x: this.cursorPositions[cursorNum].x
+                        x: this.cursorPositions[cursorNum].x || 0,
+                        y: this.cursorPositions[cursorNum].y || 0
                     }
                 });
             }
@@ -882,163 +949,29 @@ export class SilverNeedleChart {
     //Get cursor position differences and return an array of data
     getCursorInfo(cursorInfo: string) {
         if (cursorInfo === 'xDelta') {
-            let getAxes = this.chart.getAxes();
-            let timePerDiv = Math.abs(getAxes.xaxis.max - getAxes.xaxis.min) / 10;
-            let i = 0;
-            let unit = '';
-            while (timePerDiv < 1) {
-                i++;
-                timePerDiv = timePerDiv * 1000;
-            }
-            if (i == 0) {
-                unit = ' s';
-            }
-            else if (i == 1) {
-                unit = ' ms';
-            }
-            else if (i == 2) {
-                unit = ' us';
-            }
-            else if (i == 3) {
-                unit = ' ns';
-            }
-            else if (i == 4) {
-                unit = ' ps';
-            }
-
-            let xDelta = (Math.abs(this.cursorPositions[1].x - this.cursorPositions[0].x) * Math.pow(1000, i)).toFixed(0) + unit;
-            return xDelta;
+            let result = this.unitFormatPipeInstance.transform(Math.abs(this.cursorPositions[1].x - this.cursorPositions[0].x), 's');
+            return result;
         }
         else if (cursorInfo === 'yDelta') {
-            let getAxes = this.chart.getAxes();
-            let yIndexer1 = 'y' + (this.activeChannels[1] - 1 === 0 ? '' : this.activeChannels[1].toString()) + 'axis';
-            let yIndexer0 = 'y' + (this.activeChannels[0] - 1 === 0 ? '' : this.activeChannels[0].toString()) + 'axis';
-            let vPerDiv = Math.abs(getAxes[yIndexer1].max - getAxes[yIndexer0].min) / 10;
-            let i = 0;
-            let unit = '';
-            while (vPerDiv < 1) {
-                i++;
-                vPerDiv = vPerDiv * 1000;
-            }
-            if (i == 0) {
-                unit = ' V';
-            }
-            else if (i == 1) {
-                unit = ' mV';
-            }
-            else if (i == 2) {
-                unit = ' uV';
-            }
-            else if (i == 3) {
-                unit = ' nV';
-            }
-
-            let yDelta = (Math.abs(this.cursorPositions[1].y - this.cursorPositions[0].y) * Math.pow(1000, i)).toFixed(0) + unit;
-            return yDelta;
+            let result = this.unitFormatPipeInstance.transform(Math.abs(this.cursorPositions[1].y - this.cursorPositions[0].y), 'V');
+            return result;
         }
         else if (cursorInfo === 'xFreq') {
             if (this.cursorPositions[1].x === this.cursorPositions[0].x) { return 'Inf' };
-            let freqRange = 1 / Math.abs(this.cursorPositions[1].x - this.cursorPositions[0].x);
-            let i = 0;
-            let unit = '';
-            while (freqRange > 1) {
-                i++;
-                freqRange = freqRange / 1000;
-            }
-            i--;
-            if (i == 0) {
-                unit = ' Hz';
-            }
-            else if (i == 1) {
-                unit = ' kHz';
-            }
-            else if (i == 2) {
-                unit = ' Mhz';
-            }
-            else if (i == 3) {
-                unit = ' GHz';
-            }
 
-            let xFreq = ((1 / Math.abs(this.cursorPositions[1].x - this.cursorPositions[0].x)) / Math.pow(1000, i)).toFixed(0) + unit;
-            return xFreq;
+            let result = this.unitFormatPipeInstance.transform((1 / Math.abs(this.cursorPositions[1].x - this.cursorPositions[0].x)), 'Hz');
+            return result;
         }
         else if (cursorInfo === 'cursorPosition0' || cursorInfo === 'cursorPosition1') {
             let index = cursorInfo.slice(-1);
             if (this.cursorPositions[index].x !== undefined) {
-                let getAxes = this.chart.getAxes();
-                let timePerDiv = Math.abs(getAxes.xaxis.max - getAxes.xaxis.min) / 10;
-                let i = 0;
-                let unit = '';
-                while (timePerDiv < 1) {
-                    i++;
-                    timePerDiv = timePerDiv * 1000;
-                }
-                if (i == 0) {
-                    unit = ' s';
-                }
-                else if (i == 1) {
-                    unit = ' ms';
-                }
-                else if (i == 2) {
-                    unit = ' us';
-                }
-                else if (i == 3) {
-                    unit = ' ns';
-                }
-                else if (i == 4) {
-                    unit = ' ps';
-                }
-
-                let cursorPosition = (this.cursorPositions[index].x * Math.pow(1000, i)).toFixed(0) + unit;
-
-                let yIndexer = 'y' + ((this.activeChannels[index] - 1) === 0 ? '' : this.activeChannels[index].toString()) + 'axis';
-
-                let vPerDiv = Math.abs(getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
-                i = 0;
-                while (vPerDiv < 1) {
-                    i++;
-                    vPerDiv = vPerDiv * 1000;
-                }
-                if (i == 0) {
-                    unit = ' V';
-                }
-                else if (i == 1) {
-                    unit = ' mV';
-                }
-                else if (i == 2) {
-                    unit = ' uV';
-                }
-                else if (i == 3) {
-                    unit = ' nV';
-                }
-                cursorPosition += ' (' + (this.cursorPositions[index].y * Math.pow(1000, i)).toFixed(0) + unit + ')';
-                return cursorPosition;
+                let xResult = this.unitFormatPipeInstance.transform(this.cursorPositions[index].x, 's');
+                let yResult = this.unitFormatPipeInstance.transform(this.cursorPositions[index].y, 'V');
+                return xResult + ' (' + yResult + ')';
             }
             else {
-                let i = 0;
-                let unit = '';
-                let getAxes = this.chart.getAxes();
-                let yIndexer = 'y' + (this.activeChannels[index] - 1 === 0 ? '' : this.activeChannels[index].toString()) + 'axis';
-                let vPerDiv = Math.abs(getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
-                i = 0;
-                while (vPerDiv < 1) {
-                    i++;
-                    vPerDiv = vPerDiv * 1000;
-                }
-                if (i == 0) {
-                    unit = ' V';
-                }
-                else if (i == 1) {
-                    unit = ' mV';
-                }
-                else if (i == 2) {
-                    unit = ' uV';
-                }
-                else if (i == 3) {
-                    unit = ' nV';
-                }
-                let cursorPosition = (this.cursorPositions[index].y * Math.pow(1000, i)).toFixed(0) + unit;
-                return cursorPosition;
+                let yResult = this.unitFormatPipeInstance.transform(this.cursorPositions[index].y, 'V');
+                return yResult;
             }
 
         }
@@ -1422,6 +1355,20 @@ export class SilverNeedleChart {
         });
     }
 
+    centerOnTrigger() {
+        this.base = 0;
+        let getAxes = this.chart.getAxes();
+        let min = this.timeDivision * -5;
+        let max = this.timeDivision * 5;
+        getAxes.xaxis.options.min = min;
+        getAxes.xaxis.options.max = max;
+        this.chart.setupGrid();
+        this.chart.draw();
+        if (this.timelineView) {
+            this.timelineChart.updateTimelineCurtains({ min: min, max: max });
+        }
+    }
+
     //---------------------------------- MATH INFO ------------------------------
 
     addMathInfo(mathInfo: string, seriesNum: number, maxIndex: number, minIndex: number) {
@@ -1662,10 +1609,10 @@ export class SilverNeedleChart {
         let triggerPosition = this.currentBufferArray[seriesNum].triggerPosition * this.currentBufferArray[seriesNum].dt;
         if (triggerPosition < 0) {
             console.log('trigger not in buffer!');
-            triggerPosition = this.currentBufferArray[seriesNum].triggerDelay;
+            triggerPosition = -1 * this.currentBufferArray[seriesNum].triggerDelay / Math.pow(10, 12);
         }
         let getAxes = this.chart.getAxes();
-        let poi = poiIndex * this.currentBufferArray[seriesNum].dt - triggerPosition;
+        let poi = poiIndex * this.currentBufferArray[seriesNum].dt - (triggerPosition);
         this.base = poi;
         let min = poi - 5 * this.timeDivision;
         let max = poi + 5 * this.timeDivision;

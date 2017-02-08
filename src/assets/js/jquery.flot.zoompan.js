@@ -420,24 +420,43 @@
                 var getAxes = plot.getAxes();
                 var infoContainer;
                 if (wheelZoomX) {
-                    var offsets = plot.offset();
-                    var newValPerPix = (secsPerDivisionValues[startingXIndex] * 10) / plot.width();
-                    var mousePix = e.clientX - offsets.left;
-                    var mouseVal = getAxes.xaxis.c2p(mousePix);
-                    var min = mouseVal - newValPerPix * mousePix;
-                    var max = min + 10 * secsPerDivisionValues[startingXIndex];
-                    getAxes.xaxis.options.min = min;
-                    getAxes.xaxis.options.max = max;
-                    var newMidPoint = (max + min) / 2
-                    infoContainer = {
-                        min: min,
-                        max: max,
-                        mid: newMidPoint,
-                        perDivVal: secsPerDivisionValues[startingXIndex],
-                        perDivArrayIndex: startingXIndex,
-                        axisNum: 1,
-                        axis: 'xaxis'
-                    };
+                    if (e.ctrlKey) {
+                        var offsets = plot.offset();
+                        var newValPerPix = (secsPerDivisionValues[startingXIndex] * 10) / plot.width();
+                        var mousePix = e.clientX - offsets.left;
+                        var mouseVal = getAxes.xaxis.c2p(mousePix);
+                        var min = mouseVal - newValPerPix * mousePix;
+                        var max = min + 10 * secsPerDivisionValues[startingXIndex];
+                        getAxes.xaxis.options.min = min;
+                        getAxes.xaxis.options.max = max;
+                        var newMidPoint = (max + min) / 2
+                        infoContainer = {
+                            min: min,
+                            max: max,
+                            mid: newMidPoint,
+                            perDivVal: secsPerDivisionValues[startingXIndex],
+                            perDivArrayIndex: startingXIndex,
+                            axisNum: 1,
+                            axis: 'xaxis'
+                        };
+                    }
+                    else {
+                        var base = (getAxes.xaxis.min + getAxes.xaxis.max) / 2;
+                        var min = base - 5 * secsPerDivisionValues[startingXIndex];
+                        var max = base + 5 * secsPerDivisionValues[startingXIndex];
+                        getAxes.xaxis.options.min = min;
+                        getAxes.xaxis.options.max = max;
+                        var newMidPoint = (max + min) / 2
+                        infoContainer = {
+                            min: min,
+                            max: max,
+                            mid: newMidPoint,
+                            perDivVal: secsPerDivisionValues[startingXIndex],
+                            perDivArrayIndex: startingXIndex,
+                            axisNum: 1,
+                            axis: 'xaxis'
+                        };
+                    }
                     plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
                 }
                 else {

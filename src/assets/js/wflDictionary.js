@@ -55,6 +55,10 @@ var waveformsLiveDictionary = (function() {
         dcInvalidSupply: {
             english: 'Invalid DC Supply Value'
         },
+        //Appears when a trigger stop fails
+        triggerStopError: {
+            english: 'Error Stopping Trigger. If This Problem Continues, Restart The Device And WaveForms Live'
+        },
 
         //Agent
         //Appears when a user tries to add an agent that already exists.
@@ -183,6 +187,9 @@ var waveformsLiveDictionary = (function() {
         },
         chartShowDevicePinout: {
             english: 'Show Device Pinout'
+        },
+        chartCenterOnTrigger: {
+            english: 'Center View On Trigger'
         },
         sineButton: {
             english: 'Sine Wave'

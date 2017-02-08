@@ -68,6 +68,7 @@ export class LoadFirmwarePage {
         }
 
         this.selectedDevice = this.knownDevicePrettyNames[0];
+        this.firmwareStatus = 'IMPORTANT: Device must be in bootloader mode to load firmware.';
     }
 
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it
@@ -90,7 +91,6 @@ export class LoadFirmwarePage {
         return new Promise((resolve, reject) => {
             this.deviceManagerService.transport.getRequest(firmwareUrl).subscribe(
                 (data) => {
-                    console.log(data);
                     if (data.indexOf('Error') !== -1) { reject('Error getting file'); return; }
                     let buf = new ArrayBuffer(data.length);
                     let bufView = new Uint8Array(buf);
@@ -161,7 +161,7 @@ export class LoadFirmwarePage {
                     this.getUploadStatus();
                     return;
                 }
-                this.firmwareStatus = 'Error uploading firmware. Please try again.';
+                this.firmwareStatus = 'Error uploading firmware. Make sure the device is in bootloader mode and try again.';
             });
     }
 
@@ -267,6 +267,10 @@ export class LoadFirmwarePage {
             this.deviceManagerService.transport.writeRead('/config', this.generateOsjb(this.arrayBufferFirmware), 'binary').subscribe(
                 (data) => {
                     data = this.arrayBufferToObject(data);
+                    if (data.agent == undefined || data.agent[0].statusCode > 0) {
+                        reject(data);
+                        return;
+                    }
                     resolve(data);
                 },
                 (err) => {
@@ -311,9 +315,6 @@ export class LoadFirmwarePage {
             data = JSON.parse(stringify);
         }
         catch (e) {
-            return;
-        }
-        if (data.agent == undefined || data.agent[0].statusCode > 0) {
             return;
         }
         return data;

@@ -21,6 +21,11 @@
                         <ion-icon name="information-circle"></ion-icon>
                     </button>
                 </div>
+                <div>
+                    <button ion-button class="chart-button disable-hover" (click)="centerOnTrigger()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartCenterOnTrigger').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                        <ion-icon name="arrow-down"></ion-icon>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -69,7 +74,7 @@
                         1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
                     </ion-col>
                     <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'time'">
-                        &Delta; X: {{getCursorInfo('xDelta')}} <br> 1/&Delta;X: {{getCursorInfo('xFreq')}}
+                        &Delta;X: {{getCursorInfo('xDelta')}} <br> 1/&Delta;X: {{getCursorInfo('xFreq')}}
                     </ion-col>
                     <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'track'">
                         1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}

@@ -6,6 +6,7 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { FftService } from '../../services/math/fft.service';
 
 @NgModule({
     imports: [],
@@ -15,7 +16,8 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
         DeviceManagerService,
         SettingsService,
         ToastService,
-        TooltipService
+        TooltipService,
+        FftService
     ]
 })
 export class CoreModule {

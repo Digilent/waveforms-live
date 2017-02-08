@@ -24,7 +24,7 @@
         </ion-col>
         <ion-col class="xaxis-center" center text-center>
             <div style="display:inline-block;">
-                <input class="custom-input" step="any" [ngModel]="chart.timeDivision | unitFormat:'s/'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
+                <input class="custom-input highlight-input" step="any" [ngModel]="chart.timeDivision | unitFormat:'s/'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
             </div>
         </ion-col>
         <ion-col center class="xaxis-right">

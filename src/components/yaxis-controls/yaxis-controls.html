@@ -41,7 +41,7 @@
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="chart.voltDivision[i] | unitFormat:'V/'" (focusout)="inputLeave($event, i, 'vpd')" (keypress)="checkForEnter($event, i, 'vpd')" />
+                        <input class="custom-input highlight-input" step="any" [ngModel]="chart.voltDivision[i] | unitFormat:'V/'" (focusout)="inputLeave($event, i, 'vpd')" (keypress)="checkForEnter($event, i, 'vpd')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
