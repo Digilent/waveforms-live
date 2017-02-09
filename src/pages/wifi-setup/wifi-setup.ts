@@ -128,6 +128,23 @@ export class WifiSetupPage {
         return loading;
     }
 
+    manualDisconnect() {
+        this.disconnectFromNetwork(this.selectedNic)
+            .then((data) => {
+                console.log(data);
+                this.getNicStatus(this.selectedNic)
+                    .then((data) => {
+                        this.currentNicStatus = data;
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    }
+
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it
     ionViewDidEnter() {
         let swiperInstance: any = this.slider.getSlider();
@@ -182,6 +199,10 @@ export class WifiSetupPage {
                 console.log('error getting nic status');
             })
             .then(() => {
+                return this.getNicStatus(this.selectedNic);
+            })
+            .then((data) => {
+                this.currentNicStatus = data;
                 return this.scanWifi(this.selectedNic);
             })
             .catch((e) => {
@@ -584,7 +605,13 @@ export class WifiSetupPage {
     }
 
     closeModal() {
-        this.viewCtrl.dismiss();
+        this.getNicStatus(this.selectedNic)
+            .then((data) => {
+                this.viewCtrl.dismiss(data);
+            })
+            .catch((e) => {
+                this.viewCtrl.dismiss();
+            });
     }
 
 }

@@ -51,6 +51,7 @@ export class DeviceConfigureModal {
         ssid: '',
         ipAddress: ''
     }
+    public deviceArrayIndex: number;
 
     constructor(
         _platform: Platform,
@@ -70,6 +71,7 @@ export class DeviceConfigureModal {
         this.deviceManagerService = _deviceManagerService;
         this.potentialDevices = this.params.get('potentialDevices');
         this.deviceBridgeAddress = this.params.get('deviceBridgeAddress');
+        this.deviceArrayIndex = this.params.get('deviceArrayIndex');
         this.deviceManagerPageRef = this.params.get('deviceManagerPageRef');
         this.deviceObject = this.params.get('deviceObject');
         if (this.params.get('bridge')) {
@@ -228,7 +230,14 @@ export class DeviceConfigureModal {
                     }
                     console.log(data);
                     this.enterJsonMode().then(() => {
-                        resolve();
+                        this.enumerateDevice(this.deviceObject.deviceBridgeAddress)
+                            .then((data) => {
+                                console.log('enumerate device done');
+                                resolve();
+                            })
+                            .catch((e) => {
+                                reject();
+                            });
                     }).catch((e) => {
                         resolve();
                     });
@@ -236,6 +245,37 @@ export class DeviceConfigureModal {
                 (err) => {
                     this.deviceManagerPageRef.toastService.createToast('timeout', true);
                     console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
+    }
+
+    updateDeviceEnumeration(deviceEnumeration: any) {
+        console.log(this.deviceArrayIndex, this.deviceManagerPageRef.devices[this.deviceArrayIndex]);
+        if (this.deviceArrayIndex == undefined || this.deviceManagerPageRef.devices[this.deviceArrayIndex] == undefined) {
+            return;
+        }
+        console.log(this.deviceManagerPageRef.devices[this.deviceArrayIndex].deviceDescriptor);
+        this.deviceManagerPageRef.devices[this.deviceArrayIndex].deviceDescriptor = deviceEnumeration;
+        this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices));
+        this.deviceManagerPageRef.getFirmwareVersionsForDevices();
+    }
+
+    enumerateDevice(address: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.connect(address).subscribe(
+                (data) => {
+                    if (data.device && data.device[0].statusCode === 0) {
+                        this.updateDeviceEnumeration(data.device[0]);
+                        resolve(data);
+                    }
+                    else {
+                        reject(data);
+                    }
+                },
+                (err) => {
                     reject(err);
                 },
                 () => { }
@@ -410,6 +450,20 @@ export class DeviceConfigureModal {
         let modal = this.modalCtrl.create(page, params, {
             enableBackdropDismiss: false
         });
+        modal.onWillDismiss((data) => {
+            this.deviceManagerService.connect(this.deviceManagerPageRef.devices[this.deviceArrayIndex].deviceBridgeAddress).subscribe(
+                (data) => {
+                    if (data.device && data.device[0].statusCode === 0) {
+                        this.updateDeviceEnumeration(data.device[0]);
+                        this.deviceManagerPageRef.getFirmwareVersionsForDevices();
+                    }
+                },
+                (err) => {
+
+                },
+                () => { }
+            );
+        });
         modal.present();
     }
 
@@ -423,6 +477,12 @@ export class DeviceConfigureModal {
     openWifiWizard() {
         let modal = this.modalCtrl.create(WifiSetupPage, undefined, {
             enableBackdropDismiss: false
+        });
+        modal.onWillDismiss((data) => {
+            console.log(data);
+            this.nicStatusContainer.ipAddress = data.ipAddress || '';
+            this.nicStatusContainer.ssid = data.ssid || '';
+            this.nicStatusContainer.status = data.status || '';
         });
         modal.present();
     }

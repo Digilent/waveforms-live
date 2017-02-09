@@ -13,6 +13,9 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 import { Chart } from '../../components/chart/chart.interface';
 import { SelectedData } from './math-modal.interface';
 
+//Pipes
+import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
+
 declare var mathFunctions: any;
 
 @Component({
@@ -39,6 +42,7 @@ export class MathModalPage {
     public minIndex: number = 0;
     public maxIndex: number = 0;
     public activeChannels: boolean[] = [];
+    public unitFormatPipe: UnitFormatPipe;
 
     constructor(
         _platform: Platform,
@@ -53,6 +57,7 @@ export class MathModalPage {
         this.params = _params;
         this.chartComponent = this.params.get('chartComponent');
         this.chart = this.chartComponent.chart;
+        this.unitFormatPipe = new UnitFormatPipe();
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
         this.mathChannels = [];
@@ -122,7 +127,7 @@ export class MathModalPage {
     getMetrics(metric: string) {
         switch (metric) {
             case 'Frequency':
-                return mathFunctions.getFrequency(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
+                return this.unitFormatPipe.transform(mathFunctions.getFrequency(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex), 'Hz');
 
             case 'Pos Pulse Width':
                 return 'Pos Pulse Width'
@@ -131,7 +136,7 @@ export class MathModalPage {
                 return 'Pos Duty Cycle'
 
             case 'Period':
-                return mathFunctions.getPeriod(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
+                return this.unitFormatPipe.transform(mathFunctions.getPeriod(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex), 's');
 
             case 'Neg Pulse Width':
                 return 'Neg Pulse Width'
@@ -146,7 +151,7 @@ export class MathModalPage {
                 return 'Rise Time'
 
             case 'Amplitude':
-                return mathFunctions.getAmplitude(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
+                return this.unitFormatPipe.transform(mathFunctions.getAmplitude(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex), 'V');
 
             case 'High':
                 return 'High'
@@ -155,19 +160,19 @@ export class MathModalPage {
                 return 'Low'
 
             case 'Peak to Peak':
-                return mathFunctions.getPeakToPeak(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
+                return this.unitFormatPipe.transform(mathFunctions.getPeakToPeak(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex), 'Vpp');
 
             case 'Maximum':
-                return mathFunctions.getMax(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
+                return this.unitFormatPipe.transform(mathFunctions.getMax(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex), 'V');
 
             case 'Minimum':
-                return mathFunctions.getMin(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
+                return this.unitFormatPipe.transform(mathFunctions.getMin(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex), 'V');
 
             case 'Mean':
-                return mathFunctions.getMean(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
+                return this.unitFormatPipe.transform(mathFunctions.getMean(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex), 'V');
 
             case 'RMS':
-                return mathFunctions.getRMS(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex);
+                return this.unitFormatPipe.transform(mathFunctions.getRMS(this.chart, this.selectedData.channel - 1, this.minIndex, this.maxIndex), 'V');
 
             case 'Overshoot':
                 return 'Overshoot'

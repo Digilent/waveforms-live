@@ -246,7 +246,8 @@ export class DeviceManagerPage {
             deviceBridgeAddress: this.devices[deviceArrayIndex].deviceBridgeAddress,
             bridge: this.devices[deviceArrayIndex].bridge,
             deviceManagerPageRef: this,
-            deviceObject: this.devices[deviceArrayIndex]
+            deviceObject: this.devices[deviceArrayIndex],
+            deviceArrayIndex: deviceArrayIndex
         };
         /*let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
         modal.present();*/
@@ -497,9 +498,9 @@ export class DeviceManagerPage {
     }
 
     openUpdateFirmware(deviceIndex: number) {
-        if (!this.devices[deviceIndex].bridge) { 
+        if (!this.devices[deviceIndex].bridge) {
             this.toastService.createToast('agentConnectError', true);
-            return; 
+            return;
         }
         this.agentSetActiveDeviceAndEnterJson(this.devices[deviceIndex])
             .then(() => {
@@ -509,9 +510,24 @@ export class DeviceManagerPage {
                 }, {
                         enableBackdropDismiss: false
                     });
+                modal.onWillDismiss((data) => {
+                    this.deviceManagerService.connect(this.devices[deviceIndex].deviceBridgeAddress).subscribe(
+                        (data) => {
+                            if (data.device && data.device[0].statusCode === 0) {
+                                this.devices[deviceIndex].deviceDescriptor = data.device[0];
+                                this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                                this.getFirmwareVersionsForDevices();
+                            }
+                        },
+                        (err) => {
+
+                        },
+                        () => { }
+                    );
+                });
                 modal.present();
             })
-            .catch((e) => { 
+            .catch((e) => {
                 this.toastService.createToast('agentConnectError', true);
             });
     }

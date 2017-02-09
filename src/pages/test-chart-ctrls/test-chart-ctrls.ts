@@ -181,6 +181,7 @@ export class TestChartCtrlsPage {
                 }
                 this.readingLa = false;
                 this.readingOsc = false;
+                this.triggerStatus = 'Idle';
             },
             (err) => {
                 console.log(err);

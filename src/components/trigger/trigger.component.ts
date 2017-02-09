@@ -20,8 +20,8 @@ export class TriggerComponent {
     public toastService: ToastService;
     public tooltipService: TooltipService;
     public delay: string = '0';
-    public lowerThresh: string = '-30';
-    public upperThresh: string = '0';
+    public lowerThresh: string = '470';
+    public upperThresh: string = '500';
     public edgeDirection: string = 'rising';
     public triggerSource: string = 'Osc Ch 1';
     public triggerType: string = 'edge';
@@ -29,7 +29,7 @@ export class TriggerComponent {
     public showTriggerSettings: boolean = true;
     public devMngSrv: DeviceManagerService;
     public activeDevice: DeviceComponent;
-    public level: number = 0;
+    public level: number = 0.5;
     public ignoreFocusOut: boolean = false;
 
     constructor(

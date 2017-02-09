@@ -19,7 +19,6 @@ import { Chart, CursorPositions } from './chart.interface';
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
-import { FftService } from '../../services/math/fft.service';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
@@ -39,7 +38,6 @@ export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     public settingsService: SettingsService;
     public tooltipService: TooltipService;
-    public fftService: FftService;
     public unitFormatPipeInstance = new UnitFormatPipe();
     public platform: Platform;
     public popoverCtrl: PopoverController;
@@ -92,66 +90,16 @@ export class SilverNeedleChart {
         _modalCtrl: ModalController,
         _platform: Platform,
         _popoverCtrl: PopoverController,
-        _fftService: FftService,
         _settingsService: SettingsService,
         _tooltipService: TooltipService
     ) {
         this.modalCtrl = _modalCtrl;
-        this.fftService = _fftService;
         this.settingsService = _settingsService;
         this.tooltipService = _tooltipService;
         this.popoverCtrl = _popoverCtrl;
         this.platform = _platform;
         this.secsPerDivVals = this.generateNiceNumArray(0.000000001, 10);
         this.generalVoltsPerDivVals = this.generateNiceNumArray(0.001, 5);
-        this.TODORemove();
-    }
-
-    TODORemove() {
-        let real = [];
-        let imaginary = [];
-        let numSamples = 100000;
-        let sigFreq = 1000000; //in mHz
-        let sampleRate = 1000000000; //in mHz
-        let t0 = 0;
-        let vOffset = 0; //in mV
-        let vpp = 3000; //mV
-
-        //Calculate dt - time between data points
-        let dt = 1000 / sampleRate;
-
-        //Build Y point arrays
-        for (let j = 0; j < numSamples; j++) {
-            real[j] = (vpp / 2) * (Math.sin((2 * Math.PI * (sigFreq / 1000)) * dt * j + t0)) + vOffset;
-            imaginary[j] = 0;
-        }
-        this.fftService.calculateFft(real, sampleRate / 1000)
-            .then((data) => {
-                console.log(data);
-            })
-            .catch((e) => {
-                console.log(e);
-            });
-        console.log(fftLibrary.transformBluestein(real, imaginary));
-        let maxMag = Math.sqrt(Math.pow(real[0], 2) + Math.pow(imaginary[0], 2));
-        let maxIndex = 0;
-        for (let i = 0; i < real.length; i++) {
-            let magnitude = Math.sqrt(Math.pow(real[i], 2) + Math.pow(imaginary[i], 2));
-            if (magnitude > maxMag) {
-                maxMag = magnitude;
-                maxIndex = i;
-            }
-        }
-        console.log(maxMag);
-        console.log(maxIndex);
-        let sampleRateHz = (sampleRate / 1000);
-        let step = sampleRateHz / numSamples;
-        let frequency = maxIndex * step;
-        let amplitude = maxMag / numSamples * 2;
-        console.log('freq');
-        console.log(frequency);
-        console.log('amp');
-        console.log(amplitude);
     }
 
     ngAfterViewInit() {
@@ -1454,7 +1402,7 @@ export class SilverNeedleChart {
     updateMathByName(selectedMathInfoObj: any, maxIndex: number, minIndex: number) {
         switch (selectedMathInfoObj.measurement) {
             case 'Frequency':
-                return mathFunctions.getFrequency(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
+                return this.unitFormatPipeInstance.transform(mathFunctions.getFrequency(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex), 'Hz');
 
             case 'Pos Pulse Width':
                 return 'Pos Pulse Width'
@@ -1463,7 +1411,7 @@ export class SilverNeedleChart {
                 return 'Pos Duty Cycle'
 
             case 'Period':
-                return mathFunctions.getPeriod(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
+                return this.unitFormatPipeInstance.transform(mathFunctions.getPeriod(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex), 's');
 
             case 'Neg Pulse Width':
                 return 'Neg Pulse Width'
@@ -1478,7 +1426,7 @@ export class SilverNeedleChart {
                 return 'Rise Time'
 
             case 'Amplitude':
-                return mathFunctions.getAmplitude(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
+                return this.unitFormatPipeInstance.transform(mathFunctions.getAmplitude(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex), 'V');
 
             case 'High':
                 return 'High'
@@ -1487,19 +1435,19 @@ export class SilverNeedleChart {
                 return 'Low'
 
             case 'Peak to Peak':
-                return mathFunctions.getPeakToPeak(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
+                return this.unitFormatPipeInstance.transform(mathFunctions.getPeakToPeak(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex), 'Vpp');
 
             case 'Maximum':
-                return mathFunctions.getMax(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
+                return this.unitFormatPipeInstance.transform(mathFunctions.getMax(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex), 'V');
 
             case 'Minimum':
-                return mathFunctions.getMin(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
+                return this.unitFormatPipeInstance.transform(mathFunctions.getMin(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex), 'V');
 
             case 'Mean':
-                return mathFunctions.getMean(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
+                return this.unitFormatPipeInstance.transform(mathFunctions.getMean(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex), 'V');
 
             case 'RMS':
-                return mathFunctions.getRMS(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex);
+                return this.unitFormatPipeInstance.transform(mathFunctions.getRMS(this.chart, selectedMathInfoObj.channel, minIndex, maxIndex), 'V');
 
             case 'Overshoot':
                 return 'Overshoot'

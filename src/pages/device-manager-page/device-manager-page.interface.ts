@@ -14,5 +14,6 @@ export interface DeviceConfigureParams {
     deviceBridgeAddress: string,
     bridge: boolean,
     deviceManagerPageRef: any
-    deviceObject: any
+    deviceObject: any,
+    deviceArrayIndex?: number
 }
