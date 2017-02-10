@@ -20,6 +20,12 @@ import { SavedWifiInfoContainer, WifiInfoContainer, NicStatusContainer } from '.
             state('false', style({ height: '0' })),
             transition('void => *', animate('0s')),
             transition('* <=> *', animate('250ms ease-in-out'))
+        ]),
+        trigger('rotate', [
+            state('true', style({ transform: 'rotate(-180deg)' })),
+            state('false', style({ transform: 'rotate(0deg)' })),
+            transition('void => *', animate('0s')),
+            transition('* <=> *', animate('250ms ease-in-out'))
         ])
     ]
 })
@@ -69,6 +75,8 @@ export class WifiSetupPage {
     public wepKeyIndex: number = 0;
     public wepKeyArray: string[] = [];
     public wepKeyEntryArray: number[] = [0, 1, 2, 3];
+    public modifyingSaved: boolean = false;
+    public showMainAdvanced: boolean = false;
 
     constructor(
         _storageService: StorageService,
@@ -113,6 +121,10 @@ export class WifiSetupPage {
 
     toggleAdvancedSettings() {
         this.showAdvancedSettings = !this.showAdvancedSettings;
+    }
+
+    toggleMainAdvanced() {
+        this.showMainAdvanced = !this.showMainAdvanced;
     }
 
     displayLoading(message?: string) {
@@ -211,7 +223,7 @@ export class WifiSetupPage {
     }
 
     addCustomNetwork() {
-
+        this.savedNetworks[0].autoConnect;
     }
 
     getNicList(): Promise<any> {
@@ -387,7 +399,8 @@ export class WifiSetupPage {
                 ssid: parameterSets[i].ssid,
                 bssid: '',
                 securityType: parameterSets[i].securityType,
-                storageLocation: storageLocation
+                storageLocation: storageLocation,
+                autoConnect: parameterSets[i].autoConnect
             });
         }
     }
@@ -574,6 +587,7 @@ export class WifiSetupPage {
         swiperInstance.unlockSwipes();
         this.slider.slideTo(0);
         swiperInstance.lockSwipes();
+        this.modifyingSaved = false;
     }
 
     showPopover(event, savedNetworkIndex: number) {
@@ -596,7 +610,11 @@ export class WifiSetupPage {
             }
             else if (data.option === 'Modify') {
                 console.log('modify');
-                this.routeToConfigSlide(this.savedNetworks[savedNetworkIndex]);
+                this.modifyingSaved = true;
+                //Wait before moving to allow for Angular2 change detection to update config slide view
+                setTimeout(() => {
+                    this.routeToConfigSlide(this.savedNetworks[savedNetworkIndex]);
+                }, 100);
             }
         });
         popover.present({

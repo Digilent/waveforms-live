@@ -199,7 +199,14 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
             this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     //Handle device errors and warnings
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    let data;
+                    try {
+                        data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                    }
+                    catch (e) {
+                        observer.error(e);
+                        return;
+                    }
                     for (let i = 0; i < chans.length; i++) {
                         if (data.trigger == undefined || data.trigger[chans[i]][0].statusCode > 0 || data.agent != undefined) {
                             observer.error(data);

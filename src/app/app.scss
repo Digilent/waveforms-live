@@ -120,6 +120,16 @@
     overflow: auto;
 }
 
+@media only screen and (min-height: 768px) and (min-width: 768px) {
+    .modal-wrapper {
+        position: absolute;
+        top: calc(50% - (600px/2));
+        left: calc(50% - (800px/2));
+        width: 800px;
+        height: 600px;
+    }
+}
+
 .tooltip.bottom {
     padding: 5px 0;
     margin-top: 3px;

@@ -103,6 +103,7 @@ export class SilverNeedleChart {
     }
 
     ngAfterViewInit() {
+        console.log('View Init');
         this.seriesAnchorVertPanRef = this.seriesAnchorVertPan.bind(this);
         this.unbindCustomEventsRef = this.unbindCustomEvents.bind(this);
         this.seriesAnchorTouchStartRef = this.seriesAnchorTouchStart.bind(this);
@@ -112,7 +113,7 @@ export class SilverNeedleChart {
             width: '100%',
             height: '100%'
         });
-        if (!this.chart) {
+        if (this.chart == undefined) {
             this.createChart();
         }
     }

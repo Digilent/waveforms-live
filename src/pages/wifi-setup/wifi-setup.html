@@ -4,23 +4,6 @@
         <ion-slide class="slide-container">
             <div class="content-container wifi-content-container">
                 <div class="slide-header">Networks</div>
-                <ion-item class="configure-item">
-                    <ion-label>NIC</ion-label>
-                    <div item-right class="item-content-right dropdown-popover-item-right">
-                        <dropdown-popover [dataArray]="availableNics" (onSelection)="nicSelection($event)"></dropdown-popover>
-                    </div>
-                </ion-item>
-                <ion-item class="configure-item">
-                    <ion-label>Storage Location</ion-label>
-                    <div item-right class="item-content-right dropdown-popover-item-right">
-                        <dropdown-popover [dataArray]="storageLocations" (onSelection)="storageSelection($event)"></dropdown-popover>
-                    </div>
-                </ion-item>
-                <ion-item class="configure-item" *ngIf="currentNicStatus.status === 'connected'">
-                    <button ion-button class="text-button-side item-button disable-hover" (click)="manualDisconnect()">
-                        Disconnect From Network
-                    </button>
-                </ion-item>
                 <ion-row class="network-container" wrap>
                     <ion-col class="network-container-column" text-center>
                         <div class="network-header">
@@ -37,12 +20,14 @@
                         <div text-center *ngIf="scanningForNetworks" class="spinner-container">
                             <ion-spinner name="crescent"></ion-spinner>
                         </div>
-                        <div *ngFor="let availableNetwork of availableNetworks">
-                            <ion-card class="network-card" (click)="routeToConfigSlide(availableNetwork)">
-                                <ion-item class="card-info">
-                                    {{availableNetwork.ssid}}
-                                </ion-item>
-                            </ion-card>
+                        <div class="available-network-container" *ngIf="availableNetworks && availableNetworks.length > 0">
+                            <div *ngFor="let availableNetwork of availableNetworks" text-center>
+                                <ion-card class="network-card" (click)="routeToConfigSlide(availableNetwork)">
+                                    <ion-item class="card-info">
+                                        {{availableNetwork.ssid}}
+                                    </ion-item>
+                                </ion-card>
+                            </div>
                         </div>
                     </ion-col>
                     <ion-col class="network-container-column" text-center>
@@ -54,18 +39,46 @@
                                 <ion-icon name="refresh"></ion-icon>
                             </button>
                         </div>
-                        <div *ngFor="let savedNetwork of savedNetworks, let i = index;">
-                            <ion-card class="network-card" (click)="loadAndConnect(i)">
-                                <ion-item class="card-info">
-                                    {{savedNetwork.ssid}}
-                                    <button item-right ion-button clear class="network-button" (click)="showPopover($event, i)">
-                                        <ion-icon name="more"></ion-icon>
-                                    </button>
-                                </ion-item>
-                            </ion-card>
+                        <div class="available-network-container" *ngIf="savedNetworks && savedNetworks.length > 0">
+                            <div *ngFor="let savedNetwork of savedNetworks, let i = index;" text-center>
+                                <ion-card class="network-card" (click)="loadAndConnect(i)">
+                                    <ion-item class="card-info">
+                                        {{savedNetwork.ssid}}
+                                        <button item-right ion-button clear class="network-button" (click)="showPopover($event, i)">
+                                            <ion-icon name="more"></ion-icon>
+                                        </button>
+                                    </ion-item>
+                                </ion-card>
+                            </div>
                         </div>
+                        
                     </ion-col>
                 </ion-row>
+                <div text-center>
+                    <button ion-button icon-right clear class="advanced-button" (tap)="toggleMainAdvanced()">
+                        Advanced
+                        <div [@rotate]="showMainAdvanced"><ion-icon class="rotate-arrow-icon" name="arrow-dropdown"></ion-icon></div>
+                    </button> 
+                </div>
+                <div>
+                    <ion-item class="configure-item collapse-card" [@expand]="showMainAdvanced">
+                        <ion-label>NIC</ion-label>
+                        <div item-right class="item-content-right dropdown-popover-item-right">
+                            <dropdown-popover [dataArray]="availableNics" (onSelection)="nicSelection($event)"></dropdown-popover>
+                        </div>
+                    </ion-item>
+                    <ion-item class="configure-item collapse-card" [@expand]="showMainAdvanced">
+                        <ion-label>Storage Location</ion-label>
+                        <div item-right class="item-content-right dropdown-popover-item-right">
+                            <dropdown-popover [dataArray]="storageLocations" (onSelection)="storageSelection($event)"></dropdown-popover>
+                        </div>
+                    </ion-item>
+                    <ion-item class="configure-item collapse-card" *ngIf="currentNicStatus.status === 'connected'" [@expand]="showMainAdvanced">
+                        <button ion-button class="text-button-side item-button disable-hover" (click)="manualDisconnect()">
+                            Disconnect From Network
+                        </button>
+                    </ion-item>
+                </div>
             </div>
             <ion-row>
                 <ion-col text-left>
@@ -80,7 +93,8 @@
         <ion-slide class="slide-container">
             <div class="content-container wifi-content-container">
                 <div class="slide-header">Setup Wifi</div>
-                <ion-list class="wifi-list">
+
+                <ion-list class="wifi-list" *ngIf="!modifyingSaved">
 
                     <ion-item class="card-info">
                         <ion-label>SSID</ion-label>
@@ -120,8 +134,7 @@
 
                     <button ion-button icon-right clear class="advanced-button" (tap)="toggleAdvancedSettings()">
                         Advanced
-                        <ion-icon *ngIf="!showAdvancedSettings" name="arrow-dropdown"></ion-icon>
-                        <ion-icon *ngIf="showAdvancedSettings" name="arrow-dropup"></ion-icon>
+                        <div [@rotate]="showAdvancedSettings"><ion-icon class="rotate-arrow-icon" name="arrow-dropdown"></ion-icon></div>
                     </button> 
 
                     <div>
@@ -152,6 +165,14 @@
                     </div>
 
                 </ion-list>
+
+                <ion-list class="wifi-list" *ngIf="modifyingSaved">
+                    <ion-item class="card-info">
+                        <ion-label>SSID</ion-label>
+                        <div item-right class="item-content-right">{{selectedNetwork.ssid}}</div>
+                    </ion-item>
+                </ion-list>
+
             </div>
             <div>
                 <ion-row>
