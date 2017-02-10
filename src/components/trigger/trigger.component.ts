@@ -142,16 +142,20 @@ export class TriggerComponent {
     }
 
     forceTrigger() {
-        /*this.activeDevice.instruments.trigger.forceTrigger([1]).subscribe(
+        this.activeDevice.instruments.trigger.forceTrigger([1]).subscribe(
             (data) => {
                 console.log(data);
             },
             (err) => {
                 console.log(err);
+                if (err.trigger && err.trigger["1"][0].statusCode === 2684354590) {
+                    this.toastService.createToast('triggerForceNotArmed');
+                    return;
+                }
+                this.toastService.createToast('triggerForceError', true);
             },
             () => { }
-        );*/
-        this.toastService.createToast('notImplemented', true);
+        );
     }
 
     setTrigType(type: string) {

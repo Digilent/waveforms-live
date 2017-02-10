@@ -83,28 +83,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                     }
                 ]
         });
-        return Observable.create((observer) => {
-            this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.trigger == undefined || data.trigger[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    observer.next(data);
-                    //Handle device errors and warnings
-                    observer.complete();
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            )
-        });
+        return super._genericResponseHandler(command);
     }
 
     singleJson(chans: number[]) {
@@ -145,29 +124,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                     }
                 ]
         });
-        return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    //Handle device errors and warnings
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.trigger == undefined || data.trigger[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    observer.next(data);
-                    //Handle device errors and warnings
-                    observer.complete();
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            )
-        });
+        return super._genericResponseHandler(command);
     }
 
     stopJson(chans: number[]) {
@@ -195,36 +152,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
         }
 
         let command = this.stopJson(chans);
-        return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    //Handle device errors and warnings
-                    let data;
-                    try {
-                        data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    }
-                    catch (e) {
-                        observer.error(e);
-                        return;
-                    }
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.trigger == undefined || data.trigger[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    observer.next(data);
-                    //Handle device errors and warnings
-                    observer.complete();
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            )
-        });
+        return super._genericResponseHandler(command);
     }
 
     forceTriggerJson(chans: number[]) {
@@ -266,29 +194,7 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
                     }
                 ]
         });
-        return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    //Handle device errors and warnings
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.trigger == undefined || data.trigger[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    observer.next(data);
-                    //Handle device errors and warnings
-                    observer.complete();
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            )
-        });
+        return super._genericResponseHandler(command);
     }
 
     stopStream() {

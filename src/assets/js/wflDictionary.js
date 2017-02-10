@@ -59,6 +59,12 @@ var waveformsLiveDictionary = (function() {
         triggerStopError: {
             english: 'Error Stopping Trigger. If This Problem Continues, Restart The Device And WaveForms Live'
         },
+        triggerForceError: {
+            english: 'Error Forcing Trigger. This Is Most Likely Due To An Unarmed Trigger'
+        },
+        triggerForceNotArmed: {
+            english: 'The Device Is Still Arming The Trigger. Please Try Again'
+        },
 
         //Agent
         //Appears when a user tries to add an agent that already exists.

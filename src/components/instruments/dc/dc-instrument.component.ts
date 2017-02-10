@@ -87,11 +87,8 @@ export class DcInstrumentComponent extends InstrumentComponent {
                 ]
         });
         return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    //Handle device errors and warnings
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-
+            super._genericResponseHandler(command).subscribe(
+                (data) => {
                     for (let i = 0; i < chans.length; i++) {
                         if (data.dc == undefined || data.dc[chans[i]][0].statusCode > 0 || data.agent != undefined) {
                             console.log(data);
@@ -104,15 +101,12 @@ export class DcInstrumentComponent extends InstrumentComponent {
                     //Return voltages and complete observer
                     observer.next(data);
                     observer.complete();
-
                 },
                 (err) => {
                     observer.error(err);
                 },
-                () => {
-                    observer.complete();
-                }
-            )
+                () => { }
+            );
         });
     }
 
@@ -133,29 +127,7 @@ export class DcInstrumentComponent extends InstrumentComponent {
                     }
                 ]
         });
-        return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    //Handle device errors and warnings
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.dc == undefined || data.dc[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    observer.next(data);
-                    observer.complete();
-
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            );
-        });
+        return super._genericResponseHandler(command);
     }
 
     //Streaming read voltages from the specified channel(s)

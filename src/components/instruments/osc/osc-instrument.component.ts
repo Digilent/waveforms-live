@@ -9,6 +9,7 @@ import { WaveformComponent } from '../../data-types/waveform';
 
 //Services
 import { TransportService } from '../../../services/transport/transport.service';
+import { CommandUtilityService } from '../../../services/device/command-utility.service';
 
 @Injectable()
 export class OscInstrumentComponent extends InstrumentComponent {
@@ -21,7 +22,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
     public dataBufferWriteIndex: number = 0;
     public dataBufferFillSize: number = 0;
     public activeBuffer: string = '0';
-
+    public commandUtilityService: CommandUtilityService;
 
     constructor(_transport: TransportService, _oscInstrumentDescriptor: any) {
         super(_transport, '/');
@@ -29,6 +30,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
 
         //Populate DC supply parameters
         this.numChans = _oscInstrumentDescriptor.numChans;
+        this.commandUtilityService = new CommandUtilityService();
 
         //Populate channels        
         for (let channel in _oscInstrumentDescriptor) {
@@ -89,28 +91,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     }
                 ]
         });
-        return Observable.create((observer) => {
-            this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.osc == undefined || data.osc[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    observer.next(data);
-                    //Handle device errors and warnings
-                    observer.complete();
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            )
-        });
+        return super._genericResponseHandler(command);
     }
 
     //Tell OpenScope to run once and return a buffer
@@ -171,7 +152,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                     }
                     console.log(command);
                     for (let channel in command.osc) {
-                        if(command.osc[channel][0].statusCode > 0) {
+                        if (command.osc[channel][0].statusCode > 0) {
                             observer.error('One or more channels still acquiring');
                         }
                         let binaryData;

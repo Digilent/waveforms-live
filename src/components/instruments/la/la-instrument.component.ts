@@ -9,6 +9,7 @@ import { WaveformComponent } from '../../data-types/waveform';
 
 //Services
 import { TransportService } from '../../../services/transport/transport.service';
+import { CommandUtilityService } from '../../../services/device/command-utility.service';
 
 @Injectable()
 export class LaInstrumentComponent extends InstrumentComponent {
@@ -21,12 +22,14 @@ export class LaInstrumentComponent extends InstrumentComponent {
     public dataBufferWriteIndex: number = 0;
     public dataBufferFillSize: number = 0;
     public activeBuffer: string = '0';
+    public commandUtilityService: CommandUtilityService;
 
     constructor(_transport: TransportService, _laInstrumentDescriptor: any) {
         super(_transport, '/')
 
         //Populate LA supply parameters
         this.numChans = _laInstrumentDescriptor.numChans;
+        this.commandUtilityService = new CommandUtilityService();
 
         //Populate channels  
         for (let channel in _laInstrumentDescriptor) {
@@ -82,29 +85,7 @@ export class LaInstrumentComponent extends InstrumentComponent {
                     }
                 ]
         });
-        return Observable.create((observer) => {
-            this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.la == undefined || data.la[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            console.log(data);
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    observer.next(data);
-                    //Handle device errors and warnings
-                    observer.complete();
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            )
-        });
+        return super._genericResponseHandler(command);
     }
 
     //Tell OpenScope to run once and return a buffer

@@ -117,40 +117,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
                 ]
         });
 
-        return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    console.log(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    let data;
-                    try {
-                        data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    }
-                    catch (e) {
-                        console.log(e);
-                        console.log('Error parsing JSON response');
-                        observer.error(e);
-                        return;
-                    }
-                    console.log(data);
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.awg == undefined || data.awg[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    console.log('no status code error');
-                    observer.next(data);
-                    observer.complete();
-
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            );
-        });
+        return super._genericResponseHandler(command);
     }
 
     setRegularWaveformJson(chans: number[], settings: SettingsObject[]) {
@@ -209,39 +176,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
                 ]
         });
 
-        return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    let data;
-                    try {
-                        data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    }
-                    catch (e) {
-                        console.log(e);
-                        console.log('Error parsing run response');
-                        observer.error(e);
-                        return;
-                    }
-                    console.log(data);
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.awg == undefined || data.awg[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            console.log(data);
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    console.log('no status code error');
-                    observer.next(data);
-                    observer.complete();
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            );
-        });
+        return super._genericResponseHandler(command);
     }
 
     stop(chans: number[]): Observable<any> {
@@ -257,38 +192,7 @@ export class AwgInstrumentComponent extends InstrumentComponent {
                 ]
         });
 
-        return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    let data;
-                    try {
-                        let stringify = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
-                        console.log(stringify);
-                        data = JSON.parse(stringify);
-                    }
-                    catch(e) {
-                        observer.error(e);
-                        return;
-                    }
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.awg == undefined || data.awg[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            console.log(data);
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    observer.next(data);
-                    observer.complete();
-
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            );
-        });
+        return super._genericResponseHandler(command);
     }
 }
 

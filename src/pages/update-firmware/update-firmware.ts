@@ -93,7 +93,6 @@ export class UpdateFirmwarePage {
                 (data) => {
                     //console.log(data);
                     console.log('got hex file');
-                    console.log(data);
                     if (data.indexOf('Error') !== -1) { reject('Error getting file'); return; }
                     let buf = new ArrayBuffer(data.length);
                     let bufView = new Uint8Array(buf);

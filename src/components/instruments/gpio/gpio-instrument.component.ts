@@ -38,40 +38,7 @@ export class GpioInstrumentComponent extends InstrumentComponent {
             ]
         });
         console.log(command);
-        return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    //Handle device errors and warnings
-                    let data;
-                    try {
-                        data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    }
-                    catch(e) {
-                        console.log(e);
-                        observer.error(e);
-                        return;
-                    }
-                    console.log(data);
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.gpio == undefined || data.gpio[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            console.log(data);
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    //Return voltages and complete observer
-                    observer.next(data);
-                    observer.complete();
-                    
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            )
-        });
+        return super._genericResponseHandler(command);
     }
 
     //Set the output voltage of the specified DC power supply channel.
@@ -89,30 +56,7 @@ export class GpioInstrumentComponent extends InstrumentComponent {
                 ]
         });
         console.log(command);
-        return Observable.create((observer) => {
-            this.transport.writeRead(this.endpoint, JSON.stringify(command), 'json').subscribe(
-                (arrayBuffer) => {
-                    //Handle device errors and warnings
-                    let data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                    for (let i = 0; i < chans.length; i++) {
-                        if (data.gpio == undefined || data.gpio[chans[i]][0].statusCode > 0 || data.agent != undefined) {
-                            console.log(data);
-                            observer.error(data);
-                            return;
-                        }
-                    }
-                    observer.next(data);
-                    observer.complete();
-
-                },
-                (err) => {
-                    observer.error(err);
-                },
-                () => {
-                    observer.complete();
-                }
-            );
-        });
+        return super._genericResponseHandler(command);
     }
 
     //Set the output voltage of the specified DC power supply channel.
