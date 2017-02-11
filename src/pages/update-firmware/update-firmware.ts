@@ -8,6 +8,7 @@ import { ProgressBarComponent } from '../../components/progress-bar/progress-bar
 import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { CommandUtilityService } from '../../services/device/command-utility.service';
 
 //Interfaaces
 import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
@@ -21,6 +22,7 @@ export class UpdateFirmwarePage {
     public storageService: StorageService;
     public settingsService: SettingsService;
     public loadingCtrl: LoadingController;
+    public commandUtilityService: CommandUtilityService;
     public params: NavParams;
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
@@ -50,10 +52,12 @@ export class UpdateFirmwarePage {
         _settingsService: SettingsService,
         _params: NavParams,
         _viewCtrl: ViewController,
+        _cmdUtilSrv: CommandUtilityService,
         _loadingCtrl: LoadingController,
         _deviceManagerService: DeviceManagerService
     ) {
         this.deviceManagerService = _deviceManagerService;
+        this.commandUtilityService = _cmdUtilSrv;
         this.storageService = _storageService;
         this.loadingCtrl = _loadingCtrl;
         this.settingsService = _settingsService;
@@ -268,21 +272,39 @@ export class UpdateFirmwarePage {
         };
         this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
             (data) => {
-                data = this.arrayBufferToObject(data);
-                if (data.agent && data.agent[0].status && data.agent[0].status === 'uploading' && data.agent[0].progress) {
-                    this.progressBarComponent.manualUpdateVal(data.agent[0].progress);
-                }
-                if (data.agent == undefined || data.agent[0].statusCode > 0 || data.agent[0].status !== 'idle' && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
-                    console.log('statusCode error');
-                    this.uploadStatusAttemptCount++;
-                    setTimeout(() => {
-                        this.getUploadStatus();
-                    }, 1000);
-                    return;
-                }
-                if (data.agent[0].status === 'idle') {
-                    this.progressBarComponent.manualUpdateVal(100);
-                }
+                this.arrayBufferToObject(data)
+                    .then((parsedData) => {
+                        if (parsedData.agent && parsedData.agent[0].status && parsedData.agent[0].status === 'uploading' && parsedData.agent[0].progress) {
+                            this.progressBarComponent.manualUpdateVal(parsedData.agent[0].progress);
+                        }
+                        if (parsedData.agent == undefined || parsedData.agent[0].statusCode > 0 || parsedData.agent[0].status !== 'idle' && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
+                            console.log('statusCode error');
+                            this.uploadStatusAttemptCount++;
+                            setTimeout(() => {
+                                this.getUploadStatus();
+                            }, 1000);
+                            return;
+                        }
+                        if (parsedData.agent[0].status === 'idle') {
+                            this.progressBarComponent.manualUpdateVal(100);
+                        }
+                    })
+                    .catch((parsedData) => {
+                        if (parsedData.agent && parsedData.agent[0].status && parsedData.agent[0].status === 'uploading' && parsedData.agent[0].progress) {
+                            this.progressBarComponent.manualUpdateVal(parsedData.agent[0].progress);
+                        }
+                        if (parsedData.agent == undefined || parsedData.agent[0].statusCode > 0 || parsedData.agent[0].status !== 'idle' && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
+                            console.log('statusCode error');
+                            this.uploadStatusAttemptCount++;
+                            setTimeout(() => {
+                                this.getUploadStatus();
+                            }, 1000);
+                            return;
+                        }
+                        if (parsedData.agent[0].status === 'idle') {
+                            this.progressBarComponent.manualUpdateVal(100);
+                        }
+                    });
             },
             (err) => {
                 console.log(err);
@@ -368,8 +390,13 @@ export class UpdateFirmwarePage {
         return new Promise((resolve, reject) => {
             this.deviceManagerService.transport.writeRead('/config', this.generateOsjb(this.arrayBufferFirmware), 'binary').subscribe(
                 (data) => {
-                    data = this.arrayBufferToObject(data);
-                    resolve(data);
+                    this.arrayBufferToObject(data)
+                        .then((data) => {
+                            resolve(data);
+                        })
+                        .catch((e) => {
+                            reject(e);
+                        });
                 },
                 (err) => {
                     console.log(err);
@@ -382,12 +409,19 @@ export class UpdateFirmwarePage {
 
     generateOsjb(firmwareArrayBuffer: ArrayBuffer) {
         let commandObject = {
-            agent: [{
-                command: 'uploadFirmware',
-                enterBootloader: true
-            }]
+            agent: [
+                {
+                    command: "saveToTempFile",
+                    fileName: "openscope-mz-firmware.hex"
+                },
+                {
+                    command: 'uploadFirmware',
+                    firmwarePath: 'openscope-mz-firmware.hex',
+                    enterBootloader: true
+                }
+            ]
         };
-        let stringCommand = JSON.stringify(commandObject);
+        /*let stringCommand = JSON.stringify(commandObject);
         let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
 
         let stringSection = binaryIndex + stringCommand + '\r\n';
@@ -400,23 +434,36 @@ export class UpdateFirmwarePage {
         let temp = new Uint8Array(stringSection.length + firmwareArrayBuffer.byteLength);
         temp.set(new Uint8Array(binaryBufferStringSection), 0);
         temp.set(new Uint8Array(firmwareArrayBuffer), binaryBufferStringSection.byteLength);
+        //Since we're actually sending the result directly to the transport, return the actual byte array instead of the arrayBuffer which is just a reference.*/
+        let temp = this.commandUtilityService.createChunkedArrayBuffer(commandObject, firmwareArrayBuffer);
+        console.log(temp);
         return temp;
     }
 
-    arrayBufferToObject(arrayBuffer) {
-        let data;
-        try {
-            let stringify = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
-            console.log(stringify);
-            data = JSON.parse(stringify);
-        }
-        catch (e) {
-            return;
-        }
-        if (data.agent == undefined || data.agent[0].statusCode > 0) {
-            return;
-        }
-        return data;
+    arrayBufferToObject(arrayBuffer): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let data;
+            try {
+                let stringify = String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0)));
+                console.log(stringify);
+                data = JSON.parse(stringify);
+            }
+            catch (e) {
+                reject(data);
+                return;
+            }
+            if (data.agent == undefined || data.agent[0].statusCode > 0) {
+                reject(data);
+                return;
+            }
+            for (let i = 0; i < data.agent.length; i++) {
+                if (data.agent[i].statusCode > 0) {
+                    reject(data);
+                    return;
+                }
+            }
+            resolve(data);
+        });
     }
 
 }

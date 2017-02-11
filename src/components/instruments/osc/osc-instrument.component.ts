@@ -117,96 +117,67 @@ export class OscInstrumentComponent extends InstrumentComponent {
         return Observable.create((observer) => {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (data) => {
-                    console.log('response');
-                    //Handle device errors and warnings
-                    let count = 0;
-                    let i = 0;
-                    let stringBuffer = '';
-                    while (count < 2 && i < 2000) {
-                        let char = '';
-                        char += String.fromCharCode.apply(null, new Int8Array(data.slice(i, i + 1)));
-                        if (char === '\n') {
-                            count++;
-                        }
-                        stringBuffer += char;
-                        i++;
-                    }
-                    if (i === 2000) {
-                        console.log(stringBuffer);
-                        observer.error('Osc Read Failed. Try Again');
-                        return;
-                    }
-                    let binaryIndexStringLength = stringBuffer.indexOf('\r\n');
-                    let binaryIndex = parseFloat(stringBuffer.substring(0, binaryIndexStringLength));
-                    let command;
-                    try {
-                        command = JSON.parse(stringBuffer.substring(binaryIndexStringLength + 2, binaryIndexStringLength + binaryIndex + 2));
-                    }
-                    catch (error) {
-                        console.log(error);
-                        console.log('Error parsing response from read. Printing entire response');
-                        console.log(String.fromCharCode.apply(null, new Int8Array(data.slice(0))));
-                        observer.error(error);
-                        observer.complete();
-                        return;
-                    }
-                    console.log(command);
-                    for (let channel in command.osc) {
-                        if (command.osc[channel][0].statusCode > 0) {
-                            observer.error('One or more channels still acquiring');
-                        }
-                        let binaryData;
-                        try {
-                            binaryData = new Int16Array(data.slice(binaryIndexStringLength + 2 + binaryIndex + command.osc[channel][0].binaryOffset, binaryIndexStringLength + 2 + binaryIndex + command.osc[channel][0].binaryOffset + command.osc[channel][0].binaryLength));
-                        }
-                        catch (e) {
-                            console.log(e);
-                            observer.error(e);
+                    let start = performance.now();
+                    this.commandUtilityService.observableParseChunkedTransfer(data).subscribe(
+                        (data) => {
+                            let fin1 = performance.now();
+                            console.log('outside function parse time: ' + (fin1 - start));
+                            let command = data.json;
+                            for (let channel in command.osc) {
+                                if (command.osc[channel][0].statusCode > 0) {
+                                    observer.error('One or more channels still acquiring');
+                                    return;
+                                }
+                                let binaryData = data.typedArray;
+                                let untypedArray = Array.prototype.slice.call(binaryData);
+                                let scaledArray = untypedArray.map((voltage) => {
+                                    return voltage / 1000;
+                                });
+                                let dt = 1 / (command.osc[channel][0].actualSampleFreq / 1000);
+                                let pointContainer = [];
+                                let triggerPosition = command.osc[chans[0]][0].triggerIndex * dt;
+                                if (triggerPosition < 0) {
+                                    console.log('trigger not in buffer!');
+                                    triggerPosition = -1 * command.osc[channel][0].triggerDelay / Math.pow(10, 12);
+                                }
+                                for (let i = 0; i < scaledArray.length; i++) {
+                                    pointContainer.push([i * dt - triggerPosition, scaledArray[i]]);
+                                }
+                                this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel) - 1] = new WaveformComponent({
+                                    dt: 1 / (command.osc[channel][0].actualSampleFreq / 1000),
+                                    t0: 0,
+                                    y: scaledArray,
+                                    data: pointContainer,
+                                    pointOfInterest: command.osc[channel][0].pointOfInterest,
+                                    triggerPosition: command.osc[channel][0].triggerIndex,
+                                    seriesOffset: command.osc[channel][0].actualVOffset / 1000,
+                                    triggerDelay: command.osc[channel][0].triggerDelay
+                                });
+                            }
+                            this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
+                            if (this.dataBufferFillSize < this.numDataBuffers) {
+                                this.dataBufferFillSize++;
+                                this.activeBuffer = this.dataBufferFillSize.toString();
+                            }
+                            else {
+                                this.activeBuffer = (this.numDataBuffers).toString();
+                            }
+                            let finish = performance.now();
+                            console.log('parse time: ' + (finish - start));
+                            observer.next(command);
+                            //Handle device errors and warnings
                             observer.complete();
-                        }
-                        let untypedArray = Array.prototype.slice.call(binaryData);
-                        let scaledArray = untypedArray.map((voltage) => {
-                            return voltage / 1000;
-                        });
-                        let dt = 1 / (command.osc[channel][0].actualSampleFreq / 1000);
-                        let pointContainer = [];
-                        let triggerPosition = command.osc[chans[0]][0].triggerIndex * dt;
-                        if (triggerPosition < 0) {
-                            console.log('trigger not in buffer!');
-                            triggerPosition = -1 * command.osc[channel][0].triggerDelay / Math.pow(10, 12);
-                        }
-                        for (let i = 0; i < scaledArray.length; i++) {
-                            pointContainer.push([i * dt - triggerPosition, scaledArray[i]]);
-                        }
-                        this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel) - 1] = new WaveformComponent({
-                            dt: 1 / (command.osc[channel][0].actualSampleFreq / 1000),
-                            t0: 0,
-                            y: scaledArray,
-                            data: pointContainer,
-                            pointOfInterest: command.osc[channel][0].pointOfInterest,
-                            triggerPosition: command.osc[channel][0].triggerIndex,
-                            seriesOffset: command.osc[channel][0].actualVOffset / 1000,
-                            triggerDelay: command.osc[channel][0].triggerDelay
-                        });
-                    }
-                    this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
-                    if (this.dataBufferFillSize < this.numDataBuffers) {
-                        this.dataBufferFillSize++;
-                        this.activeBuffer = this.dataBufferFillSize.toString();
-                    }
-                    else {
-                        this.activeBuffer = (this.numDataBuffers).toString();
-                    }
-                    observer.next(command);
-                    //Handle device errors and warnings
-                    observer.complete();
+                        },
+                        (err) => {
+                            observer.error(data);
+                        },
+                        () => { }
+                    );
                 },
                 (err) => {
                     observer.error(err);
                 },
-                () => {
-                    observer.complete();
-                }
+                () => { }
             )
         });
     }
