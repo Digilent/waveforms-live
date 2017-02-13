@@ -128,7 +128,8 @@ export class OscInstrumentComponent extends InstrumentComponent {
                                     observer.error('One or more channels still acquiring');
                                     return;
                                 }
-                                let binaryData = data.typedArray;
+                                let binaryOffset = command.osc[channel][0].binaryOffset / 2;
+                                let binaryData = data.typedArray.slice(binaryOffset, binaryOffset + command.osc[channel][0].binaryLength / 2);
                                 let untypedArray = Array.prototype.slice.call(binaryData);
                                 let scaledArray = untypedArray.map((voltage) => {
                                     return voltage / 1000;

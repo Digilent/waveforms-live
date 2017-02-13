@@ -110,7 +110,67 @@ export class LaInstrumentComponent extends InstrumentComponent {
         return Observable.create((observer) => {
             this.transport.writeRead('/', JSON.stringify(command), 'json').subscribe(
                 (data) => {
-                    //Handle device errors and warnings
+                    let start = performance.now();
+                    this.commandUtilityService.observableParseChunkedTransfer(data).subscribe(
+                        (data) => {
+                            let command = data.json;
+                            let channelsObject = {};
+                            let binaryData = new Int16Array(data.typedArray.slice(command.la[chans[0].toString()][0].binaryOffset, command.la[chans[0].toString()][0].binaryOffset + command.la[chans[0].toString()][0].binaryLength));
+                            let untypedArray = Array.prototype.slice.call(binaryData);
+                            let start = performance.now();
+                            for (let channel in command.la) {
+                                if (command.la[channel][0].statusCode > 0) {
+                                    observer.error(command);
+                                    return;
+                                }
+                                channelsObject[channel] = [];
+
+                                let andVal = Math.pow(2, parseInt(channel) - 1);
+                                let dt = 1 / (command.la[channel][0].actualSampleFreq / 1000);
+                                let pointContainer = [];
+                                let triggerPosition = command.la[chans[0]][0].triggerIndex * dt;
+                                if (triggerPosition < 0) {
+                                    console.log('trigger not in la buffer!');
+                                    triggerPosition = command.la[channel][0].triggerDelay;
+                                }
+                                for (let j = 0; j < untypedArray.length; j++) {
+                                    channelsObject[channel].push((andVal & untypedArray[j]) > 0 ? 1 : 0);
+                                    pointContainer.push([j * dt - triggerPosition, (andVal & untypedArray[j]) > 0 ? 1 : 0]);
+                                }
+
+                                this.dataBuffer[this.dataBufferWriteIndex][parseInt(channel) - 1] = new WaveformComponent({
+                                    dt: 1 / (command.la[channel][0].actualSampleFreq / 1000),
+                                    t0: 0,
+                                    y: channelsObject[channel],
+                                    data: pointContainer,
+                                    pointOfInterest: command.la[channel][0].pointOfInterest,
+                                    triggerPosition: command.la[channel][0].triggerIndex,
+                                    seriesOffset: 0.5
+                                });
+                                /*bufferCount++;*/
+                            }
+                            this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
+                            if (this.dataBufferFillSize < this.numDataBuffers) {
+                                this.dataBufferFillSize++;
+                                this.activeBuffer = this.dataBufferFillSize.toString();
+                            }
+                            else {
+                                this.activeBuffer = (this.numDataBuffers).toString();
+                            }
+                            let finish = performance.now();
+                            console.log('Time: ' + (finish - start));
+                            console.log(channelsObject);
+
+                            observer.next(command);
+                            //Handle device errors and warnings
+                            observer.complete();
+                        },
+                        (err) => {
+                            observer.error(data);
+                        },
+                        () => { }
+                    );
+                    /*//Handle device errors and warnings
                     let bufferCount = 0;
                     let count = 0;
                     let i = 0;
@@ -193,7 +253,7 @@ export class LaInstrumentComponent extends InstrumentComponent {
 
                     observer.next(command);
                     //Handle device errors and warnings
-                    observer.complete();
+                    observer.complete();*/
                 },
                 (err) => {
                     observer.error(err);

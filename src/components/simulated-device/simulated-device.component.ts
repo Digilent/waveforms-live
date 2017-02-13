@@ -12,6 +12,7 @@ import { SimulatedGpioComponent } from './instruments/simulated-gpio.component';
 
 //Services
 import { SimulatedDeviceService } from '../../services/simulated-device/simulated-device.service';
+import { CommandUtilityService } from '../../services/device/command-utility.service';
 
 @Injectable()
 export class SimulatedDeviceComponent {
@@ -28,9 +29,11 @@ export class SimulatedDeviceComponent {
     public trigger: SimulatedTriggerComponent;
     public gpio: SimulatedGpioComponent;
     public simDevService: SimulatedDeviceService;
+    public commandUtilityService: CommandUtilityService;
 
     constructor(enumeration) {
         this.descriptor = enumeration;
+        this.commandUtilityService = new CommandUtilityService();
         this.simDevService = new SimulatedDeviceService();
         this.simDevService.setEnumeration(this.descriptor);
         this.awg = new SimulatedAwgComponent(this.simDevService);
@@ -135,6 +138,8 @@ export class SimulatedDeviceComponent {
                 return this.trigger.single();
             case 'triggerforceTrigger':
                 return this.trigger.forceTrigger();
+            case 'triggerstop': 
+                return this.trigger.stop();
 
             //---------- OSC ----------            
             case 'oscsetParameters':
@@ -184,22 +189,15 @@ export class SimulatedDeviceComponent {
             }
 
         }
-        let stringCommand = JSON.stringify(commandObject);
-        let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
-
-        let stringSection = binaryIndex + stringCommand + '\r\n';
-        let buf = new ArrayBuffer(stringSection.length + binaryOffset);
+        let buf = new ArrayBuffer(binaryOffset);
         let bufView = new Uint8Array(buf);
-        for (let i = 0; i < stringSection.length; i++) {
-            bufView[i] = stringSection.charCodeAt(i);
-        }
         let binaryInjectorIndex = 0;
         let prevLength = 0;
         for (let instrument in binaryDataContainer) {
             for (let channel in binaryDataContainer[instrument]) {
                 let unsignedConversion = new Uint8Array(binaryDataContainer[instrument][channel].buffer);
                 binaryInjectorIndex += prevLength + unsignedConversion.length;
-                for (let i = stringSection.length + prevLength, j = 0; i < binaryInjectorIndex + stringSection.length; i = i + 2, j = j + 2) {
+                for (let i = prevLength, j = 0; i < binaryInjectorIndex; i = i + 2, j = j + 2) {
                     bufView[i] = unsignedConversion[j];
                     bufView[i + 1] = unsignedConversion[j + 1];
                 }
@@ -207,6 +205,6 @@ export class SimulatedDeviceComponent {
                 if (instrument === 'la') { break; }
             }
         }
-        return bufView.buffer;
+        return this.commandUtilityService.createChunkedArrayBuffer(commandObject, bufView.buffer).buffer;
     }
 }

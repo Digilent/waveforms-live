@@ -39,6 +39,14 @@ export class SimulatedTriggerComponent {
         };
     }
 
+    stop() {
+        return {
+            "command":"stop",
+            "statusCode": 0,
+            "wait": -1
+        }
+    }
+
     forceTrigger() {
         return {
             "command":"forceTrigger",
