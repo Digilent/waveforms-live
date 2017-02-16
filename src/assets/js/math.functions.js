@@ -128,6 +128,27 @@ var mathFunctions = (function () {
         return p2p;
     }
 
+    var getFftArray = function getFftArray(chartRef, seriesNum, minIndex, maxIndex) {
+        var series = chartRef.getData();
+        var getAxes = chartRef.getAxes();
+        var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+        var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+        var real = activeIndices.map((element) => {
+            return element[1];
+        });
+        var sampleFreq = 1 / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]);
+        var imaginary = new Array(real.length).fill(0);
+        var numSamples = real.length;
+        transformBluestein(real, imaginary);
+        var magnitudeFreqArray = [];
+        var step = sampleFreq / numSamples;
+        for (var i = 0; i < real.length / 2; i++) {
+            var magnitude = Math.sqrt(Math.pow(real[i], 2) + Math.pow(imaginary[i], 2));
+            magnitudeFreqArray.push([step * i, (magnitude / numSamples) * 2]);
+        }
+        return magnitudeFreqArray;
+    }
+
     var getFrequency = function getFrequency(chartRef, seriesNum, minIndex, maxIndex) {
         var series = chartRef.getData();
         var getAxes = chartRef.getAxes();
@@ -408,7 +429,8 @@ var mathFunctions = (function () {
         getRMS: getRMS,
         getPeakToPeak: getPeakToPeak,
         getFrequency: getFrequency,
-        getPeriod: getPeriod
+        getPeriod: getPeriod,
+        getFftArray: getFftArray
     }
 
 })()

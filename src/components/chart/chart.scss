@@ -39,6 +39,17 @@
     background-color: black;
 }
 
+.chart-component-wrapper .fft-component-container
+{
+    display: block;
+    position: absolute;
+    width: 100%;
+    background-color: black;
+    bottom: 0;
+    overflow: hidden;
+    min-height: 0.1px;
+}
+
 .chart-container-container .chart-button-container
 {
     position: absolute;
@@ -46,6 +57,7 @@
     right: 0;
     width: 25px;
     height: 90px;
+    z-index: 5;
 }
 
 .pinoutPopover .popover-content

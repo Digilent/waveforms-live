@@ -60,3 +60,14 @@ export interface CursorPositions {
     x: number,
     y: number
 }
+
+export interface DataContainer {
+    data: Array<number[]>,
+    yaxis: number,
+    lines: {
+        show: boolean
+    },
+    points: {
+        show: boolean
+    }
+}

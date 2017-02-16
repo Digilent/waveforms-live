@@ -234,6 +234,8 @@ export class TestChartCtrlsPage {
         }
         let samplingParams = this.chart1.calculateDataFromWindow();
         this.theoreticalAcqTime = 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
+        console.log(':::::TRIGGER DELAY::::::');
+        console.log(this.chart1.base);
         let triggerDelay = Math.max(Math.min(parseFloat(this.chart1.base.toString()), this.activeDevice.instruments.osc.chans[0].delayMax / Math.pow(10, 12)), this.activeDevice.instruments.osc.chans[0].delayMin / Math.pow(10, 12));
         console.log(this.theoreticalAcqTime);
         console.log(triggerDelay);

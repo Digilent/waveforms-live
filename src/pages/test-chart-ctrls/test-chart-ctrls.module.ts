@@ -4,6 +4,7 @@ import { IonicModule } from 'ionic-angular';
 
 import { TestChartCtrlsPage } from './test-chart-ctrls';
 import { SilverNeedleChart } from '../../components/chart/chart.component';
+import { DigilentChart } from '../../components/digilent-chart/digilent-chart.component';
 import { XAxisComponent } from '../../components/xaxis-controls/xaxis-controls.component';
 import { YAxisComponent } from '../../components/yaxis-controls/yaxis-controls.component';
 import { TimelineChartComponent } from '../../components/timeline-chart/timeline-chart.component';
@@ -14,13 +15,10 @@ import { DcSupplyComponent } from '../../components/dc-supply/dc-supply.componen
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
-
-import { ChartModule } from 'angular2-highcharts';
  
 @NgModule({
     imports: [
         SharedModule,
-        ChartModule,
         IonicModule.forRoot(TestChartCtrlsPage),
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),
@@ -32,6 +30,7 @@ import { ChartModule } from 'angular2-highcharts';
         ModalCursorPage,
         MathModalPage,
         SilverNeedleChart,
+        DigilentChart,
         XAxisComponent,
         YAxisComponent,
         TimelineChartComponent,

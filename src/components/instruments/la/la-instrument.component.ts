@@ -117,7 +117,6 @@ export class LaInstrumentComponent extends InstrumentComponent {
                             let channelsObject = {};
                             let binaryData = new Int16Array(data.typedArray.slice(command.la[chans[0].toString()][0].binaryOffset, command.la[chans[0].toString()][0].binaryOffset + command.la[chans[0].toString()][0].binaryLength));
                             let untypedArray = Array.prototype.slice.call(binaryData);
-                            let start = performance.now();
                             for (let channel in command.la) {
                                 if (command.la[channel][0].statusCode > 0) {
                                     observer.error(command);
@@ -147,7 +146,6 @@ export class LaInstrumentComponent extends InstrumentComponent {
                                     triggerPosition: command.la[channel][0].triggerIndex,
                                     seriesOffset: 0.5
                                 });
-                                /*bufferCount++;*/
                             }
                             this.dataBufferWriteIndex = (this.dataBufferWriteIndex + 1) % this.numDataBuffers;
                             if (this.dataBufferFillSize < this.numDataBuffers) {

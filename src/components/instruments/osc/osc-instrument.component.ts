@@ -123,6 +123,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                             let fin1 = performance.now();
                             console.log('outside function parse time: ' + (fin1 - start));
                             let command = data.json;
+                            console.log(command);
                             for (let channel in command.osc) {
                                 if (command.osc[channel][0].statusCode > 0) {
                                     observer.error('One or more channels still acquiring');
@@ -136,11 +137,14 @@ export class OscInstrumentComponent extends InstrumentComponent {
                                 });
                                 let dt = 1 / (command.osc[channel][0].actualSampleFreq / 1000);
                                 let pointContainer = [];
-                                let triggerPosition = command.osc[chans[0]][0].triggerIndex * dt;
-                                if (triggerPosition < 0) {
+                                /*let triggerPosition = command.osc[chans[0]][0].triggerIndex * dt;*/
+                                let triggerPosition = -1 * command.osc[channel][0].triggerDelay / Math.pow(10, 12) + dt * scaledArray.length / 2;
+                                /*if (triggerPosition < 0) {
                                     console.log('trigger not in buffer!');
                                     triggerPosition = -1 * command.osc[channel][0].triggerDelay / Math.pow(10, 12);
-                                }
+                                }*/
+                                console.log(':::::TRIGGER POSITION PARSED');
+                                console.log(triggerPosition);
                                 for (let i = 0; i < scaledArray.length; i++) {
                                     pointContainer.push([i * dt - triggerPosition, scaledArray[i]]);
                                 }

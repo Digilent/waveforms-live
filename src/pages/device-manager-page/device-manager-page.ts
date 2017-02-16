@@ -528,7 +528,7 @@ export class DeviceManagerPage {
                 modal.present();
             })
             .catch((e) => {
-                this.toastService.createToast('agentConnectError', true);
+                console.log(e);
             });
     }
 

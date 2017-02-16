@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, ViewChild, trigger, state, style, transition, animate } from '@angular/core';
 import { ModalController, Platform, PopoverController } from 'ionic-angular';
 import { Transfer } from 'ionic-native';
 
@@ -7,6 +7,7 @@ import { DeviceComponent } from '../device/device.component';
 import { WaveformComponent } from '../data-types/waveform';
 import { GenPopover } from '../gen-popover/gen-popover.component';
 import { PinoutPopover } from '../pinout-popover/pinout-popover.component';
+import { DigilentChart } from '../digilent-chart/digilent-chart.component';
 
 //Pages
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
@@ -14,7 +15,7 @@ import { MathModalPage } from '../../pages/math-modal/math-modal';
 //import { ChartModalPage } from '../../pages/chart-modal/chart-modal';
 
 //Interfaces
-import { Chart, CursorPositions } from './chart.interface';
+import { Chart, CursorPositions, DataContainer } from './chart.interface';
 
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
@@ -31,11 +32,20 @@ declare var cordova: any;
 
 @Component({
     selector: 'silverNeedleChart',
-    templateUrl: 'chart.html'
+    templateUrl: 'chart.html',
+    animations: [
+        trigger('expand', [
+            state('true', style({ height: '100%' })),
+            state('false', style({ height: '0%' })),
+            transition('void => *', animate('0s')),
+            transition('* <=> *', animate('250ms ease-in-out'))
+        ])
+    ]
 })
 
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
+    @ViewChild('fftChart') fftChart: DigilentChart;
     public settingsService: SettingsService;
     public tooltipService: TooltipService;
     public unitFormatPipeInstance = new UnitFormatPipe();
@@ -67,10 +77,10 @@ export class SilverNeedleChart {
     public modalCtrl: ModalController;
     public currentBufferArray: WaveformComponent[] = [];
     public oscopeChansActive: boolean[] = [];
-    public colorArray: string[] = ['orange', '#4487BA', 'ff3b99', '00c864'];
+    public colorArray: string[] = ['#FFA500', '#4487BA', '#ff3b99', '#00c864'];
     public deviceDescriptor: DeviceComponent;
     public selectedMathInfo: any = [];
-    public seriesDataContainer: any = [];
+    public seriesDataContainer: DataContainer[] = [];
     public yAxisOptionsContainer: any = [];
     public activeOscChannel: number = 1;
 
@@ -85,6 +95,8 @@ export class SilverNeedleChart {
     public seriesAnchorTouchStartRef: any;
     public previousYPos: number;
     public flotOverlayRef;
+    public showFft: boolean = false;
+    public fftChartOptions: any;
 
     constructor(
         _modalCtrl: ModalController,
@@ -115,6 +127,7 @@ export class SilverNeedleChart {
         });
         if (this.chart == undefined) {
             this.createChart();
+            this.fftChartOptions = this.getFftChartOptions();
         }
     }
 
@@ -231,6 +244,99 @@ export class SilverNeedleChart {
             this.base = wheelData.mid;
             setTimeout(() => { this.shouldShowIndividualPoints(); }, 20);
         });
+        $("#timelineContainer").bind("timelinePanEvent", (event, data) => {
+            this.base = data.mid;
+        });
+    }
+
+    getFftChartOptions() {
+        let fftChartOptions = {
+            series: {
+                lines: {
+                    show: true
+                }
+            },
+            legend: {
+                show: false
+            },
+            canvas: true,
+            grid: {
+                hoverable: true,
+                clickable: true,
+                autoHighlight: false,
+                borderWidth: 0,
+                backgroundColor: 'black',
+                labelMargin: 15,
+                margin: {
+                    top: 15,
+                    left: 10,
+                    right: 27,
+                    bottom: 10
+                }
+            },
+            colors: this.colorArray,
+            axisLabels: {
+                show: true
+            },
+            tooltip: {
+                show: true,
+                cssClass: 'flotTip',
+                content: (label, xval, yval, flotItem) => {
+                    return xval + ' (' + yval + ')';
+                },
+                onHover: (flotItem, tooltipel) => {
+                    let color = flotItem.series.color;
+                    tooltipel[0].style.borderBottomColor = color;
+                    tooltipel[0].style.borderTopColor = color;
+                    tooltipel[0].style.borderLeftColor = color;
+                    tooltipel[0].style.borderRightColor = color;
+                }
+            },
+            zoomPan: {
+                enabled: true,
+                startingIndex: 21
+            },
+            cursorMoveOnPan: true,
+            yaxes: this.generateFftYaxisOptions(),
+            xaxis: {
+                tickColor: '#666666',
+                font: {
+                    color: '#666666'
+                }
+            }
+        }
+        return fftChartOptions;
+    }
+
+    generateFftYaxisOptions() {
+        let fftYAxes: any = [];
+        for (let i = 0; i < this.deviceDescriptor.instruments.osc.numChans; i++) {
+            let color = this.colorArray[i];
+            let axisOptions = {
+                position: 'left',
+                axisLabel: 'Ch ' + (i + 1),
+                axisLabelColour: '#666666',
+                axisLabelUseCanvas: true,
+                show: i === 0,
+                tickColor: '#666666',
+                font: {
+                    color: '#666666'
+                }
+            }
+            let dataObject = {
+                data: [],
+                yaxis: i + 1,
+                lines: {
+                    show: (i === 0)
+                },
+                points: {
+                    show: false
+                },
+                color: color
+            };
+            fftYAxes.push(axisOptions);
+        }
+        return fftYAxes;
     }
 
     createChart() {
@@ -267,8 +373,10 @@ export class SilverNeedleChart {
                 show: true,
                 cssClass: 'flotTip',
                 content: (label, xval, yval, flotItem) => {
-                    let xLabel = flotItem.series.xaxis.options.tickFormatter(xval, flotItem.series.xaxis);
-                    let yLabel = flotItem.series.yaxis.options.tickFormatter(yval, flotItem.series.yaxis);
+                    let xLabel;
+                    let yLabel;
+                    xLabel = flotItem.series.xaxis.options.tickFormatter(xval, flotItem.series.xaxis);
+                    yLabel = flotItem.series.yaxis.options.tickFormatter(yval, flotItem.series.yaxis);
                     return xLabel + ' (' + yLabel + ')';
                 },
                 onHover: (flotItem, tooltipel) => {
@@ -379,6 +487,56 @@ export class SilverNeedleChart {
 
         //updateChart();
         this.onLoad(this.chart);
+    }
+
+    getFftArray(seriesNum: number, minIndex: number, maxIndex: number) {
+        return mathFunctions.getFftArray(this.chart, seriesNum, minIndex, maxIndex);
+    }
+
+    toggleFft() {
+        this.showFft = !this.showFft;
+        if (this.showFft) {
+            let dataToSet: DataContainer[] = [];
+            for (let i = 0; i < this.numSeries.length; i++) {
+                if (this.numSeries[i] < this.oscopeChansActive.length) {
+                    console.log(this.numSeries[i]);
+                    dataToSet.push({
+                        data: this.getFftArray(this.numSeries[i], 0, this.currentBufferArray[this.numSeries[i]].y.length),
+                        yaxis: this.numSeries[i] + 1,
+                        lines: {
+                            show: true
+                        },
+                        points: {
+                            show: false
+                        }
+                    });
+                }
+            }
+            this.fftChart.setData(dataToSet);
+        }
+        /*let oscSeriesToFft: number[] = [];
+        for (let i = 0; i < this.numSeries.length; i++) {
+            if (this.numSeries[i] < this.oscopeChansActive.length) {
+                oscSeriesToFft.push(this.numSeries[i]);
+                let fftStartIndex = this.deviceDescriptor.instruments.osc.numChans + this.deviceDescriptor.instruments.la.numChans;
+                this.seriesDataContainer[this.numSeries[i] + fftStartIndex].lines.show = !this.seriesDataContainer[this.numSeries[i] + fftStartIndex].lines.show;
+            }
+        }
+        this.drawFft(oscSeriesToFft);*/
+    }
+
+    drawFft(oscSeriesToDraw: number[]) {
+        /*for (let i = 0; i < oscSeriesToDraw.length; i++) {
+            let fftSeriesNum = this.deviceDescriptor.instruments.osc.numChans + this.deviceDescriptor.instruments.la.numChans + oscSeriesToDraw[i];
+            if (this.seriesDataContainer[oscSeriesToDraw[i]].lines.show && this.seriesDataContainer[fftSeriesNum]) {
+                let fftArray = this.getFftArray(0, 0, this.currentBufferArray[oscSeriesToDraw[i]].y.length);
+                this.seriesDataContainer[oscSeriesToDraw[i]].data = fftArray;
+                console.log('set data');
+            }
+        }
+        this.chart.setData(this.seriesDataContainer);
+        this.chart.draw();
+        console.log(this.chart.getData());*/
     }
 
     shouldShowIndividualPoints() {
@@ -540,6 +698,15 @@ export class SilverNeedleChart {
                 color: series[this.numSeries[i]].color,
                 seriesNum: this.numSeries[i]
             });
+        }
+    }
+
+    hexToRgb(hexVal: string): { r: number, g: number, b: number } {
+        let toInt = parseInt(hexVal, 16);
+        return {
+            r: (toInt >> 16) & 255,
+            g: (toInt >> 8) & 255,
+            b: (toInt) & 255
         }
     }
 
@@ -1555,11 +1722,12 @@ export class SilverNeedleChart {
         if (poiIndex < 0 || poiIndex === undefined) {
             return;
         }
-        let triggerPosition = this.currentBufferArray[seriesNum].triggerPosition * this.currentBufferArray[seriesNum].dt;
-        if (triggerPosition < 0) {
+        //let triggerPosition = this.currentBufferArray[seriesNum].triggerPosition * this.currentBufferArray[seriesNum].dt;
+        let triggerPosition = -1 * this.currentBufferArray[seriesNum].triggerDelay / Math.pow(10, 12) + this.currentBufferArray[seriesNum].dt * this.currentBufferArray[seriesNum].y.length / 2;
+        /*if (triggerPosition < 0) {
             console.log('trigger not in buffer!');
             triggerPosition = -1 * this.currentBufferArray[seriesNum].triggerDelay / Math.pow(10, 12);
-        }
+        }*/
         let getAxes = this.chart.getAxes();
         let poi = poiIndex * this.currentBufferArray[seriesNum].dt - (triggerPosition);
         this.base = poi;

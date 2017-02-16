@@ -197,6 +197,9 @@ var waveformsLiveDictionary = (function() {
         chartCenterOnTrigger: {
             english: 'Center View On Trigger'
         },
+        chartToggleFft: {
+            english: 'Toggle FFT View'
+        },
         sineButton: {
             english: 'Sine Wave'
         },

@@ -113,6 +113,7 @@ export class SimulatedOscComponent {
             y: typedArray,
             pointOfInterest: numSamples / 2,
             triggerIndex: numSamples / 2,
+            triggerDelay: 0,
             actualVOffset: vOffset,
             actualGain: 1
         };
@@ -154,6 +155,7 @@ export class SimulatedOscComponent {
             y: typedArray,
             pointOfInterest: numSamples / 2,
             triggerIndex: numSamples / 2,
+            triggerDelay: 0,
             actualVOffset: vOffset,
             actualGain: 1
         };
@@ -197,6 +199,7 @@ export class SimulatedOscComponent {
             y: typedArray,
             pointOfInterest: numSamples / 2,
             triggerIndex: numSamples / 2,
+            triggerDelay: 0,
             actualVOffset: vOffset,
             actualGain: 1
         };
@@ -233,6 +236,7 @@ export class SimulatedOscComponent {
             y: typedArray,
             pointOfInterest: numSamples / 2,
             triggerIndex: numSamples / 2,
+            triggerDelay: 0,
             actualVOffset: vOffset,
             actualGain: 1
         };
@@ -270,6 +274,7 @@ export class SimulatedOscComponent {
             y: typedArray,
             pointOfInterest: numSamples / 2,
             triggerIndex: numSamples / 2,
+            triggerDelay: 0,
             actualVOffset: vOffset,
             actualGain: 1
         };
@@ -301,6 +306,7 @@ export class SimulatedOscComponent {
             y: typedArray,
             pointOfInterest: numSamples / 2,
             triggerIndex: numSamples / 2,
+            triggerDelay: 0,
             actualVOffset: vOffset,
             actualGain: 1
         };
