@@ -1,4 +1,4 @@
-import { Component, Output, Input, EventEmitter, trigger, state, style, transition, animate } from '@angular/core';
+import { Component, Output, Input, EventEmitter } from '@angular/core';
 
 //Interfaces
 import { Chart, DataContainer } from '../chart/chart.interface';
@@ -10,15 +10,7 @@ declare var $: any;
 
 @Component({
     selector: 'digilent-chart',
-    templateUrl: 'digilent-chart.html',
-    animations: [
-        trigger('expand', [
-            state('true', style({ height: '100%' })),
-            state('false', style({ height: '0%' })),
-            transition('void => *', animate('0s')),
-            transition('* <=> *', animate('250ms ease-in-out'))
-        ])
-    ]
+    templateUrl: 'digilent-chart.html'
 })
 
 export class DigilentChart {
@@ -27,8 +19,8 @@ export class DigilentChart {
     @Input() flotOptions: any;
     @Input() chartType: 'standard'|'log'|'semilogX'|'semilogY';
     public unitFormatPipeInstance = new UnitFormatPipe();
-    public chart: Chart;
-    
+    public digilentChart: Chart;
+    private initialChartLoad: boolean = true;
 
     constructor() { }
 
@@ -39,34 +31,40 @@ export class DigilentChart {
             width: '100%',
             height: '100%'
         });
-        if (this.chart == undefined) {
+        if (this.digilentChart == undefined) {
             this.createChart();
         }
     }
 
     
 
-    createChart() {
-        console.log('creating digilent chart');
-        console.log('generated options');
-        console.log('chart id::::::::');
-        console.log(this.chartId);
+    createChart(data?: DataContainer[]) {
+        console.log('creating digilent chart under id: ' + this.chartId);
+        data = data == undefined ? [] : data;
         if (this.chartId == undefined || this.flotOptions == undefined) {
             setTimeout(() => {
                 this.createChart();
-            }, 20);
+            }, 200);
             return;
         }
-        this.chart = $.plot("#" + this.chartId, [], this.flotOptions);
+        this.digilentChart = $.plot("#" + this.chartId, data, this.flotOptions);
+        if (this.initialChartLoad) {
+            this.initialChartLoad = false;
+            this.chartLoad.emit();
+        }
     }
 
-    setData(dataToDraw: DataContainer[]) {
-        this.chart.setData(dataToDraw);
-        this.chart.setupGrid();
-        this.chart.draw();
+    setData(dataToDraw: DataContainer[], autoscale?: boolean) {
+        if (autoscale) {
+            this.createChart(dataToDraw);
+            return;
+        }
+        this.digilentChart.setData(dataToDraw);
+        this.digilentChart.setupGrid();
+        this.digilentChart.draw();
     }
 
-    refreshChart() {
-        this.createChart();
+    refreshChart(dataToDraw?: DataContainer[]) {
+        this.createChart(dataToDraw);
     }
 }

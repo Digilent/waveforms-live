@@ -12,6 +12,7 @@
 (function (d) { function e(a) { var b = a || window.event, c = [].slice.call(arguments, 1), f = 0, e = 0, g = 0, a = d.event.fix(b); a.type = "mousewheel"; b.wheelDelta && (f = b.wheelDelta / 120); b.detail && (f = -b.detail / 3); g = f; void 0 !== b.axis && b.axis === b.HORIZONTAL_AXIS && (g = 0, e = -1 * f); void 0 !== b.wheelDeltaY && (g = b.wheelDeltaY / 120); void 0 !== b.wheelDeltaX && (e = -1 * b.wheelDeltaX / 120); c.unshift(a, f, e, g); return (d.event.dispatch || d.event.handle).apply(this, c) } var c = ["DOMMouseScroll", "mousewheel"]; if (d.event.fixHooks) for (var h = c.length; h;)d.event.fixHooks[c[--h]] = d.event.mouseHooks; d.event.special.mousewheel = { setup: function () { if (this.addEventListener) for (var a = c.length; a;)this.addEventListener(c[--a], e, !1); else this.onmousewheel = e }, teardown: function () { if (this.removeEventListener) for (var a = c.length; a;)this.removeEventListener(c[--a], e, !1); else this.onmousewheel = null } }; d.fn.extend({ mousewheel: function (a) { return a ? this.bind("mousewheel", a) : this.trigger("mousewheel") }, unmousewheel: function (a) { return this.unbind("mousewheel", a) } }) })(jQuery);
 
 (function ($) {
+    "use strict";
     var options = {
         zoomPan: {
             enabled: false,
@@ -29,118 +30,91 @@
         }
     };
 
-    //Internal variables
-    var previousXPosition;
-    var previousYPosition;
-    var panType;
-    var wheelZoomX;
-    var multiTouchEventContainer = {
-        midPoint: null,
-        previousX1: null,
-        previousX2: null,
-        previousY1: null,
-        previousY2: null,
-        startingMultiTouch: true
-    };
-    var highlightContainer = {
-        highlighting: false,
-        start: 0
+    var ZoomPan = function (plot) {
+        this.previousXPosition = null;
+        this.previousYPosition = null;
+        this.panType = null;
+        this.wheelZoomX = null;
+        this.multiTouchEventContainer = {
+            midPoint: null,
+            previousX1: null,
+            previousX2: null,
+            previousY1: null,
+            previousY2: null,
+            startingMultiTouch: true
+        };
+        this.highlightContainer = {
+            highlighting: false,
+            start: 0
+        };
+
+        this.init(plot);
     }
 
-    //Variables exposed in options
-    var selectedYAxis;
-    var secsPerDivisionValues;
-    var voltsPerDivisionValues;
-    var startingXIndex;
-    var startingYIndexArray;
-    var updateTimelineChart;
-    var timelineChartRef;
+    ZoomPan.prototype.init = function (plot) {
+        var that = this;
 
-    function init(plot) {
+        plot.hooks.processOptions.push(function (plot, eventHolder) {
+            that.plotOptions = plot.getOptions();
 
-        /**************************************************************
-        * Process Options
-        **************************************************************/
-        plot.hooks.processOptions.push(function (plot, options) {
-            if (options.zoomPan.enabled) {
-                console.log('zoom pan plugin enabled');
-
-                //Read values. Options will be default defined above unless specified in options
-                selectedYAxis = options.zoomPan.selectedYAxis;
-                secsPerDivisionValues = options.zoomPan.secsPerDivisionValues;
-                voltsPerDivisionValues = options.zoomPan.voltsPerDivisionValues;
-                startingXIndex = options.zoomPan.startingXIndex;
-                startingYIndexArray = options.zoomPan.startingYIndexArray;
-                updateTimelineChart = options.zoomPan.updateTimelineChart;
-                timelineChartRef = options.zoomPan.timelineChartRef;
-
-                //Setup Chart
-                setupChart(plot);
+            if (that.plotOptions.zoomPan.enabled === false || that.plotOptions.zoomPan.enabled == undefined) {
+                return;
             }
-        });
 
-        /**************************************************************
-        * Sets Up Plugin
-        **************************************************************/
-        function setupChart(plot) {
-
-            /**************************************************************
-            * User Accessible Functions
-            **************************************************************/
             plot.getActiveXIndex = function getActiveXIndex() {
-                return startingXIndex;
+                return that.plotOptions.zoomPan.startingXIndex;
             }
 
             plot.setActiveXIndex = function setActiveXIndex(index) {
-                startingXIndex = index;
+                that.plotOptions.zoomPan.startingXIndex = index;
             }
 
             plot.getActiveYIndices = function getActiveYIndices() {
-                return startingYIndexArray;
+                return that.plotOptions.zoomPan.startingYIndexArray;
             }
 
             plot.setActiveYIndices = function setActiveYIndexArray(indexArray) {
-                startingYIndexArray = indexArray;
+                that.plotOptions.zoomPan.startingYIndexArray = indexArray;
             }
 
             plot.getActiveYAxis = function getActiveYAxis() {
-                return selectedYAxis;
+                return that.plotOptions.zoomPan.selectedYAxis;
             }
 
             plot.setActiveYAxis = function setActiveYAxis(activeYAxisNumber) {
-                selectedYAxis = activeYAxisNumber;
+                that.plotOptions.zoomPan.selectedYAxis = activeYAxisNumber;
             }
 
             plot.getSecsPerDivArray = function getSecsPerDivArray() {
-                return secsPerDivisionValues;
+                return that.plotOptions.zoomPan.secsPerDivisionValues;
             }
 
             plot.setSecsPerDivArray = function setSecsPerDivArray(secsPerDivArray) {
-                secsPerDivisionValues = secsPerDivArray;
+                that.plotOptions.zoomPan.secsPerDivisionValues = secsPerDivArray;
             }
 
             plot.getVoltsPerDivArray = function getVoltsPerDivArray() {
-                return voltsPerDivisionValues;
+                return that.plotOptions.zoomPan.voltsPerDivisionValues;
             }
 
             plot.setVoltsPerDivArray = function setVoltsPerDivArray(voltsPerDivArray) {
-                voltsPerDivisionValues = voltsPerDivArray;
+                that.plotOptions.zoomPan.voltsPerDivisionValues = voltsPerDivArray;
             }
 
             plot.getTimelineRef = function getTimelineRef() {
-                return timelineChartRef;
+                return that.plotOptions.zoomPan.timelineChartRef;
             }
 
             plot.setTimelineRef = function setTimelineRef(timelineRef) {
-                timelineChartRef = timelineRef;
+                that.plotOptions.zoomPan.timelineChartRef = timelineRef;
             }
 
             plot.getTimelineUpdate = function getTimelineUpdate() {
-                return updateTimelineChart;
+                return that.plotOptions.zoomPan.updateTimelineChart;
             }
 
             plot.setTimelineUpdate = function setTimelineUpdate(update) {
-                updateTimelineChart = update;
+                that.plotOptions.zoomPan.updateTimelineChart = update;
             }
 
             plot.unbindMoveEvents = function unbindMoveEvents() {
@@ -159,20 +133,20 @@
                     var offsets = plot.offset();
                     plot.getPlaceholder().append('<div id="plot-highlight-div"></div>').bind('mousemove', middleMouseMove);
                     $('#plot-highlight-div').bind('mouseup', chartMouseUp);
-                    highlightContainer.highlighting = true;
-                    highlightContainer.start = e.clientX;
+                    that.highlightContainer.highlighting = true;
+                    that.highlightContainer.start = e.clientX;
                     return;
                 }
 
-                previousXPosition = e.clientX;
-                previousYPosition = e.clientY;
+                that.previousXPosition = e.clientX;
+                that.previousYPosition = e.clientY;
 
                 if (e.shiftKey) {
-                    panType = 'vertical';
+                    that.panType = 'vertical';
                     plot.getPlaceholder().bind('mousemove', vertPanChart);
                 }
                 else {
-                    panType = 'horizontal';
+                    that.panType = 'horizontal';
                     plot.getPlaceholder().bind('mousemove', horPanChart);
                 }
             }
@@ -185,8 +159,8 @@
                     "position": "absolute",
                     "top": margins.top.toString() + 'px',
                     "bottom": (plot.getPlaceholder().height() - margins.top - plot.height()).toString() + 'px',
-                    "left": (highlightContainer.start < e.clientX ? highlightContainer.start : e.clientX).toString() + 'px',
-                    "width": (Math.abs(e.clientX - highlightContainer.start)).toString() + 'px',
+                    "left": (that.highlightContainer.start < e.clientX ? that.highlightContainer.start : e.clientX).toString() + 'px',
+                    "width": (Math.abs(e.clientX - that.highlightContainer.start)).toString() + 'px',
                     "backgroundColor": 'rgba(182, 191, 190, 0.3)'
                 });
             }
@@ -194,12 +168,12 @@
             function touchDown(e) {
                 //Use e.originalEvent since jquery does stuff to the event object.
                 if (e.originalEvent.touches.length === 1) {
-                    previousXPosition = e.originalEvent.touches[0].clientX;
-                    previousYPosition = e.originalEvent.touches[0].clientY;
+                    that.previousXPosition = e.originalEvent.touches[0].clientX;
+                    that.previousYPosition = e.originalEvent.touches[0].clientY;
                     plot.getPlaceholder().bind('touchmove', touchMove);
                 }
                 else if (e.originalEvent.touches.length > 1) {
-                    multiTouchEventContainer.startingMultiTouch = true;
+                    that.multiTouchEventContainer.startingMultiTouch = true;
                 }
             }
 
@@ -214,20 +188,20 @@
                 var getAxes = plot.getAxes();
                 var offsets = plot.offset();
 
-                if (multiTouchEventContainer.startingMultiTouch) {
+                if (that.multiTouchEventContainer.startingMultiTouch) {
                     //new multitouch event. Setup event container and exit.
-                    multiTouchEventContainer.startingMultiTouch = false;
-                    multiTouchEventContainer.previousX1 = positionX1;
-                    multiTouchEventContainer.previousY1 = positionY1;
-                    multiTouchEventContainer.previousX2 = positionX2;
-                    multiTouchEventContainer.previousY2 = positionY2;
-                    multiTouchEventContainer.midPoint = midPoint;
+                    that.multiTouchEventContainer.startingMultiTouch = false;
+                    that.multiTouchEventContainer.previousX1 = positionX1;
+                    that.multiTouchEventContainer.previousY1 = positionY1;
+                    that.multiTouchEventContainer.previousX2 = positionX2;
+                    that.multiTouchEventContainer.previousY2 = positionY2;
+                    that.multiTouchEventContainer.midPoint = midPoint;
                     return;
                 }
                 else {
                     var plotWidth = plot.width();
-                    var oldUnitLeft = getAxes.xaxis.c2p(multiTouchEventContainer.previousX1 - offsets.left);
-                    var oldUnitRight = getAxes.xaxis.c2p(multiTouchEventContainer.previousX2 - offsets.left)
+                    var oldUnitLeft = getAxes.xaxis.c2p(that.multiTouchEventContainer.previousX1 - offsets.left);
+                    var oldUnitRight = getAxes.xaxis.c2p(that.multiTouchEventContainer.previousX2 - offsets.left)
                     var oldUnitValDif = Math.abs(oldUnitLeft - oldUnitRight);
                     var newUnitPerPix = oldUnitValDif / Math.abs(positionX1 - positionX2);
                     var max = oldUnitRight + newUnitPerPix * (plotWidth - (positionX2 - offsets.left));
@@ -251,22 +225,22 @@
                     axis: 'xaxis'
                 };
                 plot.getPlaceholder().trigger('panEvent', [infoContainer]);
-                if (updateTimelineChart && timelineChartRef != null) {
-                    timelineChartRef.updateTimelineCurtains(infoContainer)
+                if (that.plotOptions.zoomPan.updateTimelineChart && that.plotOptions.zoomPan.timelineChartRef != null) {
+                    that.plotOptions.zoomPan.timelineChartRef.updateTimelineCurtains(infoContainer);
                 }
 
-                multiTouchEventContainer.previousX1 = positionX1;
-                multiTouchEventContainer.previousY1 = positionY1;
-                multiTouchEventContainer.previousX2 = positionX2;
-                multiTouchEventContainer.previousY2 = positionY2;
-                multiTouchEventContainer.midPoint = midPoint;
+                that.multiTouchEventContainer.previousX1 = positionX1;
+                that.multiTouchEventContainer.previousY1 = positionY1;
+                that.multiTouchEventContainer.previousX2 = positionX2;
+                that.multiTouchEventContainer.previousY2 = positionY2;
+                that.multiTouchEventContainer.midPoint = midPoint;
             }
 
             function singleTouch(e) {
                 var getAxes = plot.getAxes();
                 var offsets = plot.offset();
                 var newVal = getAxes.xaxis.c2p(e.originalEvent.touches[0].clientX - offsets.left);
-                var oldValinNewWindow = getAxes.xaxis.c2p(previousXPosition - offsets.left)
+                var oldValinNewWindow = getAxes.xaxis.c2p(that.previousXPosition - offsets.left)
                 var difference = newVal - oldValinNewWindow;
                 var base = (getAxes.xaxis.max + getAxes.xaxis.min) / 2;
                 var timePerDivision = (getAxes.xaxis.max - getAxes.xaxis.min) / 10;
@@ -291,10 +265,10 @@
                     axis: 'xaxis'
                 };
                 plot.getPlaceholder().trigger('panEvent', [infoContainer]);
-                if (updateTimelineChart && timelineChartRef != null) {
-                    timelineChartRef.updateTimelineCurtains(infoContainer)
+                if (that.plotOptions.zoomPan.updateTimelineChart && that.plotOptions.zoomPan.timelineChartRef != undefined) {
+                    that.plotOptions.zoomPan.timelineChartRef.updateTimelineCurtains(infoContainer)
                 }
-                previousXPosition = e.originalEvent.touches[0].clientX;
+                that.previousXPosition = e.originalEvent.touches[0].clientX;
             }
 
             function touchMove(e) {
@@ -303,7 +277,7 @@
                     multiTouch(e);
                 }
                 else {
-                    multiTouchEventContainer.startingMultiTouch = true;
+                    that.multiTouchEventContainer.startingMultiTouch = true;
                     singleTouch(e);
                 }
             }
@@ -315,43 +289,43 @@
                 var xaxis = plot.getAxes().xaxis;
                 var timePerDiv = (xaxis.max - xaxis.min) / 10;
                 var count = 0;
-                while (secsPerDivisionValues[count] < timePerDiv && count < secsPerDivisionValues.length) {
+                while (that.plotOptions.zoomPan.secsPerDivisionValues[count] < timePerDiv && count < that.plotOptions.zoomPan.secsPerDivisionValues.length) {
                     count++;
                 }
-                startingXIndex = count;
+                that.plotOptions.zoomPan.startingXIndex = count;
                 var infoContainer = {
                     min: xaxis.min,
                     max: xaxis.max,
                     mid: (xaxis.max + xaxis.min) / 2,
                     perDivVal: timePerDiv,
-                    perDivArrayIndex: startingXIndex,
+                    perDivArrayIndex: that.plotOptions.zoomPan.startingXIndex,
                     axisNum: 1,
                     axis: 'xaxis'
                 };
                 plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
-                if (e.originalEvent.touches.length > 0) { previousXPosition = e.originalEvent.touches[0].clientX; }
-                multiTouchEventContainer.startingMultiTouch = true;
+                if (e.originalEvent.touches.length > 0) { that.previousXPosition = e.originalEvent.touches[0].clientX; }
+                that.multiTouchEventContainer.startingMultiTouch = true;
             }
 
             function chartMouseUp(e) {
-                if (panType === 'vertical') {
-                    panType = null;
+                if (that.panType === 'vertical') {
+                    that.panType = null;
                     plot.getPlaceholder().unbind('mousemove', vertPanChart);
                 }
-                else if (panType === 'horizontal') {
-                    panType = null;
+                else if (that.panType === 'horizontal') {
+                    that.panType = null;
                     plot.getPlaceholder().unbind('mousemove', horPanChart);
                 }
-                else if (highlightContainer.highlighting) {
+                else if (that.highlightContainer.highlighting) {
                     if (e.type === 'mouseout' && e.clientX < plot.width() && e.clientX > 0) {
                         //Do this because the mouse can go over the highlight div and cause a mouseout event
                         middleMouseMove(e);
                         return;
                     }
                     plot.getPlaceholder().unbind('mousemove', middleMouseMove);
-                    highlightContainer.highlighting = false;
+                    that.highlightContainer.highlighting = false;
                     $('#plot-highlight-div').remove();
-                    zoomOnMiddleMouseSelection(highlightContainer.start, e.clientX);
+                    zoomOnMiddleMouseSelection(that.highlightContainer.start, e.clientX);
                 }
             }
 
@@ -371,46 +345,46 @@
                 plot.draw();
                 var timePerDiv = (xaxis.max - xaxis.min) / 10;
                 var count = 0;
-                while (secsPerDivisionValues[count] < timePerDiv && count < secsPerDivisionValues.length) {
+                while (that.plotOptions.zoomPan.secsPerDivisionValues[count] < timePerDiv && count < that.plotOptions.zoomPan.secsPerDivisionValues.length) {
                     count++;
                 }
-                startingXIndex = count;
+                that.plotOptions.zoomPan.startingXIndex = count;
                 var infoContainer = {
                     min: xaxis.min,
                     max: xaxis.max,
                     mid: (xaxis.max + xaxis.min) / 2,
                     perDivVal: timePerDiv,
-                    perDivArrayIndex: startingXIndex,
+                    perDivArrayIndex: that.plotOptions.zoomPan.startingXIndex,
                     axisNum: 1,
                     axis: 'xaxis'
                 };
                 plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
-                if (updateTimelineChart && timelineChartRef != null) {
-                    timelineChartRef.setActiveXIndex(startingXIndex);
-                    timelineChartRef.updateTimelineCurtains(infoContainer);
+                if (that.plotOptions.zoomPan.updateTimelineChart && that.plotOptions.zoomPan.timelineChartRef != undefined) {
+                    that.plotOptions.zoomPan.timelineChartRef.setActiveXIndex(that.plotOptions.zoomPan.startingXIndex);
+                    that.plotOptions.zoomPan.timelineChartRef.updateTimelineCurtains(infoContainer);
                 }
             }
 
             function mouseWheel(e, delta) {
                 e.preventDefault();
-                wheelZoomX = !e.shiftKey;
-                if (wheelZoomX) {
-                    if (delta < 0 && startingXIndex < secsPerDivisionValues.length - 1) {
-                        startingXIndex++;
+                that.wheelZoomX = !e.shiftKey;
+                if (that.wheelZoomX) {
+                    if (delta < 0 && that.plotOptions.zoomPan.startingXIndex < that.plotOptions.zoomPan.secsPerDivisionValues.length - 1) {
+                        that.plotOptions.zoomPan.startingXIndex++;
                         mouseWheelRedraw(e);
                     }
-                    else if (delta > 0 && startingXIndex > 0) {
-                        startingXIndex--;
+                    else if (delta > 0 && that.plotOptions.zoomPan.startingXIndex > 0) {
+                        that.plotOptions.zoomPan.startingXIndex--;
                         mouseWheelRedraw(e);
                     }
                 }
                 else {
-                    if (delta < 0 && startingYIndexArray[selectedYAxis - 1] < voltsPerDivisionValues.length - 1) {
+                    if (delta < 0 && that.plotOptions.zoomPan.startingYIndexArray[selectedYAxis - 1] < that.plotOptions.zoomPan.voltsPerDivisionValues.length - 1) {
                         startingYIndexArray[selectedYAxis - 1]++;
                         mouseWheelRedraw(e);
                     }
-                    else if (delta > 0 && startingYIndexArray[selectedYAxis - 1] > 0) {
-                        startingYIndexArray[selectedYAxis - 1]--;
+                    else if (delta > 0 && that.plotOptions.zoomPan.startingYIndexArray[selectedYAxis - 1] > 0) {
+                        that.plotOptions.zoomPan.startingYIndexArray[selectedYAxis - 1]--;
                         mouseWheelRedraw(e);
                     }
                 }
@@ -419,14 +393,14 @@
             function mouseWheelRedraw(e) {
                 var getAxes = plot.getAxes();
                 var infoContainer;
-                if (wheelZoomX) {
+                if (that.wheelZoomX) {
                     if (e.ctrlKey) {
                         var offsets = plot.offset();
-                        var newValPerPix = (secsPerDivisionValues[startingXIndex] * 10) / plot.width();
+                        var newValPerPix = (that.plotOptions.zoomPan.secsPerDivisionValues[that.plotOptions.zoomPan.startingXIndex] * 10) / plot.width();
                         var mousePix = e.clientX - offsets.left;
                         var mouseVal = getAxes.xaxis.c2p(mousePix);
                         var min = mouseVal - newValPerPix * mousePix;
-                        var max = min + 10 * secsPerDivisionValues[startingXIndex];
+                        var max = min + 10 * that.plotOptions.zoomPan.secsPerDivisionValues[that.plotOptions.zoomPan.startingXIndex];
                         getAxes.xaxis.options.min = min;
                         getAxes.xaxis.options.max = max;
                         var newMidPoint = (max + min) / 2
@@ -434,16 +408,16 @@
                             min: min,
                             max: max,
                             mid: newMidPoint,
-                            perDivVal: secsPerDivisionValues[startingXIndex],
-                            perDivArrayIndex: startingXIndex,
+                            perDivVal: that.plotOptions.zoomPan.secsPerDivisionValues[that.plotOptions.zoomPan.startingXIndex],
+                            perDivArrayIndex: that.plotOptions.zoomPan.startingXIndex,
                             axisNum: 1,
                             axis: 'xaxis'
                         };
                     }
                     else {
                         var base = (getAxes.xaxis.min + getAxes.xaxis.max) / 2;
-                        var min = base - 5 * secsPerDivisionValues[startingXIndex];
-                        var max = base + 5 * secsPerDivisionValues[startingXIndex];
+                        var min = base - 5 * that.plotOptions.zoomPan.secsPerDivisionValues[that.plotOptions.zoomPan.startingXIndex];
+                        var max = base + 5 * that.plotOptions.zoomPan.secsPerDivisionValues[that.plotOptions.zoomPan.startingXIndex];
                         getAxes.xaxis.options.min = min;
                         getAxes.xaxis.options.max = max;
                         var newMidPoint = (max + min) / 2
@@ -451,8 +425,8 @@
                             min: min,
                             max: max,
                             mid: newMidPoint,
-                            perDivVal: secsPerDivisionValues[startingXIndex],
-                            perDivArrayIndex: startingXIndex,
+                            perDivVal: that.plotOptions.zoomPan.secsPerDivisionValues[that.plotOptions.zoomPan.startingXIndex],
+                            perDivArrayIndex: that.plotOptions.zoomPan.startingXIndex,
                             axisNum: 1,
                             axis: 'xaxis'
                         };
@@ -460,19 +434,19 @@
                     plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
                 }
                 else {
-                    var yaxisIndexer = 'y' + (selectedYAxis === 1 ? '' : selectedYAxis.toString()) + 'axis';
+                    var yaxisIndexer = 'y' + (that.plotOptions.zoomPan.selectedYAxis === 1 ? '' : that.plotOptions.zoomPan.selectedYAxis.toString()) + 'axis';
                     var base = (getAxes[yaxisIndexer].max + getAxes[yaxisIndexer].min) / 2;
-                    var min = base - voltsPerDivisionValues[startingYIndexArray[selectedYAxis - 1]] * 5;
-                    var max = base + voltsPerDivisionValues[startingYIndexArray[selectedYAxis - 1]] * 5;
+                    var min = base - that.plotOptions.zoomPan.voltsPerDivisionValues[that.plotOptions.zoomPan.startingYIndexArray[that.plotOptions.zoomPan.selectedYAxis - 1]] * 5;
+                    var max = base + that.plotOptions.zoomPan.voltsPerDivisionValues[that.plotOptions.zoomPan.startingYIndexArray[that.plotOptions.zoomPan.selectedYAxis - 1]] * 5;
                     getAxes[yaxisIndexer].options.min = min;
                     getAxes[yaxisIndexer].options.max = max;
                     infoContainer = {
                         min: min,
                         max: max,
                         mid: base,
-                        perDivVal: voltsPerDivisionValues[startingYIndexArray[selectedYAxis - 1]],
-                        perDivArrayIndex: startingYIndexArray[selectedYAxis - 1],
-                        axisNum: selectedYAxis,
+                        perDivVal: that.plotOptions.zoomPan.voltsPerDivisionValues[that.plotOptions.zoomPan.startingYIndexArray[that.plotOptions.zoomPan.selectedYAxis - 1]],
+                        perDivArrayIndex: that.plotOptions.zoomPan.startingYIndexArray[that.plotOptions.zoomPan.selectedYAxis - 1],
+                        axisNum: that.plotOptions.zoomPan.selectedYAxis,
                         axis: yaxisIndexer
                     };
                     plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
@@ -481,17 +455,17 @@
                 plot.setupGrid();
                 plot.draw();
 
-                if (updateTimelineChart && timelineChartRef != null) {
-                    timelineChartRef.setActiveXIndex(startingXIndex);
-                    timelineChartRef.updateTimelineCurtains(infoContainer);
+                if (that.plotOptions.zoomPan.updateTimelineChart && that.plotOptions.zoomPan.timelineChartRef != undefined) {
+                    that.plotOptions.zoomPan.timelineChartRef.setActiveXIndex(that.plotOptions.zoomPan.startingXIndex);
+                    that.plotOptions.zoomPan.timelineChartRef.updateTimelineCurtains(infoContainer);
                 }
             }
 
             function vertPanChart(e) {
-                var yaxisIndexer = 'y' + (selectedYAxis === 1 ? '' : selectedYAxis.toString()) + 'axis';
+                var yaxisIndexer = 'y' + (that.plotOptions.zoomPan.selectedYAxis === 1 ? '' : that.plotOptions.zoomPan.selectedYAxis.toString()) + 'axis';
                 var getAxes = plot.getAxes();
                 var newVal = getAxes[yaxisIndexer].c2p(e.clientY);
-                var oldValinNewWindow = getAxes[yaxisIndexer].c2p(previousYPosition);
+                var oldValinNewWindow = getAxes[yaxisIndexer].c2p(that.previousYPosition);
                 var difference = newVal - oldValinNewWindow;
                 var base = (getAxes[yaxisIndexer].max + getAxes[yaxisIndexer].min) / 2;
                 var voltsPerDivision = (getAxes[yaxisIndexer].max - getAxes[yaxisIndexer].min) / 10;
@@ -502,7 +476,7 @@
                 getAxes[yaxisIndexer].options.max = max;
                 plot.setupGrid();
                 plot.draw();
-                previousYPosition = e.clientY;
+                that.previousYPosition = e.clientY;
                 plot.getPlaceholder().trigger('panEvent', [
                     {
                         x: e.clientX,
@@ -510,7 +484,7 @@
                         min: min,
                         max: max,
                         mid: newPos,
-                        axisNum: selectedYAxis,
+                        axisNum: that.plotOptions.zoomPan.selectedYAxis,
                         axis: yaxisIndexer
                     }
                 ]);
@@ -519,7 +493,7 @@
             function horPanChart(e) {
                 var getAxes = plot.getAxes();
                 var newVal = getAxes.xaxis.c2p(e.clientX);
-                var oldValinNewWindow = getAxes.xaxis.c2p(previousXPosition);
+                var oldValinNewWindow = getAxes.xaxis.c2p(that.previousXPosition);
                 var difference = newVal - oldValinNewWindow;
                 var base = (getAxes.xaxis.max + getAxes.xaxis.min) / 2;
                 var timePerDivision = (getAxes.xaxis.max - getAxes.xaxis.min) / 10;
@@ -540,11 +514,13 @@
                     axis: 'xaxis'
                 };
                 plot.getPlaceholder().trigger('panEvent', [infoContainer]);
-                if (updateTimelineChart && timelineChartRef != null) {
-                    timelineChartRef.updateTimelineCurtains(infoContainer)
+                if (that.plotOptions.zoomPan.updateTimelineChart && that.plotOptions.zoomPan.timelineChartRef != undefined) {
+                    that.plotOptions.zoomPan.timelineChartRef.updateTimelineCurtains(infoContainer)
                 }
-                previousXPosition = e.clientX;
+                that.previousXPosition = e.clientX;
             }
+
+
 
             /**************************************************************
             * Bind Events
@@ -571,12 +547,20 @@
                 eventHolder.unbind('panEvent');
                 eventHolder.unbind('mouseWheelRedraw');
             });
-        }
+            
+        });
+
+
     }
+
+    var init = function (plot) {
+        new ZoomPan(plot);
+    };
+
     $.plot.plugins.push({
         init: init,
         options: options,
         name: 'zoomPan',
-        version: '0.1'
+        version: '0.2'
     });
 })(jQuery);

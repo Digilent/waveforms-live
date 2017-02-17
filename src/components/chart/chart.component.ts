@@ -193,7 +193,8 @@ export class SilverNeedleChart {
     }
 
     createTimelineChart(dataObjectArray: any) {
-        if (this.timelineChart !== null) { return; }
+        console.log('creating timeline chart');
+        if (this.timelineChart != undefined) { return; }
 
         let chartRef = this.chart;
         this.timelineChart = $.plot("#timelineContainer", dataObjectArray, {
@@ -282,7 +283,7 @@ export class SilverNeedleChart {
                 show: true,
                 cssClass: 'flotTip',
                 content: (label, xval, yval, flotItem) => {
-                    return xval + ' (' + yval + ')';
+                    return (this.unitFormatPipeInstance.transform(xval, 'Hz') + ' (' + this.unitFormatPipeInstance.transform(yval, 'V') + ')');
                 },
                 onHover: (flotItem, tooltipel) => {
                     let color = flotItem.series.color;
@@ -300,6 +301,7 @@ export class SilverNeedleChart {
             yaxes: this.generateFftYaxisOptions(),
             xaxis: {
                 tickColor: '#666666',
+                tickFormatter: ((val, axis) => {return val.toString() + ' Hz'}),
                 font: {
                     color: '#666666'
                 }
@@ -319,21 +321,11 @@ export class SilverNeedleChart {
                 axisLabelUseCanvas: true,
                 show: i === 0,
                 tickColor: '#666666',
+                tickFormatter: this.yTickFormatter,
                 font: {
                     color: '#666666'
                 }
             }
-            let dataObject = {
-                data: [],
-                yaxis: i + 1,
-                lines: {
-                    show: (i === 0)
-                },
-                points: {
-                    show: false
-                },
-                color: color
-            };
             fftYAxes.push(axisOptions);
         }
         return fftYAxes;
@@ -406,6 +398,7 @@ export class SilverNeedleChart {
         });
 
         this.chart.setVoltsPerDivArray(this.voltsPerDivVals);
+        this.chart.setSecsPerDivArray(this.secsPerDivVals);
 
         this.chart.hooks.drawOverlay.push(this.seriesAnchorsHandler.bind(this));
 
@@ -496,6 +489,13 @@ export class SilverNeedleChart {
     toggleFft() {
         this.showFft = !this.showFft;
         if (this.showFft) {
+            this.drawFft(true);
+        }
+    }
+
+    drawFft(autoscale?: boolean) {
+        if (this.showFft) {
+            autoscale = autoscale == undefined ? false : autoscale;
             let dataToSet: DataContainer[] = [];
             for (let i = 0; i < this.numSeries.length; i++) {
                 if (this.numSeries[i] < this.oscopeChansActive.length) {
@@ -512,31 +512,8 @@ export class SilverNeedleChart {
                     });
                 }
             }
-            this.fftChart.setData(dataToSet);
+            this.fftChart.setData(dataToSet, autoscale);
         }
-        /*let oscSeriesToFft: number[] = [];
-        for (let i = 0; i < this.numSeries.length; i++) {
-            if (this.numSeries[i] < this.oscopeChansActive.length) {
-                oscSeriesToFft.push(this.numSeries[i]);
-                let fftStartIndex = this.deviceDescriptor.instruments.osc.numChans + this.deviceDescriptor.instruments.la.numChans;
-                this.seriesDataContainer[this.numSeries[i] + fftStartIndex].lines.show = !this.seriesDataContainer[this.numSeries[i] + fftStartIndex].lines.show;
-            }
-        }
-        this.drawFft(oscSeriesToFft);*/
-    }
-
-    drawFft(oscSeriesToDraw: number[]) {
-        /*for (let i = 0; i < oscSeriesToDraw.length; i++) {
-            let fftSeriesNum = this.deviceDescriptor.instruments.osc.numChans + this.deviceDescriptor.instruments.la.numChans + oscSeriesToDraw[i];
-            if (this.seriesDataContainer[oscSeriesToDraw[i]].lines.show && this.seriesDataContainer[fftSeriesNum]) {
-                let fftArray = this.getFftArray(0, 0, this.currentBufferArray[oscSeriesToDraw[i]].y.length);
-                this.seriesDataContainer[oscSeriesToDraw[i]].data = fftArray;
-                console.log('set data');
-            }
-        }
-        this.chart.setData(this.seriesDataContainer);
-        this.chart.draw();
-        console.log(this.chart.getData());*/
     }
 
     shouldShowIndividualPoints() {
@@ -1034,6 +1011,10 @@ export class SilverNeedleChart {
 
         this.drawSeriesAnchors();
         this.shouldShowIndividualPoints();
+        
+        if (this.showFft) {
+            this.drawFft(true);
+        }
     }
 
     //Remove extra series and axes from the chart

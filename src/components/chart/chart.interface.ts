@@ -69,5 +69,6 @@ export interface DataContainer {
     },
     points: {
         show: boolean
-    }
+    },
+    color?: string
 }

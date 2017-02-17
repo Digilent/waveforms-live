@@ -52,6 +52,7 @@ export class DeviceConfigureModal {
         ipAddress: ''
     }
     public deviceArrayIndex: number;
+    public currentCalibration: string = '';
 
     constructor(
         _platform: Platform,
@@ -109,6 +110,7 @@ export class DeviceConfigureModal {
             else {
                 if (this.deviceObject.ipAddress === 'local') {
                     this.deviceConfigure = true;
+                    this.currentCalibration = 'USER';
                     return;
                 }
                 this.deviceManagerService.connect(this.deviceObject.ipAddress).subscribe(
@@ -116,7 +118,13 @@ export class DeviceConfigureModal {
                         console.log(data);
                         if (data.device && data.device[0].statusCode === 0) {
                             this.deviceConfigure = true;
-                            this.getNicStatus('wlan0');
+                            this.getNicStatus('wlan0')
+                                .then(() => {
+                                    this.getCurrentCalibration();
+                                })
+                                .catch((e) => {
+                                    this.getCurrentCalibration();
+                                });
                         }
                     },
                     (err) => {
@@ -150,6 +158,27 @@ export class DeviceConfigureModal {
                 () => { }
             );
 
+        });
+    }
+
+    getCurrentCalibration(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationRead().subscribe(
+                (data) => {
+                    console.log(data);
+                    let calibrationObjectString = JSON.stringify(data.device[0].calibrationData);
+                    if (calibrationObjectString.indexOf('USER') !== -1) {
+                        this.currentCalibration = 'USER';
+                    }
+                    else {
+                        this.currentCalibration = 'FACTORY';
+                    }
+                },
+                (err) => {
+                    reject(err);
+                },
+                () => { }
+            );
         });
     }
 

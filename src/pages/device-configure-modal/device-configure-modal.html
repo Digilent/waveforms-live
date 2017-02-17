@@ -71,7 +71,7 @@
                     <ion-item-divider class="list-header">Calibration</ion-item-divider>
                     <ion-item class="configure-item">
                         <ion-label fixed>Current Calibration</ion-label>
-                        <div item-right class="item-content-right">USER</div>
+                        <div item-right class="item-content-right">{{currentCalibration}}</div>
                     </ion-item>
                     <ion-item class="configure-item" *ngIf="deviceObject.ipAddress !== 'local'">
                         <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCalibrateWizard()">Calibrate</button>
