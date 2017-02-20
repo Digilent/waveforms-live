@@ -48,6 +48,7 @@ export class DigilentChart {
             return;
         }
         this.digilentChart = $.plot("#" + this.chartId, data, this.flotOptions);
+        this.setNearestPresetSecPerDivVal();
         if (this.initialChartLoad) {
             this.initialChartLoad = false;
             this.chartLoad.emit();
@@ -62,9 +63,22 @@ export class DigilentChart {
         this.digilentChart.setData(dataToDraw);
         this.digilentChart.setupGrid();
         this.digilentChart.draw();
+        this.setNearestPresetSecPerDivVal();
     }
 
     refreshChart(dataToDraw?: DataContainer[]) {
         this.createChart(dataToDraw);
+        this.setNearestPresetSecPerDivVal();
+    }
+
+    setNearestPresetSecPerDivVal() {
+        let getAxes = this.digilentChart.getAxes();
+        let newSecPerDivVal = (getAxes.xaxis.max - getAxes.xaxis.min) / 10;
+        let secsPerDivArray = this.digilentChart.getSecsPerDivArray();
+        let count = 0;
+        while (secsPerDivArray[count] < newSecPerDivVal && count < secsPerDivArray.length) {
+            count++;
+        }
+        this.digilentChart.setActiveXIndex(count);
     }
 }

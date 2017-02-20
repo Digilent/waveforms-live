@@ -295,13 +295,13 @@ export class SilverNeedleChart {
             },
             zoomPan: {
                 enabled: true,
-                startingIndex: 21
+                secsPerDivisionValues: this.generateNiceNumArray(1, 500000)
             },
             cursorMoveOnPan: true,
             yaxes: this.generateFftYaxisOptions(),
             xaxis: {
                 tickColor: '#666666',
-                tickFormatter: ((val, axis) => {return val.toString() + ' Hz'}),
+                tickFormatter: ((val, axis) => {return this.unitFormatPipeInstance.transform(val, 'Hz')}),
                 font: {
                     color: '#666666'
                 }
@@ -381,7 +381,7 @@ export class SilverNeedleChart {
             },
             zoomPan: {
                 enabled: true,
-                startingIndex: 21
+                startingXIndex: 21
             },
             cursorMoveOnPan: true,
             yaxes: yAxesOptions,
@@ -497,20 +497,18 @@ export class SilverNeedleChart {
         if (this.showFft) {
             autoscale = autoscale == undefined ? false : autoscale;
             let dataToSet: DataContainer[] = [];
-            for (let i = 0; i < this.numSeries.length; i++) {
-                if (this.numSeries[i] < this.oscopeChansActive.length) {
-                    console.log(this.numSeries[i]);
-                    dataToSet.push({
-                        data: this.getFftArray(this.numSeries[i], 0, this.currentBufferArray[this.numSeries[i]].y.length),
-                        yaxis: this.numSeries[i] + 1,
-                        lines: {
-                            show: true
-                        },
-                        points: {
-                            show: false
-                        }
-                    });
-                }
+            for (let i = 0; i < this.deviceDescriptor.instruments.osc.numChans; i++) {
+                dataToSet.push({
+                    data: this.numSeries.indexOf(i) !== -1 ? this.getFftArray(i, 0, this.currentBufferArray[i].y.length): [],
+                    yaxis: i + 1,
+                    lines: {
+                        show: this.numSeries.indexOf(i) !== -1
+                    },
+                    points: {
+                        show: false
+                    }
+                });
+                
             }
             this.fftChart.setData(dataToSet, autoscale);
         }
