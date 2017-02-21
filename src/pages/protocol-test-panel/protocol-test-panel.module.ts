@@ -3,19 +3,14 @@ import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
 import { ProtocolTestPanel } from './protocol-test-panel';
-import { ChartModal } from './protocol-test-panel';
-import { ChartModule } from 'angular2-highcharts';
 
 @NgModule({
     imports: [
         SharedModule,
-        ChartModule,
-        IonicModule.forRoot(ProtocolTestPanel),
-        IonicModule.forRoot(ChartModal)
+        IonicModule.forRoot(ProtocolTestPanel)
     ],
     declarations: [
-        ProtocolTestPanel,
-        ChartModal
+        ProtocolTestPanel
     ],
     exports: [
         ProtocolTestPanel
