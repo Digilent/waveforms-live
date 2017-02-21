@@ -96,14 +96,28 @@
 
                 <ion-list class="wifi-list" *ngIf="!modifyingSaved">
 
-                    <ion-item class="card-info">
+                    <ion-item class="card-info" *ngIf="!customNetworkConfig">
                         <ion-label>SSID</ion-label>
                         <div item-right class="item-content-right">{{selectedNetwork.ssid}}</div>
                     </ion-item>
 
-                    <ion-item class="card-info">
+                    <ion-item class="card-info" *ngIf="customNetworkConfig">
+                        <ion-label>SSID</ion-label>
+                        <div item-right class="item-content-right hostname-input-wrapper">
+                            <input class="custom-input" [(ngModel)]="selectedNetwork.ssid" />
+                        </div>
+                    </ion-item>
+
+                    <ion-item class="card-info" *ngIf="!customNetworkConfig">
                         <ion-label>Security Type</ion-label>
                         <div item-right class="item-content-right">{{selectedNetwork.securityType}}</div>
+                    </ion-item>
+
+                    <ion-item class="card-info" *ngIf="customNetworkConfig">
+                        <ion-label>Security Type</ion-label>
+                        <div item-right class="item-content-right dropdown-popover-item-right">
+                            <dropdown-popover [dataArray]="securityTypes" (onSelection)="customNetworkSecuritySelect($event)"></dropdown-popover>
+                        </div>
                     </ion-item>
 
                     <ion-item class="card-info" *ngIf="selectedNetwork.securityType === 'wpa' || selectedNetwork.securityType === 'wpa2'">

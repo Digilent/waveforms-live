@@ -212,6 +212,7 @@ export class DeviceComponent {
                 },
                 (err) => {
                     console.log(err);
+                    observer.error('Error in multiCommand().\nThis is most likely due to no device being detected.');
                 },
                 () => {
 

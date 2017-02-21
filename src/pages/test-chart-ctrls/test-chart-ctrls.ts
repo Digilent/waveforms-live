@@ -172,7 +172,8 @@ export class TestChartCtrlsPage {
         }
     }
 
-    abortSingle() {
+    abortSingle(ignoreResponse?: boolean) {
+        ignoreResponse = ignoreResponse == undefined ? false : ignoreResponse;
         this.activeDevice.instruments.trigger.stop([1]).subscribe(
             (data) => {
                 console.log(data);
@@ -185,6 +186,16 @@ export class TestChartCtrlsPage {
             },
             (err) => {
                 console.log(err);
+                if (ignoreResponse) {
+                    if (this.running) {
+                        this.running = false;
+                    }
+                    this.readingLa = false;
+                    this.readingOsc = false;
+                    this.triggerStatus = 'Idle';
+                    this.toastService.createToast('timeout', true);
+                    return;
+                }
                 this.toastService.createToast('triggerStopError', true);
             },
             () => { }
@@ -357,7 +368,8 @@ export class TestChartCtrlsPage {
             },
             (err) => {
                 console.log(err);
-                //Still acquiring
+                //Might still acquiring from previous session
+                this.abortSingle(true);
             },
             () => {
                 if (this.activeDevice.transport.getType() !== 'local') {

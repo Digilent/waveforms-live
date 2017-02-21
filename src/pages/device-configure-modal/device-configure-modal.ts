@@ -459,6 +459,10 @@ export class DeviceConfigureModal {
 
     }
 
+    done() {
+        this.navCtrl.pop();
+    }
+
     openCorrectFirmwareModal() {
         if (!this.potentialDevices) { return; }
         let page;

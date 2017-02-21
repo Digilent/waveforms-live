@@ -4,7 +4,6 @@ import { IonicModule } from 'ionic-angular';
 
 import { TestChartCtrlsPage } from './test-chart-ctrls';
 import { SilverNeedleChart } from '../../components/chart/chart.component';
-import { DigilentChart } from '../../components/digilent-chart/digilent-chart.component';
 import { XAxisComponent } from '../../components/xaxis-controls/xaxis-controls.component';
 import { YAxisComponent } from '../../components/yaxis-controls/yaxis-controls.component';
 import { TimelineChartComponent } from '../../components/timeline-chart/timeline-chart.component';
@@ -30,7 +29,6 @@ import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.co
         ModalCursorPage,
         MathModalPage,
         SilverNeedleChart,
-        DigilentChart,
         XAxisComponent,
         YAxisComponent,
         TimelineChartComponent,

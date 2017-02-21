@@ -77,6 +77,8 @@ export class WifiSetupPage {
     public wepKeyEntryArray: number[] = [0, 1, 2, 3];
     public modifyingSaved: boolean = false;
     public showMainAdvanced: boolean = false;
+    public customNetworkConfig: boolean = false;
+    public securityTypes: string[] = ['wpa2', 'wpa', 'wep40', 'wep104'];
 
     constructor(
         _storageService: StorageService,
@@ -125,6 +127,10 @@ export class WifiSetupPage {
 
     toggleMainAdvanced() {
         this.showMainAdvanced = !this.showMainAdvanced;
+    }
+
+    customNetworkSecuritySelect(event) {
+        this.selectedNetwork.securityType = event;
     }
 
     displayLoading(message?: string) {
@@ -223,7 +229,24 @@ export class WifiSetupPage {
     }
 
     addCustomNetwork() {
-        this.savedNetworks[0].autoConnect;
+        this.disableAutoConnect = false;
+        this.password = '';
+        this.save = true;
+        this.autoConnect = true;
+        this.connectNow = true;
+        this.wifiStatus = 'Ready';
+        this.selectedNetwork = {
+            ssid: '',
+            bssid: '',
+            securityType: 'wpa2',
+            channel: 0,
+            signalStrength: 0
+        };
+        this.customNetworkConfig = true;
+        let swiperInstance: any = this.slider.getSlider();
+        swiperInstance.unlockSwipes();
+        this.slider.slideTo(1);
+        swiperInstance.lockSwipes();
     }
 
     getNicList(): Promise<any> {
@@ -496,12 +519,14 @@ export class WifiSetupPage {
     }
 
     routeToConfigSlide(network) {
+        this.customNetworkConfig = false;
         this.disableAutoConnect = false;
         this.password = '';
         this.save = true;
         this.autoConnect = true;
         this.connectNow = true;
         this.selectedNetwork = network;
+        this.wifiStatus = 'Ready';
         let swiperInstance: any = this.slider.getSlider();
         swiperInstance.unlockSwipes();
         this.slider.slideTo(1);

@@ -9,6 +9,7 @@ import { DropdownPopoverComponent } from '../../components/dropdown-popover/drop
 import { DropDownMenu } from '../../libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu.component';
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar.component';
+import { DigilentChart } from '../../components/digilent-chart/digilent-chart.component';
 
 @NgModule({
     imports: [
@@ -23,7 +24,8 @@ import { ProgressBarComponent } from '../../components/progress-bar/progress-bar
         DropDownMenu,
         DropdownPopoverComponent,
         UnitFormatPipe,
-        ProgressBarComponent
+        ProgressBarComponent,
+        DigilentChart
     ],
     exports: [
         GenPopover,
@@ -33,7 +35,8 @@ import { ProgressBarComponent } from '../../components/progress-bar/progress-bar
         CommonModule,
         FormsModule,
         TooltipModule,
-        ProgressBarComponent
+        ProgressBarComponent,
+        DigilentChart
     ]
 })
 export class SharedModule { }

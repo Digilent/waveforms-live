@@ -1,4 +1,3 @@
 <div class="bode-component-container">
-    hey
-    <!--<digilent-chart #bodePlot [flotOptions]="bodePlotOptions" chartId="bodePlot"></digilent-chart>-->
+    <digilent-chart #bodePlot [flotOptions]="bodePlotOptions" chartId="bodePlot" (chartLoad)="plotLoaded()"></digilent-chart>
 </div>

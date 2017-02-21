@@ -43,6 +43,7 @@ export class DigilentChart {
         data = data == undefined ? [] : data;
         if (this.chartId == undefined || this.flotOptions == undefined) {
             setTimeout(() => {
+                console.log('trying to create chart again');
                 this.createChart();
             }, 200);
             return;
