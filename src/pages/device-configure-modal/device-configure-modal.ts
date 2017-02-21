@@ -101,6 +101,7 @@ export class DeviceConfigureModal {
                             this.dropdownPopRef.setActiveSelection(this.deviceObject.connectedDeviceAddress);
                             this.selectedPotentialDeviceIndex = this.potentialDevices.indexOf(this.deviceObject.connectedDeviceAddress);
                         }
+                        this.getCurrentCalibration();
                     })
                     .catch((e) => {
                         console.log('Error setting active from existing');
@@ -169,6 +170,9 @@ export class DeviceConfigureModal {
                     let calibrationObjectString = JSON.stringify(data.device[0].calibrationData);
                     if (calibrationObjectString.indexOf('USER') !== -1) {
                         this.currentCalibration = 'USER';
+                    }
+                    else if (calibrationObjectString.indexOf('IDEAL') !== -1) {
+                        this.currentCalibration = 'IDEAL';
                     }
                     else {
                         this.currentCalibration = 'FACTORY';

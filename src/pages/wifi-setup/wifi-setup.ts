@@ -40,7 +40,7 @@ export class WifiSetupPage {
     public viewCtrl: ViewController;
     public savedNetworks: SavedWifiInfoContainer[] = [];
     public availableNetworks: WifiInfoContainer[] = [];
-    public selectedNetwork: WifiInfoContainer = {
+    public selectedNetwork: WifiInfoContainer | SavedWifiInfoContainer = {
         ssid: null,
         bssid: null,
         securityType: null,
@@ -199,6 +199,73 @@ export class WifiSetupPage {
                 console.log('error loading and connecting to network');
                 loading.dismiss();
             });
+    }
+
+    updateSavedNetwork() {
+        let loading = this.displayLoading('Updating Network');
+        this.loadWifiNetwork((<SavedWifiInfoContainer>this.selectedNetwork).storageLocation, this.selectedNetwork.ssid)
+            .then(() => {
+                return this.deleteSavedWifiNetwork((<SavedWifiInfoContainer>this.selectedNetwork).storageLocation, this.selectedNetwork.ssid);
+            })
+            .then(() => {
+                if (this.selectedNetwork.securityType === 'wpa' || this.selectedNetwork.securityType === 'wpa2') {
+                    this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, (<SavedWifiInfoContainer>this.selectedNetwork).autoConnect, this.password)
+                        .then(() => {
+                            return this.saveWifiNetwork(this.selectedStorageLocation);
+                        })
+                        .then(() => {
+                            if (this.connectNow) {
+                                setTimeout(() => {
+                                    console.log('return promise');
+                                    return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
+                                }, 500);
+                            }
+                            else {
+                                return new Promise((resolve, reject) => { resolve(); });
+                            }
+                        })
+                        .then(() => {
+                            loading.dismiss();
+                            this.getSavedWifiNetworks(this.selectedStorageLocation).then(() => { }).catch((e) => { });
+                            this.backToNetworks();
+                        })
+                        .catch((e) => {
+                            console.log('error updating parameters');
+                            this.wifiStatus = 'Error updating wifi parameters.';
+                            loading.dismiss();
+                        });
+                }
+                else {
+                    let formattedKeyArray = this.wepKeyArray.join(':');
+                    console.log(formattedKeyArray);
+                    this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, (<SavedWifiInfoContainer>this.selectedNetwork).autoConnect, undefined, formattedKeyArray, this.wepKeyIndex)
+                        .then(() => {
+                            if (this.connectNow) {
+                                return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
+                            }
+                            else {
+                                return new Promise((resolve, reject) => { resolve(); });
+                            }
+                        })
+                        .then(() => {
+                            loading.dismiss();
+                            this.getSavedWifiNetworks(this.selectedStorageLocation).then(() => { }).catch((e) => { });
+                            this.backToNetworks();
+                        })
+                        .catch((e) => {
+                            loading.dismiss();
+                            console.log('error updating parameters');
+                            this.wifiStatus = 'Error updating wifi parameters.';
+                        });
+                }
+            })
+            .catch((e) => {
+
+            })
+            .catch((e) => {
+
+            });
+
     }
 
     refreshAvailableNetworks() {

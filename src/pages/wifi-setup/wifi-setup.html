@@ -181,10 +181,53 @@
                 </ion-list>
 
                 <ion-list class="wifi-list" *ngIf="modifyingSaved">
+
                     <ion-item class="card-info">
                         <ion-label>SSID</ion-label>
                         <div item-right class="item-content-right">{{selectedNetwork.ssid}}</div>
                     </ion-item>
+
+                    <ion-item class="card-info">
+                        <ion-label>Security Type</ion-label>
+                        <div item-right class="item-content-right">{{selectedNetwork.securityType}}</div>
+                    </ion-item>
+
+                    <ion-item class="card-info" *ngIf="selectedNetwork.securityType === 'wpa' || selectedNetwork.securityType === 'wpa2'">
+                        <ion-label>Password</ion-label>
+                        <div item-right class="item-content-right hostname-input-wrapper">
+                            <input type="password" class="custom-input" [(ngModel)]="password" />
+                        </div>
+                    </ion-item>
+                    <div *ngIf="selectedNetwork.securityType === 'wep40' || selectedNetwork.securityType === 'wep104'">
+                        <ion-item class="card-info">
+                            <ion-label>Wep Key Index</ion-label>
+                            <div item-right class="item-content-right hostname-input-wrapper">
+                                <input class="custom-input" [(ngModel)]="wepKeyIndex" />
+                            </div>
+                        </ion-item>
+                        <ion-item class="card-info" *ngFor="let key of wepKeyEntryArray, let i = index;">
+                            <ion-label>Wep Key {{i + 1}}</ion-label>
+                            <div item-right class="item-content-right hostname-input-wrapper">
+                                <input placeholder="AA:34:CC:78:12" class="custom-input" [(ngModel)]="wepKeyArray[i]" />
+                            </div>
+                        </ion-item>
+                    </div>
+
+                    <ion-item class="card-info">
+                        <ion-label>Storage Location</ion-label>
+                        <div item-right class="item-content-right">{{selectedNetwork.storageLocation}}</div>
+                    </ion-item>
+
+                    <ion-item class="card-info">
+                        <ion-label>Auto-Connect</ion-label>
+                        <ion-checkbox item-right [(ngModel)]="selectedNetwork.autoConnect"></ion-checkbox>
+                    </ion-item>
+
+                    <ion-item class="card-info">
+                        <ion-label>Connect Now</ion-label>
+                        <ion-checkbox item-right [(ngModel)]="connectNow" (ngModelChange)="checkboxChanged('connectNow')"></ion-checkbox>
+                    </ion-item>
+
                 </ion-list>
 
             </div>
@@ -197,9 +240,13 @@
                         </button>
                     </ion-col>
                     <ion-col text-right>
-                        <button ion-button icon-right class="text-button-side disable-hover" (click)="addNetwork()">
+                        <button ion-button icon-right class="text-button-side disable-hover" (click)="addNetwork()" *ngIf="!modifyingSaved">
                             Add
                             <ion-icon name="add"></ion-icon>
+                        </button>
+                        <button ion-button icon-right class="text-button-side disable-hover" (click)="updateSavedNetwork()" *ngIf="modifyingSaved">
+                            Save
+                            <img class="svg-save" src="assets/img/save.svg" />
                         </button>
                     </ion-col>
                 </ion-row>

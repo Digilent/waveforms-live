@@ -377,12 +377,12 @@
                     }
                 }
                 else {
-                    if (delta < 0 && that.plotOptions.zoomPan.startingYIndexArray[selectedYAxis - 1] < that.plotOptions.zoomPan.voltsPerDivisionValues.length - 1) {
-                        startingYIndexArray[selectedYAxis - 1]++;
+                    if (delta < 0 && that.plotOptions.zoomPan.startingYIndexArray[that.plotOptions.zoomPan.selectedYAxis - 1] < that.plotOptions.zoomPan.voltsPerDivisionValues.length - 1) {
+                        that.plotOptions.zoomPan.startingYIndexArray[that.plotOptions.zoomPan.selectedYAxis - 1]++;
                         mouseWheelRedraw(e);
                     }
-                    else if (delta > 0 && that.plotOptions.zoomPan.startingYIndexArray[selectedYAxis - 1] > 0) {
-                        that.plotOptions.zoomPan.startingYIndexArray[selectedYAxis - 1]--;
+                    else if (delta > 0 && that.plotOptions.zoomPan.startingYIndexArray[that.plotOptions.zoomPan.selectedYAxis - 1] > 0) {
+                        that.plotOptions.zoomPan.startingYIndexArray[that.plotOptions.zoomPan.selectedYAxis - 1]--;
                         mouseWheelRedraw(e);
                     }
                 }
@@ -430,6 +430,10 @@
                         };
                     }
                     plot.getPlaceholder().trigger('mouseWheelRedraw', [infoContainer]);
+                    if (that.plotOptions.zoomPan.updateTimelineChart && that.plotOptions.zoomPan.timelineChartRef != undefined) {
+                        that.plotOptions.zoomPan.timelineChartRef.setActiveXIndex(that.plotOptions.zoomPan.startingXIndex);
+                        that.plotOptions.zoomPan.timelineChartRef.updateTimelineCurtains(infoContainer);
+                    }
                 }
                 else {
                     var yaxisIndexer = 'y' + (that.plotOptions.zoomPan.selectedYAxis === 1 ? '' : that.plotOptions.zoomPan.selectedYAxis.toString()) + 'axis';
@@ -452,11 +456,6 @@
 
                 plot.setupGrid();
                 plot.draw();
-
-                if (that.plotOptions.zoomPan.updateTimelineChart && that.plotOptions.zoomPan.timelineChartRef != undefined) {
-                    that.plotOptions.zoomPan.timelineChartRef.setActiveXIndex(that.plotOptions.zoomPan.startingXIndex);
-                    that.plotOptions.zoomPan.timelineChartRef.updateTimelineCurtains(infoContainer);
-                }
             }
 
             function vertPanChart(e) {
@@ -501,7 +500,7 @@
                 var pixDif = e.clientX - that.previousXPosition;
                 var min = getAxes.xaxis.c2p(minPix - pixDif);
                 var max = getAxes.xaxis.c2p(maxPix - pixDif);
-                var newPos = (max - min) / 2;
+                var newPos = (max + min) / 2;
                 getAxes.xaxis.options.min = min;
                 getAxes.xaxis.options.max = max;
                 plot.setupGrid();
