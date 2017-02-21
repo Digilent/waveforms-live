@@ -1,14 +1,10 @@
 import { Component } from '@angular/core';
-import { ModalController, NavParams, ViewController, Platform } from 'ionic-angular';
 
 //Components
 import { TransportComponent } from '../../components/transport/transport.component';
 
 //Services
 import { StorageService } from '../../services/storage/storage.service';
-
-//Interfaces
-import { Chart } from '../../components/chart/chart.interface';
 
 @Component({
     templateUrl: 'protocol-test-panel.html'
@@ -55,7 +51,6 @@ export class ProtocolTestPanel {
     public selectedRepsonseBinaryFormat: string;
 
     public XHR: XMLHttpRequest;
-    public modalCtrl: ModalController;
 
     /* Protocol Commands */
     public commands =
@@ -293,9 +288,8 @@ export class ProtocolTestPanel {
     public activeCommand: Object;
 
 
-    constructor(_storage: StorageService, _modalCtrl: ModalController) {
+    constructor(_storage: StorageService) {
         console.log('ProtocolTestPanel Constructor');
-        this.modalCtrl = _modalCtrl;
         this.storage = _storage;
         this.selectedHttpMethod = this.httpMethodNames[0];
         this.selectedRepsonseBodyFormat = this.responseBodyFormats[0];
