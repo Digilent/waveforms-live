@@ -462,14 +462,20 @@
             function vertPanChart(e) {
                 var yaxisIndexer = 'y' + (that.plotOptions.zoomPan.selectedYAxis === 1 ? '' : that.plotOptions.zoomPan.selectedYAxis.toString()) + 'axis';
                 var getAxes = plot.getAxes();
-                var newVal = getAxes[yaxisIndexer].c2p(e.clientY);
+                var minPix = getAxes[yaxisIndexer].p2c(getAxes[yaxisIndexer].min);
+                var maxPix = getAxes[yaxisIndexer].p2c(getAxes[yaxisIndexer].max);
+                var pixDif = e.clientY - that.previousYPosition;
+                var min = getAxes[yaxisIndexer].c2p(minPix - pixDif);
+                var max = getAxes[yaxisIndexer].c2p(maxPix - pixDif);
+                var newPos = (max + min) / 2;
+                /*var newVal = getAxes[yaxisIndexer].c2p(e.clientY);
                 var oldValinNewWindow = getAxes[yaxisIndexer].c2p(that.previousYPosition);
                 var difference = newVal - oldValinNewWindow;
                 var base = (getAxes[yaxisIndexer].max + getAxes[yaxisIndexer].min) / 2;
                 var voltsPerDivision = (getAxes[yaxisIndexer].max - getAxes[yaxisIndexer].min) / 10;
                 var newPos = base - difference;
                 var min = newPos - voltsPerDivision * 5;
-                var max = newPos + voltsPerDivision * 5;
+                var max = newPos + voltsPerDivision * 5;*/
                 getAxes[yaxisIndexer].options.min = min;
                 getAxes[yaxisIndexer].options.max = max;
                 plot.setupGrid();
@@ -490,14 +496,12 @@
 
             function horPanChart(e) {
                 var getAxes = plot.getAxes();
-                var newVal = getAxes.xaxis.c2p(e.clientX);
-                var oldValinNewWindow = getAxes.xaxis.c2p(that.previousXPosition);
-                var difference = newVal - oldValinNewWindow;
-                var base = (getAxes.xaxis.max + getAxes.xaxis.min) / 2;
-                var timePerDivision = (getAxes.xaxis.max - getAxes.xaxis.min) / 10;
-                var newPos = base - difference;
-                var min = newPos - timePerDivision * 5;
-                var max = newPos + timePerDivision * 5;
+                var minPix = getAxes.xaxis.p2c(getAxes.xaxis.min);
+                var maxPix = getAxes.xaxis.p2c(getAxes.xaxis.max);
+                var pixDif = e.clientX - that.previousXPosition;
+                var min = getAxes.xaxis.c2p(minPix - pixDif);
+                var max = getAxes.xaxis.c2p(maxPix - pixDif);
+                var newPos = (max - min) / 2;
                 getAxes.xaxis.options.min = min;
                 getAxes.xaxis.options.max = max;
                 plot.setupGrid();

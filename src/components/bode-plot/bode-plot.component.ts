@@ -4,7 +4,7 @@ import { Component, Output, ViewChild, EventEmitter } from '@angular/core';
 import { DigilentChart } from '../digilent-chart/digilent-chart.component';
 
 //Interfaces
-import { Chart, DataContainer } from '../chart/chart.interface';
+/*import { Chart, DataContainer } from '../chart/chart.interface';*/
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';

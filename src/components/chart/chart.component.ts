@@ -313,7 +313,6 @@ export class SilverNeedleChart {
     generateFftYaxisOptions() {
         let fftYAxes: any = [];
         for (let i = 0; i < this.deviceDescriptor.instruments.osc.numChans; i++) {
-            let color = this.colorArray[i];
             let axisOptions = {
                 position: 'left',
                 axisLabel: 'Ch ' + (i + 1),
