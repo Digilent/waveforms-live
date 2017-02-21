@@ -1495,7 +1495,7 @@ export class SilverNeedleChart {
         let data = canvas.toDataURL();
         ctx.restore();
 
-        if (this.platform.is('cordova')) {
+        if (this.platform.is('cordova') && (this.platform.is('android') || this.platform.is('ios'))) {
             this.platform.ready().then(() => {
                 const fileTransfer = new Transfer();
                 //const imageLocation = `${cordova.file.applicationDirectory}www/assets/img/${data}`;
