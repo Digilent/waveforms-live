@@ -7,7 +7,7 @@
                 <div class="slide-header">Device Calibration</div>
                 <ion-row>
                     <ion-col class="icon-col" center text-center>
-                        <ion-icon class="intro-icon" name="color-wand"></ion-icon>
+                        <img class="custom-image-button intro-icon" src="assets/img/calibrate.svg" />
                     </ion-col>
                 </ion-row>
                 <ion-row>
@@ -24,20 +24,20 @@
                     <ion-row>
                         <ion-col text-left>
                             <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()">
-                                <ion-icon name="close"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/close.svg" />
                                 Close
                             </button>
                         </ion-col>
                         <ion-col text-center>
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="toLoadExistingPage()">
                                 Load Existing
-                                <ion-icon name="archive"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/archive.svg" />
                             </button>
                         </ion-col>
                         <ion-col text-right>
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="runCalibration()">
                                 Begin
-                                <ion-icon name="arrow-forward"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/arrow-forward.svg">
                             </button>
                         </ion-col>
                     </ion-row>
@@ -58,18 +58,18 @@
                     <ion-row>
                         <ion-col text-left>
                             <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()" *ngIf="calibrationFailed">
-                                <ion-icon name="close"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/close.svg">
                                 Close
                             </button>
                         </ion-col>
                         <ion-col text-right>
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="toCalibrationSuccessPage()" *ngIf="calibrationSuccessful">
                                 Next
-                                <ion-icon name="arrow-forward"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/arrow-forward.svg">
                             </button>
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="startCalibration()" *ngIf="calibrationFailed">
                                 Retry
-                                <ion-icon name="redo"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/redo.svg">
                             </button>
                         </ion-col>
                     </ion-row>
@@ -88,7 +88,7 @@
                         <span class="storage-label">Storage Location</span>
                         <dropdown-popover [dataArray]="storageLocations" (onSelection)="selectStorage($event)"></dropdown-popover>
                         <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" item-right (click)="getStorageLocations()">
-                            <ion-icon name="refresh"></ion-icon>
+                            <img class="custom-image-button" src="assets/img/refresh.svg">
                         </button>
                     </ion-item>
                 </div>
@@ -102,7 +102,7 @@
                             <div>
                                 <button class="save-button disable-hover" (click)="saveCalibrationToDevice()">
                                     <div>
-                                        <img class="svg-in-img" src="assets/img/save.svg" />
+                                        <img class="svg-in-img" src="assets/img/save.svg">
                                     </div>
                                     <div>
                                         SAVE
@@ -112,7 +112,7 @@
                             <div>
                                 <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()">
                                     Done
-                                    <ion-icon name="checkmark"></ion-icon>
+                                    <img class="custom-image-button" src="assets/img/check.svg">
                                 </button>
                             </div>
                         </ion-col>
@@ -129,11 +129,11 @@
                         <span class="storage-label">Storage Location</span>
                         <dropdown-popover [dataArray]="storageLocations" (onSelection)="selectStorage($event)"></dropdown-popover>
                         <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" item-right (click)="getStorageLocations()">
-                            <ion-icon name="refresh"></ion-icon>
+                            <img class="custom-image-button" src="assets/img/refresh.svg">
                         </button>
                         <button ion-button icon-right class="load-calibration-button text-button-side disable-hover" item-right (click)="loadSelectedCalibration()">
                             Load
-                            <ion-icon name="archive"></ion-icon>
+                            <img class="custom-image-button" src="assets/img/archive.svg">
                         </button>
                     </ion-item>
                 </div>
@@ -151,7 +151,7 @@
                         <ion-col text-right class="button-container-col">
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()">
                                 Done
-                                <ion-icon name="checkmark"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/check.svg">
                             </button>
                         </ion-col>
                     </ion-row>

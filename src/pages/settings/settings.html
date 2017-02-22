@@ -1,7 +1,7 @@
 <ion-header>
     <ion-navbar>
         <button menuToggle>
-            <ion-icon name="menu"></ion-icon>
+            <img class="custom-image-button" src="assets/img/menu.svg" />
         </button>
         <ion-title>Settings</ion-title>
     </ion-navbar>
@@ -35,8 +35,7 @@
             </ion-list>
                 <button ion-button icon-right clear class="advanced-button" (tap)="toggleAdvancedSettings()">
                     Advanced
-                    <ion-icon *ngIf="!showAdvancedSettings" name="arrow-dropdown"></ion-icon>
-                    <ion-icon *ngIf="showAdvancedSettings" name="arrow-dropup"></ion-icon>
+                    <img class="custom-image-button" [src]="showAdvancedSettings ? 'arrow-dropup' : 'arrow-dropdown'" />
                 </button>
                 <div *ngIf="showAdvancedSettings" class="configure-item-wrapper">
                     <ion-list class="section-list">
@@ -54,76 +53,6 @@
                 </div>
         </div>
     </div>
-
-    <!--<div text-center>
-        <div class="configure-item-wrapper">
-            <div *ngIf="bridgeConfigure">
-                <ion-list class="section-list">
-                    <ion-item-divider class="list-header">Agent</ion-item-divider>
-                    <ion-item class="configure-item">
-                        <ion-label>Selected Device</ion-label>
-                        <div item-right class="item-content-right dropdown-popover-item-right" [ngClass]="{'invalid-enumeration':invalidEnumeration}">
-                            <dropdown-popover #dropdownPop [dataArray]="potentialDevices" (onSelection)="dropdownDeviceChange($event)"></dropdown-popover>
-                            <button ion-button class="icon-only-button-side disable-hover alert-button" (click)="retryDeviceEnumeration()" *ngIf="invalidEnumeration"
-                                [tooltip]="tooltipService.getTooltip('configDeviceRetryEnumerate').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                                <ion-icon name="alert"></ion-icon>
-                            </button>
-                        </div>
-                    </ion-item>
-                    <ion-item class="configure-item">
-                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="reEnumerateAgent()">Re-Enumerate</button>
-                    </ion-item>
-                    <ion-item class="configure-item" *ngIf="potentialDevices && potentialDevices.length > 0">
-                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update / Load Firmware</button>
-                    </ion-item>
-                </ion-list>
-            </div>
-
-            <div *ngIf="deviceConfigure && !invalidEnumeration">
-                <ion-list class="section-list">
-                    <ion-item-divider class="list-header">WiFi Settings</ion-item-divider>
-                    <ion-item class="configure-item first-item">
-                        <ion-label>Name</ion-label>
-                        <div item-right class="item-content-right hostname-input-wrapper">
-                            <input class="custom-input" [(ngModel)]="deviceObject.hostname" />
-                        </div>
-                    </ion-item>
-                    <ion-item class="configure-item">
-                        <ion-label>Device Address</ion-label>
-                        <div item-right class="item-content-right">{{deviceObject.connectedDeviceAddress || deviceObject.ipAddress}}</div>
-                    </ion-item>
-                    <ion-item class="configure-item">
-                        <ion-label>WiFi Status</ion-label>
-                        <div item-right class="item-content-right">{{nicStatusContainer.status}}</div>
-                    </ion-item>
-                    <ion-item class="configure-item">
-                        <ion-label>SSID</ion-label>
-                        <div item-right class="item-content-right">{{nicStatusContainer.ssid}}</div>
-                    </ion-item>
-                    <ion-item class="configure-item" *ngIf="deviceObject.bridge">
-                        <ion-label>Device IP Address</ion-label>
-                        <div item-right class="item-content-right">{{nicStatusContainer.ipAddress}}</div>
-                    </ion-item>
-                    <ion-item class="configure-item" *ngIf="deviceObject.ipAddress !== 'local'">
-                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="openWifiWizard()">Setup Wifi</button>
-                    </ion-item>
-                </ion-list>
-            </div>
-
-            <div *ngIf="deviceConfigure && !invalidEnumeration">
-                <ion-list class="section-list">
-                    <ion-item-divider class="list-header">Calibration</ion-item-divider>
-                    <ion-item class="configure-item">
-                        <ion-label fixed>Current Calibration</ion-label>
-                        <div item-right class="item-content-right">USER</div>
-                    </ion-item>
-                    <ion-item class="configure-item" *ngIf="deviceObject.ipAddress !== 'local'">
-                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCalibrateWizard()">Calibrate</button>
-                    </ion-item>
-                </ion-list>
-            </div>
-        </div>
-    </div>-->
 
 </ion-content>
 

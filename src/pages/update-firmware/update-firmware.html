@@ -38,14 +38,14 @@
                     <ion-row>
                         <ion-col text-left>
                             <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()">
-                                <ion-icon name="close"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/close.svg">
                                 Close
                             </button>
                         </ion-col>
                         <ion-col text-right *ngIf="!firmwareUpToDate">
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="toProgressBar()">
                                 Update
-                                <ion-icon name="arrow-forward"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/arrow-forward.svg">
                             </button>
                         </ion-col>
                     </ion-row>
@@ -63,7 +63,7 @@
                         <ion-col text-right>
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()" *ngIf="updateComplete">
                                 Done
-                                <ion-icon name="checkmark"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/check.svg">
                             </button>
                         </ion-col>
                     </ion-row>

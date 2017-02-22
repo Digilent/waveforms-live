@@ -11,10 +11,10 @@
                         </div>
                         <div text-center *ngIf="!scanningForNetworks" class="available-button-container">
                             <button ion-button class="icon-only-button-side available-network-button disable-hover" (click)="refreshAvailableNetworks()">
-                                <ion-icon name="refresh"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/refresh.svg">
                             </button>
                             <button ion-button class="icon-only-button-side available-network-button disable-hover" (click)="addCustomNetwork()">
-                                <ion-icon name="add"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/add.svg">
                             </button>
                         </div>
                         <div text-center *ngIf="scanningForNetworks" class="spinner-container">
@@ -36,7 +36,7 @@
                         </div>
                         <div text-center *ngIf="!scanningForNetworks" class="available-button-container">
                             <button ion-button class="icon-only-button-side available-network-button disable-hover" (click)="refreshSavedNetworks()">
-                                <ion-icon name="refresh"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/refresh.svg">
                             </button>
                         </div>
                         <div class="available-network-container" *ngIf="savedNetworks && savedNetworks.length > 0">
@@ -45,7 +45,7 @@
                                     <ion-item class="card-info">
                                         {{savedNetwork.ssid}}
                                         <button item-right ion-button clear class="network-button" (click)="showPopover($event, i)">
-                                            <ion-icon name="more"></ion-icon>
+                                            <img class="custom-image-button" src="assets/img/more.svg">
                                         </button>
                                     </ion-item>
                                 </ion-card>
@@ -57,7 +57,9 @@
                 <div text-center>
                     <button ion-button icon-right clear class="advanced-button" (tap)="toggleMainAdvanced()">
                         Advanced
-                        <div [@rotate]="showMainAdvanced"><ion-icon class="rotate-arrow-icon" name="arrow-dropdown"></ion-icon></div>
+                        <div [@rotate]="showMainAdvanced">
+                            <img class="custom-image-button" src="assets/img/arrow-dropdown.svg">
+                        </div>
                     </button> 
                 </div>
                 <div>
@@ -83,7 +85,7 @@
             <ion-row>
                 <ion-col text-left>
                     <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()">
-                        <ion-icon name="close"></ion-icon>
+                        <img class="custom-image-button" src="assets/img/close.svg">
                         Close
                     </button>
                 </ion-col>
@@ -148,7 +150,9 @@
 
                     <button ion-button icon-right clear class="advanced-button" (tap)="toggleAdvancedSettings()">
                         Advanced
-                        <div [@rotate]="showAdvancedSettings"><ion-icon class="rotate-arrow-icon" name="arrow-dropdown"></ion-icon></div>
+                        <div [@rotate]="showAdvancedSettings">
+                            <img class="custom-image-button rotate-arrow-icon" src="assets/img/arrow-dropdown.svg">
+                        </div>
                     </button> 
 
                     <div>
@@ -235,14 +239,14 @@
                 <ion-row>
                     <ion-col text-left>
                         <button ion-button icon-left class="text-button-side disable-hover" (click)="backToNetworks()">
-                            <ion-icon name="close"></ion-icon>
+                            <img class="custom-image-button" src="assets/img/close.svg">
                             Close
                         </button>
                     </ion-col>
                     <ion-col text-right>
                         <button ion-button icon-right class="text-button-side disable-hover" (click)="addNetwork()" *ngIf="!modifyingSaved">
                             Add
-                            <ion-icon name="add"></ion-icon>
+                            <img class="custom-image-button" src="assets/img/add.svg">
                         </button>
                         <button ion-button icon-right class="text-button-side disable-hover" (click)="updateSavedNetwork()" *ngIf="modifyingSaved">
                             Save

@@ -55,10 +55,8 @@
     border-radius: 0px;
     margin: 0px;
     border:solid #535353 1px;
-    width: 25px;
     height: 25px;
     font-size: 12px;
-    margin-right: 6px;
     position: relative;
 }
 
@@ -174,7 +172,11 @@ ion-list .item-input.input-has-focus:last-child {
     border-bottom: solid black 1px;
     background-color: #535353;
     width: 35px;
+    height: 25px;
     position: relative;
+    img {
+        max-height: 100%;
+    }
 }
 
 .fgen-container .image-end

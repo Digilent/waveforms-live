@@ -1,13 +1,17 @@
-<ion-header>
-    <ion-navbar>
-        <button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-        </button>
-        <ion-title>Configuration Menu</ion-title>
-    </ion-navbar>
-</ion-header>
+<ion-content class="device-configure-modal-container">
 
-<ion-content class="device-configure-modal-container">    
+    <div>
+        <ion-row>
+            <ion-col class="back-button-col" center>
+                <button ion-button class="custom-back-button disable-hover" (click)="done()">
+                    <img class="custom-image-button" src="assets/img/arrow-back.svg">
+                </button>
+            </ion-col>
+            <ion-col center class="config-title-menu-col">
+                Configuration Menu
+            </ion-col>
+        </ion-row>
+    </div>  
 
     <!--<ion-row wrap class="section-col-container">
         <ion-col class="section-col" *ngIf="bridgeConfigure">-->
@@ -22,7 +26,7 @@
                             <dropdown-popover #dropdownPop [dataArray]="potentialDevices" (onSelection)="dropdownDeviceChange($event)"></dropdown-popover>
                             <button ion-button class="icon-only-button-side disable-hover alert-button" (click)="retryDeviceEnumeration()" *ngIf="invalidEnumeration"
                                 [tooltip]="tooltipService.getTooltip('configDeviceRetryEnumerate').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                                <ion-icon name="alert"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/info.svg" />
                             </button>
                         </div>
                     </ion-item>

@@ -6,7 +6,7 @@
         <ion-row class="top-bar-container">
             <ion-col class="move-left" center text-center>
                 <button clear ion-button menuToggle class="open-menu-button">
-                    <ion-icon name="menu"></ion-icon>
+                    <img class="custom-image-button" src="assets/img/menu.svg" />
                 </button>
             </ion-col>
 
@@ -40,19 +40,19 @@
                     [tooltip]="tooltipService.getTooltip('tutorialSingleButton').message" [tooltipAnimation]="true" tooltipPlacement="bottom" 
                     [forceShow]="tutorialStage === 3 && tutorialMode" onlyForceShow="true">
                     <span class="collapse-button">Single</span>
-                    <img class="custom-image-button" src="assets/img/single.png">
+                    <img class="custom-image-button" src="assets/img/single.svg" />
                 </button>
                 <button *ngIf="(readingLa || readingOsc) && !running" ion-button icon-right class="text-button-side disable-hover main-button" (tap)="abortSingle()">
                     <span class="collapse-button">Abort</span>
-                    <ion-icon name="ios-square" class="red-stop remove-icon-padding"></ion-icon>
+                    <img class="custom-image-button" src="assets/img/stop.svg" />
                 </button>
                 <button ion-button icon-right class="text-button-side disable-hover main-button" (tap)="runClick()" *ngIf="!running">
                     <span class="collapse-button">Run</span>
-                    <img class="custom-image-button" src="assets/img/run.png">
+                    <img class="custom-image-button" src="assets/img/run.svg" />
                 </button>
                 <button ion-button icon-right class="text-button-side disable-hover main-button" (tap)="stopClick()" *ngIf="running">
                     <span class="collapse-button">Stop</span>
-                    <ion-icon name="ios-square" class="red-stop remove-icon-padding"></ion-icon>
+                    <img class="custom-image-button" src="assets/img/stop.svg" />
                 </button>
                 <div class="trigger-indicator">
                     {{triggerStatus}}
@@ -65,7 +65,7 @@
                 <silverNeedleChart #chart1 (chartLoad)="initSettings()" class="chart-wrapper"></silverNeedleChart>
                 <ion-fab class="tutorial-mode-button" *ngIf="tutorialMode">
                     <button ion-fab mini class="help-button" (tap)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
-                        <ion-icon [name]="tutorialMode ? 'close' : 'help'"></ion-icon>
+                        <img [src]="tutorialMode ? 'assets/img/close.svg' : 'assets/img/help.svg'" />
                     </button>
                 </ion-fab>
             </ion-col>

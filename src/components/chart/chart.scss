@@ -85,6 +85,7 @@
     border: solid black 1px;
     border-radius: 0px;
     box-shadow: none;
+    padding: 4px;
 }
 
 .chart-component-wrapper .chart-button:hover
@@ -177,6 +178,8 @@
         border: solid black 1px;
         border-radius: 0px;
         min-width: 0px;
+        padding: 0;
+        width: 26px;
     }
     .chart-component-wrapper [icon-right] ion-icon {
         padding-left: 1px;

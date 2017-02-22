@@ -4,13 +4,13 @@
 
     <div class="menu-button-container">
         <button ion-button menuToggle class="custom-menu-button disable-hover">
-            <ion-icon name="menu"></ion-icon>
+            <img class="custom-image-button" src="assets/img/menu.svg">
         </button>
     </div>
 
     <ion-fab right bottom>
         <button ion-fab mini (tap)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
-            <ion-icon [name]="tutorialMode ? 'close' : 'help'"></ion-icon>
+            <img [src]="tutorialMode ? 'assets/img/close.svg' : 'assets/img/help.svg'" />
         </button>
     </ion-fab>
 
@@ -28,8 +28,7 @@
             [forceShow]="tutorialStage===0 && tutorialMode" [tooltipAnimation]="true" tooltipPlacement="bottom" 
             [ngClass]="{'move-feature-to-front':tutorialStage===0 && tutorialMode}">
             Add a Device
-            <ion-icon *ngIf="!showDevMenu" name="arrow-dropdown"></ion-icon>
-            <ion-icon *ngIf="showDevMenu" name="arrow-dropup"></ion-icon>
+            <img [src]="showDevMenu ? 'assets/img/arrow-dropup.svg' : 'assets/img/arrow-dropdown.svg'" class="custom-image-button">
         </button>
     </div>
     <div [ngClass]="{fadein: showDevMenu}" class="fadeout" text-center>
@@ -37,7 +36,7 @@
             <div class="devicetype-button-container">
                 <button icon-left ion-button class="devicetype-button disable-hover" (click)="setConnectionType('network')" [tooltip]="tooltipMessages['networkButton']" 
                     [forceShow]="tutorialStage===1 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'left' : 'bottom'">
-                    <ion-icon name="ios-wifi"></ion-icon>
+                    <img class="custom-image-button" src="assets/img/wifi.svg">
                     Network
                 </button>
             </div>
@@ -45,14 +44,14 @@
                 <button icon-left ion-button class="devicetype-button disable-hover" (click)="setConnectionType('simulated')" [tooltip]="tooltipMessages['simulatedButton']" 
                     [forceShow]="tutorialStage===1 && tutorialMode" [tooltipAnimation]="true" tooltipPlacement="bottom" 
                     [ngClass]="{'move-feature-to-front':tutorialStage===1 && tutorialMode}">
-                    <ion-icon name="ionitron"></ion-icon>
+                    <img class="custom-image-button" src="assets/img/simulated.svg">
                     Simulated
                 </button>
             </div>
             <div class="devicetype-button-container">
                 <button icon-left ion-button class="devicetype-button disable-hover" (click)="setConnectionType('agent')" [tooltip]="tooltipMessages['agentButton']" 
                     [forceShow]="tutorialStage===1 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'right' : 'bottom'">
-                    <ion-icon name="construct"></ion-icon>
+                    <img class="custom-image-button" src="assets/img/agent.svg">
                     Agent
                 </button>
             </div>
@@ -62,7 +61,9 @@
                 <div *ngSwitchCase="'network'" text-center>
                     <ion-card class="device-manager-card select-device-card">
                         <ion-item class="device-card-item">
-                            <ion-icon class="add-device-icon" item-left name="ios-wifi"></ion-icon>
+                            <div item-left class="item-image-container">
+                                <img class="custom-image-button" src="assets/img/wifi.svg">
+                            </div>
                             <ion-label class="add-device-label">
                                 <ion-item class="dev-menu-item">
                                     <ion-label stacked>Hostname / IP</ion-label>
@@ -70,11 +71,11 @@
                                     <div item-right class="connect-button-container">
                                         <button ion-button class="connect-button disable-hover" (click)="backToChooseDeviceType()" [tooltip]="tooltipMessages['backToAddDevice']" 
                                             [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'bottom' : 'left'">
-                                            <ion-icon name="close"></ion-icon>
+                                            <img class="custom-image-button" src="assets/img/close.svg">
                                         </button>
                                         <button ion-button class="connect-button disable-hover" (tap)="attemptConnect(addDeviceIp)" [tooltip]="tooltipMessages['addCurrentDevice']" 
                                             [forceShow]="tutorialStage===2 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'right' : 'left'">
-                                            <ion-icon name="add"></ion-icon>
+                                            <img class="custom-image-button" src="assets/img/add.svg">
                                         </button>
                                     </div>
                                 </ion-item>
@@ -86,7 +87,9 @@
                 <div *ngSwitchCase="'simulated'" text-center>
                     <ion-card class="device-manager-card select-device-card">
                         <ion-item class="device-card-item" [ngClass]="{'move-feature-to-front':tutorialStage===2 && tutorialMode}">
-                            <ion-icon class="add-device-icon" item-left name="ionitron"></ion-icon>
+                            <div item-left class="item-image-container">
+                                <img class="custom-image-button" src="assets/img/simulated.svg">
+                            </div>
                             <ion-label class="add-device-label">
                                 <ion-item class="dev-menu-item">
                                     <div class="custom-ion-label">Simulated Device</div>
@@ -94,11 +97,11 @@
                                     <div item-right class="connect-button-container">
                                         <button ion-button class="connect-button disable-hover" (click)="backToChooseDeviceType()" [tooltip]="tooltipMessages['backToAddDevice']" 
                                             [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'bottom' : 'left'">
-                                            <ion-icon name="close"></ion-icon>
+                                            <img class="custom-image-button" src="assets/img/close.svg">
                                         </button>
                                         <button ion-button class="connect-button disable-hover" (tap)="openSimDevice()" [tooltip]="tooltipMessages['addCurrentDevice']" 
                                             [forceShow]="tutorialStage===2 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'right' : 'left'">
-                                            <ion-icon name="add"></ion-icon>
+                                            <img class="custom-image-button" src="assets/img/add.svg">
                                         </button>
                                     </div>
                                 </ion-item>
@@ -111,7 +114,9 @@
                 <div *ngSwitchCase="'agent'" text-center>
                     <ion-card class="device-manager-card select-device-card">
                         <ion-item class="device-card-item">
-                            <ion-icon class="add-device-icon" item-left name="construct"></ion-icon>
+                            <div item-left class="item-image-container">
+                                <img class="custom-image-button" src="assets/img/agent.svg">
+                            </div>
                             <ion-label class="add-device-label">
                                 <ion-item class="dev-menu-item">
                                     <ion-label stacked>Agent</ion-label>
@@ -119,11 +124,11 @@
                                     <div item-right class="connect-button-container">
                                         <button ion-button class="connect-button disable-hover" (click)="backToChooseDeviceType()" [tooltip]="tooltipMessages['backToAddDevice']" 
                                             [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'bottom' : 'left'">
-                                            <ion-icon name="close"></ion-icon>
+                                            <img class="custom-image-button" src="assets/img/close.svg">
                                         </button>
                                         <button ion-button class="connect-button disable-hover" (tap)="attemptBridgeConnect(deviceBridgeAddress)" [tooltip]="tooltipMessages['addCurrentDevice']" 
                                             [forceShow]="tutorialStage===2 && tutorialMode" [tooltipAnimation]="true" [tooltipPlacement]="tutorialMode ? 'right' : 'left'">
-                                            <ion-icon name="add"></ion-icon>
+                                            <img class="custom-image-button" src="assets/img/add.svg">
                                         </button>
                                     </div>
                                 </ion-item>
@@ -153,12 +158,12 @@
                     <div item-right class="button-container">
                         <div *ngIf="device.outdatedFirmware">
                             <button ion-button class="card-button alert-button" clear (click)="openUpdateFirmware(i)">
-                                <ion-icon name="alert"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/info.svg">
                             </button>
                         </div>
                         <div>
                             <button ion-button class="card-button" clear (click)="openPopover($event, i)" [tooltip]="tooltipMessages['deviceCardMore']" [tooltipAnimation]="true" tooltipPlacement="left">
-                                <ion-icon name="more"></ion-icon>
+                                <img class="custom-image-button" src="assets/img/more.svg">
                             </button>
                         </div>
                     </div>

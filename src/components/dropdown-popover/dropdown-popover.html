@@ -2,7 +2,7 @@
     <div *ngIf="isMobile">
         <button ion-button icon-right (click)="openGenPopover($event)" class="popover-button">
             {{currentlySelected}}
-            <ion-icon name="arrow-dropdown"></ion-icon>
+            <img class="custom-image-button" src="assets/img/arrow-dropdown.svg">
         </button>
     </div>
     <div *ngIf="!isMobile">

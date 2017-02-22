@@ -18,15 +18,11 @@
                     </ion-col>
                     <ion-col class="header-side-col" center text-right>
                         <button ion-button clear (tap)="toggleVisibility(i, $event)" class="header-button disable-hover" [style.background-color]="getSeriesColor(i)" [ngClass]="{'series-on': chart.oscopeChansActive[i]}">
-                            <ion-icon name="power"></ion-icon>
+                            <img class="button-side-svg" src="assets/img/power.svg" />
                         </button>
                     </ion-col>
                 </ion-row>
                 
-                <!--<div [ngClass]="{'instrument-header': !settingsService.nestedChannels}">{{settingsService.nestedChannels === false ? 'Osc' : ''}} {{names[i]}}</div>
-                <button ion-button clear (click)="toggleVisibility(i, $event)" class="align-left disable-hover" [style.background-color]="getSeriesColor(i)" [ngClass]="{'series-on': chart.oscopeChansActive[i]}">
-                    <ion-icon name="power"></ion-icon>
-                </button>-->
             </div>
             <div *ngIf="showSeriesSettings[i]" class="button-info-container">
                 <ion-row class="controls-container">
@@ -57,13 +53,17 @@
                         Offset
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
-                        <button ion-button (tap)="chart.decrementOffset(i)" class="icon-only-button-side disable-hover offset-button"><ion-icon name="remove"></ion-icon></button>
+                        <button ion-button (tap)="chart.decrementOffset(i)" class="icon-only-button-side disable-hover offset-button">
+                            <img class="button-side-svg" src="assets/img/remove.svg" />
+                        </button>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <input class="custom-input" step="any" [ngModel]="chart.voltBase[i] | unitFormat:'V'" (focusout)="inputLeave($event, i, 'offset')" (keypress)="checkForEnter($event, i, 'offset')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
-                        <button ion-button (tap)="chart.incrementOffset(i)" class="icon-only-button-side disable-hover offset-button"><ion-icon name="add"></ion-icon></button>
+                        <button ion-button (tap)="chart.incrementOffset(i)" class="icon-only-button-side disable-hover offset-button">
+                            <img class="button-side-svg" src="assets/img/add.svg" />
+                        </button>
                     </ion-col>
                 </ion-row>
             </div>

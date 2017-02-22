@@ -1,13 +1,16 @@
-<ion-header>
-    <ion-navbar>
-        <button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-        </button>
-        <ion-title>Bode Plot</ion-title>
-    </ion-navbar>
-</ion-header>
-
 <ion-content class="bode-container">
+    <div>
+        <ion-row>
+            <ion-col class="back-button-col" center>
+                <button ion-button class="custom-back-button disable-hover" (click)="done()">
+                    <img class="custom-image-button" src="assets/img/arrow-back.svg">
+                </button>
+            </ion-col>
+            <ion-col center class="config-title-menu-col">
+                Configuration Menu
+            </ion-col>
+        </ion-row>
+    </div>
     <div class="bode-component-wrapper">
         <bode-plot></bode-plot>
     </div>

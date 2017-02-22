@@ -49,6 +49,9 @@
     border-radius: 0px;
     margin: 0;
     min-width: 29px;
+    width: 30px;
+    padding-left: 6px;
+    padding-right: 6px;
     color: #CCCCCC;
 }
 
@@ -251,6 +254,11 @@
     overflow: visible;
 }
 
+.first-tab-container .select-device-card
+{
+    cursor: default;
+}
+
 .fadein, .fadeout {
     max-height: 0;           
     overflow-y: hidden;
@@ -275,10 +283,23 @@
     background-color: transparent;
     width: 42px;
     box-shadow: none;
+    padding-left: 4px;
+    padding-right: 4px;
 
     ion-icon {
         font-size: 24px;
     }
+}
+
+.first-tab-container .devicetype-button .custom-image-button
+{
+    padding-right: 8px;
+}
+
+.first-tab-container .item-image-container
+{
+    margin-bottom: 0;
+    margin-top: 16px;
 }
 
 .first-tab-container .menu-button-container

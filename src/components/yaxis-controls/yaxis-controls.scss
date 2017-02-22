@@ -37,10 +37,15 @@
     margin-left: 0.1rem;
     font-size: 8px;
     height: 25px;
+    width: 26px;
+    padding: 0;
     background-color: #535353;
     border: solid black 1px;
     border-radius: 0px;
     box-shadow: none;
+    .button-inner img {
+        max-width: 16px;
+    }
 }
 
 .icon-only-button-side:hover
@@ -63,6 +68,19 @@
     border-radius: 0px;
     box-shadow: none;
     color: #CCCCCC;
+    .button-inner img {
+        width: 16px;
+    }
+}
+
+.text-button-side[icon-right] .button-inner img
+{
+    margin-left: 0.4em;
+}
+
+.text-button-side[icon-left] .button-inner img
+{
+    margin-right: 0.4em;
 }
 
 .button-md.activated

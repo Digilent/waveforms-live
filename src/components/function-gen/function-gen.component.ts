@@ -76,6 +76,9 @@ export class FgenComponent {
         this.offset = 0;
         this.dutyCycle = 50;
         this.powerOn = false;
+        setTimeout(() => {
+            this.getAwgStates();
+        }, 200)
     }
 
     startTutorial() {
@@ -99,6 +102,31 @@ export class FgenComponent {
             this.formatInputAndUpdate(event, input);
             this.ignoreFocusOut = true;
         }
+    }
+
+    getAwgStates() {
+        let chans = [];
+        for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {
+            chans.push(i + 1);
+        }
+        this.activeDevice.instruments.awg.getCurrentState(chans).subscribe(
+            (data) => {
+                console.log(data);
+                for (let channel in data.awg) {
+                    this.powerOn = data.awg[channel][0].state === 'running';
+                }
+                if (this.powerOn) {
+                    this.waveType = data.awg['1'][0].waveType;
+                    this.frequency = data.awg['1'][0].actualSignalFreq / 1000;
+                    this.amplitude = data.awg['1'][0].actualVpp / 1000;
+                    this.offset = data.awg['1'][0].actualVOffset / 1000;
+                }
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => { }
+        );
     }
 
     proceedToNextStage() {
@@ -229,6 +257,7 @@ export class FgenComponent {
             return;
         }
         this.waveType = waveType;
+        console.log(this.waveType);
         if (this.tutorialMode) {
             this.highlightPower();
         }

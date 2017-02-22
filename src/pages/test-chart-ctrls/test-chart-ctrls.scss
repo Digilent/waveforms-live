@@ -120,16 +120,13 @@
     border-radius: 0px;
     vertical-align: middle;
     margin: 0 0 0 0;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 .chart-page-container .move-left .open-menu-button:hover
 {
     background-color: #686868;
-}
-
-.chart-page-container .collapse-button
-{
-    padding-right: 4px;
 }
 
 .chart-page-container .red-stop
@@ -143,6 +140,11 @@
     background-color: #EEEEEE;
     font-size: 12px;
     font-weight: 600;
+    img {
+        width: 20px;
+    }
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 .chart-page-container .trigger-indicator
@@ -177,5 +179,8 @@
     }
     .chart-page-container [icon-right] ion-icon {
         padding-left: 1px;
+    }
+    .chart-page-container .text-button-side[icon-right] .button-inner img {
+        margin: 0;
     }
 }

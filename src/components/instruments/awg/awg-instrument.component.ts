@@ -100,6 +100,20 @@ export class AwgInstrumentComponent extends InstrumentComponent {
         });
     }
 
+    getCurrentState(chans: number[]): Observable<any> {
+        let command = {
+            awg: {}
+        }
+        chans.forEach((element, index, array) => {
+            command.awg[chans[index]] =
+                [{
+                    command: "getCurrentState"
+                }]
+        });
+
+        return super._genericResponseHandler(command);
+    }
+
     setRegularWaveform(chans: number[], settings: SettingsObject[]): Observable<any> {
         let command = {
             "awg": {}

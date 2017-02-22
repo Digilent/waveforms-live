@@ -13,22 +13,22 @@
                 </div>
                 <div [hidden]="showFft">
                     <button ion-button class="chart-button disable-hover" (click)="openChartModal($event)" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartSettings').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                        <ion-icon name="settings"></ion-icon>
+                        <img class="button-side-svg" src="assets/img/settings.svg" />
                     </button>
                 </div>
                 <div [hidden]="showFft">
                     <button ion-button class="chart-button disable-hover" (click)="autoscaleAllAxes()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartAutoscale').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                        <ion-icon name="expand"></ion-icon>
+                        <img class="button-side-svg" src="assets/img/fullscreen.svg" />
                     </button>
                 </div>
                 <div [hidden]="showFft">
                     <button ion-button class="chart-button disable-hover" (click)="openDevicePinout($event)" [tooltip]="tooltipService.getTooltip('chartShowDevicePinout').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                        <ion-icon name="information-circle"></ion-icon>
+                        <img class="button-side-svg" src="assets/img/info.svg" />
                     </button>
                 </div>
                 <div [hidden]="showFft">
                     <button ion-button class="chart-button disable-hover" (click)="centerOnTrigger()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartCenterOnTrigger').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                        <ion-icon name="arrow-down"></ion-icon>
+                        <img class="button-side-svg" src="assets/img/arrow-down.svg" />
                     </button>
                 </div>
             </div>
@@ -40,10 +40,10 @@
                 <ion-row center class="cursor-container">
                     <button ion-button icon-right class="text-button-side disable-hover" (click)="openMathModal($event)" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('mathButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
                         <span class="collapse-button">Math</span>
-                        <ion-icon name="ios-glasses-outline"></ion-icon>
+                        <img class="button-side-svg" src="assets/img/math.svg" />
                     </button>
                     <button ion-button class="icon-only-button-side disable-hover" (click)="updateMath()" [tooltip]="tooltipService.getTooltip('refreshMathButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
-                        <ion-icon name="refresh"></ion-icon>
+                        <img class="button-side-svg" src="assets/img/refresh.svg" />
                     </button>
                     <ion-col center class="cursor-info-col" id="test-test">
                         <span *ngIf="selectedMathInfo[0]">
@@ -73,7 +73,7 @@
                 <ion-row center class="cursor-container">
                     <button ion-button icon-right class="text-button-side disable-hover" (click)="openCursorModal($event)" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('cursorButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
                         <span class="collapse-button">Cursors</span>
-                        <ion-icon name="md-create"></ion-icon>
+                        <img class="button-side-svg" src="assets/img/edit.svg" />
                     </button>
                     <ion-col center *ngIf="cursorType.toLowerCase() === 'time'" class="cursor-info-col">
                         1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
