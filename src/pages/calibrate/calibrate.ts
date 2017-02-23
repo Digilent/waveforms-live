@@ -188,7 +188,11 @@ export class CalibratePage {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationLoad(type).subscribe(
             (data) => {
                 console.log(data);
-                this.readCalibration();
+                setTimeout(() => {
+                    this.readCalibration().catch((e) => {
+                        this.calibrationResultsIndicator = 'Error reading current calibration.';
+                    });
+                }, 750);
                 this.calibrationResultsIndicator = 'Loaded calibration successfully.';
             },
             (err) => {
@@ -245,6 +249,13 @@ export class CalibratePage {
             },
             (err) => {
                 console.log(err);
+                if (err.device == undefined && this.calibrationReadAttempts < this.maxCalibrationReadAttempts) {
+                    this.calibrationReadAttempts++;
+                    setTimeout(() => {
+                        this.readCalibrationAfterCalibrating();
+                    }, this.timeBetweenReadAttempts); 
+                    return; 
+                }
                 if (err.device[0].statusCode === 8) {
                     if (this.calibrationReadAttempts < this.maxCalibrationReadAttempts) {
                         this.calibrationReadAttempts++;

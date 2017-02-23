@@ -16,7 +16,7 @@
     <!--<ion-row wrap class="section-col-container">
         <ion-col class="section-col" *ngIf="bridgeConfigure">-->
     <div text-center>
-        <div class="configure-item-wrapper">
+        <div class="configure-item-wrapper" *ngIf="deviceConfigure || bridgeConfigure">
             <div *ngIf="bridgeConfigure">
                 <ion-list class="section-list">
                     <ion-item-divider class="list-header">Agent</ion-item-divider>

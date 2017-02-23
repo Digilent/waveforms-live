@@ -74,9 +74,10 @@ var mathFunctions = (function () {
         var imaginary = new Array(real.length).fill(0);
         var numSamples = real.length;
         transformBluestein(real, imaginary);
-        var maxMag = Math.sqrt(Math.pow(real[0], 2) + Math.pow(imaginary[0], 2));
-        var indexMax = 0;
-        for (var i = 1; i < real.length / 2; i++) {
+        var startingIndex = 1;
+        var indexMax = startingIndex;
+        var maxMag = Math.sqrt(Math.pow(real[startingIndex], 2) + Math.pow(imaginary[startingIndex], 2));
+        for (var i = startingIndex + 1; i < real.length / 2; i++) {
             var magnitude = Math.sqrt(Math.pow(real[i], 2) + Math.pow(imaginary[i], 2));
             if (magnitude > maxMag) {
                 maxMag = magnitude;
@@ -154,16 +155,18 @@ var mathFunctions = (function () {
         var getAxes = chartRef.getAxes();
         var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
-        var real = activeIndices.map((element) => {
+        var real = activeIndices.map(function(element) {
             return element[1];
         });
         var sampleFreq = 1 / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]);
         var imaginary = new Array(real.length).fill(0);
         var numSamples = real.length;
         transformBluestein(real, imaginary);
-        var maxMag = Math.sqrt(Math.pow(real[0], 2) + Math.pow(imaginary[0], 2));
+        //Ignore 0 frequency part when trying to get frequency. Offset can be bigger than wave amplitude and cause issues.
+        var startingIndex = 1;
+        var maxMag = Math.sqrt(Math.pow(real[startingIndex], 2) + Math.pow(imaginary[startingIndex], 2));
         var indexMax = 0;
-        for (var i = 1; i < real.length / 2; i++) {
+        for (var i = startingIndex + 1; i < real.length / 2; i++) {
             var magnitude = Math.sqrt(Math.pow(real[i], 2) + Math.pow(imaginary[i], 2));
             if (magnitude > maxMag) {
                 maxMag = magnitude;
@@ -187,9 +190,10 @@ var mathFunctions = (function () {
         var imaginary = new Array(real.length).fill(0);
         var numSamples = real.length;
         transformBluestein(real, imaginary);
-        var maxMag = Math.sqrt(Math.pow(real[0], 2) + Math.pow(imaginary[0], 2));
-        var indexMax = 0;
-        for (var i = 1; i < real.length / 2; i++) {
+        var startingIndex = 1;
+        var indexMax = startingIndex;
+        var maxMag = Math.sqrt(Math.pow(real[startingIndex], 2) + Math.pow(imaginary[startingIndex], 2));
+        for (var i = startingIndex + 1; i < real.length / 2; i++) {
             var magnitude = Math.sqrt(Math.pow(real[i], 2) + Math.pow(imaginary[i], 2));
             if (magnitude > maxMag) {
                 maxMag = magnitude;

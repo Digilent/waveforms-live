@@ -20,7 +20,7 @@
                         <div text-center *ngIf="scanningForNetworks" class="spinner-container">
                             <ion-spinner name="crescent"></ion-spinner>
                         </div>
-                        <div class="available-network-container" *ngIf="availableNetworks && availableNetworks.length > 0">
+                        <div class="available-network-container">
                             <div *ngFor="let availableNetwork of availableNetworks" text-center>
                                 <ion-card class="network-card" (click)="routeToConfigSlide(availableNetwork)">
                                     <ion-item class="card-info">
@@ -39,7 +39,7 @@
                                 <img class="custom-image-button" src="assets/img/refresh.svg">
                             </button>
                         </div>
-                        <div class="available-network-container" *ngIf="savedNetworks && savedNetworks.length > 0">
+                        <div class="available-network-container">
                             <div *ngFor="let savedNetwork of savedNetworks, let i = index;" text-center>
                                 <ion-card class="network-card" (click)="loadAndConnect(i)">
                                     <ion-item class="card-info">

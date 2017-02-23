@@ -89,6 +89,9 @@ export class DeviceConfigureModal {
                         this.deviceConfigure = true;
                         return this.getNicStatus('wlan0');
                     })
+                    .catch((e) => {
+                        console.log(e);
+                    })
                     .then(() => {
                         return this.reEnumerateAgent();
                     })
@@ -96,12 +99,15 @@ export class DeviceConfigureModal {
                         return this.reEnumerateAgent();
                     })
                     .then(() => {
-                        loading.dismiss();
                         if (this.potentialDevices && this.potentialDevices.indexOf(this.deviceObject.connectedDeviceAddress) !== -1) {
                             this.dropdownPopRef.setActiveSelection(this.deviceObject.connectedDeviceAddress);
                             this.selectedPotentialDeviceIndex = this.potentialDevices.indexOf(this.deviceObject.connectedDeviceAddress);
                         }
-                        this.getCurrentCalibration();
+                        this.getCurrentCalibration().then(() => {
+                            loading.dismiss();
+                        }).catch((e) => {
+                            loading.dismiss();
+                        });
                     })
                     .catch((e) => {
                         console.log('Error setting active from existing');
@@ -114,6 +120,7 @@ export class DeviceConfigureModal {
                     this.currentCalibration = 'USER';
                     return;
                 }
+                let loading = this.deviceManagerPageRef.displayLoading();
                 this.deviceManagerService.connect(this.deviceObject.ipAddress).subscribe(
                     (data) => {
                         console.log(data);
@@ -121,15 +128,23 @@ export class DeviceConfigureModal {
                             this.deviceConfigure = true;
                             this.getNicStatus('wlan0')
                                 .then(() => {
-                                    this.getCurrentCalibration();
+                                    return this.getCurrentCalibration();
                                 })
                                 .catch((e) => {
-                                    this.getCurrentCalibration();
+                                    return this.getCurrentCalibration();
+                                })
+                                .then(() => {
+                                    loading.dismiss();
+                                })
+                                .catch((e) => {
+                                    loading.dismiss();
                                 });
                         }
                     },
                     (err) => {
                         console.log(err);
+                        this.deviceManagerPageRef.toastService.createToast('timeout', true);
+                        loading.dismiss();
                     },
                     () => { }
                 );
@@ -177,6 +192,7 @@ export class DeviceConfigureModal {
                     else {
                         this.currentCalibration = 'FACTORY';
                     }
+                    resolve(data);
                 },
                 (err) => {
                     reject(err);
@@ -416,7 +432,11 @@ export class DeviceConfigureModal {
                                 this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices));
                                 this.deviceManagerService.addDeviceFromDescriptor(this.deviceObject.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                                 this.deviceConfigure = true;
-                                this.getNicStatus('wlan0');
+                                this.getNicStatus('wlan0').then(() => {
+                                    this.getCurrentCalibration().catch((e) => { });
+                                }).catch((e) => {
+                                    this.getCurrentCalibration().catch((e) => { });
+                                });
                                 return;
                             }
 
@@ -430,7 +450,11 @@ export class DeviceConfigureModal {
                                 this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
                                 this.deviceManagerPageRef.deviceManagerService.addDeviceFromDescriptor(this.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                             }
-                            this.getNicStatus('wlan0');
+                            this.getNicStatus('wlan0').then(() => {
+                                this.getCurrentCalibration().catch((e) => { });
+                            }).catch((e) => {
+                                this.getCurrentCalibration().catch((e) => { });
+                            });
                         },
                         (err) => {
                             console.log(err);
@@ -508,15 +532,27 @@ export class DeviceConfigureModal {
         let modal = this.modalCtrl.create(CalibratePage, undefined, {
             enableBackdropDismiss: false
         });
+        modal.onWillDismiss(() => {
+            this.getCurrentCalibration().catch((e) => {
+                console.log(e);
+            });
+        });
         modal.present();
     }
 
     openWifiWizard() {
-        let modal = this.modalCtrl.create(WifiSetupPage, undefined, {
+        let modal = this.modalCtrl.create(WifiSetupPage, {
+            deviceObject: this.deviceObject
+        }, {
             enableBackdropDismiss: false
         });
         modal.onWillDismiss((data) => {
             console.log(data);
+            if (data == undefined) { return; }
+            if (data.toDeviceManagerPage) {
+                this.navCtrl.pop();
+                return;
+            }
             this.nicStatusContainer.ipAddress = data.ipAddress || '';
             this.nicStatusContainer.ssid = data.ssid || '';
             this.nicStatusContainer.status = data.status || '';

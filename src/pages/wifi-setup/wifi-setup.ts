@@ -1,5 +1,5 @@
 import { Component, ViewChild, trigger, state, animate, transition, style } from '@angular/core';
-import { NavParams, Slides, ViewController, PopoverController, LoadingController } from 'ionic-angular';
+import { NavParams, Slides, ViewController, PopoverController, LoadingController, NavController } from 'ionic-angular';
 
 //Services
 import { StorageService } from '../../services/storage/storage.service';
@@ -11,6 +11,7 @@ import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Interfaces
 import { SavedWifiInfoContainer, WifiInfoContainer, NicStatusContainer } from './wifi-setup.interface';
+import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
 
 @Component({
     templateUrl: 'wifi-setup.html',
@@ -79,6 +80,7 @@ export class WifiSetupPage {
     public showMainAdvanced: boolean = false;
     public customNetworkConfig: boolean = false;
     public securityTypes: string[] = ['wpa2', 'wpa', 'wep40', 'wep104'];
+    public deviceObject: DeviceCardInfo;
 
     constructor(
         _storageService: StorageService,
@@ -87,7 +89,8 @@ export class WifiSetupPage {
         _params: NavParams,
         _viewCtrl: ViewController,
         _loadingCtrl: LoadingController,
-        _popoverCtrl: PopoverController
+        _popoverCtrl: PopoverController,
+        public navCtrl: NavController
     ) {
         this.storageService = _storageService;
         this.settingsService = _settingsService;
@@ -96,6 +99,7 @@ export class WifiSetupPage {
         this.loadingCtrl = _loadingCtrl;
         this.params = _params;
         this.viewCtrl = _viewCtrl;
+        this.deviceObject = this.params.get('deviceObject');
         console.log('wifi constructor');
 
         this.getNicList()
@@ -183,10 +187,16 @@ export class WifiSetupPage {
     storageSelection(event) {
         console.log(event);
         this.selectedStorageLocation = event;
-        this.getSavedWifiNetworks(event);
+        this.getSavedWifiNetworks(event).catch((e) => { });
     }
 
     loadAndConnect(savedDeviceIndex: number) {
+        if (this.deviceObject && !this.deviceObject.bridge) {
+            let decision = confirm('Connecting to a network over wifi will send you back to the Device Manager Page. Are you sure?');
+            if (!decision) {
+                return;
+            }
+        }
         let loading = this.displayLoading('Connecting To Saved Network...');
         this.loadWifiNetwork(this.savedNetworks[savedDeviceIndex].storageLocation, this.savedNetworks[savedDeviceIndex].ssid)
             .then(() => {
@@ -194,10 +204,16 @@ export class WifiSetupPage {
             })
             .then(() => {
                 loading.dismiss();
+                if (this.deviceObject && !this.deviceObject.bridge) {
+                    this.closeModal(true);
+                }
             })
             .catch((e) => {
                 console.log('error loading and connecting to network');
                 loading.dismiss();
+                if (this.deviceObject && !this.deviceObject.bridge) {
+                    this.closeModal(true);
+                }
             });
     }
 
@@ -460,7 +476,7 @@ export class WifiSetupPage {
 
     refreshSavedNetworks() {
         console.log(this.selectedStorageLocation);
-        this.getSavedWifiNetworks(this.selectedStorageLocation);
+        this.getSavedWifiNetworks(this.selectedStorageLocation).catch((e) => { });
     }
 
     getSavedWifiNetworks(storageLocation: string): Promise<any> {
@@ -714,7 +730,14 @@ export class WifiSetupPage {
         });
     }
 
-    closeModal() {
+    closeModal(backToDeviceManagerPage?: boolean) {
+        backToDeviceManagerPage = backToDeviceManagerPage == undefined ? false : backToDeviceManagerPage;
+        if (backToDeviceManagerPage) {
+            this.viewCtrl.dismiss({
+                toDeviceManagerPage: true
+            });
+            return;
+        }
         this.getNicStatus(this.selectedNic)
             .then((data) => {
                 this.viewCtrl.dismiss(data);

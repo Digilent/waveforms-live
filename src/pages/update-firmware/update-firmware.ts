@@ -277,7 +277,7 @@ export class UpdateFirmwarePage {
                         if (parsedData.agent && parsedData.agent[0].status && parsedData.agent[0].status === 'uploading' && parsedData.agent[0].progress) {
                             this.progressBarComponent.manualUpdateVal(parsedData.agent[0].progress);
                         }
-                        if (parsedData.agent == undefined || parsedData.agent[0].statusCode > 0 || parsedData.agent[0].status !== 'idle' && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
+                        if ((parsedData.agent == undefined || parsedData.agent[0].statusCode > 0 || parsedData.agent[0].status !== 'idle') && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
                             console.log('statusCode error');
                             this.uploadStatusAttemptCount++;
                             setTimeout(() => {
@@ -293,7 +293,7 @@ export class UpdateFirmwarePage {
                         if (parsedData.agent && parsedData.agent[0].status && parsedData.agent[0].status === 'uploading' && parsedData.agent[0].progress) {
                             this.progressBarComponent.manualUpdateVal(parsedData.agent[0].progress);
                         }
-                        if (parsedData.agent == undefined || parsedData.agent[0].statusCode > 0 || parsedData.agent[0].status !== 'idle' && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
+                        if ((parsedData.agent == undefined || parsedData.agent[0].statusCode > 0 || parsedData.agent[0].status !== 'idle') && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
                             console.log('statusCode error');
                             this.uploadStatusAttemptCount++;
                             setTimeout(() => {
