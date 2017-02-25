@@ -38,13 +38,13 @@
             </ion-row>
             <div *ngIf="showChanSettings[i]">
                 <div class="wavetype-images-container" text-center [tooltip]="tooltipService.getTooltip('tutorialWaveSelectButton').message" 
-                    [forceShow]="tutorialStage === 2 && tutorialMode" [tooltipAnimation]="true" tooltipPlacement="bottom" onlyForceShow="true">
+                    [forceShow]="tutorialStage === 2 && tutorialMode" [tooltipAnimation]="true" tooltipPlacement="top" onlyForceShow="true">
                     <div (tap)="toggleWave('sine')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sine','dim-image': powerOn}"
                         [tooltip]="tooltipService.getTooltip('sineButton').message" [tooltipAnimation]="true" tooltipPlacement="top">
                         <img src="assets/img/sine.svg">
                     </div>
                     <div (tap)="toggleWave('triangle')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='triangle','dim-image': powerOn,'move-feature-to-front':tutorialStage === 2}"
-                        [tooltip]="tooltipService.getTooltip(tutorialStage === 2 ? 'tutorialTriangleButton' : 'triangleButton').message" [tooltipAnimation]="true" tooltipPlacement="top"
+                        [tooltip]="tooltipService.getTooltip(tutorialStage === 2 ? 'tutorialTriangleButton' : 'triangleButton').message" [tooltipAnimation]="true" tooltipPlacement="bottom"
                         [forceShow]="tutorialStage === 2 && tutorialMode">
                         <img src="assets/img/triangle.svg">
                     </div>

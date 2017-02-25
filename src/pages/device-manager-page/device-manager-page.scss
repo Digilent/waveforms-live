@@ -70,6 +70,16 @@
     overflow: visible;
 }
 
+/*.first-tab-container .device-manager-card:hover
+{
+    border: solid white 1px;
+}*/
+
+.first-tab-container .highlight-device-card:hover
+{
+    border: solid white 1px;
+}
+
 .first-tab-container .connect-button-container .tooltip.right .tooltip-arrow {
     top: 25%;
 }

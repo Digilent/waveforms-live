@@ -47,12 +47,12 @@
 
         <ion-slide class="slide-container">
             <div class="content-container">
-                <div class="slide-header">Running Calibration</div>
-                <div class="calibration-instructions pad-above">
-                    {{calibrationStatus}}
-                </div>
+                <div class="slide-header">Calibrating</div>
                 <div text-center class="pad-above">
                     <digilent-progress-bar #digilentProgressBar (progressBarDone)="progressBarFinished()"></digilent-progress-bar>
+                </div>
+                <div class="calibration-instructions pad-above">
+                    {{calibrationStatus}}
                 </div>
                 <div class="navigation-button-container">
                     <ion-row>
@@ -123,7 +123,7 @@
 
         <ion-slide class="slide-container">
             <div class="content-container">
-                <div class="slide-header">Loaded Calibration</div>
+                <div class="slide-header">Load Calibration</div>
                 <div text-center>
                     <ion-item class="calibration-dropdown-popover-container">
                         <span class="storage-label">Storage Location</span>

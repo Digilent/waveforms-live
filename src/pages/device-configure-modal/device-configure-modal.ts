@@ -85,8 +85,11 @@ export class DeviceConfigureModal {
             if (this.deviceObject.bridge) {
                 let loading = this.deviceManagerPageRef.displayLoading();
                 this.setAgentActiveDeviceFromExisting()
-                    .then(() => {
+                    .then((errorEnteringJsonMode: boolean) => {
                         this.deviceConfigure = true;
+                        if (errorEnteringJsonMode) {
+                            return;
+                        }
                         return this.getNicStatus('wlan0');
                     })
                     .catch((e) => {
@@ -163,7 +166,7 @@ export class DeviceConfigureModal {
                 (data) => {
                     this.nicStatusContainer.ipAddress = data.device[0].ipAddress;
                     this.nicStatusContainer.ssid = data.device[0].ssid;
-                    this.nicStatusContainer.status = data.device[0].status;
+                    this.nicStatusContainer.status = data.device[0].status.charAt(0).toUpperCase() + data.device[0].status.slice(1);
                     resolve(data);
                     console.log(data);
                 },
@@ -244,7 +247,7 @@ export class DeviceConfigureModal {
         });
     }
 
-    setAgentActiveDeviceFromExisting(): Promise<null> {
+    setAgentActiveDeviceFromExisting(): Promise<any> {
         //Used to have agent set the device in JSON mode for serial communication.
         let command = {
             "agent": [
@@ -288,7 +291,7 @@ export class DeviceConfigureModal {
                                 reject();
                             });
                     }).catch((e) => {
-                        resolve();
+                        resolve(true);
                     });
                 },
                 (err) => {

@@ -230,7 +230,7 @@ export class WifiSetupPage {
                             return this.saveWifiNetwork(this.selectedStorageLocation);
                         })
                         .then(() => {
-                            if (this.connectNow) {
+                            if (this.connectNow && this.deviceObject && this.deviceObject.bridge) {
                                 setTimeout(() => {
                                     console.log('return promise');
                                     return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
@@ -256,7 +256,7 @@ export class WifiSetupPage {
                     console.log(formattedKeyArray);
                     this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, (<SavedWifiInfoContainer>this.selectedNetwork).autoConnect, undefined, formattedKeyArray, this.wepKeyIndex)
                         .then(() => {
-                            if (this.connectNow) {
+                            if (this.connectNow && this.deviceObject && this.deviceObject.bridge) {
                                 return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
                             }
                             else {
@@ -635,7 +635,7 @@ export class WifiSetupPage {
                     }
                 })
                 .then(() => {
-                    if (this.connectNow) {
+                    if (this.connectNow && this.deviceObject && this.deviceObject.bridge) {
                         if (this.save) {
                             setTimeout(() => {
                                 console.log('return promise');
@@ -671,7 +671,7 @@ export class WifiSetupPage {
             console.log(formattedKeyArray);
             this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, this.autoConnect, undefined, formattedKeyArray, this.wepKeyIndex)
                 .then(() => {
-                    if (this.connectNow) {
+                    if (this.connectNow && this.deviceObject && this.deviceObject.bridge) {
                         return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
                     }
                     else {

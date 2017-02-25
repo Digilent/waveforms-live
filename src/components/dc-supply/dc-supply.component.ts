@@ -124,6 +124,9 @@ export class DcSupplyComponent {
             }
             this.voltageSupplies = channelNumArray;
         }
+        setTimeout(() => {
+            this.getVoltages(this.voltageSupplies);
+        }, 600);
     }
 
     formatExtremes(channel: number) {

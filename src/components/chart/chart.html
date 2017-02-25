@@ -12,23 +12,24 @@
                     </button>
                 </div>
                 <div [hidden]="showFft">
-                    <button ion-button class="chart-button disable-hover" (click)="openChartModal($event)" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartSettings').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                        <img class="button-side-svg" src="assets/img/settings.svg" />
-                    </button>
-                </div>
-                <div [hidden]="showFft">
                     <button ion-button class="chart-button disable-hover" (click)="autoscaleAllAxes()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartAutoscale').message" [tooltipAnimation]="true" tooltipPlacement="left">
                         <img class="button-side-svg" src="assets/img/fullscreen.svg" />
                     </button>
                 </div>
                 <div [hidden]="showFft">
-                    <button ion-button class="chart-button disable-hover" (click)="openDevicePinout($event)" [tooltip]="tooltipService.getTooltip('chartShowDevicePinout').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                        <img class="button-side-svg" src="assets/img/info.svg" />
+                    <button ion-button class="chart-button disable-hover" (click)="centerOnTrigger()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartCenterOnTrigger').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                        <img class="button-side-svg align-trigger" src="assets/img/align-center.svg" />
                     </button>
                 </div>
                 <div [hidden]="showFft">
-                    <button ion-button class="chart-button disable-hover" (click)="centerOnTrigger()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartCenterOnTrigger').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                        <img class="button-side-svg" src="assets/img/arrow-down.svg" />
+                    <button ion-button class="chart-button disable-hover" (click)="openChartModal($event)" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartSettings').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                        <img class="button-side-svg" src="assets/img/download.svg" />
+                    </button>
+                </div>
+                <div [hidden]="showFft">
+                    <button ion-button class="chart-button disable-hover" (click)="openDevicePinout($event)" [tooltip]="tooltipService.getTooltip('chartShowDevicePinout').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                        <!--<img class="button-side-svg" src="assets/img/info.svg" />-->
+                        PIN
                     </button>
                 </div>
             </div>

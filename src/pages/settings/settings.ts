@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PopoverController } from 'ionic-angular';
+import { PopoverController, NavController } from 'ionic-angular';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
@@ -20,7 +20,7 @@ export class SettingsPage {
     public currentSelectedDeviceInfoArray: string[] = [];
     public showAdvancedSettings: boolean = false;
 
-    constructor(_storageService: StorageService, _popCtrl: PopoverController, _settingsService: SettingsService) {
+    constructor(_storageService: StorageService, _popCtrl: PopoverController, _settingsService: SettingsService, public navCtrl: NavController) {
         this.storageService = _storageService;
         this.settingsService = _settingsService;
         this.popoverCtrl = _popCtrl;
@@ -56,5 +56,9 @@ export class SettingsPage {
 
     clearAppLog() {
         this.settingsService.clearAppLog();
+    }
+
+    done() {
+        this.navCtrl.pop();
     }
 }

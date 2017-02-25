@@ -63,6 +63,7 @@
 {
     font-size: 14px;
     color: #CCCCCC;
+    padding: 0 16px 0 16px;
 }
 /*
 .calibration-container .calibrate-item
@@ -95,6 +96,9 @@
 {
     font-size: 16px;
     background-color: #535353;
+    .item-inner {
+        border: none;
+    }
 }
 
 .calibration-container .dropdown-popover-container

@@ -66,6 +66,15 @@
                         </button>
                     </ion-col>
                 </ion-row>
+                
+                <ion-row class="controls-container">
+                    <ion-col center class="vpd-label-col">
+                        Sample Rate
+                    </ion-col>
+                    <ion-col class="samplefreq-val-col" center text-center>
+                        <input [disabled]="true" class="custom-input" step="any" [ngModel]="chart.calculateDataFromWindow().sampleFreq | unitFormat:'S/s'" />
+                    </ion-col>
+                </ion-row>
             </div>
         </div>
     </div>

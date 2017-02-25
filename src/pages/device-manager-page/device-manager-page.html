@@ -119,7 +119,7 @@
                             </div>
                             <ion-label class="add-device-label">
                                 <ion-item class="dev-menu-item">
-                                    <ion-label stacked>Agent</ion-label>
+                                    <ion-label stacked>Digilent Agent</ion-label>
                                     <ion-input [(ngModel)]="deviceBridgeAddress" (keypress)="checkForEnter($event, 'agent')"></ion-input>
                                     <div item-right class="connect-button-container">
                                         <button ion-button class="connect-button disable-hover" (click)="backToChooseDeviceType()" [tooltip]="tooltipMessages['backToAddDevice']" 
@@ -142,7 +142,7 @@
     </div>
     <div>
         <div text-center>
-            <ion-card class="device-manager-card" *ngFor="let device of devices, let i = index;">
+            <ion-card class="device-manager-card highlight-device-card" *ngFor="let device of devices, let i = index;">
 
                 <ion-item class="card-item" [ngClass]="{'move-feature-to-front':tutorialStage===3 && tutorialMode && i === 0}" [tooltip]="tooltipMessages['deviceCard']" 
                     [forceShow]="tutorialStage===3 && tutorialMode && i===0" [tooltipAnimation]="true" tooltipPlacement="bottom" forceShowDelay="500">

@@ -87,11 +87,11 @@ var waveformsLiveDictionary = (function() {
         //Tutorial Tooltips
         //Appears on main add a device button on device-manager-page
         tutorialAddADevice: {
-            english: 'Click To Add A Device'
+            english: 'Click To Add A New Device'
         },
         //Appears on the network device button when adding a new device.
         tutorialNetworkButton: {
-            english: 'This Button Adds A Device That Is On Your WiFi Network'
+            english: 'This Button Adds A Device That Is On The Network'
         },
         //Appears on the simulated device button when adding a new device.
         tutorialSimulatedButton: {
@@ -99,11 +99,11 @@ var waveformsLiveDictionary = (function() {
         },
         //Appears on the agent button when adding a new device.
         tutorialAgentButton: {
-            english: 'This Button Adds An Agent Which Allows You To Talk To USB Devices'
+            english: 'This Button Adds The Digilent Agent Which Enables Communication With USB Devices'
         },
         //Appears on the button used to attempt to add the current device.
         tutorialAddCurrentDevice: {
-            english: 'Click To Add Device'
+            english: 'Click To Add The Device'
         },
         //Appears on the button used to navigate backwards to the device type selection stage.
         tutorialBackToAddDevice: {
@@ -115,28 +115,28 @@ var waveformsLiveDictionary = (function() {
         },
         //Appears on the device card.
         tutorialDeviceCard: {
-            english: 'Click To Connect To Device And Navigate To Instrument Panel'
+            english: 'The Device Has Been Saved To The Device Manager. Click To Connect To The Device And Navigate To The Instrument Panel'
         },
         tutorialWaveSelectButton: {
-            english: 'Use These Buttons To Select A Wave Type'
+            english: 'These Buttons Set The Wave Type'
         },
         tutorialFgenPower: {
-            english: 'Click To Toggle Wavegen Power'
+            english: 'Click To Turn The Wavegen On'
         },
         tutorialTriangleButton: {
-            english: 'Select A Triangle Wave'
+            english: 'Click The Triangle Wave Button'
         },
         tutorialTimeline: {
-            english: 'This Is The Timeline. It Shows Your Window In The Current Buffer. Click And Drag To Pan And Mousewheel To Zoom.'
+            english: 'This Is The Timeline. It Shows The View In The Current Buffer. Click And Drag To Pan. Mousewheel To Zoom.'
         },
         tutorialChart: {
-            english: 'This Is The Chart. Click And Drag To Pan And Mousewheel To Zoom.'
+            english: 'This Is The Chart. Click And Drag To Pan. Mousewheel To Zoom.'
         },
         tutorialLoopBack: {
-            english: 'For The Simulated Device, The AWG Is Connected To The Oscilloscope.'
+            english: 'The Simulated Device Wavegen Is Connected To The Oscilloscope'
         },
         tutorialSingleButton: {
-            english: 'Click To Get A Buffer Of Data.'
+            english: 'Click To Arm The Trigger. Data Is Returned When The Acquisition Is Complete'
         },
 
         //Tooltips

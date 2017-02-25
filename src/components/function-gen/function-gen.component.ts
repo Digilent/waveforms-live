@@ -284,7 +284,7 @@ export class FgenComponent {
             settings[i] = {
                 signalType: this.waveType,
                 signalFreq: this.frequency,
-                vpp: this.amplitude,
+                vpp: this.waveType === 'dc' ? 0 : this.amplitude,
                 vOffset: this.offset
             };
         }

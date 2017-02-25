@@ -19,7 +19,7 @@
         <div class="configure-item-wrapper" *ngIf="deviceConfigure || bridgeConfigure">
             <div *ngIf="bridgeConfigure">
                 <ion-list class="section-list">
-                    <ion-item-divider class="list-header">Agent</ion-item-divider>
+                    <ion-item-divider class="list-header">Digilent Agent</ion-item-divider>
                     <ion-item class="configure-item">
                         <ion-label>Selected Device</ion-label>
                         <div item-right class="item-content-right dropdown-popover-item-right" [ngClass]="{'invalid-enumeration':invalidEnumeration}">
@@ -34,7 +34,7 @@
                         <button ion-button class="text-button-side item-button disable-hover" clear (click)="reEnumerateAgent()">Re-Enumerate</button>
                     </ion-item>
                     <ion-item class="configure-item" *ngIf="potentialDevices && potentialDevices.length > 0">
-                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update / Load Firmware</button>
+                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update Firmware</button>
                     </ion-item>
                 </ion-list>
             </div>
@@ -82,12 +82,13 @@
                     </ion-item>
                 </ion-list>
             </div>
-
-            <div text-right>
-                <button ion-button class="text-button-side disable-hover" (click)="done()">
-                    Done
-                </button>
-            </div>
+        </div>
+    </div>
+    <div text-center>
+        <div text-right class="nav-button-wrapper">
+            <button ion-button class="text-button-side disable-hover" (click)="done()">
+                {{(deviceConfigure && !invalidEnumeration) ? 'Done' : 'Cancel'}}
+            </button>
         </div>
     </div>
 

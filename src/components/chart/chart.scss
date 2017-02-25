@@ -30,6 +30,11 @@
     -ms-flex: 1 1 400px; 
 }
 
+.chart-component-wrapper .align-trigger
+{
+    transform: rotate(90deg);
+}
+
 .chart-component-wrapper .chart-component-container-div
 {
     display: block;

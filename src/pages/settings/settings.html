@@ -1,17 +1,20 @@
-<ion-header>
-    <ion-navbar>
-        <button menuToggle>
-            <img class="custom-image-button" src="assets/img/menu.svg" />
-        </button>
-        <ion-title>Settings</ion-title>
-    </ion-navbar>
-</ion-header>
-
-<ion-content class="settings-body" padding>
+<ion-content class="settings-body">
+    <div>
+        <ion-row>
+            <ion-col class="back-button-col" center>
+                <button ion-button class="custom-back-button disable-hover" (click)="done()">
+                    <img class="custom-image-button" src="assets/img/arrow-back.svg">
+                </button>
+            </ion-col>
+            <ion-col center class="config-title-menu-col">
+                Settings
+            </ion-col>
+        </ion-row>
+    </div>
     <div text-center>
         <div class="configure-item-wrapper">
             <ion-list class="section-list">
-                <ion-item-divider class="list-header">Hotkeys</ion-item-divider>
+                <ion-item-divider class="list-header">Chart Hotkeys</ion-item-divider>
                 <ion-item class="configure-item">
                     <ion-label>Zoom On Center</ion-label>
                     <div item-right class="item-content-right">Mousewheel</div>
@@ -35,7 +38,7 @@
             </ion-list>
                 <button ion-button icon-right clear class="advanced-button" (tap)="toggleAdvancedSettings()">
                     Advanced
-                    <img class="custom-image-button" [src]="showAdvancedSettings ? 'arrow-dropup' : 'arrow-dropdown'" />
+                    <img class="custom-image-button" [src]="showAdvancedSettings ? 'assets/img/arrow-dropup.svg' : 'assets/img/arrow-dropdown.svg'" />
                 </button>
                 <div *ngIf="showAdvancedSettings" class="configure-item-wrapper">
                     <ion-list class="section-list">

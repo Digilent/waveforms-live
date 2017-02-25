@@ -67,6 +67,30 @@
     }
 }
 
+ion-checkbox .checkbox-icon.checkbox-checked
+{
+    border-color: #4487BA;
+    background-color: #4487BA;
+}
+
+::-webkit-input-placeholder { /* Chrome */
+    color: inherit;
+    opacity: 0.2;
+
+}
+:-ms-input-placeholder { /* IE 10+ */
+    color: inherit;
+    opacity: 0.2;
+}
+::-moz-placeholder { /* Firefox 19+ */
+    color: inherit;
+    opacity: 0.2;
+}
+:-moz-placeholder { /* Firefox 4 - 18 */
+    color: inherit;
+    opacity: 0.2;
+}
+
 .custom-input
 {
     color: #CCCCCC;

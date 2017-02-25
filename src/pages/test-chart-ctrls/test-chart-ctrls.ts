@@ -193,7 +193,9 @@ export class TestChartCtrlsPage {
                     this.readingLa = false;
                     this.readingOsc = false;
                     this.triggerStatus = 'Idle';
-                    this.toastService.createToast('timeout', true);
+                    if (err === 'TX Error: ') {
+                        this.toastService.createToast('timeout', true);
+                    }
                     return;
                 }
                 this.toastService.createToast('triggerStopError', true);
@@ -569,6 +571,7 @@ export class TestChartCtrlsPage {
     stopClick() {
         console.log('stop');
         this.running = false;
+        this.abortSingle(true);
     }
 
     //Enable cursors and timeline view

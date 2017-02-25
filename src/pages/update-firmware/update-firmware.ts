@@ -183,7 +183,7 @@ export class UpdateFirmwarePage {
     }
 
     displayLoading(message?: string) {
-        message = message || 'Attempting To Upload...';
+        message = message || 'Transferring Hex File...';
         let loading = this.loadingCtrl.create({
             content: message,
             spinner: 'crescent',

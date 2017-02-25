@@ -301,7 +301,7 @@ export class SilverNeedleChart {
             yaxes: this.generateFftYaxisOptions(),
             xaxis: {
                 tickColor: '#666666',
-                tickFormatter: ((val, axis) => {return this.unitFormatPipeInstance.transform(val, 'Hz')}),
+                tickFormatter: ((val, axis) => { return this.unitFormatPipeInstance.transform(val, 'Hz') }),
                 font: {
                     color: '#666666'
                 }
@@ -498,7 +498,7 @@ export class SilverNeedleChart {
             let dataToSet: DataContainer[] = [];
             for (let i = 0; i < this.deviceDescriptor.instruments.osc.numChans; i++) {
                 dataToSet.push({
-                    data: this.numSeries.indexOf(i) !== -1 ? this.getFftArray(i, 0, this.currentBufferArray[i].y.length): [],
+                    data: this.numSeries.indexOf(i) !== -1 ? this.getFftArray(i, 0, this.currentBufferArray[i].y.length) : [],
                     yaxis: i + 1,
                     lines: {
                         show: this.numSeries.indexOf(i) !== -1
@@ -507,7 +507,7 @@ export class SilverNeedleChart {
                         show: false
                     }
                 });
-                
+
             }
             this.fftChart.setData(dataToSet, autoscale);
         }
@@ -851,7 +851,7 @@ export class SilverNeedleChart {
 
             this.chart.setActiveYIndices(this.activeVPDIndex);
 
-            this.activeTPDIndex = this.secsPerDivVals.indexOf(0.002);
+            this.activeTPDIndex = this.secsPerDivVals.indexOf(0.001);
             this.chart.setActiveXIndex(this.activeTPDIndex);
             this.setTimeSettings({
                 timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
@@ -1008,7 +1008,7 @@ export class SilverNeedleChart {
 
         this.drawSeriesAnchors();
         this.shouldShowIndividualPoints();
-        
+
         if (this.showFft) {
             this.drawFft(true);
         }
@@ -1612,8 +1612,15 @@ export class SilverNeedleChart {
         }
     }
 
-    calculateDataFromWindow() {
+    calculateDataFromWindow(): {bufferSize: number, sampleFreq: number} {
         //100 points per division
+        if (this.chart == undefined) {
+            return {
+                bufferSize: 0,
+                sampleFreq: 0
+            }
+        }
+
         let numPoints = this.chart.width();
         //Need to sample at 100 times in 1 time division
         let sampleFreq = (numPoints / 10) * (1 / this.secsPerDivVals[this.activeTPDIndex]);
