@@ -60,6 +60,7 @@ export class TestChartCtrlsPage {
 
     public currentOscReadArray: number[];
     public currentLaReadArray: number[];
+    public forceTriggerInterval: number = 100;
 
     constructor(
         _deviceManagerService: DeviceManagerService,
@@ -375,8 +376,27 @@ export class TestChartCtrlsPage {
                 this.abortSingle(true);
             },
             () => {
+                if (this.triggerComponent.edgeDirection === 'off') {
+                    this.forceTrigger()
+                        .then(() => {
+                            console.log('done force trigger');
+                            if (this.activeDevice.transport.getType() !== 'local') {
+                                setTimeout(() => {
+                                    this.readOscope(oscArray[0]);
+                                    this.readLa(laArray[0]);
+                                }, this.theoreticalAcqTime);
+                            }
+                            else {
+                                this.readOscope(oscArray[0]);
+                                this.readLa(laArray[0]);
+                            }
+                        })
+                        .catch((e) => { 
+                            console.log('fail force trigger');
+                        });
+                    return;
+                }
                 if (this.activeDevice.transport.getType() !== 'local') {
-
                     setTimeout(() => {
                         this.readOscope(oscArray[0]);
                         this.readLa(laArray[0]);
@@ -398,6 +418,33 @@ export class TestChartCtrlsPage {
         };
 
 
+    }
+
+    forceTrigger(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (!this.readingLa && !this.readingOsc) {
+                reject();
+                return;
+            }
+            this.activeDevice.instruments.trigger.forceTrigger([1]).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    setTimeout(() => {
+                        return this.forceTrigger()
+                            .then((data) => {
+                                resolve(data);
+                            })
+                            .catch((e) => { 
+                                reject();
+                            });
+                    }, this.forceTriggerInterval);
+                },
+                () => { }
+            );
+        });
     }
 
     readLa(readArray: number[]) {
