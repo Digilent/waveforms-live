@@ -2,9 +2,6 @@
     <div class="chart-container-container" id="chart-component-container">
         <div (pinch)="pinchEvent($event)" class="chart-component-container-div">
             <div id="flotContainer"></div>
-            <div class="beta-container">
-                <img src="assets/img/beta.svg" />
-            </div>
             <div class="chart-button-container">
                 <div>
                     <button ion-button class="chart-button disable-hover" (click)="toggleFft()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartToggleFft').message" [tooltipAnimation]="true" tooltipPlacement="left">

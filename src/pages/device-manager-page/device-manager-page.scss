@@ -324,9 +324,18 @@
 {
     position: absolute;
     bottom: 0;
-    left: 0;
-    width: 150px;
+    left: 16px;
+    width: 75px;
     max-width: 33%;
+}
+
+.first-tab-container .tutorial-button-container
+{
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    max-width: 33%;
+    z-index: 1000;
 }
 
 .first-tab-container .kickstarter-button
@@ -336,6 +345,8 @@
     border: solid black 1px;
     color: white;
     border-radius: 0;
+    min-width: 100px;
+    max-width: 100%;
 }
 
 .first-tab-container .kickstarter-button:hover

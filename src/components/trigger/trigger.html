@@ -48,11 +48,12 @@
 				</ion-col>
 				<ion-col class="input-col" center>
                     <div class="label-flex">
-                        <div class="label-left remove-margin">
-                            <button ion-button icon-right class="source-button disable-hover" (click)="openGenPopover($event)">
+                        <div class="label-left">
+                            <!--<button ion-button icon-right class="source-button disable-hover" (click)="openGenPopover($event)">
                                 {{triggerSource}}
                                 <img class="custom-image-button" src="assets/img/arrow-dropdown.svg">
-                            </button>
+                            </button>-->
+							<dropdown-popover [dataArray]="triggerSources" (onSelection)="sourceSelect($event)"></dropdown-popover>
                         </div>
                     </div>
 				</ion-col>

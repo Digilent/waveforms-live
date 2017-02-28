@@ -623,7 +623,17 @@ export class WifiSetupPage {
                 return;
             }
         }
-        let loading = this.displayLoading('Connecting To Network');
+        if (this.selectedNetwork.ssid === '' && this.selectedNetwork.bssid === '') {
+            this.wifiStatus = 'Please enter a valid SSID.';
+            return;
+        }
+        let loading;
+        if (this.customNetworkConfig) {
+            loading = this.displayLoading('Adding Network');
+        }
+        else {
+            loading = this.displayLoading('Connecting To Network');
+        }
         if (this.selectedNetwork.securityType === 'wpa' || this.selectedNetwork.securityType === 'wpa2') {
             this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, this.autoConnect, this.password)
                 .then(() => {

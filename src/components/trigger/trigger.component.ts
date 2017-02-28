@@ -24,6 +24,7 @@ export class TriggerComponent {
     public upperThresh: string = '500';
     public edgeDirection: string = 'rising';
     public triggerSource: string = 'Osc Ch 1';
+    public triggerSources: string[] = [];
     public triggerType: string = 'edge';
     public popoverCtrl: PopoverController;
     public showTriggerSettings: boolean = true;
@@ -43,6 +44,13 @@ export class TriggerComponent {
         this.toastService = _toastService;
         this.devMngSrv = _devMngSrv;
         this.activeDevice = this.devMngSrv.devices[this.devMngSrv.activeDeviceIndex];
+        for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
+            this.triggerSources.push('Osc Ch ' + (i + 1));
+        }
+    }
+
+    sourceSelect(event) {
+        this.triggerSource = event;
     }
 
     checkForEnter(event) {

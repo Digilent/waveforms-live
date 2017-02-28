@@ -8,6 +8,7 @@ import { ProgressBarComponent } from '../../components/progress-bar/progress-bar
 import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { CommandUtilityService } from '../../services/device/command-utility.service';
 
 @Component({
     templateUrl: 'load-firmware.html',
@@ -41,7 +42,8 @@ export class LoadFirmwarePage {
         _params: NavParams,
         _loadingCtrl: LoadingController,
         _viewCtrl: ViewController,
-        _deviceManagerService: DeviceManagerService
+        _deviceManagerService: DeviceManagerService,
+        public commandUtilityService: CommandUtilityService
     ) {
         this.deviceManagerService = _deviceManagerService;
         this.storageService = _storageService;
@@ -68,7 +70,7 @@ export class LoadFirmwarePage {
         }
 
         this.selectedDevice = this.knownDevicePrettyNames[0];
-        this.firmwareStatus = 'IMPORTANT: Device must be in bootloader mode to load firmware.';
+        this.firmwareStatus = 'Select a known device or choose a hex file.';
     }
 
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it
@@ -147,20 +149,12 @@ export class LoadFirmwarePage {
                 this.slider.slideTo(1);
                 swiperInstance.lockSwipes();
                 this.progressBarComponent.manualStart();
+                this.getUploadStatus();
                 loading.dismiss();
             })
             .catch((e) => {
                 console.log('Error caught trying to upload the firmware');
                 loading.dismiss();
-                if (e === 'HTTP Timeout: ') {
-                    let swiperInstance: any = this.slider.getSlider();
-                    swiperInstance.unlockSwipes();
-                    this.slider.slideTo(1);
-                    swiperInstance.lockSwipes();
-                    this.progressBarComponent.manualStart();
-                    this.getUploadStatus();
-                    return;
-                }
                 this.firmwareStatus = 'Error uploading firmware. Make sure the device is in bootloader mode and try again.';
             });
     }
@@ -284,25 +278,19 @@ export class LoadFirmwarePage {
 
     generateOsjb(firmwareArrayBuffer: ArrayBuffer) {
         let commandObject = {
-            agent: [{
-                command: 'uploadFirmware',
-                enterBootloader: false
-            }]
+            agent: [
+                {
+                    command: "saveToTempFile",
+                    fileName: "openscope-mz-firmware.hex"
+                },
+                {
+                    command: 'uploadFirmware',
+                    firmwarePath: 'openscope-mz-firmware.hex',
+                    enterBootloader: false
+                }
+            ]
         };
-        let stringCommand = JSON.stringify(commandObject);
-        let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
-
-        let stringSection = binaryIndex + stringCommand + '\r\n';
-        let binaryBufferStringSectionArrayBuf = new ArrayBuffer(stringSection.length);
-        let binaryBufferStringSection = new Uint8Array(binaryBufferStringSectionArrayBuf);
-        for (let i = 0; i < stringSection.length; i++) {
-            binaryBufferStringSection[i] = stringSection.charCodeAt(i);
-        }
-
-        let temp = new Uint8Array(stringSection.length + firmwareArrayBuffer.byteLength);
-        temp.set(new Uint8Array(binaryBufferStringSection), 0);
-        temp.set(new Uint8Array(firmwareArrayBuffer), binaryBufferStringSection.byteLength);
-        console.log('temp');
+        let temp = this.commandUtilityService.createChunkedArrayBuffer(commandObject, firmwareArrayBuffer);
         console.log(temp);
         return temp;
     }

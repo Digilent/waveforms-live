@@ -11,7 +11,7 @@
 
 .wifi-setup-container .dropdown-popover-item-right
 {
-    min-width: 140px;
+    width: 140px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -20,8 +20,14 @@
         .dropdown-select {
             cursor: pointer;
             height: 25px;
+            text-transform: uppercase;
         }
     }
+}
+
+.wifi-setup-container .security-type-container
+{
+    text-transform: uppercase;
 }
 
 .wifi-setup-container .configure-item
@@ -116,6 +122,9 @@
 
     .item-inner {
         border: none !important;
+        .input-wrapper {
+            min-width: 100px;
+        }
     }
 
     ion-label {
@@ -151,10 +160,9 @@
     border: solid black 1px;
 }
 
-.wifi-setup-container .rotate-arrow-icon
+.wifi-setup-container .wep104
 {
-    padding-right: 0.4em;
-    padding-left: 0.4em;
+    width: 252px;
 }
 
 .wifi-setup-container .collapse-card

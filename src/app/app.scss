@@ -91,6 +91,13 @@ ion-checkbox .checkbox-icon.checkbox-checked
     opacity: 0.2;
 }
 
+.advanced-button
+{
+    text-transform: none;
+    padding-left: 16px;
+    padding-right: 6px;
+}
+
 .custom-input
 {
     color: #CCCCCC;
@@ -297,12 +304,12 @@ ion-checkbox .checkbox-icon.checkbox-checked
 
 .end-tutorial 
 {
-    background-color: red;
+    background-color: red !important;
 }
 
 .help-button
 {
-    background-color: #4487BA;
+    background-color: #4487BA !important;
 }
 
 .custom-backdrop
@@ -314,6 +321,12 @@ ion-checkbox .checkbox-icon.checkbox-checked
     right: 0;
     bottom: 0;
     z-index: 500;
+}
+
+.rotate-image-container
+{
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 html input[disabled] {

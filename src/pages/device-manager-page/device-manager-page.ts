@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, trigger, state, animate, transition, style } from '@angular/core';
 import { PopoverController, App, NavController, ModalController, Platform, AlertController, LoadingController } from 'ionic-angular';
 
 //Pages
@@ -32,7 +32,15 @@ interface tooltipInterface {
 }
 
 @Component({
-    templateUrl: 'device-manager-page.html'
+    templateUrl: 'device-manager-page.html',
+    animations: [
+        trigger('rotate', [
+            state('true', style({ transform: 'rotate(-180deg)' })),
+            state('false', style({ transform: 'rotate(0deg)' })),
+            transition('void => *', animate('0s')),
+            transition('* <=> *', animate('250ms ease-in-out'))
+        ])
+    ]
 })
 export class DeviceManagerPage {
     public app: App;

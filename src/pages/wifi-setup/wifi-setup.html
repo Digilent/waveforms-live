@@ -34,8 +34,8 @@
                         <div class="network-header">
                             Saved Networks
                         </div>
-                        <div text-center *ngIf="!scanningForNetworks" class="available-button-container">
-                            <button ion-button class="icon-only-button-side available-network-button disable-hover" (click)="refreshSavedNetworks()">
+                        <div text-center class="available-button-container">
+                            <button ion-button [disabled]="scanningForNetworks" class="icon-only-button-side available-network-button disable-hover" (click)="refreshSavedNetworks()">
                                 <img class="custom-image-button" src="assets/img/refresh.svg">
                             </button>
                         </div>
@@ -58,7 +58,7 @@
                     <button ion-button icon-right clear class="advanced-button" (tap)="toggleMainAdvanced()">
                         Advanced
                         <div [@rotate]="showMainAdvanced">
-                            <img class="custom-image-button" src="assets/img/arrow-dropdown.svg">
+                            <img class="custom-image-button" src="assets/img/arrow-dropdown-white.svg">
                         </div>
                     </button> 
                 </div>
@@ -112,7 +112,7 @@
 
                     <ion-item class="card-info" *ngIf="!customNetworkConfig">
                         <ion-label>Security Type</ion-label>
-                        <div item-right class="item-content-right">{{selectedNetwork.securityType}}</div>
+                        <div item-right class="item-content-right security-type-container">{{selectedNetwork.securityType}}</div>
                     </ion-item>
 
                     <ion-item class="card-info" *ngIf="customNetworkConfig">
@@ -137,8 +137,8 @@
                         </ion-item>
                         <ion-item class="card-info" *ngFor="let key of wepKeyEntryArray, let i = index;">
                             <ion-label>Wep Key {{i + 1}}</ion-label>
-                            <div item-right class="item-content-right hostname-input-wrapper">
-                                <input placeholder="AA:34:CC:78:12" class="custom-input" [(ngModel)]="wepKeyArray[i]" />
+                            <div item-right class="item-content-right hostname-input-wrapper" [ngClass]="{'wep104':selectedNetwork.securityType==='wep104'}">
+                                <input [placeholder]="selectedNetwork.securityType === 'wep40' ? 'AA:34:CC:78:12' : 'AA:BC:32:38:83:09:B8:8C:7D:FE:FF:6D:1A'" class="custom-input" [(ngModel)]="wepKeyArray[i]" />
                             </div>
                         </ion-item>
                     </div>
@@ -151,7 +151,7 @@
                     <button ion-button icon-right clear class="advanced-button" (tap)="toggleAdvancedSettings()">
                         Advanced
                         <div [@rotate]="showAdvancedSettings">
-                            <img class="custom-image-button rotate-arrow-icon" src="assets/img/arrow-dropdown.svg">
+                            <img class="custom-image-button" src="assets/img/arrow-dropdown-white.svg">
                         </div>
                     </button> 
 
@@ -193,7 +193,7 @@
 
                     <ion-item class="card-info">
                         <ion-label>Security Type</ion-label>
-                        <div item-right class="item-content-right">{{selectedNetwork.securityType}}</div>
+                        <div item-right class="item-content-right security-type-container">{{selectedNetwork.securityType}}</div>
                     </ion-item>
 
                     <ion-item class="card-info" *ngIf="selectedNetwork.securityType === 'wpa' || selectedNetwork.securityType === 'wpa2'">

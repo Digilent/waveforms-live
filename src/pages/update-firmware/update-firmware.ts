@@ -217,20 +217,12 @@ export class UpdateFirmwarePage {
                 this.slider.slideTo(1);
                 swiperInstance.lockSwipes();
                 this.progressBarComponent.manualStart();
+                this.getUploadStatus();
                 loading.dismiss();
             })
             .catch((e) => {
                 console.log('Error caught trying to upload the firmware');
                 loading.dismiss();
-                if (e === 'HTTP Timeout: ') {
-                    let swiperInstance: any = this.slider.getSlider();
-                    swiperInstance.unlockSwipes();
-                    this.slider.slideTo(1);
-                    swiperInstance.lockSwipes();
-                    this.progressBarComponent.manualStart();
-                    this.getUploadStatus();
-                    return;
-                }
                 this.updateStatus = 'Error uploading firmware. Please try again.';
             });
     }
@@ -421,20 +413,6 @@ export class UpdateFirmwarePage {
                 }
             ]
         };
-        /*let stringCommand = JSON.stringify(commandObject);
-        let binaryIndex = (stringCommand.length + 2).toString() + '\r\n';
-
-        let stringSection = binaryIndex + stringCommand + '\r\n';
-        let binaryBufferStringSectionArrayBuf = new ArrayBuffer(stringSection.length);
-        let binaryBufferStringSection = new Uint8Array(binaryBufferStringSectionArrayBuf);
-        for (let i = 0; i < stringSection.length; i++) {
-            binaryBufferStringSection[i] = stringSection.charCodeAt(i);
-        }
-
-        let temp = new Uint8Array(stringSection.length + firmwareArrayBuffer.byteLength);
-        temp.set(new Uint8Array(binaryBufferStringSection), 0);
-        temp.set(new Uint8Array(firmwareArrayBuffer), binaryBufferStringSection.byteLength);
-        //Since we're actually sending the result directly to the transport, return the actual byte array instead of the arrayBuffer which is just a reference.*/
         let temp = this.commandUtilityService.createChunkedArrayBuffer(commandObject, firmwareArrayBuffer);
         console.log(temp);
         return temp;

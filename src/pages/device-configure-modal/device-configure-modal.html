@@ -30,18 +30,18 @@
                             </button>
                         </div>
                     </ion-item>
-                    <ion-item class="configure-item">
-                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="reEnumerateAgent()">Re-Enumerate</button>
+                    <ion-item class="configure-item only-button-item">
+                        <button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="reEnumerateAgent()">Re-Enumerate</button>
                     </ion-item>
-                    <ion-item class="configure-item" *ngIf="potentialDevices && potentialDevices.length > 0">
-                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update Firmware</button>
+                    <ion-item class="configure-item only-button-item" *ngIf="potentialDevices && potentialDevices.length > 0">
+                        <button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update Firmware</button>
                     </ion-item>
                 </ion-list>
             </div>
 
             <div *ngIf="deviceConfigure && !invalidEnumeration">
                 <ion-list class="section-list">
-                    <ion-item-divider class="list-header">WiFi Settings</ion-item-divider>
+                    <ion-item-divider class="list-header">Wifi Settings</ion-item-divider>
                     <ion-item class="configure-item first-item">
                         <ion-label>Name</ion-label>
                         <div item-right class="item-content-right hostname-input-wrapper">
@@ -53,7 +53,7 @@
                         <div item-right class="item-content-right">{{deviceObject.connectedDeviceAddress || deviceObject.ipAddress}}</div>
                     </ion-item>
                     <ion-item class="configure-item">
-                        <ion-label>WiFi Status</ion-label>
+                        <ion-label>Wifi Status</ion-label>
                         <div item-right class="item-content-right">{{nicStatusContainer.status}}</div>
                     </ion-item>
                     <ion-item class="configure-item">
@@ -64,8 +64,8 @@
                         <ion-label>Device IP Address</ion-label>
                         <div item-right class="item-content-right">{{nicStatusContainer.ipAddress}}</div>
                     </ion-item>
-                    <ion-item class="configure-item" *ngIf="deviceObject.ipAddress !== 'local'">
-                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="openWifiWizard()">Setup Wifi</button>
+                    <ion-item class="configure-item only-button-item" *ngIf="deviceObject.ipAddress !== 'local'">
+                        <button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="openWifiWizard()">Setup Wifi</button>
                     </ion-item>
                 </ion-list>
             </div>
@@ -77,8 +77,8 @@
                         <ion-label fixed>Current Calibration</ion-label>
                         <div item-right class="item-content-right">{{currentCalibration}}</div>
                     </ion-item>
-                    <ion-item class="configure-item" *ngIf="deviceObject.ipAddress !== 'local'">
-                        <button ion-button class="text-button-side item-button disable-hover" clear (click)="openCalibrateWizard()">Calibrate</button>
+                    <ion-item class="configure-item only-button-item" *ngIf="deviceObject.ipAddress !== 'local'">
+                        <button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="openCalibrateWizard()">Calibrate</button>
                     </ion-item>
                 </ion-list>
             </div>
@@ -86,7 +86,7 @@
     </div>
     <div text-center>
         <div text-right class="nav-button-wrapper">
-            <button ion-button class="text-button-side disable-hover" (click)="done()">
+            <button ion-button class="text-button-side disable-hover done-button" (click)="done()">
                 {{(deviceConfigure && !invalidEnumeration) ? 'Done' : 'Cancel'}}
             </button>
         </div>

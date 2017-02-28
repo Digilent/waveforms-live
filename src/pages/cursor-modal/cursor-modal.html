@@ -2,21 +2,15 @@
     <ion-list class="cursor-modal-list">
         <ion-item class="cursor-modal-item">
             <h3>Type</h3>
-            <button ion-button icon-right clear class="cursor-modal-button disable-hover" (click)="showPopover($event, 'cursorType')"> {{chartComponent.cursorType}} 
-                <img class="custom-image-button" src="assets/img/arrow-dropdown.svg" />
-            </button>
+            <dropdown-popover #typeDropPop [dataArray]="cursorTypeArray" (onSelection)="cursorTypeSelect($event)"></dropdown-popover>
         </ion-item>
         <ion-item class="cursor-modal-item">
             <h3>Cursor 1 Channel</h3>
-            <button ion-button icon-right clear [disabled]="chartComponent.cursorType === 'Disabled'" class="cursor-modal-button disable-hover" (click)="showPopover($event, 'cursor1Chan')"> {{chartComponent.cursor1Chan}} 
-                <img class="custom-image-button" src="assets/img/arrow-dropdown.svg" />
-            </button>
+            <dropdown-popover #c1DropPop [dataArray]="activeChans" (onSelection)="availableChannelSelect($event, 1)"></dropdown-popover>
         </ion-item>
         <ion-item class="cursor-modal-item">
             <h3>Cursor 2 Channel</h3>
-            <button ion-button icon-right clear [disabled]="chartComponent.cursorType === 'Disabled'" class="cursor-modal-button disable-hover" (click)="showPopover($event, 'cursor2Chan')"> {{chartComponent.cursor2Chan}} 
-                <img class="custom-image-button" src="assets/img/arrow-dropdown.svg" />
-            </button>
+            <dropdown-popover #c2DropPop [dataArray]="activeChans" (onSelection)="availableChannelSelect($event, 2)"></dropdown-popover>
         </ion-item>
     </ion-list>
 </div>

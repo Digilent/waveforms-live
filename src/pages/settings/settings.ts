@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, trigger, state, animate, transition, style } from '@angular/core';
 import { PopoverController, NavController } from 'ionic-angular';
 
 //Components
@@ -9,7 +9,15 @@ import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 
 @Component({
-    templateUrl: 'settings.html'
+    templateUrl: 'settings.html',
+    animations: [
+        trigger('rotate', [
+            state('true', style({ transform: 'rotate(-180deg)' })),
+            state('false', style({ transform: 'rotate(0deg)' })),
+            transition('void => *', animate('0s')),
+            transition('* <=> *', animate('250ms ease-in-out'))
+        ])
+    ]
 })
 export class SettingsPage {
     public storageService: StorageService;

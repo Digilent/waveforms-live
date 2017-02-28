@@ -38,7 +38,9 @@
             </ion-list>
                 <button ion-button icon-right clear class="advanced-button" (tap)="toggleAdvancedSettings()">
                     Advanced
-                    <img class="custom-image-button" [src]="showAdvancedSettings ? 'assets/img/arrow-dropup.svg' : 'assets/img/arrow-dropdown.svg'" />
+                    <div [@rotate]="showAdvancedSettings" class="rotate-image-container">
+                        <img class="custom-image-button" src="assets/img/arrow-dropdown-white.svg">
+                    </div>
                 </button>
                 <div *ngIf="showAdvancedSettings" class="configure-item-wrapper">
                     <ion-list class="section-list">

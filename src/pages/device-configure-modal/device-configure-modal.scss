@@ -54,7 +54,7 @@
 .device-configure-modal-container .hostname-input-wrapper
 {
     max-width: 60%;
-    width: 200px;
+    width: 140px;
 }
 
 .device-configure-modal-container .set-white-font
@@ -85,6 +85,11 @@
     border-top: solid black 1px;
 }
 
+.device-configure-modal-container .done-button
+{
+    margin-right: 0;
+}
+
 .device-configure-modal-container .nav-button-wrapper
 {
     display: inline-block;
@@ -112,7 +117,7 @@
 
 .device-configure-modal-container .dropdown-popover-item-right
 {
-    min-width: 110px;
+    min-width: 140px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -161,6 +166,14 @@
 .device-configure-modal-container .item-button
 {
     font-size: 10px;
+    margin: 0;
+    margin-right: 8px;
+    min-width: 104px;
+}
+
+.device-configure-modal-container .only-button-item
+{
+    padding-bottom: 8px;
 }
 
 .item-content-right

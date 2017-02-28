@@ -1,10 +1,11 @@
 import { NavParams, ViewController, Platform, PopoverController } from 'ionic-angular';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 import { DeviceComponent } from '../../components/device/device.component';
 import { SilverNeedleChart } from '../../components/chart/chart.component';
+import { DropdownPopoverComponent } from '../../components/dropdown-popover/dropdown-popover.component';
 
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
@@ -13,6 +14,9 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
     templateUrl: "cursor-modal.html"
 })
 export class ModalCursorPage {
+    @ViewChild('typeDropPop') typeDropPop: DropdownPopoverComponent;
+    @ViewChild('c1DropPop') c1DropPop: DropdownPopoverComponent;
+    @ViewChild('c2DropPop') c2DropPop: DropdownPopoverComponent;
     public platform: Platform;
     public viewCtrl: ViewController;
     public params: NavParams;
@@ -54,6 +58,32 @@ export class ModalCursorPage {
             this.chartComponent.cursor2Chan = this.activeChans[0];
             this.chartComponent.handleCursors();
         }
+    }
+
+    ngOnInit() {
+        this.setCurrentValuesInDropdown();
+    }
+
+    setCurrentValuesInDropdown() {
+        this.typeDropPop.setActiveSelection(this.chartComponent.cursorType);
+        this.c1DropPop.setActiveSelection(this.chartComponent.cursor1Chan);
+        this.c2DropPop.setActiveSelection(this.chartComponent.cursor2Chan);
+    }
+
+    cursorTypeSelect(event) {
+        console.log(event);
+        this.chartComponent.cursorType = event;
+        this.chartComponent.handleCursors();
+    }
+
+    availableChannelSelect(event, channel: number) {
+        if (channel === 1) {
+            this.chartComponent.cursor1Chan = event;
+        }
+        else {
+            this.chartComponent.cursor2Chan = event;
+        }
+        this.chartComponent.handleCursors();
     }
 
     //Show cursor settings popover and return data as a navparam on dismiss

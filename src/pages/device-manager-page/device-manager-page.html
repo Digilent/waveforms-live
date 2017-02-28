@@ -8,19 +8,17 @@
         </button>
     </div>
 
-    <ion-fab right bottom>
-        <button ion-fab mini (tap)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
-            <img [src]="tutorialMode ? 'assets/img/close.svg' : 'assets/img/help.svg'" />
+    <div class="tutorial-button-container">
+        <button ion-button (tap)="executeHelp()" class="kickstarter-button disable-hover" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}" *ngIf="tutorialMode">
+            End Tutorial
         </button>
-    </ion-fab>
+        <button ion-button (tap)="executeHelp()" class="kickstarter-button disable-hover" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}" *ngIf="!tutorialMode">
+            Tutorial
+        </button>
+    </div>
 
     <div class="beta-container">
-        <img src="assets/img/beta.svg" />
-        <div>
-            <button ion-button class="kickstarter-button disable-hover" (click)="supportKickstarter()">
-                Support Our Kickstarter
-            </button>
-        </div>
+        <img src="assets/img/digilent-logo.png">
     </div>
 
     <div class="align-center">
@@ -28,7 +26,9 @@
             [forceShow]="tutorialStage===0 && tutorialMode" [tooltipAnimation]="true" tooltipPlacement="bottom" 
             [ngClass]="{'move-feature-to-front':tutorialStage===0 && tutorialMode}">
             Add a Device
-            <img [src]="showDevMenu ? 'assets/img/arrow-dropup.svg' : 'assets/img/arrow-dropdown.svg'" class="custom-image-button">
+            <div [@rotate]="showDevMenu" class="rotate-image-container">
+                <img src="assets/img/arrow-dropdown-white.svg" class="custom-image-button">
+            </div>
         </button>
     </div>
     <div [ngClass]="{fadein: showDevMenu}" class="fadeout" text-center>

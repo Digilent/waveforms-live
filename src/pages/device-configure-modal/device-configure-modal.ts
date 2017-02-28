@@ -192,6 +192,9 @@ export class DeviceConfigureModal {
                     else if (calibrationObjectString.indexOf('IDEAL') !== -1) {
                         this.currentCalibration = 'IDEAL';
                     }
+                    else if (calibrationObjectString.indexOf('CALIBRATED') !== -1) {
+                        this.currentCalibration = 'CALIBRATED';
+                    }
                     else {
                         this.currentCalibration = 'FACTORY';
                     }
@@ -515,6 +518,7 @@ export class DeviceConfigureModal {
             enableBackdropDismiss: false
         });
         modal.onWillDismiss((data) => {
+            if (this.deviceArrayIndex == undefined || page === LoadFirmwarePage) { return; }
             this.deviceManagerService.connect(this.deviceManagerPageRef.devices[this.deviceArrayIndex].deviceBridgeAddress).subscribe(
                 (data) => {
                     if (data.device && data.device[0].statusCode === 0) {
@@ -558,7 +562,7 @@ export class DeviceConfigureModal {
             }
             this.nicStatusContainer.ipAddress = data.ipAddress || '';
             this.nicStatusContainer.ssid = data.ssid || '';
-            this.nicStatusContainer.status = data.status || '';
+            this.nicStatusContainer.status = data.status.charAt(0).toUpperCase() + data.status.slice(1) || '';
         });
         modal.present();
     }
