@@ -240,6 +240,7 @@ export class TestChartCtrlsPage {
             trigSourceArr[2] = '1';
         }
         let trigType;
+        console.log(this.triggerComponent.edgeDirection);
         switch (this.triggerComponent.edgeDirection) {
             case 'rising': trigType = 'risingEdge'; break;
             case 'falling': trigType = 'fallingEdge'; break;

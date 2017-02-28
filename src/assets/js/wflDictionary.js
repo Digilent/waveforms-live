@@ -236,6 +236,36 @@ var waveformsLiveDictionary = (function() {
         triggerForce: {
             english: 'Force Trigger'
         },
+        triggerSource: {
+            english: 'Set The Trigger Source'
+        },
+        triggerLevel: {
+            english: 'Set The Trigger Level'
+        },
+        oscOffset: {
+            english: 'Set Offset'
+        },
+        oscVpd: {
+            english: 'Set Volts / Division'
+        },
+        oscSamplingFreq: {
+            english: 'Osc Sampling Frequency'
+        },
+        xAxisTpd: {
+            english: 'Set Time / Division'
+        },
+        awgFreq: {
+            english: 'Set Wavegen Frequency'
+        }, 
+        awgAmp: {
+            english: 'Set Wavegen Amplitude'
+        }, 
+        awgOffset: {
+            english: 'Set Wavegen Offset'
+        },
+        dcVoltage: {
+            english: 'Set DC Voltage'
+        },
         configDeviceRetryEnumerate: {
             english: 'Retry Enumeration'
         }

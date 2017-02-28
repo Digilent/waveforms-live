@@ -45,14 +45,23 @@
                 <div *ngIf="showAdvancedSettings" class="configure-item-wrapper">
                     <ion-list class="section-list">
                         <ion-item-divider class="list-header">App Logging</ion-item-divider>
-                        <ion-item class="configure-item">
-                            <button ion-button class="text-button-side item-button disable-hover" (click)="changeConsoleLog($event)">Change Console Log</button>
+                        <ion-item class="configure-item only-button-item">
+                            <ion-label>Change Logging Behavior</ion-label>
+                            <div item-right>
+                                <button ion-button class="text-button-side item-button disable-hover" (click)="changeConsoleLog($event)">Change Console Log</button>
+                            </div>
                         </ion-item>
-                        <ion-item class="configure-item">
-                            <button ion-button class="text-button-side item-button disable-hover" (click)="exportLogFile()">Export Log</button>
+                        <ion-item class="configure-item only-button-item">
+                            <ion-label>Export Log</ion-label>
+                            <div item-right>
+                                <button ion-button class="text-button-side item-button disable-hover" (click)="exportLogFile()">Export Log</button>
+                            </div>
                         </ion-item>
-                        <ion-item class="configure-item">
-                            <button ion-button class="text-button-side item-button disable-hover" (click)="clearAppLog()">Clear App Log</button>
+                        <ion-item class="configure-item only-button-item">
+                            <ion-label>Clear Local App Log</ion-label>
+                            <div item-right>
+                                <button ion-button class="text-button-side item-button disable-hover" (click)="clearAppLog()">Clear App Log</button>
+                            </div>
                         </ion-item>
                     </ion-list>
                 </div>

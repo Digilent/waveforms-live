@@ -3,6 +3,9 @@ import { Component, Input } from '@angular/core';
 //Components
 import { SilverNeedleChart } from '../chart/chart.component';
 
+//Services
+import { TooltipService } from '../../services/tooltip/tooltip.service';
+
 @Component({
     templateUrl: 'xaxis-controls.html',
     selector: 'xaxis-controls'
@@ -14,7 +17,7 @@ export class XAxisComponent {
     public showTimeSettings: boolean = true;
     public ignoreFocusOut: boolean = false;
 
-    constructor() { }
+    constructor(public tooltipService: TooltipService) { }
 
     checkForEnter(event) {
         if (event.key === 'Enter') {

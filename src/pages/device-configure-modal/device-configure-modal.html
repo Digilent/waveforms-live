@@ -24,14 +24,22 @@
                         <ion-label>Selected Device</ion-label>
                         <div item-right class="item-content-right dropdown-popover-item-right" [ngClass]="{'invalid-enumeration':invalidEnumeration}">
                             <dropdown-popover #dropdownPop [dataArray]="potentialDevices" (onSelection)="dropdownDeviceChange($event)"></dropdown-popover>
-                            <button ion-button class="icon-only-button-side disable-hover alert-button" (click)="retryDeviceEnumeration()" *ngIf="invalidEnumeration"
+                            <!--<button ion-button class="icon-only-button-side disable-hover alert-button" (click)="retryDeviceEnumeration()" *ngIf="invalidEnumeration"
                                 [tooltip]="tooltipService.getTooltip('configDeviceRetryEnumerate').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                                <img class="custom-image-button" src="assets/img/info.svg" />
+                                <img class="custom-image-button" src="assets/img/info.svg">
+                            </button>-->
+                            <button ion-button item-right class="icon-only-button-side alert-button disable-hover" clear (click)="reEnumerateAgent()">
+                                <img class="custom-image-button" src="assets/img/refresh.svg">
                             </button>
                         </div>
                     </ion-item>
                     <ion-item class="configure-item only-button-item">
-                        <button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="reEnumerateAgent()">Re-Enumerate</button>
+                        <!--<button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="reEnumerateAgent()">Re-Enumerate</button>-->
+                        <button ion-button item-right class="text-button-side disable-hover item-button" (click)="retryDeviceEnumeration()" [disabled]="!invalidEnumeration"
+                            [tooltip]="tooltipService.getTooltip('configDeviceRetryEnumerate').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                            <!--<img class="custom-image-button" src="assets/img/info.svg">-->
+                            Connect
+                        </button>
                     </ion-item>
                     <ion-item class="configure-item only-button-item" *ngIf="potentialDevices && potentialDevices.length > 0">
                         <button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update Firmware</button>

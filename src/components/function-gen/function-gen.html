@@ -67,7 +67,7 @@
                     </ion-col>
                     <ion-col class="input-col">
                         <div class="label-flex">
-                            <div class="label-left">
+                            <div class="label-left" [tooltip]="tooltipService.getTooltip('awgFreq').message" [tooltipAnimation]="true" tooltipPlacement="top">
                                 <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="frequency | unitFormat:'Hz'" (focusout)="inputLeave($event, 'frequency')" (keypress)="checkForEnter($event, 'frequency')" />
                             </div>
                         </div>
@@ -79,7 +79,7 @@
                     </ion-col>
                     <ion-col class="input-col">
                         <div class="label-flex">
-                            <div class="label-left">
+                            <div class="label-left" [tooltip]="tooltipService.getTooltip('awgAmp').message" [tooltipAnimation]="true" tooltipPlacement="top">
                                 <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="amplitude | unitFormat:'Vpp'" (focusout)="inputLeave($event, 'amplitude')" (keypress)="checkForEnter($event, 'amplitude')" />
                             </div>
                         </div>
@@ -91,7 +91,7 @@
                     </ion-col>
                     <ion-col class="input-col">
                         <div class="label-flex">
-                            <div class="label-left">
+                            <div class="label-left" [tooltip]="tooltipService.getTooltip('awgOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
                                 <input class="custom-input" step="any" [disabled]="powerOn" [ngModel]="offset | unitFormat:'V'" (focusout)="inputLeave($event, 'offset')" (keypress)="checkForEnter($event, 'offset')" />
                             </div>
                         </div>

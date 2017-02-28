@@ -1,5 +1,5 @@
 <div class="xaxis-component-wrapper">
-    <ion-row>
+    <!--<ion-row>
         <ion-col class="header-side-col" center text-left>
             <button ion-button clear class="dropdown-image-button" (tap)="toggleSeriesSettings()">
                 <img class="custom-dropdown-img" [ngClass]="{rotateOn: showTimeSettings}" src="assets/img/arrow-right.png">
@@ -10,7 +10,7 @@
         </ion-col>
         <ion-col class="header-side-col" center text-right>
         </ion-col>
-    </ion-row>
+    </ion-row>-->
     <ion-row *ngIf="showTimeSettings" class="controls-container time-base-row">
         <ion-col center class="tpd-label-col">
             Time/
@@ -23,7 +23,7 @@
             </div>
         </ion-col>
         <ion-col class="xaxis-center" center text-center>
-            <div style="display:inline-block;">
+            <div style="display:inline-block;" [tooltip]="tooltipService.getTooltip('xAxisTpd').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
                 <input class="custom-input highlight-input" step="any" [ngModel]="chart.timeDivision | unitFormat:'s/'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
             </div>
         </ion-col>

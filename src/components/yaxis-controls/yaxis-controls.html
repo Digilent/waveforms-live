@@ -36,7 +36,7 @@
                             </button>
                         </div>
                     </ion-col>
-                    <ion-col class="vpd-val-col" center text-center>
+                    <ion-col class="vpd-val-col" center text-center [tooltip]="tooltipService.getTooltip('oscVpd').message" [tooltipAnimation]="true" tooltipPlacement="top">
                         <input class="custom-input highlight-input" step="any" [ngModel]="chart.voltDivision[i] | unitFormat:'V/'" (focusout)="inputLeave($event, i, 'vpd')" (keypress)="checkForEnter($event, i, 'vpd')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
@@ -54,21 +54,21 @@
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <button ion-button (tap)="chart.decrementOffset(i)" class="icon-only-button-side disable-hover offset-button">
-                            <img class="button-side-svg" src="assets/img/remove.svg" />
+                            <img class="button-side-svg" src="assets/img/remove.svg">
                         </button>
                     </ion-col>
-                    <ion-col class="vpd-val-col" center text-center>
+                    <ion-col class="vpd-val-col" center text-center [tooltip]="tooltipService.getTooltip('oscOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
                         <input class="custom-input" step="any" [ngModel]="chart.voltBase[i] | unitFormat:'V'" (focusout)="inputLeave($event, i, 'offset')" (keypress)="checkForEnter($event, i, 'offset')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <button ion-button (tap)="chart.incrementOffset(i)" class="icon-only-button-side disable-hover offset-button">
-                            <img class="button-side-svg" src="assets/img/add.svg" />
+                            <img class="button-side-svg" src="assets/img/add.svg">
                         </button>
                     </ion-col>
                 </ion-row>
                 
                 <ion-row class="controls-container">
-                    <ion-col center class="vpd-label-col">
+                    <ion-col center class="vpd-label-col" [tooltip]="tooltipService.getTooltip('oscSamplingFreq').message" [tooltipAnimation]="true" tooltipPlacement="top">
                         Sample Rate
                     </ion-col>
                     <ion-col class="samplefreq-val-col" center text-center>

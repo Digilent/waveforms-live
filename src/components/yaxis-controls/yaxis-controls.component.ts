@@ -6,6 +6,7 @@ import { SilverNeedleChart } from '../chart/chart.component';
 
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
+import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 @Component({
     templateUrl: 'yaxis-controls.html',
@@ -26,7 +27,7 @@ export class YAxisComponent {
     public showOscSettings: boolean = true;
     public ignoreFocusOut: boolean = false;
 
-    constructor(_viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController, _settingsSrv: SettingsService) {
+    constructor(_viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController, _settingsSrv: SettingsService, public tooltipService: TooltipService) {
         this.popoverCtrl = _popoverCtrl;
         this.viewCtrl = _viewCtrl;
         this.params = _params;

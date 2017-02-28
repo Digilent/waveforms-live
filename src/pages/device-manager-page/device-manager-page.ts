@@ -613,8 +613,8 @@ export class DeviceManagerPage {
         });
     }
 
-    supportKickstarter() {
-        let openTab = window.open('https://www.kickstarter.com/projects/342199468/openscope-instrumentation-for-everyone/', '_blank');
+    routeToDigilent() {
+        let openTab = window.open('https://store.digilentinc.com/', '_blank');
         openTab.location;
     }
 

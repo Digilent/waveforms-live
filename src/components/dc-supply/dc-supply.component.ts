@@ -6,6 +6,7 @@ import { DeviceComponent } from '../../components/device/device.component';
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
 import { ToastService } from '../../services/toast/toast.service';
+import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 @Component({
     templateUrl: 'dc-supply.html',
@@ -34,7 +35,7 @@ export class DcSupplyComponent {
     public toastService: ToastService;
     public ignoreFocusOut: boolean = false;
 
-    constructor(_deviceManagerService: DeviceManagerService, _toastService: ToastService) {
+    constructor(_deviceManagerService: DeviceManagerService, _toastService: ToastService, public tooltipService: TooltipService) {
         this.toastService = _toastService;
         this.voltageSupplies = [0, 1, 2];
         this.contentHidden = true;

@@ -1444,9 +1444,7 @@ export class SilverNeedleChart {
         let popover = this.popoverCtrl.create(PinoutPopover, undefined, {
             cssClass: 'pinoutPopover'
         });
-        popover.present({
-            ev: event
-        });
+        popover.present();
     }
 
     centerOnTrigger() {

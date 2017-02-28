@@ -48,7 +48,7 @@
 				</ion-col>
 				<ion-col class="input-col" center>
                     <div class="label-flex">
-                        <div class="label-left">
+                        <div class="label-left" [tooltip]="tooltipService.getTooltip('triggerSource').message" [tooltipAnimation]="true" tooltipPlacement="top">
                             <!--<button ion-button icon-right class="source-button disable-hover" (click)="openGenPopover($event)">
                                 {{triggerSource}}
                                 <img class="custom-image-button" src="assets/img/arrow-dropdown.svg">
@@ -64,7 +64,7 @@
 				</ion-col>
 				<ion-col center class="input-col">
                     <div class="label-flex">
-                        <div class="label-left">
+                        <div class="label-left" [tooltip]="tooltipService.getTooltip('triggerLevel').message" [tooltipAnimation]="true" tooltipPlacement="top">
                             <input class="custom-input" step="any" [ngModel]="level | unitFormat:'V'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
                         </div>
                     </div>

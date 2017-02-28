@@ -71,10 +71,16 @@ export class CalibratePage {
         console.log(this.selectedLocation);
     }
 
-    toSlide(slideNum: number) {
+    toSlide(slideNum: number, noTransition?: boolean) {
+        noTransition = noTransition == undefined ? false : noTransition;
         let swiperInstance: any = this.slider.getSlider();
         swiperInstance.unlockSwipes();
-        this.slider.slideTo(slideNum);
+        if (noTransition) {
+            this.slider.slideTo(slideNum, 0);
+        }
+        else {
+            this.slider.slideTo(slideNum);
+        }
         swiperInstance.lockSwipes();
     }
 
@@ -229,7 +235,7 @@ export class CalibratePage {
     toLoadExistingPage() {
         let swiperInstance: any = this.slider.getSlider();
         swiperInstance.unlockSwipes();
-        this.slider.slideTo(3);
+        this.slider.slideTo(3, 0);
         swiperInstance.lockSwipes();
         this.calibrationResultsIndicator = 'Select a storage location and click load.';
         this.calibrationResults = '';

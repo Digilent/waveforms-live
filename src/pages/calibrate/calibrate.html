@@ -90,25 +90,31 @@
                         <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" item-right (click)="getStorageLocations()">
                             <img class="custom-image-button" src="assets/img/refresh.svg">
                         </button>
+                        <button ion-button icon-right class="storage-refresh-button text-button-side disable-hover" item-right (click)="saveCalibrationToDevice()">
+                            Save
+                            <img class="svg-in-img" src="assets/img/save.svg">
+                        </button>
+                    </ion-item>
+                    <ion-item class="configure-item">
+                        <ion-label>Status</ion-label>
+                        <div item-right class="item-content-right">
+                            {{calibrationResultsIndicator}}
+                        </div>
                     </ion-item>
                 </div>
                 <div class="navigation-button-container">
                     <ion-row>
-                        <ion-col text-left class="status-indicator-col">
-                            <div class="calibration-instructions status-indicator">Status: </div>
-                            <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>
+                        <ion-col text-left>
+                            <!--<div class="calibration-instructions status-indicator">Status: </div>
+                            <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>-->
                         </ion-col>
-                        <ion-col text-right class="button-container-col">
-                            <div>
-                                <button class="save-button disable-hover" (click)="saveCalibrationToDevice()">
-                                    <div>
-                                        <img class="svg-in-img" src="assets/img/save.svg">
-                                    </div>
-                                    <div>
-                                        SAVE
-                                    </div>
-                                </button>
-                            </div>
+                        <ion-col text-center>
+                            <!--<button ion-button icon-right class="text-button-side disable-hover" (click)="saveCalibrationToDevice()">
+                                Save
+                                <img class="svg-in-img" src="assets/img/save.svg">
+                            </button>-->
+                        </ion-col>
+                        <ion-col text-right>
                             <div>
                                 <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()">
                                     Done
@@ -142,11 +148,24 @@
                     <textarea [ngModel]="calibrationResults" class="calibration-results-container"></textarea>
                 </div>
 
+                <div>
+                    <ion-item class="configure-item">
+                        <ion-label>Status</ion-label>
+                        <div item-right class="item-content-right">
+                            {{calibrationResultsIndicator}}
+                        </div>
+                    </ion-item>
+                </div>
+
                 <div class="navigation-button-container">
                     <ion-row>
-                        <ion-col text-left class="status-indicator-col">
-                            <div class="calibration-instructions status-indicator">Status: </div>
-                            <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>
+                        <ion-col text-left>
+                            <!--<div class="calibration-instructions status-indicator">Status: </div>
+                            <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>-->
+                            <button ion-button icon-left class="text-button-side disable-hover" (click)="toSlide(0, true)">
+                                <img class="custom-image-button" src="assets/img/arrow-back.svg">
+                                Back
+                            </button>
                         </ion-col>
                         <ion-col text-right class="button-container-col">
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()">
