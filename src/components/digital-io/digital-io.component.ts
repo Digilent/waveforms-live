@@ -63,6 +63,20 @@ export class DigitalIoComponent {
         this.headerClicked.emit(null);
     }
 
+    getChannelTooltip(channel: number) {
+        let buttonState = this.getButtonState(channel);
+        switch (buttonState) {
+            case 'A':
+                return 'This channel is set to Analyzer';
+            case 'I':
+                return 'This channel is set to Input';
+            case 'O':
+                return 'This channel is set to Output';
+            default:
+                return 'Unknown channel state';
+        }
+    }
+
     setAll(direction: 'output' | 'input') {
         let chanArray = [];
         let valArray = [];

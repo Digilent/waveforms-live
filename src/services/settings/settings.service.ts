@@ -19,7 +19,7 @@ export class SettingsService {
 
     public knownFirmwareUrls: { openscopeMz: { prettyName: string, firmwareUrl: string } } = {
         openscopeMz: {
-            prettyName: 'OpenScope-MZ',
+            prettyName: 'OpenScope MZ',
             firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent-test'
         }
     };

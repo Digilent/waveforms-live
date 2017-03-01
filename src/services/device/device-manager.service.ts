@@ -99,7 +99,7 @@ export class DeviceManagerService {
 
     connectLocal(deviceName: string): Observable<any> {
         return Observable.create((observer) => {
-            if (deviceName === 'OpenScope-MZ') {
+            if (deviceName === 'OpenScope MZ') {
                 let XHR = new XMLHttpRequest();
                 // We define what will happen if the data are successfully sent
                 XHR.addEventListener("load", function (event: MyEventResponse) {

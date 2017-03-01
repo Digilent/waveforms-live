@@ -37,7 +37,7 @@
                 <ion-col *ngFor="let channel of gpioChans, let i = index;" class="digi-col" text-center>
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
-                        <div class="dummy-border" [ngClass]="{'button-output': gpioDirections[i]}">
+                        <div class="dummy-border" [tooltip]="getChannelTooltip(i)" [tooltipAnimation]="true" tooltipPlacement="left" [ngClass]="{'button-output': gpioDirections[i]}">
                             <button (tap)="toggleChannel(i)" class="channel-button" [disabled]="!gpioDirections[i]" [ngClass]="{'button-on': gpioVals[i]}">
                                 <span class="button-indicator">{{getButtonState(i)}}</span>
                             </button>
@@ -65,7 +65,7 @@
                 <ion-col *ngFor="let channel of gpioChans, let i = index;" class="digi-col" text-center>
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
-                        <div class="dummy-border">
+                        <div class="dummy-border" [tooltip]="getChannelTooltip(i)" [tooltipAnimation]="true" tooltipPlacement="left">
                             <button (tap)="toggleChanDirection(i)" class="channel-button direction-mode direction-mode-border" [ngClass]="{'button-on': gpioDirections[i]}">
                                 <span class="button-indicator">{{getButtonState(i)}}</span>
                             </button>
@@ -96,7 +96,7 @@
                         <div>{{i + 1}}</div>
                         <div class="dummy-border">
                             <button (tap)="toggleLaChan(i)" class="channel-button la-mode la-mode-border" 
-                                [tooltip]="tooltipService.getTooltip('analyzerButton').message" [tooltipAnimation]="true" tooltipPlacement="top" 
+                                [tooltip]="getChannelTooltip(i)" [tooltipAnimation]="true" tooltipPlacement="left" 
                                 [ngClass]="{'button-on': laActiveChans[i]}">
                                 <span class="button-indicator">{{getButtonState(i)}}</span>
                             </button>

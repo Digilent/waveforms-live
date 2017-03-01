@@ -3,7 +3,7 @@
     "statusCode": 0,
     "wait": 0,
     "deviceMake": "Digilent",
-    "deviceModel": "OpenScope-MZ",
+    "deviceModel": "OpenScope MZ",
     "firmwareVersion": {
         "major": 0,
         "minor": 13,

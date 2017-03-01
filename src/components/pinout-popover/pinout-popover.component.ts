@@ -21,7 +21,7 @@ export class PinoutPopover {
         let devModel = dev.deviceModel;
         console.log(devModel);
         switch (devModel) {
-            case 'OpenScope-MZ': 
+            case 'OpenScope MZ': 
                 console.log('openscope in get pinout');
                 this.pinoutAddress = 'assets/img/osmz-pinout.svg';
                 break;

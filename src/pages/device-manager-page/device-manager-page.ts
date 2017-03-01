@@ -57,12 +57,12 @@ export class DeviceManagerPage {
     public settingsService: SettingsService;
     public storage: StorageService;
     public showDevMenu: boolean = false;
-    public selectedSimulatedDevice: string = 'OpenScope-MZ';
+    public selectedSimulatedDevice: string = 'OpenScope MZ';
     public deviceBridgeAddress = 'http://localhost:56089';
 
     public devices: DeviceCardInfo[] = [];
 
-    public simulatedDevices: string[] = ['OpenScope-MZ'];
+    public simulatedDevices: string[] = ['OpenScope MZ'];
     public deviceConnectionType: string = 'network';
     public showDeviceTypeCard: boolean = true;
 
@@ -467,7 +467,7 @@ export class DeviceManagerPage {
     }
 
     openSimDevice() {
-        if (this.selectedSimulatedDevice === 'OpenScope-MZ') {
+        if (this.selectedSimulatedDevice === 'OpenScope MZ') {
             if (this.checkIfMatchingLocal(this.selectedSimulatedDevice, this.tutorialMode)) {
                 if (!this.tutorialMode) {
                     this.toastService.createToast('deviceExists', true);
