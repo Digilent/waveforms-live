@@ -46,6 +46,7 @@ export class UpdateFirmwarePage {
     public arrayBufferFirmware: ArrayBuffer;
     public uploadStatusAttemptCount: number = 0;
     public maxUploadStatusAttempts: number = 20;
+    public errorUpdatingFirmware: boolean = false;
 
     constructor(
         _storageService: StorageService,
@@ -318,6 +319,7 @@ export class UpdateFirmwarePage {
                 .then(() => {
                     console.log('entered json mode');
                     this.updateComplete = true;
+                    this.updateStatus = 'Update complete!';
                     loadingRef.dismiss();
                 })
                 .catch((e) => {
@@ -328,6 +330,8 @@ export class UpdateFirmwarePage {
                     }
                     else {
                         loadingRef.dismiss();
+                        this.updateStatus = 'Update failed.';
+                        this.errorUpdatingFirmware = true;
                     }
                 });
         }, 1000);

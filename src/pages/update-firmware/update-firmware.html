@@ -58,12 +58,20 @@
                 <div class="slide-header">Updating Firmware</div>
                 <digilent-progress-bar #digilentProgressBar (progressBarDone)="doneUpdating()"></digilent-progress-bar>
 
+                <ion-item class="firmware-item">
+                    <ion-label fixed>Status</ion-label>
+                    <div item-right class="general-content">{{updateStatus}}</div>
+                </ion-item>
+                
                 <div class="navigation-button-container">
                     <ion-row>
                         <ion-col text-right>
-                            <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()" *ngIf="updateComplete">
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()" *ngIf="updateComplete && !errorUpdatingFirmware">
                                 Done
                                 <img class="custom-image-button" src="assets/img/check.svg">
+                            </button>
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()" *ngIf="errorUpdatingFirmware">
+                                <img class="custom-image-button" src="assets/img/remove.svg">
                             </button>
                         </ion-col>
                     </ion-row>

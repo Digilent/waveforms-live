@@ -63,17 +63,36 @@ export class DigitalIoComponent {
         this.headerClicked.emit(null);
     }
 
-    getChannelTooltip(channel: number) {
+    getChannelTooltip(channel: number, state: 'analyzer' | 'gpio' | 'direction') {
         let buttonState = this.getButtonState(channel);
-        switch (buttonState) {
-            case 'A':
-                return 'This channel is set to Analyzer';
-            case 'I':
-                return 'This channel is set to Input';
-            case 'O':
-                return 'This channel is set to Output';
-            default:
-                return 'Unknown channel state';
+        let mode = 'Input';
+        if (buttonState === 'A') {
+            mode = 'Analyzer';
+        }
+        else if (buttonState === 'O') {
+            mode = 'Output';
+        }
+        
+        if (state === 'analyzer') {
+            if (buttonState === 'I' || buttonState === 'O') {
+                return 'Mode: ' + mode + '. Click to change to analyzer';
+            }
+            return 'Mode: ' + mode + '. Click to change to input';
+        }
+        else if (state === 'gpio') {
+            if (buttonState === 'I') {
+                return 'Mode: ' + mode + '. Value: ' + (this.gpioVals[channel] ? 'High' : 'Low');
+            }
+            else if (buttonState === 'A') {
+                return 'Mode: ' + mode;
+            }
+            return 'Mode: ' + mode + '. Click to toggle ' + (this.gpioVals[channel] ? 'Low' : 'High');
+        }
+        else {
+            if (buttonState === 'I' || buttonState === 'A') {
+                return 'Mode: ' + mode + '. Click to change to output';
+            }
+            return 'Mode: ' + mode + '. Click to change to input';
         }
     }
 
