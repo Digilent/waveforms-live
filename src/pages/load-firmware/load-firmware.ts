@@ -34,7 +34,8 @@ export class LoadFirmwarePage {
     public firmwareStatus: string = 'Select a default device or upload your own hex file.';
     public updateComplete: boolean = false;
     public uploadStatusAttemptCount: number = 0;
-    public maxUploadStatusAttempts: number = 20;
+    public maxUploadStatusAttempts: number = 50;
+    public errorUpdatingFirmware: boolean = false;
 
     constructor(
         _storageService: StorageService,
@@ -144,6 +145,7 @@ export class LoadFirmwarePage {
         this.uploadStatusAttemptCount = 0;
         this.sendHexFile()
             .then(() => {
+                this.firmwareStatus = 'Updating firmware';
                 let swiperInstance: any = this.slider.getSlider();
                 swiperInstance.unlockSwipes();
                 this.slider.slideTo(1);
@@ -170,11 +172,16 @@ export class LoadFirmwarePage {
         this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
             (data) => {
                 data = this.arrayBufferToObject(data);
+                if (data.agent == undefined || data.agent[0].statusCode !== 0) {
+                    this.firmwareStatus = 'Error uploading firmware';
+                    this.errorUpdatingFirmware = true;
+                    return;
+                }
                 if (data.agent && data.agent[0].status && data.agent[0].status === 'uploading' && data.agent[0].progress) {
                     this.progressBarComponent.manualUpdateVal(data.agent[0].progress);
                 }
-                if (data.agent == undefined || data.agent[0].statusCode > 0 || data.agent[0].status !== 'idle' && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
-                    console.log('statusCode error');
+                if (data.agent[0].status !== 'idle' && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
+                    console.log('still updating');
                     this.uploadStatusAttemptCount++;
                     setTimeout(() => {
                         this.getUploadStatus();
@@ -183,7 +190,11 @@ export class LoadFirmwarePage {
                 }
                 if (data.agent[0].status === 'idle') {
                     this.progressBarComponent.manualUpdateVal(100);
+                    this.firmwareStatus = 'Upload successful!';
+                    return;
                 }
+                this.firmwareStatus = 'Error uploading firmware';
+                this.errorUpdatingFirmware = true;
             },
             (err) => {
                 console.log(err);
@@ -193,9 +204,10 @@ export class LoadFirmwarePage {
 
     }
 
-    displayLoading() {
+    displayLoading(message?: string) {
+        message = message || 'Transferring Hex File...';
         let loading = this.loadingCtrl.create({
-            content: 'Attempting To Upload...',
+            content: message,
             spinner: 'crescent',
             cssClass: 'custom-loading-indicator'
         });

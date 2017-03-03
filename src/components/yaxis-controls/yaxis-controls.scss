@@ -9,9 +9,9 @@
     border-bottom: solid black 1px;
 }
 
-.yaxis-component-container .offset-button
+.offset-button
 {
-    margin: 0;
+    margin: 0 !important;
 }
 
 .align-center
@@ -176,7 +176,7 @@ ion-navbar
     transition: all 0.2s ease-in;
 }
 
-.yaxis-component-container .vpd-val-col
+.vpd-val-col
 {
     min-width: 80px;
     padding: 0px 4px 0px 4px;
@@ -188,14 +188,14 @@ ion-navbar
     padding: 0px 6px 0px 0px;
 }
 
-.yaxis-component-container .vpd-button-col
+.vpd-button-col
 {
     padding: 0;
     font-size: 0px;
     max-width: 26px;
 }
 
-.yaxis-component-container .margin-right
+.margin-right
 {
     margin-right: 6px;
 }
@@ -206,7 +206,7 @@ ion-navbar
     color: black;
 }
 
-.yaxis-component-container .vpd-label-col
+.vpd-label-col
 {
     padding: 0px 0px 0px 15px;
     color: #CCCCCC;

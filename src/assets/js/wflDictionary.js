@@ -83,6 +83,9 @@ var waveformsLiveDictionary = (function() {
         agentConnectError: {
             english: 'Agent Could Not Connect To Device'
         },
+        agentEnterJsonError: {
+            english: 'Error Putting Device In JSON Mode'
+        },
 
         //Tutorial Tooltips
         //Appears on main add a device button on device-manager-page

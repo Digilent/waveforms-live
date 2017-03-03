@@ -135,6 +135,17 @@ ion-list .item-input.input-has-focus:last-child {
     border-bottom: none;
 }
 
+.fgen-container .touch-button-col
+{
+    padding: 0;
+    width: 26px;
+}
+
+.fgen-container .freq-input-row
+{
+    padding-top: 5px;
+}
+
 .fgen-container .input-label
  {
      color: #CCCCCC;
@@ -188,9 +199,13 @@ ion-list .item-input.input-has-focus:last-child {
 {
     //Have to do this to remove default margin on image LOL
     font-size: 0;
-    padding-bottom: 5px;
     padding-top: 5px;
     background-color: #535353;
+}
+
+.fgen-container .fgen-content-container
+{
+    padding-bottom: 5px;
 }
 
 .fgen-container .dim-image

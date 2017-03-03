@@ -432,6 +432,10 @@ export class TestChartCtrlsPage {
                     resolve(data);
                 },
                 (err) => {
+                    if (err.trigger && err.trigger["1"][0].statusCode === 2684354590) {
+                        resolve();
+                        return;
+                    }
                     setTimeout(() => {
                         return this.forceTrigger()
                             .then((data) => {

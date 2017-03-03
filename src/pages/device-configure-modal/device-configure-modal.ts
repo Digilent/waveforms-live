@@ -362,7 +362,7 @@ export class DeviceConfigureModal {
                         reject(e);
                     }
                     if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
-                        this.deviceManagerPageRef.toastService.createToast('agentConnectError', true);
+                        this.deviceManagerPageRef.toastService.createToast('agentEnterJsonError', true);
                         this.invalidEnumeration = true;
                         reject();
                         return;

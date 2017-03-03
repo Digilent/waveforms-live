@@ -35,7 +35,7 @@
                     </ion-item>
                     <ion-item class="configure-item only-button-item">
                         <!--<button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="reEnumerateAgent()">Re-Enumerate</button>-->
-                        <button ion-button item-right class="text-button-side disable-hover item-button" (click)="retryDeviceEnumeration()" [disabled]="!invalidEnumeration"
+                        <button ion-button item-right class="text-button-side disable-hover item-button" (click)="retryDeviceEnumeration()"
                             [tooltip]="tooltipService.getTooltip('configDeviceRetryEnumerate').message" [tooltipAnimation]="true" tooltipPlacement="left">
                             <!--<img class="custom-image-button" src="assets/img/info.svg">-->
                             Connect

@@ -271,6 +271,61 @@ export class FgenComponent {
         this.showSettings = !this.showSettings;
     }
 
+    frequencyMousewheel(event) {
+        if (event.deltaY < 0) {
+            this.incrementFrequency();
+        }
+        else {
+            this.decrementFrequency();
+        }
+    }
+
+    amplitudeMousewheel(event) {
+        console.log(event);
+    }
+
+    offsetMousewheel(event) {
+        console.log(event);
+    }
+
+    incrementFrequency() {
+        let valString = this.frequency.toString();
+        let leadingNum = parseInt(valString.charAt(0), 10);
+        let numberMag = valString.split('.')[0].length - 1;
+        leadingNum++;
+        if (leadingNum === 10) {
+            leadingNum = 1;
+            numberMag++;
+        }
+        let newFreq = leadingNum * Math.pow(10, numberMag);
+        if (newFreq < this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000) {
+            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
+        }
+        else if (newFreq > this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000) {
+            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
+        }
+        this.frequency = newFreq;
+    }
+
+    decrementFrequency() {
+        let valString = this.frequency.toString();
+        let leadingNum = parseInt(valString.charAt(0), 10);
+        let numberMag = valString.split('.')[0].length - 1;
+        leadingNum--;
+        if (leadingNum === 0) {
+            leadingNum = 9;
+            numberMag--;
+        }
+        let newFreq = leadingNum * Math.pow(10, numberMag);
+        if (newFreq < this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000) {
+            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
+        }
+        else if (newFreq > this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000) {
+            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
+        }
+        this.frequency = newFreq;
+    }
+
     //Toggle power to awg
     togglePower(event) {
         this.awaitingResponse = true;

@@ -45,7 +45,7 @@ export class UpdateFirmwarePage {
 
     public arrayBufferFirmware: ArrayBuffer;
     public uploadStatusAttemptCount: number = 0;
-    public maxUploadStatusAttempts: number = 20;
+    public maxUploadStatusAttempts: number = 50;
     public errorUpdatingFirmware: boolean = false;
 
     constructor(
@@ -213,6 +213,7 @@ export class UpdateFirmwarePage {
         let loading = this.displayLoading();
         this.sendHexFile()
             .then(() => {
+                this.updateStatus = 'Updating firmware';
                 let swiperInstance: any = this.slider.getSlider();
                 swiperInstance.unlockSwipes();
                 this.slider.slideTo(1);
@@ -267,11 +268,15 @@ export class UpdateFirmwarePage {
             (data) => {
                 this.arrayBufferToObject(data)
                     .then((parsedData) => {
-                        if (parsedData.agent && parsedData.agent[0].status && parsedData.agent[0].status === 'uploading' && parsedData.agent[0].progress) {
+                        if (parsedData.agent == undefined || parsedData.agent[0].statusCode !== 0) {
+                            this.updateStatus = 'Error uploading firmware';
+                            this.errorUpdatingFirmware = true;
+                        }
+                        if (parsedData.agent[0].status && parsedData.agent[0].status === 'uploading' && parsedData.agent[0].progress) {
                             this.progressBarComponent.manualUpdateVal(parsedData.agent[0].progress);
                         }
-                        if ((parsedData.agent == undefined || parsedData.agent[0].statusCode > 0 || parsedData.agent[0].status !== 'idle') && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
-                            console.log('statusCode error');
+                        if (parsedData.agent[0].status !== 'idle' && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
+                            console.log('calibration is still running');
                             this.uploadStatusAttemptCount++;
                             setTimeout(() => {
                                 this.getUploadStatus();
@@ -280,7 +285,10 @@ export class UpdateFirmwarePage {
                         }
                         if (parsedData.agent[0].status === 'idle') {
                             this.progressBarComponent.manualUpdateVal(100);
+                            return;
                         }
+                        this.updateStatus = 'Error uploading firmware';
+                        this.errorUpdatingFirmware = true;
                     })
                     .catch((parsedData) => {
                         if (parsedData.agent && parsedData.agent[0].status && parsedData.agent[0].status === 'uploading' && parsedData.agent[0].progress) {

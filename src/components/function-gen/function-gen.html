@@ -36,7 +36,7 @@
                     </button>
                 </ion-col>
             </ion-row>
-            <div *ngIf="showChanSettings[i]">
+            <div *ngIf="showChanSettings[i]" class="fgen-content-container">
                 <div class="wavetype-images-container" text-center [tooltip]="tooltipService.getTooltip('tutorialWaveSelectButton').message" 
                     [forceShow]="tutorialStage === 2 && tutorialMode" [tooltipAnimation]="true" tooltipPlacement="top" onlyForceShow="true">
                     <div (tap)="toggleWave('sine')" class="wavetype-image" [ngClass]="{'selected-wavetype': waveType==='sine','dim-image': powerOn}"
@@ -61,40 +61,96 @@
                         <img src="assets/img/dc.svg">
                     </div>
                 </div>
-                <ion-row>
+                <ion-row class="freq-input-row">
                     <ion-col class="input-label" center>
                         Frequency
                     </ion-col>
-                    <ion-col class="input-col">
+                    <!--<ion-col class="input-col">
                         <div class="label-flex">
                             <div class="label-left" [tooltip]="tooltipService.getTooltip('awgFreq').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                                <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="frequency | unitFormat:'Hz'" (focusout)="inputLeave($event, 'frequency')" (keypress)="checkForEnter($event, 'frequency')" />
+                                <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="frequency | unitFormat:'Hz'" (mousewheel)="frequencyMousewheel($event)" (focusout)="inputLeave($event, 'frequency')" (keypress)="checkForEnter($event, 'frequency')" />
                             </div>
                         </div>
+                    </ion-col>-->
+                    <ion-col text-right center class="vpd-button-col">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                            <img src="assets/img/remove.svg">
+                        </button>
+                    </ion-col>
+                    <ion-col class="vpd-val-col" center text-center [tooltip]="tooltipService.getTooltip('oscOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        <div [tooltip]="tooltipService.getTooltip('awgFreq').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                            <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="frequency | unitFormat:'Hz'" (mousewheel)="frequencyMousewheel($event)" (focusout)="inputLeave($event, 'frequency')" (keypress)="checkForEnter($event, 'frequency')" />
+                        </div>
+                    </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                            <img src="assets/img/add.svg">
+                        </button>
                     </ion-col>
                 </ion-row>
-                <ion-row>
-                    <ion-col class="input-label" center>
+                <ion-row class="freq-input-row">
+                    <ion-col center class="vpd-label-col">
                         Amplitude
                     </ion-col>
-                    <ion-col class="input-col">
-                        <div class="label-flex">
-                            <div class="label-left" [tooltip]="tooltipService.getTooltip('awgAmp').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                                <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="amplitude | unitFormat:'Vpp'" (focusout)="inputLeave($event, 'amplitude')" (keypress)="checkForEnter($event, 'amplitude')" />
-                            </div>
+                    <ion-col text-right center class="vpd-button-col">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                            <img src="assets/img/remove.svg">
+                        </button>
+                    </ion-col>
+                    <ion-col class="vpd-val-col" center text-center [tooltip]="tooltipService.getTooltip('oscOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        <div [tooltip]="tooltipService.getTooltip('awgAmp').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                            <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="amplitude | unitFormat:'Vpp'" (mousewheel)="amplitudeMousewheel($event)" (focusout)="inputLeave($event, 'amplitude')" (keypress)="checkForEnter($event, 'amplitude')" />
                         </div>
                     </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                            <img src="assets/img/add.svg">
+                        </button>
+                    </ion-col>
+                    <!--<ion-col class="input-label" center>
+                        Amplitude
+                    </ion-col>
+                    <ion-col class="touch-button-col">
+                        <button ion-button class="icon-only-button-side disable-hover">
+                            <img src="assets/img/remove.svg">
+                        </button>
+                    </ion-col>
+                    <ion-col class="input-col">
+                        <div [tooltip]="tooltipService.getTooltip('awgAmp').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                            <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="amplitude | unitFormat:'Vpp'" (mousewheel)="amplitudeMousewheel($event)" (focusout)="inputLeave($event, 'amplitude')" (keypress)="checkForEnter($event, 'amplitude')" />
+                        </div>
+                    </ion-col>
+                    <ion-col class="touch-button-col">
+                        <button ion-button class="icon-only-button-side disable-hover">
+                            <img src="assets/img/add.svg">
+                        </button>
+                    </ion-col>-->
                 </ion-row>
-                <ion-row>
+                <ion-row class="freq-input-row">
                     <ion-col class="input-label" center>
                         DC Offset
                     </ion-col>
-                    <ion-col class="input-col">
+                    <!--<ion-col class="input-col">
                         <div class="label-flex">
                             <div class="label-left" [tooltip]="tooltipService.getTooltip('awgOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                                <input class="custom-input" step="any" [disabled]="powerOn" [ngModel]="offset | unitFormat:'V'" (focusout)="inputLeave($event, 'offset')" (keypress)="checkForEnter($event, 'offset')" />
+                                <input class="custom-input" step="any" [disabled]="powerOn" [ngModel]="offset | unitFormat:'V'" (mousewheel)="offsetMousewheel($event)" (focusout)="inputLeave($event, 'offset')" (keypress)="checkForEnter($event, 'offset')" />
                             </div>
                         </div>
+                    </ion-col>-->
+                    <ion-col text-right center class="vpd-button-col">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                            <img src="assets/img/remove.svg">
+                        </button>
+                    </ion-col>
+                    <ion-col class="vpd-val-col" center text-center [tooltip]="tooltipService.getTooltip('oscOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        <div [tooltip]="tooltipService.getTooltip('awgOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                            <input class="custom-input" step="any" [disabled]="powerOn" [ngModel]="offset | unitFormat:'V'" (mousewheel)="offsetMousewheel($event)" (focusout)="inputLeave($event, 'offset')" (keypress)="checkForEnter($event, 'offset')" />
+                        </div>
+                    </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                            <img src="assets/img/add.svg">
+                        </button>
                     </ion-col>
                 </ion-row>
                 <!--<ion-row>

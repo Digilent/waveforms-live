@@ -162,7 +162,8 @@ export class DeviceManagerPage {
         console.log(event);
     }
 
-    displayLoading() {
+    displayLoading(message?: string) {
+        message = message == undefined ? 'Connecting To Device...' : message;
         let loading = this.loadingCtrl.create({
             content: 'Connecting To Device...',
             spinner: 'crescent',
@@ -411,7 +412,7 @@ export class DeviceManagerPage {
                     this.enterJsonMode().then(() => {
                         resolve();
                     }).catch((e) => {
-                        resolve();
+                        resolve({error: 'jsonMode'});
                     });
                 },
                 (err) => {
@@ -510,8 +511,13 @@ export class DeviceManagerPage {
             this.toastService.createToast('agentConnectError', true);
             return;
         }
+        let loading = this.displayLoading()
         this.agentSetActiveDeviceAndEnterJson(this.devices[deviceIndex])
-            .then(() => {
+            .then((possibleError) => {
+                loading.dismiss();
+                if (possibleError && possibleError.error && possibleError.error === 'jsonMode') {
+                    this.toastService.createToast('agentEnterJsonError', true);
+                }
                 let modal = this.modalCtrl.create(UpdateFirmwarePage, {
                     agentAddress: this.devices[deviceIndex].deviceBridgeAddress,
                     deviceObject: this.devices[deviceIndex]
@@ -536,6 +542,8 @@ export class DeviceManagerPage {
                 modal.present();
             })
             .catch((e) => {
+                loading.dismiss();
+                this.toastService.createToast('agentConnectError', true);
                 console.log(e);
             });
     }
