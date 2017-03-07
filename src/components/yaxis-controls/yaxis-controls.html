@@ -1,6 +1,6 @@
 <div class="yaxis-component-container">
     <div *ngIf="settingsService.nestedChannels" class="header-bar-side" center text-center>
-        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showOscSettings}" (click)="toggleOscSettings()" src="assets/img/arrow-right.png">
+        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showOscSettings}" (click)="toggleOscSettings()" src="assets/img/collapse-arrow-right.svg">
         <span class="header-bar-title instrument-header">Oscilloscope</span>
         <div style="width:26px;height:26px;display:inline-block;"></div>
     </div>
@@ -10,7 +10,7 @@
                 <ion-row>
                     <ion-col class="header-side-col" center text-left>
                         <button ion-button clear class="dropdown-image-button" (tap)="toggleSeriesSettings(i)">
-                            <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSeriesSettings[i]}" src="assets/img/arrow-right.png">
+                            <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSeriesSettings[i]}" src="assets/img/collapse-arrow-right.svg">
                         </button>
                     </ion-col>
                     <ion-col center text-center>
@@ -32,7 +32,7 @@
                     <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
                             <button ion-button [disabled]="chart.activeVPDIndex[i] == chart.voltsPerDivVals.length-1" (tap)="chart.incrementVPD(i)" class="img-button disable-hover">
-                                <img class="custom-image-button" src="assets/img/zoom-out.png">
+                                <img class="custom-image-button" src="assets/img/zoom-out.svg">
                             </button>
                         </div>
                     </ion-col>
@@ -42,7 +42,7 @@
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
                             <button ion-button [disabled]="chart.activeVPDIndex[i] == 0" (tap)="chart.decrementVPD(i)" class="img-button disable-hover">
-                                <img class="custom-image-button" src="assets/img/zoom-in.png">
+                                <img class="custom-image-button" src="assets/img/zoom-in.svg">
                             </button>
                         </div>
                     </ion-col>

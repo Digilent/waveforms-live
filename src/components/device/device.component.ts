@@ -38,7 +38,7 @@ export class DeviceComponent {
         gpio: null
     };
 
-    public firmwareRepositoryUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent-test/';
+    public firmwareRepositoryUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/firmware';
 
     constructor(_rootUri: string, deviceDescriptor: any) {
         console.log('Device Contructor');

@@ -125,9 +125,6 @@ export class DcSupplyComponent {
             }
             this.voltageSupplies = channelNumArray;
         }
-        setTimeout(() => {
-            this.getVoltages(this.voltageSupplies);
-        }, 600);
     }
 
     formatExtremes(channel: number) {
@@ -183,7 +180,17 @@ export class DcSupplyComponent {
             () => {
                 //console.log('getVoltage Done');
             }
-        )
+        );
+    }
+
+    initializeFromGetStatus(getStatusObject: any) {
+        for (let channel in getStatusObject.dc) {
+            getStatusObject.dc[channel].forEach((val, index, array) => {
+                if (val.voltage != undefined) {
+                    this.voltages[parseInt(channel) - 1] = getStatusObject.dc[channel][index].voltage;
+                }
+            });
+        }
     }
 
     //Toggle voltages on/off

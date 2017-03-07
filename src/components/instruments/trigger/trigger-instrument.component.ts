@@ -86,6 +86,40 @@ export class TriggerInstrumentComponent extends InstrumentComponent {
         return super._genericResponseHandler(command);
     }
 
+    getCurrentState(chans: number[]) {
+        let command = {
+            trigger: {}
+        };
+        chans.forEach((element, index, array) => {
+            command.trigger[chans[index]] =
+                [
+                    {
+                        command: 'getCurrentState'
+                    }
+                ]
+        });
+        return super._genericResponseHandler(command);
+    }
+
+    getCurrentStateJson(chans: number[]) {
+        let command = {
+            trigger: {}
+        };
+        chans.forEach((element, index, array) => {
+            command.trigger[chans[index]] =
+                [
+                    {
+                        command: 'getCurrentState'
+                    }
+                ]
+        });
+        return command;
+    }
+
+    getCurrentStateParse(chan, responseObject) {
+        return 'Success';
+    }
+
     singleJson(chans: number[]) {
         let command = {
             "trigger": {}

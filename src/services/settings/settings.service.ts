@@ -16,11 +16,12 @@ export class SettingsService {
     public routeToStore: boolean = true;
     public drawLaOnTimeline: boolean = false;
     public wflVersion: string = '0.1.0';
+    public useDevBuilds: boolean = false;
 
     public knownFirmwareUrls: { openscopeMz: { prettyName: string, firmwareUrl: string } } = {
         openscopeMz: {
             prettyName: 'OpenScope MZ',
-            firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent-test'
+            firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/firmware'
         }
     };
 

@@ -63,6 +63,10 @@
                                 <button ion-button class="text-button-side item-button disable-hover" (click)="clearAppLog()">Clear App Log</button>
                             </div>
                         </ion-item>
+                        <ion-item class="configure-item">
+                            <ion-label>Use Dev Firmware Builds</ion-label>
+                            <ion-toggle [(ngModel)]="settingsService.useDevBuilds"></ion-toggle>
+                        </ion-item>
                     </ion-list>
                 </div>
         </div>

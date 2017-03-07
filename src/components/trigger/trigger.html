@@ -3,7 +3,7 @@
 		<ion-row>
 			<ion-col class="header-side-col" center text-left>
 				<button ion-button clear class="dropdown-image-button" (tap)="toggleTriggerShow()">
-					<img class="custom-dropdown-img" [ngClass]="{rotateOn: showTriggerSettings}" src="assets/img/arrow-right.png">
+					<img class="custom-dropdown-img" [ngClass]="{rotateOn: showTriggerSettings}" src="assets/img/collapse-arrow-right.svg">
 				</button>
 			</ion-col>
 			<ion-col center text-center>
@@ -20,11 +20,11 @@
 					<div class="trigger-image-container">
 						<button ion-button class="off-button disable-hover"(tap)="setTrigType('rising')"  [ngClass]="{'selected-mode':edgeDirection==='rising'}"
 							[tooltip]="tooltipService.getTooltip('triggerRisingEdge').message" [tooltipAnimation]="true" tooltipPlacement="right">
-							<img class="custom-image-button" src="assets/img/trigger-rising.png">
+							<img class="custom-image-button" src="assets/img/rising.svg">
 						</button>
 						<button ion-button class="off-button disable-hover" (tap)="setTrigType('falling')" [ngClass]="{'selected-mode':edgeDirection==='falling'}"
 							[tooltip]="tooltipService.getTooltip('triggerFallingEdge').message" [tooltipAnimation]="true" tooltipPlacement="top">
-							<img class="custom-image-button" src="assets/img/trigger-falling.png">
+							<img class="custom-image-button" src="assets/img/falling.svg">
 						</button>
 						
 						<button ion-button class="off-button disable-hover off-button-right" (tap)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}"
@@ -53,7 +53,7 @@
                                 {{triggerSource}}
                                 <img class="custom-image-button" src="assets/img/arrow-dropdown.svg">
                             </button>-->
-							<dropdown-popover [dataArray]="triggerSources" (onSelection)="sourceSelect($event)"></dropdown-popover>
+							<dropdown-popover #dropPopSource [dataArray]="triggerSources" (onSelection)="sourceSelect($event)"></dropdown-popover>
                         </div>
                     </div>
 				</ion-col>

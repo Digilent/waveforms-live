@@ -116,7 +116,7 @@ export class DeviceManagerPage {
         for (let i = 0; i < this.devices.length; i++) {
             if (this.devices[i].bridge) {
                 //TODO: read device enum for ip address and then call device man service getFirmwareVersionsFromUrl
-                this.deviceManagerService.getLatestFirmwareVersionFromUrl('https://s3-us-west-2.amazonaws.com/digilent-test').then((latestFirmwareVersion) => {
+                this.deviceManagerService.getLatestFirmwareVersionFromUrl('https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/firmware').then((latestFirmwareVersion) => {
                     this.determineIfOutdatedFirmware(latestFirmwareVersion, i);
                 })
                     .catch((e) => {
@@ -229,7 +229,7 @@ export class DeviceManagerPage {
 
     openPopover(event, arrayIndex: number) {
         let genPopover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['Connect', 'Remove', 'Configure']
+            dataArray: ['Connect', 'Remove', 'Configure', 'About Device']
         });
         genPopover.present({
             ev: event
@@ -246,7 +246,23 @@ export class DeviceManagerPage {
             else if (data.option === 'Configure') {
                 this.openConfigureModal(arrayIndex);
             }
+            else if (data.option === 'About Device') {
+                this.openDeviceReference(arrayIndex);
+            }
         });
+    }
+
+    openDeviceReference(deviceArrayIndex: number) {
+        let deviceModel = this.devices[deviceArrayIndex].deviceDescriptor.deviceModel;
+        switch (deviceModel) {
+            case 'OpenScope MZ':
+                let openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/start', '_blank');
+                openTab.location;
+                return;
+            default:
+                this.toastService.createToast('deviceUnknown', true);
+                return;
+        }
     }
 
     openConfigureModal(deviceArrayIndex: number) {

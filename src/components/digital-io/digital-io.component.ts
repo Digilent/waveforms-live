@@ -56,7 +56,6 @@ export class DigitalIoComponent {
             this.laActiveChans.push(false);
         }
         this.contentHidden = true;
-        this.setAll('input');
     }
 
     emitEvent() {

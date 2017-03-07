@@ -15,8 +15,8 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="single.svg"
-   inkscape:export-filename="C:\Users\samkr\Desktop\icons\run.png"
+   sodipodi:docname="arrow-right.svg"
+   inkscape:export-filename="C:\Users\samkr\Desktop\icons\arrow-right.png"
    inkscape:export-xdpi="4.3899999"
    inkscape:export-ydpi="4.3899999">
   <defs
@@ -29,8 +29,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="29.732337"
-     inkscape:cy="201.51871"
+     inkscape:cx="-39.738536"
+     inkscape:cy="247.49566"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -142,19 +142,11 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-540.36216)"
-     style="display:inline">
+     transform="translate(0,-540.36216)">
     <path
-       style="fill:#3a3a3a;fill-opacity:1;fill-rule:evenodd;stroke:#3a3a3a;stroke-width:39.04162979;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 166.34634,796.36217 0,84.76584 141.52226,-84.76584 -141.52226,-84.76586 z"
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:34.45071411;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
+       d="m 198.19732,796.36217 0,88.1944 105.91203,-88.1944 -105.91203,-88.19442 z"
        id="path4148"
-       inkscape:connector-curvature="0"
-       inkscape:export-xdpi="4.3899999"
-       inkscape:export-ydpi="4.3899999" />
-    <path
-       style="fill:#3a3a3a;fill-opacity:1;fill-rule:evenodd;stroke:#3a3a3a;stroke-width:21.66462517;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 354.34216,677.93359 0,236.85714"
-       id="path4149"
        inkscape:connector-curvature="0" />
   </g>
 </svg>

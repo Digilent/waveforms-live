@@ -1,10 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 
 //Components
 import { GenPopover } from '../gen-popover/gen-popover.component';
 import { DeviceComponent } from '../device/device.component';
 import { SilverNeedleChart } from '../chart/chart.component';
+import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
 
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
@@ -17,6 +18,7 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
 })
 export class TriggerComponent {
     @Input() chart: SilverNeedleChart;
+    @ViewChild('dropPopSource') dropPopSource: DropdownPopoverComponent;
     public toastService: ToastService;
     public tooltipService: TooltipService;
     public delay: string = '0';
@@ -46,6 +48,28 @@ export class TriggerComponent {
         this.activeDevice = this.devMngSrv.devices[this.devMngSrv.activeDeviceIndex];
         for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
             this.triggerSources.push('Osc Ch ' + (i + 1));
+        }
+    }
+
+    initializeFromGetStatus(getStatusObject: any) {
+        for (let channel in getStatusObject.trigger) {
+            getStatusObject.trigger[channel].forEach((val, index, array) => {
+                if (val.source != undefined && val.source.instrument === 'osc') {
+                    this.triggerSource = 'Osc Ch ' + val.source.channel;
+                    this.dropPopSource.setActiveSelection(this.triggerSource);
+                }
+                else {
+                    //External trigger TODO
+                }
+                if (val.source != undefined && val.source.type != undefined) {
+                    this.edgeDirection = val.source.type === 'risingEdge' ? 'rising' : 'falling';
+                }
+                if (val.source != undefined && val.source.lowerThreshold != undefined && val.source.upperThreshold != undefined) {
+                    this.lowerThresh = (val.source.lowerThreshold / 1000).toString();
+                    this.upperThresh = (val.source.upperThreshold / 1000).toString();
+                    this.level = val.source.upperThreshold / 1000;
+                }
+            });
         }
     }
 

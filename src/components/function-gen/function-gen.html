@@ -9,7 +9,7 @@
     </tooltip-content>
 
     <div *ngIf="settingsService.nestedChannels" class="header-bar-side awg-header">
-        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSettings}" (tap)="toggleAwgSettings()" src="assets/img/arrow-right.png">
+        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showSettings}" (tap)="toggleAwgSettings()" src="assets/img/collapse-arrow-right.svg">
         <div class="header-bar-title instrument-header" [tooltip]="okButton" [forceShow]="tutorialMode && tutorialStage === 1" tooltipPlacement="top" onlyForceShow="true">
             Wavegen
         </div>
@@ -20,7 +20,7 @@
             <ion-row>
                 <ion-col class="header-side-col" center text-left>
                     <button ion-button clear class="dropdown-image-button" (tap)="toggleChanSettings(i)">
-                        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showChanSettings[i]}" src="assets/img/arrow-right.png">
+                        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showChanSettings[i]}" src="assets/img/collapse-arrow-right.svg">
                     </button>
                 </ion-col>
                 <ion-col center text-center>
@@ -65,25 +65,18 @@
                     <ion-col class="input-label" center>
                         Frequency
                     </ion-col>
-                    <!--<ion-col class="input-col">
-                        <div class="label-flex">
-                            <div class="label-left" [tooltip]="tooltipService.getTooltip('awgFreq').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                                <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="frequency | unitFormat:'Hz'" (mousewheel)="frequencyMousewheel($event)" (focusout)="inputLeave($event, 'frequency')" (keypress)="checkForEnter($event, 'frequency')" />
-                            </div>
-                        </div>
-                    </ion-col>-->
                     <ion-col text-right center class="vpd-button-col">
-                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button" (tap)="decrementFrequency()" [disabled]="powerOn || waveType==='dc' || frequency === (activeDevice.instruments.awg.chans[i].signalFreqMin / 1000)">
                             <img src="assets/img/remove.svg">
                         </button>
                     </ion-col>
-                    <ion-col class="vpd-val-col" center text-center [tooltip]="tooltipService.getTooltip('oscOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                    <ion-col class="vpd-val-col" center text-center>
                         <div [tooltip]="tooltipService.getTooltip('awgFreq').message" [tooltipAnimation]="true" tooltipPlacement="top">
                             <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="frequency | unitFormat:'Hz'" (mousewheel)="frequencyMousewheel($event)" (focusout)="inputLeave($event, 'frequency')" (keypress)="checkForEnter($event, 'frequency')" />
                         </div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
-                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button" (tap)="incrementFrequency()" [disabled]="powerOn || waveType==='dc' || frequency === (activeDevice.instruments.awg.chans[i].signalFreqMax / 1000)">
                             <img src="assets/img/add.svg">
                         </button>
                     </ion-col>
@@ -93,78 +86,42 @@
                         Amplitude
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
-                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button" (tap)="decrementAmplitude()" [disabled]="powerOn || waveType==='dc' || amplitude === 0">
                             <img src="assets/img/remove.svg">
                         </button>
                     </ion-col>
-                    <ion-col class="vpd-val-col" center text-center [tooltip]="tooltipService.getTooltip('oscOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                    <ion-col class="vpd-val-col" center text-center>
                         <div [tooltip]="tooltipService.getTooltip('awgAmp').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                            <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="amplitude | unitFormat:'Vpp'" (mousewheel)="amplitudeMousewheel($event)" (focusout)="inputLeave($event, 'amplitude')" (keypress)="checkForEnter($event, 'amplitude')" />
+                            <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="amplitude | unitFormat:'Vpp'" (mousewheel)="voltageMousewheel($event, 'amplitude')" (focusout)="inputLeave($event, 'amplitude')" (keypress)="checkForEnter($event, 'amplitude')" />
                         </div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
-                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button" (tap)="incrementAmplitude()" [disabled]="powerOn || waveType==='dc' || amplitude === (activeDevice.instruments.awg.chans[i].dacVpp / 1000)">
                             <img src="assets/img/add.svg">
                         </button>
                     </ion-col>
-                    <!--<ion-col class="input-label" center>
-                        Amplitude
-                    </ion-col>
-                    <ion-col class="touch-button-col">
-                        <button ion-button class="icon-only-button-side disable-hover">
-                            <img src="assets/img/remove.svg">
-                        </button>
-                    </ion-col>
-                    <ion-col class="input-col">
-                        <div [tooltip]="tooltipService.getTooltip('awgAmp').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                            <input class="custom-input" step="any" [disabled]="powerOn || waveType==='dc'" [ngModel]="amplitude | unitFormat:'Vpp'" (mousewheel)="amplitudeMousewheel($event)" (focusout)="inputLeave($event, 'amplitude')" (keypress)="checkForEnter($event, 'amplitude')" />
-                        </div>
-                    </ion-col>
-                    <ion-col class="touch-button-col">
-                        <button ion-button class="icon-only-button-side disable-hover">
-                            <img src="assets/img/add.svg">
-                        </button>
-                    </ion-col>-->
                 </ion-row>
                 <ion-row class="freq-input-row">
                     <ion-col class="input-label" center>
                         DC Offset
                     </ion-col>
-                    <!--<ion-col class="input-col">
-                        <div class="label-flex">
-                            <div class="label-left" [tooltip]="tooltipService.getTooltip('awgOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                                <input class="custom-input" step="any" [disabled]="powerOn" [ngModel]="offset | unitFormat:'V'" (mousewheel)="offsetMousewheel($event)" (focusout)="inputLeave($event, 'offset')" (keypress)="checkForEnter($event, 'offset')" />
-                            </div>
-                        </div>
-                    </ion-col>-->
                     <ion-col text-right center class="vpd-button-col">
-                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button" (tap)="decrementOffset()" [disabled]="powerOn || offset === (activeDevice.instruments.awg.chans[i].vOffsetMin / 1000)">
                             <img src="assets/img/remove.svg">
                         </button>
                     </ion-col>
-                    <ion-col class="vpd-val-col" center text-center [tooltip]="tooltipService.getTooltip('oscOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                    <ion-col class="vpd-val-col" center text-center>
                         <div [tooltip]="tooltipService.getTooltip('awgOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                            <input class="custom-input" step="any" [disabled]="powerOn" [ngModel]="offset | unitFormat:'V'" (mousewheel)="offsetMousewheel($event)" (focusout)="inputLeave($event, 'offset')" (keypress)="checkForEnter($event, 'offset')" />
+                            <input class="custom-input" step="any" [disabled]="powerOn" [ngModel]="offset | unitFormat:'V'" (mousewheel)="voltageMousewheel($event, 'offset')" (focusout)="inputLeave($event, 'offset')" (keypress)="checkForEnter($event, 'offset')" />
                         </div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
-                        <button ion-button class="icon-only-button-side disable-hover offset-button">
+                        <button ion-button class="icon-only-button-side disable-hover offset-button" (tap)="incrementOffset()" [disabled]="powerOn || offset === (activeDevice.instruments.awg.chans[i].vOffsetMax / 1000)">
                             <img src="assets/img/add.svg">
                         </button>
                     </ion-col>
                 </ion-row>
-                <!--<ion-row>
-                    <ion-col class="input-label" center>
-                        Duty Cycle
-                    </ion-col>
-                    <ion-col class="input-col">
-                        <div class="label-flex">
-                            <div class="label-left">
-                                <input class="custom-input" [disabled]="!isSquare() || powerOn" step="any" [ngModel]="dutyCycle | unitFormat:'%'" (focusout)="inputLeave($event, 'dutyCycle')" (keypress)="checkForEnter($event, 'dutyCycle')" />
-                            </div>
-                        </div>
-                    </ion-col>
-                </ion-row>-->
+                
             </div>
         </div>
     </div>

@@ -56,6 +56,12 @@ export class MyApp {
         openTab.location;
     }
 
+    toReference() {
+        this.menu.close();
+        let openTab = window.open('https://reference.digilentinc.com/reference/software/waveforms-live/start', '_blank');
+        openTab.location;
+    }
+
     openPage(page) {
         // close the menu when clicking a link from the menu
         this.menu.close();

@@ -27,6 +27,9 @@ var waveformsLiveDictionary = (function() {
         deviceAdded: {
             english: 'Device Added Successfully'
         },
+        deviceUnknown: {
+            english: 'Device Model Unknown'
+        },
         //Appears when a user tries to add a device that already exists.
         deviceExists: {
             english: 'Device is Added Already'

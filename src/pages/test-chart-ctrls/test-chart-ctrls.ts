@@ -7,7 +7,7 @@ import { DeviceComponent } from '../../components/device/device.component';
 import { TriggerComponent } from '../../components/trigger/trigger.component';
 import { FgenComponent } from '../../components/function-gen/function-gen.component';
 import { DigitalIoComponent } from '../../components/digital-io/digital-io.component';
-
+import { DcSupplyComponent } from '../../components/dc-supply/dc-supply.component';
 
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
@@ -24,6 +24,7 @@ export class TestChartCtrlsPage {
     @ViewChild('triggerComponent') triggerComponent: TriggerComponent;
     @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
     @ViewChild('fgenComponent') fgenComponent: FgenComponent;
+    @ViewChild('dcComponent') dcComponent: DcSupplyComponent
     public app: App;
     public platform: Platform;
     public params: NavParams;
@@ -81,6 +82,130 @@ export class TestChartCtrlsPage {
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.storage = _storage;
         console.log(this.tutorialMode);
+        this.getOscStatus()
+            .then(() => {
+                return this.getAwgStatus();
+            })
+            .then(() => {
+                return this.getTriggerStatus();
+            })
+            .then(() => {
+                return this.setGpioToInputs('input');
+            })
+            .then(() => {
+                return this.getVoltages();
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    }
+
+    getVoltages(): Promise<any> {
+        let chans = [];
+        for (let i = 0; i < this.activeDevice.instruments.dc.numChans; i++) {
+            chans.push(i + 1);
+        }
+        return new Promise((resolve, reject) => {
+            this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
+                (data) => {
+                    console.log(data);
+                    this.dcComponent.initializeFromGetStatus(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => {
+                    //console.log('getVoltage Done');
+                }
+            );
+        });
+    }
+
+    getOscStatus(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let chans = [];
+            for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
+                chans.push(i + 1);
+            }
+            this.activeDevice.instruments.osc.getCurrentState(chans).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log('error getting osc status');
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
+    }
+
+    getAwgStatus(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let chans = [];
+            for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {
+                chans.push(i + 1);
+            }
+            this.activeDevice.instruments.awg.getCurrentState(chans).subscribe(
+                (data) => {
+                    console.log(data);
+                    this.fgenComponent.initializeFromGetStatus(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log('error getting awg status');
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
+    }
+
+    setGpioToInputs(direction: 'input' | 'output'): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let chanArray = [];
+            let valArray = [];
+            for (let i = 0; i < this.activeDevice.instruments.gpio.numChans; i++) {
+                chanArray.push(i + 1);
+                valArray.push(direction);
+            }
+            this.activeDevice.instruments.gpio.setParameters(chanArray, valArray).subscribe(
+                (data) => {
+                    console.log('set direction');
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => {
+                    
+                }
+            );
+        });
+    }
+
+    getTriggerStatus() {
+        return new Promise((resolve, reject) => {
+            this.activeDevice.instruments.trigger.getCurrentState([1]).subscribe(
+                (data) => {
+                    console.log(data);
+                    this.triggerComponent.initializeFromGetStatus(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log('error getting trigger status');
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     executeHelp() {

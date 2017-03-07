@@ -76,9 +76,28 @@ export class FgenComponent {
         this.offset = 0;
         this.dutyCycle = 50;
         this.powerOn = false;
-        setTimeout(() => {
-            this.getAwgStates();
-        }, 200)
+    }
+
+    initializeFromGetStatus(getStatusObject: any) {
+        for (let channel in getStatusObject.awg) {
+            getStatusObject.awg[channel].forEach((val, index, array) => {
+                if (val.state != undefined) {
+                    this.powerOn = val.state === 'running';
+                }
+                if (val.waveType != undefined) {
+                    this.waveType = val.waveType;
+                }
+                if (val.actualSignalFreq != undefined) {
+                    this.frequency = val.actualSignalFreq / 1000;
+                }
+                if (val.actualVpp != undefined) {
+                    this.amplitude = val.actualVpp / 1000;
+                }
+                if (val.actualVOffset != undefined) {
+                    this.offset = val.actualVOffset / 1000;
+                }
+            });
+        }
     }
 
     startTutorial() {
@@ -272,6 +291,7 @@ export class FgenComponent {
     }
 
     frequencyMousewheel(event) {
+        if (this.powerOn) { return; }
         if (event.deltaY < 0) {
             this.incrementFrequency();
         }
@@ -280,12 +300,34 @@ export class FgenComponent {
         }
     }
 
-    amplitudeMousewheel(event) {
-        console.log(event);
+    voltageMousewheel(event, type: 'amplitude' | 'offset') {
+        if (this.powerOn) { return; }
+        if (event.deltaY < 0) {
+            type === 'amplitude' ? this.incrementAmplitude() : this.incrementOffset();
+        }
+        else {
+            type === 'amplitude' ? this.decrementAmplitude() : this.decrementOffset();
+        }
     }
 
-    offsetMousewheel(event) {
-        console.log(event);
+    incrementAmplitude() {
+        let newAmp = this.amplitude + 0.1;
+        this.amplitude = Math.min(newAmp, this.activeDevice.instruments.awg.chans[0].dacVpp / 1000);
+    }
+
+    decrementAmplitude() {
+        let newAmp = this.amplitude - 0.1;
+        this.amplitude = Math.max(newAmp, 0);
+    }
+
+    incrementOffset() {
+        let newOffset = this.offset + 0.1;
+        this.offset = Math.min(newOffset, this.activeDevice.instruments.awg.chans[0].vOffsetMax / 1000);
+    }
+
+    decrementOffset() {
+        let newOffset = this.offset - 0.1;
+        this.offset = Math.max(newOffset, this.activeDevice.instruments.awg.chans[0].vOffsetMin / 1000);
     }
 
     incrementFrequency() {

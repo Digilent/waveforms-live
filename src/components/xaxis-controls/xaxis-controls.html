@@ -2,7 +2,7 @@
     <!--<ion-row>
         <ion-col class="header-side-col" center text-left>
             <button ion-button clear class="dropdown-image-button" (tap)="toggleSeriesSettings()">
-                <img class="custom-dropdown-img" [ngClass]="{rotateOn: showTimeSettings}" src="assets/img/arrow-right.png">
+                <img class="custom-dropdown-img" [ngClass]="{rotateOn: showTimeSettings}" src="assets/img/collapse-arrow-right.svg">
             </button>
         </ion-col>
         <ion-col center text-center>
@@ -18,7 +18,7 @@
         <ion-col center class="xaxis-left">
             <div style="display:inline-block">
                 <button ion-button (tap)="chart.incrementTPD()" [disabled]="chart.activeTPDIndex == chart.secsPerDivVals.length-1" class="img-button disable-hover">
-                    <img class="custom-image-button" src="assets/img/zoom-out.png">
+                    <img class="custom-image-button" src="assets/img/zoom-out.svg">
                 </button>
             </div>
         </ion-col>
@@ -30,7 +30,7 @@
         <ion-col center class="xaxis-right">
             <div style="display:inline-block">
                 <button ion-button (tap)="chart.decrementTPD()" [disabled]="chart.activeTPDIndex == 0" class="img-button disable-hover">
-                    <img class="custom-image-button" src="assets/img/zoom-in.png">
+                    <img class="custom-image-button" src="assets/img/zoom-in.svg">
                 </button>
             </div>
         </ion-col>

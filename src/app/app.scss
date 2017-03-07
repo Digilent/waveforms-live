@@ -126,6 +126,9 @@ ion-checkbox .checkbox-icon.checkbox-checked
     font-size: 0;
     margin: 0;
     padding: 0;
+    img {
+        max-width: 26px;
+    }
 }
 
 .header-button
@@ -332,6 +335,11 @@ ion-checkbox .checkbox-icon.checkbox-checked
 {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+}
+
+.toggle-md .toggle-checked .toggle-inner
+{
+    background-color: #4487BA;
 }
 
 html input[disabled] {

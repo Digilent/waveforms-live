@@ -43,6 +43,40 @@ export class OscInstrumentComponent extends InstrumentComponent {
         }
     }
 
+    getCurrentState(chans: number[]) {
+        let command = {
+            osc: {}
+        };
+        chans.forEach((element, index, array) => {
+            command.osc[chans[index]] =
+                [
+                    {
+                        command: 'getCurrentState'
+                    }
+                ]
+        });
+        return super._genericResponseHandler(command);
+    }
+
+    getCurrentStateJson(chans: number[]) {
+        let command = {
+            osc: {}
+        };
+        chans.forEach((element, index, array) => {
+            command.osc[chans[index]] =
+                [
+                    {
+                        command: 'getCurrentState'
+                    }
+                ]
+        });
+        return command;
+    }
+
+    getCurrentStateParse(chan, responseObject) {
+        return 'Success';
+    }
+
     setParametersJson(chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[], delays: number[]) {
         let command = {
             "osc": {}

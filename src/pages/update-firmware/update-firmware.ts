@@ -79,7 +79,7 @@ export class UpdateFirmwarePage {
     }
 
     getFirmwareList() {
-        this.deviceManagerService.getFirmwareVersionsFromUrl('https://s3-us-west-2.amazonaws.com/digilent-test').then((firmwareVersionArray: string[]) => {
+        this.deviceManagerService.getFirmwareVersionsFromUrl('https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/firmware').then((firmwareVersionArray: string[]) => {
             console.log(firmwareVersionArray);
             this.availableFirmwareVersions = firmwareVersionArray;
             this.getLatestFirmware();
@@ -245,7 +245,7 @@ export class UpdateFirmwarePage {
                     });
             }
             else {
-                this.getFirmwareFromUrl('https://s3-us-west-2.amazonaws.com/digilent-test' + '/OpenScopeMZ-' + this.selectedFirmwareVersion + '.hex')
+                this.getFirmwareFromUrl('https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/firmware' + '/OpenScopeMZ-' + this.selectedFirmwareVersion + '.hex')
                     .then(() => {
                         resolve();
                     })
