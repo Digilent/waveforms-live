@@ -1,47 +1,48 @@
 {
-  "name": "webwaveforms",
-  "version": "0.2.0",
-  "author": "Digilent",
-  "homepage": "http://digilent.com/",
-  "main": "electron.js",
-  "private": true,
-  "scripts": {
-    "clean": "ionic-app-scripts clean",
-    "build": "ionic-app-scripts build",
-    "ionic:build": "ionic-app-scripts build",
-    "ionic:serve": "ionic-app-scripts serve"
-  },
-  "dependencies": {
-    "@angular/common": "2.0.0",
-    "@angular/compiler": "2.0.0",
-    "@angular/compiler-cli": "0.6.2",
-    "@angular/core": "2.0.0",
-    "@angular/forms": "2.0.0",
-    "@angular/http": "2.0.0",
-    "@angular/platform-browser": "2.0.0",
-    "@angular/platform-browser-dynamic": "2.0.0",
-    "@angular/platform-server": "2.0.0",
-    "@ionic/storage": "1.0.3",
-    "ionic-angular": "2.0.0-rc.1",
-    "ionic-native": "2.2.3",
-    "ionicons": "3.0.0",
-    "rxjs": "5.0.0-beta.12",
-    "zone.js": "0.6.21",
-    "sw-toolbox": "3.4.0",
-    "electron": "^1.4.1"
-  },
-  "devDependencies": {
-    "@ionic/app-scripts": "1.0.0",
-    "typescript": "2.0.9"
-  },
-  "description": "Web Waveforms: An Ionic project",
-  "cordovaPlugins": [
-    "cordova-plugin-device",
-    "cordova-plugin-console",
-    "cordova-plugin-whitelist",
-    "cordova-plugin-splashscreen",
-    "cordova-plugin-statusbar",
-    "ionic-plugin-keyboard"
-  ],
-  "cordovaPlatforms": []
+    "name": "webwaveforms",
+    "version": "0.2.0",
+    "author": "Digilent",
+    "homepage": "http://digilent.com/",
+    "main": "electron.js",
+    "private": true,
+    "scripts": {
+        "clean": "ionic-app-scripts clean",
+        "build": "ionic-app-scripts build",
+        "ionic:build": "ionic-app-scripts build",
+        "ionic:serve": "ionic-app-scripts serve",
+        "updateVersion": "node versionManager.js"
+    },
+    "dependencies": {
+        "@angular/common": "2.0.0",
+        "@angular/compiler": "2.0.0",
+        "@angular/compiler-cli": "0.6.2",
+        "@angular/core": "2.0.0",
+        "@angular/forms": "2.0.0",
+        "@angular/http": "2.0.0",
+        "@angular/platform-browser": "2.0.0",
+        "@angular/platform-browser-dynamic": "2.0.0",
+        "@angular/platform-server": "2.0.0",
+        "@ionic/storage": "1.0.3",
+        "ionic-angular": "2.0.0-rc.1",
+        "ionic-native": "2.2.3",
+        "ionicons": "3.0.0",
+        "rxjs": "5.0.0-beta.12",
+        "zone.js": "0.6.21",
+        "sw-toolbox": "3.4.0",
+        "electron": "^1.4.1"
+    },
+    "devDependencies": {
+        "@ionic/app-scripts": "1.0.0",
+        "typescript": "2.0.9"
+    },
+    "description": "Web Waveforms: An Ionic project",
+    "cordovaPlugins": [
+        "cordova-plugin-device",
+        "cordova-plugin-console",
+        "cordova-plugin-whitelist",
+        "cordova-plugin-splashscreen",
+        "cordova-plugin-statusbar",
+        "ionic-plugin-keyboard"
+    ],
+    "cordovaPlatforms": []
 }
