@@ -65,6 +65,10 @@ export class TriggerComponent {
         this.tutorialMode = true;
         this.tutorialStage = 'level';
     }
+    
+    tutorialToEdge() {
+        this.tutorialStage = 'type';
+    }
 
     initializeFromGetStatus(getStatusObject: any) {
         for (let channel in getStatusObject.trigger) {

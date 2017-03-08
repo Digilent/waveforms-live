@@ -21,15 +21,6 @@
                     </div>
                 </tooltip-content>
 
-                <tooltip-content #okButton2 [animation]="true" class="tutorial-ok-button">
-                    <div>
-                        {{tooltipService.getTooltip('tutorialChart').message}}
-                    </div>
-                    <div>
-                        <button ion-button class="text-button-side disable-hover" (tap)="startFgenTutorial()">ok</button>
-                    </div>
-                </tooltip-content>
-
                 <div class="timeline-chart-wrapper" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 1}"
                     [tooltip]="okButton" [forceShow]="tutorialMode && tutorialStage === 1" tooltipPlacement="bottom" onlyForceShow="true">
                     <timeline-chart></timeline-chart>
@@ -60,14 +51,38 @@
             </ion-col>
         </ion-row>
         <ion-row class="center-container">
-            <ion-col class="custom-col" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 2}"
-                [tooltip]="okButton2" [forceShow]="tutorialMode && tutorialStage === 2" tooltipPlacement="right" onlyForceShow="true"> 
+
+            <div class="end-tutorial-display" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 4}" *ngIf="tutorialMode && tutorialStage === 4">
+                <div text-center>
+                    For More Info, Go To The
+                    <a href="https://reference.digilentinc.com/reference/software/waveforms-live/start" target="_blank">WaveForms Live Reference Page</a>
+                </div>
+                <div text-center>
+                    For Feedback And Support, Go To The
+                    <a href="https://forum.digilentinc.com/forum/30-waveforms-live-and-openscope-feedback/" target="_blank">Digilent Forums</a>
+                </div>
+                <br>
+                <div text-center>
+                    <button ion-button class="text-button-side disable-hover" (tap)="tutorialFinished()">ok</button>
+                </div>
+            </div>
+
+            <ion-col class="custom-col" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 2}"> 
                 <silverNeedleChart #chart1 (chartLoad)="initSettings()" class="chart-wrapper"></silverNeedleChart>
                 <ion-fab class="tutorial-mode-button" *ngIf="tutorialMode">
                     <button ion-fab mini class="help-button" (tap)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
                         <img [src]="tutorialMode ? 'assets/img/close.svg' : 'assets/img/help.svg'" />
                     </button>
                 </ion-fab>
+                <div class="chart-tutorial-tooltip" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 2}" *ngIf="tutorialMode && tutorialStage === 2">
+                    <div>
+                        {{tooltipService.getTooltip('tutorialChart').message}}
+                    </div>
+                    <br>
+                    <div text-center>
+                        <button ion-button class="text-button-side disable-hover" (tap)="startFgenTutorial()">ok</button>
+                    </div>
+                </div>
             </ion-col>
             <ion-col class="controls-wrapper">
                 <xaxis-controls [chart]="chart1"></xaxis-controls>

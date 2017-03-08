@@ -156,6 +156,33 @@
     overflow: hidden;
 }
 
+
+.chart-page-container .chart-tutorial-tooltip
+{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #535353;
+    width: 250px;
+    color: white;
+    padding: 8px 16px 8px 16px;
+    border-radius: 4px;
+}
+
+.chart-page-container .end-tutorial-display
+{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #535353;
+    width: 250px;
+    color: white;
+    padding: 8px 16px 8px 16px;
+    border-radius: 4px;
+}
+
 //Remove text from collapse buttons also this is cool
 @media screen and (max-width: 500px) {
     .chart-page-container .collapse-button {

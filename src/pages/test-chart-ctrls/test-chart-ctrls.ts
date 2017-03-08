@@ -359,7 +359,7 @@ export class TestChartCtrlsPage {
     //Run osc single
     singleClick(forceWholeCommand?: boolean) {
         if (this.tutorialMode) {
-            this.tutorialFinished();
+            this.proceedToNextStage();
         }
         this.readAttemptCount = 0;
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;

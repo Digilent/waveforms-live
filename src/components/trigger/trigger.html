@@ -1,4 +1,23 @@
 <div class="trigger-container">
+
+	<tooltip-content #levelButton [animation]="true" class="tutorial-ok-button">
+		<div>
+			{{tooltipService.getTooltip('tutorialTriggerLevel').message}}
+		</div>
+		<div>
+			<button ion-button class="text-button-side disable-hover" (tap)="tutorialToEdge()">ok</button>
+		</div>
+	</tooltip-content>
+
+	<tooltip-content #edgeButton [animation]="true" class="tutorial-ok-button">
+		<div>
+			{{tooltipService.getTooltip('tutorialTriggerType').message}}
+		</div>
+		<div>
+			<button ion-button class="text-button-side disable-hover" (tap)="endTutorial()">ok</button>
+		</div>
+	</tooltip-content>
+
 	<div class="header-bar-side">
 		<ion-row>
 			<ion-col class="header-side-col" center text-left>
@@ -17,10 +36,11 @@
 		<ion-grid class="ion-grid-no-padding">
 			<ion-row class="button-row">
 				<ion-col center text-center class="interact-button-col">
-					<div class="trigger-image-container">
+					<div class="trigger-image-container" [tooltip]="edgeButton" [tooltipAnimation]="true" tooltipPlacement="top" onlyForceShow="true"
+						[forceShow]="tutorialStage === 'type' && tutorialMode" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 'type'}">
+
 						<button ion-button class="off-button disable-hover"(tap)="setTrigType('rising')"  [ngClass]="{'selected-mode':edgeDirection==='rising'}"
-							[tooltip]="tooltipService.getTooltip(tutorialMode ? 'tutorialTriggerType' : 'triggerRisingEdge').message" [tooltipAnimation]="true" tooltipPlacement="right"
-							[forceShow]="tutorialStage === 'type' && tutorialMode">
+							[tooltip]="tooltipService.getTooltip('triggerRisingEdge').message" [tooltipAnimation]="true" tooltipPlacement="top">
 							<img class="custom-image-button" src="assets/img/rising.svg">
 						</button>
 						<button ion-button class="off-button disable-hover" (tap)="setTrigType('falling')" [ngClass]="{'selected-mode':edgeDirection==='falling'}"
@@ -65,8 +85,8 @@
 				</ion-col>
 				<ion-col center class="input-col">
                     <div class="label-flex">
-                        <div class="label-left" [tooltip]="tooltipService.getTooltip(tutorialMode ? 'tutorialTriggerLevel' : 'triggerLevel').message" [tooltipAnimation]="true" tooltipPlacement="top" 
-							[forceShow]="tutorialStage === 'level' && tutorialMode">
+                        <div class="label-left" [tooltip]="tutorialMode ? levelButton : tooltipService.getTooltip('triggerLevel').message" [tooltipAnimation]="true" tooltipPlacement="top" 
+							[forceShow]="tutorialStage === 'level' && tutorialMode" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 'level'}">
                             <input class="custom-input" step="any" [ngModel]="level | unitFormat:'V'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
                         </div>
                     </div>
