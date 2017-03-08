@@ -70,6 +70,7 @@ export class DeviceManagerPage {
     public tutorialStage: number = 0;
 
     public tooltipMessages: tooltipInterface;
+    public listUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/release/firmware/without-bootloader';
 
     constructor(_popoverCtrl: PopoverController,
         _deviceManagerService: DeviceManagerService,
@@ -99,15 +100,22 @@ export class DeviceManagerPage {
         this.addDeviceIp = "http://"
         this.deviceManagerService = _deviceManagerService;
         this.storage = _storage;
+        this.storage.getData('routeToStore').then((data) => {
+            if ((data == null || data === true) && !this.platform.is('cordova') && (this.platform.is('android') || this.platform.is('ios'))) {
+                //this.routeToStore();
+            }
+        });
+        this.storage.getData('useDevBuilds').then((data) => {
+            if (data == undefined) { return; }
+            console.log(data);
+            if (JSON.parse(data)) {
+                this.listUrl = 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/development/firmware/without-bootloader';
+            }
+        });
         this.storage.getData('savedDevices').then((data) => {
             if (data !== null) {
                 this.devices = JSON.parse(data);
                 this.getFirmwareVersionsForDevices();
-            }
-        });
-        this.storage.getData('routeToStore').then((data) => {
-            if ((data == null || data === true) && !this.platform.is('cordova') && (this.platform.is('android') || this.platform.is('ios'))) {
-                //this.routeToStore();
             }
         });
     }
@@ -116,12 +124,11 @@ export class DeviceManagerPage {
         for (let i = 0; i < this.devices.length; i++) {
             if (this.devices[i].bridge) {
                 //TODO: read device enum for ip address and then call device man service getFirmwareVersionsFromUrl
-                this.deviceManagerService.getLatestFirmwareVersionFromUrl('https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/firmware').then((latestFirmwareVersion) => {
+                this.deviceManagerService.getLatestFirmwareVersionFromUrl(this.listUrl).then((latestFirmwareVersion) => {
                     this.determineIfOutdatedFirmware(latestFirmwareVersion, i);
-                })
-                    .catch((e) => {
-                        console.log(e);
-                    });
+                }).catch((e) => {
+                    console.log(e);
+                });
             }
         }
     }
@@ -428,7 +435,7 @@ export class DeviceManagerPage {
                     this.enterJsonMode().then(() => {
                         resolve();
                     }).catch((e) => {
-                        resolve({error: 'jsonMode'});
+                        resolve({ error: 'jsonMode' });
                     });
                 },
                 (err) => {

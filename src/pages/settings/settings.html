@@ -65,7 +65,7 @@
                         </ion-item>
                         <ion-item class="configure-item">
                             <ion-label>Use Dev Firmware Builds</ion-label>
-                            <ion-toggle [(ngModel)]="settingsService.useDevBuilds"></ion-toggle>
+                            <ion-toggle [(ngModel)]="settingsService.useDevBuilds" (ngModelChange)="saveDevBuilds($event)"></ion-toggle>
                         </ion-item>
                     </ion-list>
                 </div>

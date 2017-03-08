@@ -40,6 +40,10 @@ export class SettingsPage {
         }
     }
 
+    saveDevBuilds(event) {
+        this.settingsService.setUseDevBuilds(event);
+    }
+
     toggleAdvancedSettings() {
         this.showAdvancedSettings = !this.showAdvancedSettings;
     }

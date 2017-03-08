@@ -18,10 +18,13 @@ export class SettingsService {
     public wflVersion: string = '0.1.0';
     public useDevBuilds: boolean = false;
 
-    public knownFirmwareUrls: { openscopeMz: { prettyName: string, firmwareUrl: string } } = {
+    public knownFirmwareUrls: { openscopeMz: { prettyName: string, listUrl: string, devListUrl: string, firmwareUrl: string, devFirmwareUrl: string } } = {
         openscopeMz: {
             prettyName: 'OpenScope MZ',
-            firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/firmware'
+            listUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/release/firmware/without-bootloader',
+            devListUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/development/firmware/without-bootloader',
+            firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/release/firmware/without-bootloader',
+            devFirmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/development/firmware/without-bootloader'
         }
     };
 
@@ -32,7 +35,12 @@ export class SettingsService {
         this.defaultConsoleLog = window.console.log;
         this.storageService.getData('routeToStore').then((data) => {
             if (data != null) {
-                this.routeToStore = data;
+                this.routeToStore = JSON.parse(data);
+            }
+        });
+        this.storageService.getData('useDevBuilds').then((data) => {
+            if (data != undefined) {
+                this.useDevBuilds = JSON.parse(data);
             }
         });
     }
@@ -40,6 +48,11 @@ export class SettingsService {
     setRouteToStore(route: boolean) {
         this.routeToStore = route;
         this.storageService.saveData('routeToStore', JSON.stringify(this.routeToStore));
+    }
+
+    setUseDevBuilds(useDevBuilds: boolean) {
+        this.useDevBuilds = useDevBuilds;
+        this.storageService.saveData('useDevBuilds', JSON.stringify(this.useDevBuilds));
     }
 
     getRouteToStore(): boolean {

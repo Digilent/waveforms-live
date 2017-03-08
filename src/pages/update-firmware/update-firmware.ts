@@ -48,6 +48,9 @@ export class UpdateFirmwarePage {
     public maxUploadStatusAttempts: number = 50;
     public errorUpdatingFirmware: boolean = false;
 
+    public listUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/release/firmware/without-bootloader';
+    public firmwareRepositoryUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/release/firmware/without-bootloader'
+
     constructor(
         _storageService: StorageService,
         _settingsService: SettingsService,
@@ -67,6 +70,11 @@ export class UpdateFirmwarePage {
         this.agentAddress = this.params.get('agentAddress');
         this.deviceObject = this.params.get('deviceObject');
         console.log('update firmware constructor');
+        console.log(this.settingsService.useDevBuilds);
+        if (this.settingsService.useDevBuilds) {
+            this.listUrl = 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/development/firmware/without-bootloader';
+            this.firmwareRepositoryUrl = 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/development/firmware/without-bootloader';
+        }
         this.deviceManagerService.transport.setHttpTransport(this.deviceObject.deviceBridgeAddress);
         this.getDeviceFirmware();
         this.getFirmwareList();
@@ -79,7 +87,7 @@ export class UpdateFirmwarePage {
     }
 
     getFirmwareList() {
-        this.deviceManagerService.getFirmwareVersionsFromUrl('https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/firmware').then((firmwareVersionArray: string[]) => {
+        this.deviceManagerService.getFirmwareVersionsFromUrl(this.listUrl).then((firmwareVersionArray: string[]) => {
             console.log(firmwareVersionArray);
             this.availableFirmwareVersions = firmwareVersionArray;
             this.getLatestFirmware();
@@ -245,7 +253,7 @@ export class UpdateFirmwarePage {
                     });
             }
             else {
-                this.getFirmwareFromUrl('https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/firmware' + '/OpenScopeMZ-' + this.selectedFirmwareVersion + '.hex')
+                this.getFirmwareFromUrl(this.firmwareRepositoryUrl + '/OpenScopeMZ-' + this.selectedFirmwareVersion + '.hex')
                     .then(() => {
                         resolve();
                     })
@@ -276,7 +284,7 @@ export class UpdateFirmwarePage {
                             this.progressBarComponent.manualUpdateVal(parsedData.agent[0].progress);
                         }
                         if (parsedData.agent[0].status !== 'idle' && this.uploadStatusAttemptCount < this.maxUploadStatusAttempts) {
-                            console.log('calibration is still running');
+                            console.log('update is still running');
                             this.uploadStatusAttemptCount++;
                             setTimeout(() => {
                                 this.getUploadStatus();

@@ -132,6 +132,7 @@ export class TestChartCtrlsPage {
             this.activeDevice.instruments.osc.getCurrentState(chans).subscribe(
                 (data) => {
                     console.log(data);
+                    this.chart1.initializeFromGetStatus(data);
                     resolve(data);
                 },
                 (err) => {
@@ -211,6 +212,7 @@ export class TestChartCtrlsPage {
     executeHelp() {
         this.tutorialMode = false;
         this.fgenComponent.finishTutorial();
+        this.triggerComponent.endTutorial();
     }
 
     startTutorial() {
@@ -223,6 +225,16 @@ export class TestChartCtrlsPage {
     }
 
     fgenTutorialFinished(event) {
+        console.log(event);
+        this.startTriggerTutorial();
+    }
+
+    startTriggerTutorial() {
+        this.tutorialStage = 0;
+        this.triggerComponent.startTutorial();
+    }
+
+    triggerTutorialFinished(event) {
         console.log(event);
         this.tutorialStage = 3;
     }
@@ -468,6 +480,8 @@ export class TestChartCtrlsPage {
         }
         singleCommand['trigger'] = {};
         if (setTrigParams || forceWholeCommand) {
+            console.log('setting trigger params');
+            console.log(this.triggerComponent.lowerThresh, this.triggerComponent.upperThresh);
             singleCommand['trigger']['setParameters'] = [
                 [1],
                 [

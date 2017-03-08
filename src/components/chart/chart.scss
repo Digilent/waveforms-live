@@ -177,7 +177,7 @@
         padding: 0;
         width: 26px;
     }
-    .chart-component-wrapper [icon-right] ion-icon {
-        padding-left: 1px;
+    .chart-component-wrapper .text-button-side[icon-right] .button-inner img {
+        margin: 0;
     }
 }

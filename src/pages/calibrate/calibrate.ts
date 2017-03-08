@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavParams, Slides, ViewController } from 'ionic-angular';
+import { NavParams, Slides, ViewController, LoadingController } from 'ionic-angular';
 
 //Components
 import { ProgressBarComponent } from  '../../components/progress-bar/progress-bar.component';
@@ -39,7 +39,8 @@ export class CalibratePage {
         _settingsService: SettingsService,
         _params: NavParams,
         _viewCtrl: ViewController,
-        _deviceManagerService: DeviceManagerService
+        _deviceManagerService: DeviceManagerService,
+        public loadingCtrl: LoadingController
     ) {
         this.deviceManagerService = _deviceManagerService;
         this.storageService = _storageService;
@@ -149,8 +150,48 @@ export class CalibratePage {
     runCalibration() {
         this.calibrationFailed = false;
         this.calibrationSuccessful = false;
-        this.startCalibration();
-        this.toSlide(1);
+        let loading = this.displayLoading();
+        this.resetInstruments().then(() => {
+            this.startCalibration();
+            loading.dismiss();
+            this.toSlide(1);
+        }).catch((e) => {
+            this.startCalibration();
+            loading.dismiss();
+            this.toSlide(1);
+        });
+    }
+
+    displayLoading(message?: string) {
+        message = message == undefined ? 'Resetting Device...' : message;
+        let loading = this.loadingCtrl.create({
+            content: message,
+            spinner: 'crescent',
+            cssClass: 'custom-loading-indicator'
+        });
+
+        loading.present();
+
+        return loading;
+    }
+
+    resetInstruments(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].resetInstruments().subscribe(
+                (data) => {
+                    console.log(data);
+                    if (data.device[0].wait) {
+                        setTimeout(() => {
+                            resolve(data);
+                        }, data.device[0].wait);
+                    }
+                },
+                (err) => {
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     startCalibration() {

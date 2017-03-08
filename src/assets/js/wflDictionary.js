@@ -144,6 +144,12 @@ var waveformsLiveDictionary = (function() {
         tutorialSingleButton: {
             english: 'Click To Arm The Trigger. Data Is Returned When The Acquisition Is Complete'
         },
+        tutorialTriggerType: {
+            english: 'tutorialTriggerType'
+        },
+        tutorialTriggerLevel: {
+            english: 'tutorialTriggerLevel'
+        },
 
         //Tooltips
         addADevice: {

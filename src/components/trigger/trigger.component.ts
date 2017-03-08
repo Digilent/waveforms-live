@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { PopoverController } from 'ionic-angular';
 
 //Components
@@ -18,6 +18,7 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
 })
 export class TriggerComponent {
     @Input() chart: SilverNeedleChart;
+    @Output('triggerTutotrialFinish') triggerTutotrialFinish = new EventEmitter();
     @ViewChild('dropPopSource') dropPopSource: DropdownPopoverComponent;
     public toastService: ToastService;
     public tooltipService: TooltipService;
@@ -35,6 +36,9 @@ export class TriggerComponent {
     public level: number = 0.5;
     public ignoreFocusOut: boolean = false;
 
+    public tutorialMode: boolean = false;
+    public tutorialStage: 'idle' | 'level' | 'type' = 'idle';
+
     constructor(
         _popoverCtrl: PopoverController,
         _devMngSrv: DeviceManagerService,
@@ -51,6 +55,17 @@ export class TriggerComponent {
         }
     }
 
+    endTutorial() {
+        this.tutorialMode = false;
+        this.tutorialStage = 'idle';
+        this.triggerTutotrialFinish.emit('trigger tutorial finished');
+    }
+
+    startTutorial() {
+        this.tutorialMode = true;
+        this.tutorialStage = 'level';
+    }
+
     initializeFromGetStatus(getStatusObject: any) {
         for (let channel in getStatusObject.trigger) {
             getStatusObject.trigger[channel].forEach((val, index, array) => {
@@ -65,9 +80,10 @@ export class TriggerComponent {
                     this.edgeDirection = val.source.type === 'risingEdge' ? 'rising' : 'falling';
                 }
                 if (val.source != undefined && val.source.lowerThreshold != undefined && val.source.upperThreshold != undefined) {
-                    this.lowerThresh = (val.source.lowerThreshold / 1000).toString();
-                    this.upperThresh = (val.source.upperThreshold / 1000).toString();
+                    this.lowerThresh = (val.source.lowerThreshold).toString();
+                    this.upperThresh = (val.source.upperThreshold).toString();
                     this.level = val.source.upperThreshold / 1000;
+                    console.log(this.lowerThresh, this.upperThresh, this.level);
                 }
             });
         }

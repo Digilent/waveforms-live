@@ -204,7 +204,15 @@ export class DeviceManagerService {
         }
         let arrayToSort: string[] = [];
         for (let i = 0; i < returnArray.length; i++) {
-            arrayToSort.push(returnArray[i].Key.substring(returnArray[i].Key.indexOf('-') + 1, returnArray[i].Key.indexOf('.hex')));
+            let splitArray = returnArray[i].Key.split('.');
+            if (splitArray[splitArray.length - 1] !== 'hex') {
+                continue;
+            }
+            let patch = splitArray[splitArray.length - 2];
+            let minor = splitArray[splitArray.length - 3];
+            let major = splitArray[splitArray.length - 4].slice(-1);
+            let versionNum = major + '.' + minor + '.' + patch;
+            arrayToSort.push(versionNum);
         }
         arrayToSort.sort((a, b) => {
             let aSplit = a.split('.');

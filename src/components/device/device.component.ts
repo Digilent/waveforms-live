@@ -38,7 +38,8 @@ export class DeviceComponent {
         gpio: null
     };
 
-    public firmwareRepositoryUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/firmware';
+    public firmwareRepositoryUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/release/without-bootloader';
+    public listFirmwareUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/release/without-bootloader';
 
     constructor(_rootUri: string, deviceDescriptor: any) {
         console.log('Device Contructor');
@@ -62,7 +63,7 @@ export class DeviceComponent {
         this.instruments.gpio = new GpioInstrumentComponent(this.transport, deviceDescriptor.gpio);
     }
 
-    getFirmwareVersions() {
+    /*getFirmwareVersions() {
         this.transport.getRequest(this.firmwareRepositoryUrl).subscribe(
             (event) => {
                 console.log(event);
@@ -72,7 +73,7 @@ export class DeviceComponent {
             },
             () => { }
         );
-    }
+    }*/
 
     multiCommand(commandObject: any): Observable<any> {
         let commandToBeSent = {
@@ -253,6 +254,15 @@ export class DeviceComponent {
                 }
             )
         });
+    }
+
+    resetInstruments(): Observable<any> {
+        let command = {
+            device: [{
+                command: 'resetInstruments'
+            }]
+        };
+        return this._genericResponseHandler(command);
     }
 
     storageGetLocations(): Observable<any> {

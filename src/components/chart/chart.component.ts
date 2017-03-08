@@ -131,6 +131,45 @@ export class SilverNeedleChart {
         }
     }
 
+    initializeFromGetStatus(getStatusObject: any) {
+        for (let channel in getStatusObject.osc) {
+            getStatusObject.osc[channel].forEach((val, index, array) => {
+                if (val.acqCount === 0) { return; }
+                this.base = val.triggerDelay / Math.pow(10, 12);
+                //TODO find closest match instead of inclusive closest match
+                this.gainToVpd(parseInt(channel), val.actualGain);
+                this.sampleFreqToWindow(val.actualSampleFreq / 1000);
+                this.setTimeSettings({
+                    timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
+                    base: this.base
+                }, false);
+            });
+        }
+    }
+
+    sampleFreqToWindow(sampleFreq: number) {
+        if (this.chart == undefined) { return; }
+        let numPoints = this.chart.width();
+        let timeDivision = (numPoints / 10) * (1 / sampleFreq);
+        console.log(timeDivision);
+        this.setNearestPresetSecPerDivVal(timeDivision);
+    }
+
+    gainToVpd(channel: number, gain: number) {
+        let j = this.voltsPerDivVals.length - 1;
+        while ((this.voltsPerDivVals[j] * 10 * gain) > (this.deviceDescriptor.instruments.osc.chans[channel - 1].adcVpp / 1000) && j > 0) {
+            j--;
+        }
+        this.voltDivision[channel - 1] = this.voltsPerDivVals[j];
+        this.activeVPDIndex[channel - 1] = j;
+        this.chart.setActiveYIndices(this.activeVPDIndex);
+        this.setSeriesSettings({
+            voltsPerDiv: this.voltDivision[channel - 1],
+            voltBase: this.voltBase[channel - 1],
+            seriesNum: channel - 1
+        });
+    }
+
     setNearestPresetSecPerDivVal(newSecPerDivVal: number) {
         let count = 0;
         while (this.secsPerDivVals[count] < newSecPerDivVal && count < this.secsPerDivVals.length) {
@@ -146,7 +185,7 @@ export class SilverNeedleChart {
         while (this.voltsPerDivVals[count] < newVoltsPerDivVal && count < this.voltsPerDivVals.length) {
             count++;
         }
-        this.activeVPDIndex[newVoltsPerDivVal] = count;
+        this.activeVPDIndex[seriesNum] = count;
         this.chart.setActiveYIndices(this.activeVPDIndex);
     }
 

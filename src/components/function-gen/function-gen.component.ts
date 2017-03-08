@@ -84,16 +84,16 @@ export class FgenComponent {
                 if (val.state != undefined) {
                     this.powerOn = val.state === 'running';
                 }
-                if (val.waveType != undefined) {
+                if (val.waveType != undefined && val.waveType !== 'none') {
                     this.waveType = val.waveType;
                 }
-                if (val.actualSignalFreq != undefined) {
+                if (val.actualSignalFreq != undefined && val.waveType !== 'none') {
                     this.frequency = val.actualSignalFreq / 1000;
                 }
-                if (val.actualVpp != undefined) {
+                if (val.actualVpp != undefined && val.waveType !== 'none') {
                     this.amplitude = val.actualVpp / 1000;
                 }
-                if (val.actualVOffset != undefined) {
+                if (val.actualVOffset != undefined && val.waveType !== 'none') {
                     this.offset = val.actualVOffset / 1000;
                 }
             });
