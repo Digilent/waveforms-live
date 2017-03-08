@@ -1,5 +1,6 @@
 {
   "name": "webwaveforms",
+  "version": "0.1.0",
   "author": "Digilent",
   "homepage": "http://digilent.com/",
   "main": "electron.js",
