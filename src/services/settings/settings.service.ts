@@ -77,18 +77,18 @@ export class SettingsService {
         };
     }
 
-    changeConsoleLog(type: 'local storage' | 'both' | 'none' | 'console') {
-        if (type === 'console') {
+    changeConsoleLog(type: 'Local Storage' | 'Both' | 'None' | 'Console') {
+        if (type === 'Console') {
             console.log('hey');
             window.console.log = this.defaultConsoleLog;
         }
-        else if (type === 'local storage') {
+        else if (type === 'Local Storage') {
             window.console.log = this.localStorageLog.bind(this);
         }
-        else if (type === 'both') {
+        else if (type === 'Both') {
             window.console.log = this.bothLog.bind(this);
         }
-        else if (type === 'none') {
+        else if (type === 'None') {
             window.console.log = function () { };
         }
     }

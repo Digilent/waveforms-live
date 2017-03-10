@@ -183,6 +183,10 @@ export class DeviceComponent {
                             console.log(e);
                             observer.error('Error in multiCommand().\nThis is most likely due to an unparseable response.\nAuto-generated error: ' + e);
                         }
+                        if (multiCommandResponse.agent && multiCommandResponse.agent[0] && multiCommandResponse.agent[0].statusCode > 0) {
+                            observer.error(multiCommandResponse);
+                            return;
+                        }
                         //Response Received! Now to reparse and call observer.next for each command
                         let flag = false;
                         for (let instrument in multiCommandResponse) {

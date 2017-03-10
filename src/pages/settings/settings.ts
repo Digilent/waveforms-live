@@ -50,7 +50,7 @@ export class SettingsPage {
 
     changeConsoleLog(event) {
         let popover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['console', 'local storage', 'both', 'none']
+            dataArray: ['Console', 'Local Storage', 'Both', 'None']
         });
         popover.onWillDismiss((data) => {
             if (data === null) { return; }

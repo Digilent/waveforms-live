@@ -78,6 +78,14 @@ export class FgenComponent {
         this.powerOn = false;
     }
 
+    initializeValues() {
+        this.powerOn = false;
+        this.frequency = 1000;
+        this.amplitude = 3;
+        this.offset = 0;
+        this.waveType = 'sine';
+    }
+
     initializeFromGetStatus(getStatusObject: any) {
         for (let channel in getStatusObject.awg) {
             getStatusObject.awg[channel].forEach((val, index, array) => {

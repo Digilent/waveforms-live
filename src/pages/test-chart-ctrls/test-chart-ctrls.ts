@@ -1,4 +1,4 @@
-import { App, Platform, NavParams } from 'ionic-angular';
+import { App, Platform, NavParams, LoadingController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 
 //Components
@@ -14,6 +14,9 @@ import { DeviceManagerService } from '../../services/device/device-manager.servi
 import { StorageService } from '../../services/storage/storage.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+
+//Interfaces
+import { PreviousLaSettings, PreviousOscSettings, PreviousTrigSettings } from './test-chart-ctrls.interface';
 
 
 @Component({
@@ -45,15 +48,15 @@ export class TestChartCtrlsPage {
     public toastService: ToastService;
     public clickBindReference;
     public readAttemptCount: number = 0;
-    public previousOscSettings: any[] = [];
-    public previousTrigSettings: any = {
+    public previousOscSettings: PreviousOscSettings[] = [];
+    public previousTrigSettings: PreviousTrigSettings = {
         instrument: null,
         channel: null,
         type: null,
         lowerThreshold: null,
         upperThreshold: null
     };
-    public previousLaSettings: any[] = [];
+    public previousLaSettings: PreviousLaSettings[] = [];
 
     public theoreticalAcqTime: number;
     public readingOsc: boolean = false;
@@ -70,7 +73,8 @@ export class TestChartCtrlsPage {
         _tooltipService: TooltipService,
         _app: App,
         _params: NavParams,
-        _platform: Platform
+        _platform: Platform,
+        public loadingCtrl: LoadingController
     ) {
         this.toastService = _toastService;
         this.tooltipService = _tooltipService;
@@ -98,6 +102,56 @@ export class TestChartCtrlsPage {
             .catch((e) => {
                 console.log(e);
             });
+    }
+
+    resetDevice() {
+        console.log('reset device');
+        let loading = this.displayLoading();
+        this.chart1.initializeValues();
+        this.previousLaSettings = [];
+        this.previousOscSettings = [];
+        this.previousTrigSettings = {
+            instrument: null,
+            channel: null,
+            type: null,
+            lowerThreshold: null,
+            upperThreshold: null
+        };
+        this.fgenComponent.initializeValues();
+        this.activeDevice.resetInstruments().subscribe(
+            (data) => {
+                setTimeout(() => {
+                    this.gpioComponent.gpioDirections.forEach((val, index, array) => {
+                        this.gpioComponent.gpioDirections[index] = false;
+                        this.gpioComponent.gpioVals[index] = false;
+                    });
+                    this.setGpioToInputs('input').then(() => {
+                        loading.dismiss();
+                    }).catch((e) => {
+                        console.log('error setting gpio to inputs');
+                        console.log(e);
+                    });
+                }, data.device[0].wait);
+            },
+            (err) => {
+                loading.dismiss();
+                this.toastService.createToast('deviceResetError');
+            },
+            () => { }
+        );
+    }
+
+    displayLoading(message?: string) {
+        message = message == undefined ? 'Resetting Device...' : message;
+        let loading = this.loadingCtrl.create({
+            content: message,
+            spinner: 'crescent',
+            cssClass: 'custom-loading-indicator'
+        });
+
+        loading.present();
+
+        return loading;
     }
 
     getVoltages(): Promise<any> {
@@ -408,7 +462,7 @@ export class TestChartCtrlsPage {
                 j++;
             }
 
-            if (this.previousOscSettings[i].offset !== 0 || this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
+            if (this.previousOscSettings[i] == undefined || this.previousOscSettings[i].offset !== 0 || this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
                 this.previousOscSettings[i].sampleFreqMax !== samplingParams.sampleFreq ||
                 this.previousOscSettings[i].bufferSizeMax !== samplingParams.bufferSize ||
                 this.previousOscSettings[i].delay !== triggerDelay ||
@@ -436,7 +490,7 @@ export class TestChartCtrlsPage {
 
         let laArray = [[], [], []];
         for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
-            if (this.previousLaSettings[i].sampleFreq !== samplingParams.sampleFreq ||
+            if (this.previousLaSettings[i] == undefined || this.previousLaSettings[i].sampleFreq !== samplingParams.sampleFreq ||
                 this.previousLaSettings[i].bufferSize !== samplingParams.bufferSize ||
                 this.previousLaSettings[i].active !== this.gpioComponent.laActiveChans[i]) {
                 setLaParams = true;
@@ -511,6 +565,9 @@ export class TestChartCtrlsPage {
             },
             (err) => {
                 console.log(err);
+                if (err.agent != undefined) {
+                    this.toastService.createToast('agentNoActiveDevice');
+                }
                 //Might still acquiring from previous session
                 this.abortSingle(true);
             },

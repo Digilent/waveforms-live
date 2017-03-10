@@ -32,11 +32,14 @@ var waveformsLiveDictionary = (function() {
         },
         //Appears when a user tries to add a device that already exists.
         deviceExists: {
-            english: 'Device is Added Already'
+            english: 'Device Is Added Already'
+        },
+        deviceResetError: {
+            english: 'Unable To Reset Device'
         },
         //Appears when a user navigates to the instrument panel without an active device (shouldn't happen).
         noActiveDevice: {
-            english: 'You currently have no device connected. Please visit the settings page.'
+            english: 'You Currently Have No Device Connected. Please Visit The Device Manager Page.'
         },
         //Appears when an enumeration response from a device is invalid.
         enumerateError: {
@@ -88,6 +91,9 @@ var waveformsLiveDictionary = (function() {
         },
         agentEnterJsonError: {
             english: 'Error Putting Device In JSON Mode'
+        },
+        agentNoActiveDevice: {
+            english: 'The Digilent Agent Has No Active Device. Please Go Back To Device Manager Page And Select A Device'
         },
 
         //Tutorial Tooltips
@@ -211,6 +217,9 @@ var waveformsLiveDictionary = (function() {
         },
         chartToggleFft: {
             english: 'Toggle FFT View'
+        },
+        chartResetDevice: {
+            english: 'Reset Device And ReInitialize'
         },
         sineButton: {
             english: 'Sine Wave'

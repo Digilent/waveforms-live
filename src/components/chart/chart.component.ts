@@ -45,6 +45,7 @@ declare var cordova: any;
 
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
+    @Output() resetDevice: EventEmitter<any> = new EventEmitter();
     @ViewChild('fftChart') fftChart: DigilentChart;
     public settingsService: SettingsService;
     public tooltipService: TooltipService;
@@ -128,6 +129,30 @@ export class SilverNeedleChart {
         if (this.chart == undefined) {
             this.createChart();
             this.fftChartOptions = this.getFftChartOptions();
+        }
+    }
+
+    initializeValues() {
+        if (this.deviceDescriptor !== undefined) {
+
+            //Init axes settings
+            for (let i = 0; i < this.deviceDescriptor.instruments.osc.numChans; i++) {
+                this.activeVPDIndex[i] = this.voltsPerDivVals.indexOf(0.5);
+                this.setSeriesSettings({
+                    voltsPerDiv: this.voltsPerDivVals[this.activeVPDIndex[i]],
+                    voltBase: this.voltBase[i],
+                    seriesNum: i
+                });
+            }
+
+            this.chart.setActiveYIndices(this.activeVPDIndex);
+
+            this.activeTPDIndex = this.secsPerDivVals.indexOf(0.001);
+            this.chart.setActiveXIndex(this.activeTPDIndex);
+            this.setTimeSettings({
+                timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
+                base: this.base
+            }, false);
         }
     }
 

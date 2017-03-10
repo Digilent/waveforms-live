@@ -29,6 +29,11 @@
                         PIN
                     </button>
                 </div>
+                <div [hidden]="showFft">
+                    <button ion-button class="chart-button disable-hover" (click)="resetDevice.emit()" [tooltip]="tooltipService.getTooltip('chartResetDevice').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                        <img class="button-side-svg" src="assets/img/restore.svg" />
+                    </button>
+                </div>
             </div>
         </div>
     </div>
