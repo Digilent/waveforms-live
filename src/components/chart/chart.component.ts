@@ -12,7 +12,6 @@ import { DigilentChart } from '../digilent-chart/digilent-chart.component';
 //Pages
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
-//import { ChartModalPage } from '../../pages/chart-modal/chart-modal';
 
 //Interfaces
 import { Chart, CursorPositions, DataContainer } from './chart.interface';
@@ -147,7 +146,7 @@ export class SilverNeedleChart {
 
             this.chart.setActiveYIndices(this.activeVPDIndex);
 
-            this.activeTPDIndex = this.secsPerDivVals.indexOf(0.001);
+            this.activeTPDIndex = this.secsPerDivVals.indexOf(0.0005);
             this.chart.setActiveXIndex(this.activeTPDIndex);
             this.setTimeSettings({
                 timePerDiv: this.secsPerDivVals[this.activeTPDIndex],
@@ -177,7 +176,7 @@ export class SilverNeedleChart {
         let numPoints = this.chart.width();
         let timeDivision = (numPoints / 10) * (1 / sampleFreq);
         console.log(timeDivision);
-        this.setNearestPresetSecPerDivVal(timeDivision);
+        this.setNearestPresetSecPerDivVal(timeDivision, true);
     }
 
     gainToVpd(channel: number, gain: number) {
@@ -195,10 +194,17 @@ export class SilverNeedleChart {
         });
     }
 
-    setNearestPresetSecPerDivVal(newSecPerDivVal: number) {
+    setNearestPresetSecPerDivVal(newSecPerDivVal: number, nonInclusive?: boolean) {
+        nonInclusive = nonInclusive == undefined ? false : nonInclusive;
         let count = 0;
         while (this.secsPerDivVals[count] < newSecPerDivVal && count < this.secsPerDivVals.length) {
             count++;
+        }
+        if (nonInclusive && count !== 0) {
+            let average = (this.secsPerDivVals[count] + this.secsPerDivVals[count - 1]) / 2;
+            if (newSecPerDivVal <= average) {
+                count--;
+            }
         }
         this.activeTPDIndex = count;
         this.chart.setActiveXIndex(count);
@@ -915,7 +921,7 @@ export class SilverNeedleChart {
 
             this.chart.setActiveYIndices(this.activeVPDIndex);
 
-            this.activeTPDIndex = this.secsPerDivVals.indexOf(0.001);
+            this.activeTPDIndex = this.secsPerDivVals.indexOf(0.0005);
             this.chart.setActiveXIndex(this.activeTPDIndex);
             this.setTimeSettings({
                 timePerDiv: this.secsPerDivVals[this.activeTPDIndex],

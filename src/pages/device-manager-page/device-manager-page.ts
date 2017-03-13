@@ -58,7 +58,7 @@ export class DeviceManagerPage {
     public storage: StorageService;
     public showDevMenu: boolean = false;
     public selectedSimulatedDevice: string = 'OpenScope MZ';
-    public deviceBridgeAddress = 'http://localhost:56089';
+    public deviceBridgeAddress = 'http://localhost:42135';
 
     public devices: DeviceCardInfo[] = [];
 
@@ -236,7 +236,7 @@ export class DeviceManagerPage {
 
     openPopover(event, arrayIndex: number) {
         let genPopover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['Connect', 'Remove', 'Configure', 'About Device']
+            dataArray: ['Connect', 'Remove', 'Configure', 'Documentation']
         });
         genPopover.present({
             ev: event
@@ -253,7 +253,7 @@ export class DeviceManagerPage {
             else if (data.option === 'Configure') {
                 this.openConfigureModal(arrayIndex);
             }
-            else if (data.option === 'About Device') {
+            else if (data.option === 'Documentation') {
                 this.openDeviceReference(arrayIndex);
             }
         });
