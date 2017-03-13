@@ -1,0 +1,5 @@
+ Flot plugin for adding cursors to the plot.
+
+Copyright (c) cipix2000@gmail.com.
+Copyright (c) 2007-2014 IOLA and Ole Laursen.
+Licensed under the MIT license.

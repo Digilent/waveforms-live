@@ -1,0 +1,3 @@
+ng2-tooltip
+MIT License
+https://github.com/pleerock/ng2-tooltip
