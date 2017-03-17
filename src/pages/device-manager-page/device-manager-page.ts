@@ -540,6 +540,7 @@ export class DeviceManagerPage {
                 loading.dismiss();
                 if (possibleError && possibleError.error && possibleError.error === 'jsonMode') {
                     this.toastService.createToast('agentEnterJsonError', true);
+                    return;
                 }
                 let modal = this.modalCtrl.create(UpdateFirmwarePage, {
                     agentAddress: this.devices[deviceIndex].deviceBridgeAddress,
