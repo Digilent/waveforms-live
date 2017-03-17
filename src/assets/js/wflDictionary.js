@@ -90,7 +90,7 @@ var waveformsLiveDictionary = (function() {
             english: 'Agent Could Not Connect To Device'
         },
         agentEnterJsonError: {
-            english: 'Error Putting Device In JSON Mode'
+            english: 'Unable To Communicate With Device'
         },
         agentNoActiveDevice: {
             english: 'The Digilent Agent Has No Active Device. Please Go Back To Device Manager Page And Select A Device'
