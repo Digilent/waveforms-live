@@ -51,7 +51,7 @@
                         <ion-label fixed>Firmware Version</ion-label>
                         <div item-right class="item-content-right">{{getFirmwareVersion()}}</div>
                     </ion-item>
-                    <ion-item class="configure-item only-button-item" *ngIf="deviceObject.ipAddress !== 'local' && deviceObject.bridge">
+                    <ion-item class="configure-item only-button-item" *ngIf="deviceObject && deviceObject.ipAddress !== 'local' && deviceObject.bridge">
                         <button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update Firmware</button>
                     </ion-item>
                 </ion-list>
