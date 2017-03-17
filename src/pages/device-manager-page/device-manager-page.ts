@@ -227,7 +227,7 @@ export class DeviceManagerPage {
     }
 
     ionViewDidEnter() {
-        this.app.setTitle('Saved Devices');
+        this.app.setTitle('Device Manager');
     }
 
     ngOnDestroy() {
@@ -236,7 +236,7 @@ export class DeviceManagerPage {
 
     openPopover(event, arrayIndex: number) {
         let genPopover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['Connect', 'Remove', 'Configure', 'Documentation']
+            dataArray: ['Connect', 'Configure', 'Documentation', 'Remove']
         });
         genPopover.present({
             ev: event

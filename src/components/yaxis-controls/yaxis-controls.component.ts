@@ -8,6 +8,9 @@ import { SilverNeedleChart } from '../chart/chart.component';
 import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 
+//Interfaces
+import { LockInfoContainer } from './yaxis-controls.interface';
+
 @Component({
     templateUrl: 'yaxis-controls.html',
     selector: 'yaxis-controls'
@@ -26,6 +29,7 @@ export class YAxisComponent {
     public timeoutRef: any;
     public showOscSettings: boolean = true;
     public ignoreFocusOut: boolean = false;
+    public lockedSampleState: LockInfoContainer[] = [];
 
     constructor(_viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController, _settingsSrv: SettingsService, public tooltipService: TooltipService) {
         this.popoverCtrl = _popoverCtrl;
@@ -38,7 +42,27 @@ export class YAxisComponent {
         for (let i = 0; i < this.chart.oscopeChansActive.length; i++) {
             this.names.push('Ch ' + (i + 1));
             this.showSeriesSettings.push(this.chart.oscopeChansActive[i]);
+            this.lockedSampleState[i] = {
+                sampleFreqLocked: true,
+                sampleSizeLocked: true,
+                manualSampleFreq: 0,
+                manualSampleSize: 0
+            };
         }
+    }
+
+    toggleSampleLock(channel: number) {
+        if (this.lockedSampleState[channel].sampleSizeLocked) {
+            this.lockedSampleState[channel].manualSampleSize = this.chart.calculateDataFromWindow().bufferSize;
+        }
+        this.lockedSampleState[channel].sampleSizeLocked = !this.lockedSampleState[channel].sampleSizeLocked;
+    }
+
+    toggleSampleFreqLock(channel: number) {
+        if (this.lockedSampleState[channel].sampleFreqLocked) {
+            this.lockedSampleState[channel].manualSampleFreq = this.chart.calculateDataFromWindow().sampleFreq;
+        }
+        this.lockedSampleState[channel].sampleFreqLocked = !this.lockedSampleState[channel].sampleFreqLocked;
     }
 
     checkForEnter(event, channel: number, inputType: string) {
@@ -48,11 +72,57 @@ export class YAxisComponent {
         }
     }
 
+    sampleCheckForEnter(event, channel, sampleType: 'sampleFreq' | 'numSamples') {
+        if (event.key === 'Enter') {
+            this.setSample(event, sampleType, channel);
+            this.ignoreFocusOut = true;
+        }
+    }
+
     inputLeave(event, channel: number, inputType: string) {
         if (!this.ignoreFocusOut) {
             this.formatInputAndUpdate(event, channel, inputType);
         }
         this.ignoreFocusOut = false;
+    }
+
+    sampleInputLeave(event, channel, sampleType: 'sampleFreq' | 'numSamples') {
+        if (!this.ignoreFocusOut) {
+            this.setSample(event, sampleType, channel);
+        }
+        this.ignoreFocusOut = false;
+    }
+
+    setSample(event, sampleType: 'sampleFreq' | 'numSamples', channel) {
+        let value = event.target.value;
+        let parsedValue: number = parseFloat(value);
+        let trueValue = parsedValue;
+        if (value.indexOf('G') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 9);
+        }
+        else if (value.indexOf('M') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 6);
+        }
+        else if (value.indexOf('k') !== -1) {
+            trueValue = parsedValue * Math.pow(10, 3);
+        }
+        else if (value.indexOf('m') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -3);
+        }
+        else if (value.indexOf('u') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -6);
+        }
+        else if (value.indexOf('n') !== -1) {
+            trueValue = parsedValue * Math.pow(10, -9);
+        }
+        if (sampleType === 'sampleFreq') {
+            trueValue = Math.max(Math.min(trueValue, this.chart.deviceDescriptor.instruments.osc.chans[channel].sampleFreqMax / 1000), this.chart.deviceDescriptor.instruments.osc.chans[channel].sampleFreqMin / 1000);
+            this.lockedSampleState[channel].manualSampleFreq = trueValue;
+        }
+        else if (sampleType === 'numSamples') {
+            trueValue = Math.max(Math.min(trueValue, this.chart.deviceDescriptor.instruments.osc.chans[channel].bufferSizeMax), 2);
+            this.lockedSampleState[channel].manualSampleSize = trueValue;
+        }
     }
 
     formatInputAndUpdate(event, channel: number, inputType: string) {

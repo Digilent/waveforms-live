@@ -156,7 +156,7 @@ export class DeviceConfigureModal {
             this.deviceBridgeAddress = this.bridgeConfigure === true ? this.deviceObject.deviceBridgeAddress : this.deviceBridgeAddress;
         }
         else if (this.deviceObject == undefined && this.bridgeConfigure) {
-            this.reEnumerateAgent(true);
+            this.reEnumerateAgent(false);
         }
     }
 
@@ -565,6 +565,17 @@ export class DeviceConfigureModal {
             this.nicStatusContainer.status = data.status.charAt(0).toUpperCase() + data.status.slice(1) || '';
         });
         modal.present();
+    }
+
+    getFirmwareVersion() {
+        if (this.deviceObject == undefined || this.invalidEnumeration) {
+            return 'N/A';
+        }
+        let vArray = [];
+        for (let mmp in this.deviceObject.deviceDescriptor.firmwareVersion) {
+            vArray.push(this.deviceObject.deviceDescriptor.firmwareVersion[mmp]);
+        }
+        return vArray.join('.');
     }
 
 }

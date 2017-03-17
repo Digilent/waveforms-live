@@ -98,6 +98,8 @@ export class SilverNeedleChart {
     public showFft: boolean = false;
     public fftChartOptions: any;
 
+    public TODOKILLME: number = 0;
+
     constructor(
         _modalCtrl: ModalController,
         _platform: Platform,
@@ -967,7 +969,8 @@ export class SilverNeedleChart {
     }
 
     flotDecimateData(seriesNum: number, bounds: any) {
-        let waveform = this.currentBufferArray[seriesNum];
+        return this.currentBufferArray[seriesNum];
+        /*let waveform = this.currentBufferArray[seriesNum];
         let numPointsInView = Math.round((bounds.max - bounds.min) / waveform.dt);
         if (numPointsInView <= 2000) {
             return this.currentBufferArray[seriesNum];
@@ -989,7 +992,7 @@ export class SilverNeedleChart {
             seriesOffset: waveform.seriesOffset,
             triggerDelay: waveform.triggerDelay
         };
-        return newWaveform;
+        return newWaveform;*/
         /*console.log(mathFunctions);
         console.log(decimateModule);
         decimateModule.initData(['time', 'Series ' + seriesNum]);
@@ -1082,6 +1085,11 @@ export class SilverNeedleChart {
         if (this.showFft) {
             this.drawFft(true);
         }
+
+        let newTime = performance.now();
+        let fps = 1000 / (newTime - this.TODOKILLME);
+        this.TODOKILLME = newTime;
+        console.warn('FPS: ' + (fps))
     }
 
     //Remove extra series and axes from the chart

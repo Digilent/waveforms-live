@@ -272,6 +272,9 @@ var waveformsLiveDictionary = (function() {
         oscSamplingFreq: {
             english: 'Osc Sampling Frequency'
         },
+        oscSampleSize: {
+            english: 'Osc Sample Size'
+        },
         xAxisTpd: {
             english: 'Set Time / Division'
         },

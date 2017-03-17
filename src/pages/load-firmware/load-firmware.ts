@@ -128,7 +128,8 @@ export class LoadFirmwarePage {
         let fileName = event.target.files[0].name;
         this.selectedFileInfo.name = fileName;
         this.firmwareStatus = 'Ready to upload "' + fileName + '".';
-        let fileEnding = fileName.slice(fileName.indexOf('.') + 1);
+        let fileNameSplit = fileName.split('.');
+        let fileEnding = fileNameSplit[fileNameSplit.length - 1];
         if (fileEnding === 'hex') {
             fileReader.onload = ((file: any) => {
                 this.firmwareStatus += '\r\nFile size is ' + file.loaded + ' bytes.';

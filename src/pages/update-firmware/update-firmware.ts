@@ -29,7 +29,7 @@ export class UpdateFirmwarePage {
     public updateComplete: boolean = false;
 
     public deviceFirmwareVersion: string = '';
-    public latestFirmwareVersion: string = 'Unable to load latest firmware version.';
+    public latestFirmwareVersion: string = 'Unable to load latest firmware version. This may be due to no internet connection or a firewall.';
     public updateStatus: string = 'Ready';
 
     public deviceObject: DeviceCardInfo;

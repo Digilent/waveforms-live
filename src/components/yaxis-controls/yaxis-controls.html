@@ -69,10 +69,37 @@
                 
                 <ion-row class="controls-container">
                     <ion-col center class="vpd-label-col" [tooltip]="tooltipService.getTooltip('oscSamplingFreq').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                        Sample Rate
+                        Samples/
+                    </ion-col>
+                    <ion-col text-right center class="vpd-button-col">
                     </ion-col>
                     <ion-col class="samplefreq-val-col" center text-center>
-                        <input [disabled]="true" class="custom-input" step="any" [ngModel]="chart.calculateDataFromWindow().sampleFreq | unitFormat:'S/s'" />
+                        <input [disabled]="lockedSampleState[i].sampleFreqLocked" class="custom-input" step="any" 
+                            [ngModel]="(lockedSampleState[i].sampleFreqLocked ? chart.calculateDataFromWindow().sampleFreq : lockedSampleState[i].manualSampleFreq) | unitFormat:'S/s'" 
+                            (focusout)="sampleInputLeave($event, i, 'sampleFreq')" (keypress)="sampleCheckForEnter($event, i, 'sampleFreq')" />
+                    </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right"> 
+                        <button ion-button (tap)="toggleSampleFreqLock(i)" class="icon-only-button-side disable-hover offset-button">
+                            <img class="button-side-svg" [src]="lockedSampleState[i].sampleFreqLocked ? 'assets/img/close-lock.svg' : 'assets/img/open-lock.svg'">
+                        </button>
+                    </ion-col>
+                </ion-row>
+                
+                <ion-row class="controls-container">
+                    <ion-col center class="vpd-label-col" [tooltip]="tooltipService.getTooltip('oscSampleSize').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        Samples
+                    </ion-col>
+                    <ion-col text-right center class="vpd-button-col">
+                    </ion-col>
+                    <ion-col class="samplefreq-val-col" center text-center>
+                        <input [disabled]="lockedSampleState[i].sampleSizeLocked" class="custom-input" step="any" 
+                            [ngModel]="(lockedSampleState[i].sampleSizeLocked ? chart.calculateDataFromWindow().bufferSize : lockedSampleState[i].manualSampleSize) | unitFormat:'S'"
+                            (focusout)="sampleInputLeave($event, i, 'numSamples')" (keypress)="sampleCheckForEnter($event, i, 'numSamples')" />
+                    </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <button ion-button (tap)="toggleSampleLock(i)" class="icon-only-button-side disable-hover offset-button">
+                            <img class="button-side-svg" [src]="lockedSampleState[i].sampleSizeLocked ? 'assets/img/close-lock.svg' : 'assets/img/open-lock.svg'">
+                        </button>
                     </ion-col>
                 </ion-row>
             </div>

@@ -41,7 +41,17 @@
                             Connect
                         </button>
                     </ion-item>
-                    <ion-item class="configure-item only-button-item" *ngIf="potentialDevices && potentialDevices.length > 0">
+                </ion-list>
+            </div>
+
+            <div>
+                <ion-list class="section-list">
+                    <ion-item-divider class="list-header">Firmware</ion-item-divider>
+                    <ion-item class="configure-item">
+                        <ion-label fixed>Firmware Version</ion-label>
+                        <div item-right class="item-content-right">{{getFirmwareVersion()}}</div>
+                    </ion-item>
+                    <ion-item class="configure-item only-button-item" *ngIf="deviceObject.ipAddress !== 'local' && deviceObject.bridge">
                         <button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update Firmware</button>
                     </ion-item>
                 </ion-list>
@@ -90,6 +100,7 @@
                     </ion-item>
                 </ion-list>
             </div>
+
         </div>
     </div>
     <div text-center>

@@ -8,6 +8,7 @@ import { TriggerComponent } from '../../components/trigger/trigger.component';
 import { FgenComponent } from '../../components/function-gen/function-gen.component';
 import { DigitalIoComponent } from '../../components/digital-io/digital-io.component';
 import { DcSupplyComponent } from '../../components/dc-supply/dc-supply.component';
+import { YAxisComponent } from '../../components/yaxis-controls/yaxis-controls.component';
 
 //Services
 import { DeviceManagerService } from '../../services/device/device-manager.service';
@@ -18,7 +19,6 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
 //Interfaces
 import { PreviousLaSettings, PreviousOscSettings, PreviousTrigSettings } from './test-chart-ctrls.interface';
 
-
 @Component({
     templateUrl: 'test-chart-ctrls.html'
 })
@@ -27,7 +27,8 @@ export class TestChartCtrlsPage {
     @ViewChild('triggerComponent') triggerComponent: TriggerComponent;
     @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
     @ViewChild('fgenComponent') fgenComponent: FgenComponent;
-    @ViewChild('dcComponent') dcComponent: DcSupplyComponent
+    @ViewChild('dcComponent') dcComponent: DcSupplyComponent;
+    @ViewChild('yaxisComponent') yaxisComponent: YAxisComponent;
     public app: App;
     public platform: Platform;
     public params: NavParams;
@@ -239,7 +240,7 @@ export class TestChartCtrlsPage {
                     reject(err);
                 },
                 () => {
-                    
+
                 }
             );
         });
@@ -321,6 +322,14 @@ export class TestChartCtrlsPage {
             }
         }
         document.getElementById('instrument-panel-container').removeEventListener('click', this.clickBindReference);
+    }
+
+    ngOnDestroy() {
+        if (this.running) {
+            this.running = false;
+            this.readingLa = false;
+            this.readingOsc = false;
+        }
     }
 
     //Alert user with toast if no active device is set
@@ -438,13 +447,13 @@ export class TestChartCtrlsPage {
             case 'falling': trigType = 'fallingEdge'; break;
             default: trigType = 'risingEdge';
         }
-        let samplingParams = this.chart1.calculateDataFromWindow();
-        this.theoreticalAcqTime = 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
-        console.log(':::::TRIGGER DELAY::::::');
-        console.log(this.chart1.base);
+
+
+        this.theoreticalAcqTime = 0;
+
+        //this.theoreticalAcqTime = 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
+
         let triggerDelay = Math.max(Math.min(parseFloat(this.chart1.base.toString()), this.activeDevice.instruments.osc.chans[0].delayMax / Math.pow(10, 12)), this.activeDevice.instruments.osc.chans[0].delayMin / Math.pow(10, 12));
-        console.log(this.theoreticalAcqTime);
-        console.log(triggerDelay);
 
         if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[2]) ||
             this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== parseInt(this.triggerComponent.lowerThresh) ||
@@ -462,6 +471,14 @@ export class TestChartCtrlsPage {
                 j++;
             }
 
+            let samplingParams: { sampleFreq: number, bufferSize: number } = this.chart1.calculateDataFromWindow();
+            if (!this.yaxisComponent.lockedSampleState[i].sampleFreqLocked) {
+                samplingParams.sampleFreq = this.yaxisComponent.lockedSampleState[i].manualSampleFreq;
+            }
+            if (!this.yaxisComponent.lockedSampleState[i].sampleSizeLocked) {
+                samplingParams.bufferSize = this.yaxisComponent.lockedSampleState[i].manualSampleSize;
+            }
+
             if (this.previousOscSettings[i] == undefined || this.previousOscSettings[i].offset !== 0 || this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
                 this.previousOscSettings[i].sampleFreqMax !== samplingParams.sampleFreq ||
                 this.previousOscSettings[i].bufferSizeMax !== samplingParams.bufferSize ||
@@ -471,6 +488,10 @@ export class TestChartCtrlsPage {
                 setTrigParams = true;
             }
             if (this.chart1.oscopeChansActive[i]) {
+                let tempTheoreticalAcqTime = 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
+                if (tempTheoreticalAcqTime > this.theoreticalAcqTime) {
+                    this.theoreticalAcqTime = tempTheoreticalAcqTime;
+                }
                 oscArray[0].push(i + 1);
                 oscArray[1].push(0);
                 oscArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
@@ -490,6 +511,7 @@ export class TestChartCtrlsPage {
 
         let laArray = [[], [], []];
         for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
+            let samplingParams: { sampleFreq: number, bufferSize: number } = this.chart1.calculateDataFromWindow();
             if (this.previousLaSettings[i] == undefined || this.previousLaSettings[i].sampleFreq !== samplingParams.sampleFreq ||
                 this.previousLaSettings[i].bufferSize !== samplingParams.bufferSize ||
                 this.previousLaSettings[i].active !== this.gpioComponent.laActiveChans[i]) {
@@ -587,7 +609,7 @@ export class TestChartCtrlsPage {
                                 this.readLa(laArray[0]);
                             }
                         })
-                        .catch((e) => { 
+                        .catch((e) => {
                             console.log('fail force trigger');
                         });
                     return;
@@ -637,7 +659,7 @@ export class TestChartCtrlsPage {
                             .then((data) => {
                                 resolve(data);
                             })
-                            .catch((e) => { 
+                            .catch((e) => {
                                 reject();
                             });
                     }, this.forceTriggerInterval);

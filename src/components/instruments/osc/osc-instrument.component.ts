@@ -120,7 +120,7 @@ export class OscInstrumentComponent extends InstrumentComponent {
                         "offset": offsets[index] * 1000,
                         "gain": gains[index],
                         "sampleFreq": Math.round(sampleFreqs[index] * 1000),
-                        "bufferSize": bufferSizes[index],
+                        "bufferSize": Math.round(bufferSizes[index]),
                         "triggerDelay": Math.round(delays[index] * 1000000000000)
                     }
                 ]
