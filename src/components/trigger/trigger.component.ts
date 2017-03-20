@@ -3,12 +3,11 @@ import { PopoverController } from 'ionic-angular';
 
 //Components
 import { GenPopover } from '../gen-popover/gen-popover.component';
-import { DeviceComponent } from '../device/device.component';
 import { SilverNeedleChart } from '../chart/chart.component';
 import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
 
 //Services
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 
@@ -32,7 +31,7 @@ export class TriggerComponent {
     public popoverCtrl: PopoverController;
     public showTriggerSettings: boolean = true;
     public devMngSrv: DeviceManagerService;
-    public activeDevice: DeviceComponent;
+    public activeDevice: DeviceService;
     public level: number = 0.5;
     public ignoreFocusOut: boolean = false;
 

@@ -3,11 +3,11 @@ import { ModalController, Platform, PopoverController } from 'ionic-angular';
 import { Transfer } from 'ionic-native';
 
 //Components
-import { DeviceComponent } from '../device/device.component';
-import { WaveformComponent } from '../data-types/waveform';
+import { DeviceService } from 'dip-angular2/services';
+import { WaveformService } from 'dip-angular2/services';
 import { GenPopover } from '../gen-popover/gen-popover.component';
 import { PinoutPopover } from '../pinout-popover/pinout-popover.component';
-import { DigilentChart } from '../digilent-chart/digilent-chart.component';
+import { DigilentChart } from 'digilent-chart-angular2/components';
 
 //Pages
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
@@ -19,7 +19,7 @@ import { Chart, CursorPositions, DataContainer } from './chart.interface';
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
-
+ 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 
@@ -75,10 +75,10 @@ export class SilverNeedleChart {
     public voltBase: number[] = [0, 0];
     public cursorPositions: Array<CursorPositions> = [{ x: null, y: null }, { x: null, y: null }];
     public modalCtrl: ModalController;
-    public currentBufferArray: WaveformComponent[] = [];
+    public currentBufferArray: WaveformService[] = [];
     public oscopeChansActive: boolean[] = [];
     public colorArray: string[] = ['#FFA500', '#4487BA', '#ff3b99', '#00c864'];
-    public deviceDescriptor: DeviceComponent;
+    public deviceDescriptor: DeviceService;
     public selectedMathInfo: any = [];
     public seriesDataContainer: DataContainer[] = [];
     public yAxisOptionsContainer: any = [];
@@ -885,7 +885,7 @@ export class SilverNeedleChart {
         alert('hey');
     }
 
-    loadDeviceSpecificValues(deviceComponent: DeviceComponent) {
+    loadDeviceSpecificValues(deviceComponent: DeviceService) {
         this.deviceDescriptor = deviceComponent;
         let resolution = (deviceComponent.instruments.osc.chans[0].adcVpp / 1000) / Math.pow(2, deviceComponent.instruments.osc.chans[0].effectiveBits);
         let i = 0;
@@ -1025,7 +1025,7 @@ export class SilverNeedleChart {
         return newWaveform;
     }
 
-    setCurrentBuffer(bufferArray: WaveformComponent[]) {
+    setCurrentBuffer(bufferArray: WaveformService[]) {
         this.currentBufferArray = bufferArray;
         if (this.deviceDescriptor !== undefined) {
             this.updateTriggerLine();

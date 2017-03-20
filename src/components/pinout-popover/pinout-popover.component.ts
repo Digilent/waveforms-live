@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ViewController } from 'ionic-angular';
 
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService } from 'dip-angular2/services';
 
 @Component({
     templateUrl: 'pinout-popover.html'

@@ -7,7 +7,7 @@ import { ProgressBarComponent } from  '../../components/progress-bar/progress-ba
 //Services
 import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService } from 'dip-angular2/services';
 
 @Component({
     templateUrl: 'calibrate.html',

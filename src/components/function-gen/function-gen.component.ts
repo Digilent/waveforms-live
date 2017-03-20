@@ -2,17 +2,16 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { ModalController, PopoverController } from 'ionic-angular';
 
 //Components
-import { DeviceComponent } from '../../components/device/device.component';
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Services
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 //Interfaces
-import { SettingsObject } from '../instruments/awg/awg-instrument.component';
+import { SettingsObject } from 'dip-angular2/services';
 
 const enum TutorialStage {
     IDLE,
@@ -37,7 +36,7 @@ export class FgenComponent {
     public dutyCycle: number;
     public powerOn: boolean;
     public deviceManagerService: DeviceManagerService;
-    public activeDevice: DeviceComponent;
+    public activeDevice: DeviceService;
     public supportedSignalTypes: string[];
     public attemptingPowerOff: boolean = false;
     public modalCtrl: ModalController;
@@ -425,7 +424,7 @@ export class FgenComponent {
 
     //Get settings from awg
     setArbitraryWaveform(chans: number[], waveforms, dataTypes: string[]) {
-        this.activeDevice.instruments.awg.setArbitraryWaveform(chans, waveforms, ['I16']).subscribe(
+        /*this.activeDevice.instruments.awg.setArbitraryWaveform(chans, waveforms, ['I16']).subscribe(
             (data) => {
                 console.log(data);
             },
@@ -434,7 +433,7 @@ export class FgenComponent {
             },
             () => {
 
-            });
+            });*/
     }
 
     //Set regular waveform for awg

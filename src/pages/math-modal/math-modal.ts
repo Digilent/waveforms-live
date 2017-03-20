@@ -2,12 +2,11 @@ import { NavParams, ViewController, Platform, PopoverController } from 'ionic-an
 import { Component } from '@angular/core';
 
 //Components
-import { DeviceComponent } from '../../components/device/device.component';
 import { SilverNeedleChart } from '../../components/chart/chart.component';
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Services
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 
 //Interfaces
 import { Chart } from '../../components/chart/chart.interface';
@@ -29,7 +28,7 @@ export class MathModalPage {
     public viewCtrl: ViewController;
     public params: NavParams;
     public deviceManagerService: DeviceManagerService;
-    public activeDevice: DeviceComponent;
+    public activeDevice: DeviceService;
     public mathChannels: string[];
     public buttonNames: Array<string[]> = [['Frequency', 'Period'], ['Amplitude', 'Peak to Peak'], ['Maximum', 'Minimum'], ['Mean', 'RMS']];
     public chart: Chart;

@@ -1,10 +1,7 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
 
-//Components
-import { DeviceComponent } from '../../components/device/device.component';
-
 //Services
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 
@@ -26,7 +23,7 @@ export class DcSupplyComponent {
     public voltageLimitFormats: string[] = [];
 
     public deviceManagerService: DeviceManagerService;
-    public activeDevice: DeviceComponent;
+    public activeDevice: DeviceService;
 
     public showCurrent: boolean = false;
 

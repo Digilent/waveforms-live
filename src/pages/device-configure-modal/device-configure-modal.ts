@@ -14,7 +14,7 @@ import { DeviceCardInfo } from '../device-manager-page/device-manager-page.inter
 import { NicStatusContainer } from '../wifi-setup/wifi-setup.interface';
 
 //Services
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService } from 'dip-angular2/services';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 @Component({

@@ -3,12 +3,11 @@ import { Component, ViewChild } from '@angular/core';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
-import { DeviceComponent } from '../../components/device/device.component';
 import { SilverNeedleChart } from '../../components/chart/chart.component';
 import { DropdownPopoverComponent } from '../../components/dropdown-popover/dropdown-popover.component';
 
 //Services
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 
 @Component({
     templateUrl: "cursor-modal.html"
@@ -24,7 +23,7 @@ export class ModalCursorPage {
     public cursorChanArray: string[] = [];
     public popoverCtrl: PopoverController;
     public deviceManagerService: DeviceManagerService;
-    public activeDevice: DeviceComponent;
+    public activeDevice: DeviceService;
     public chartComponent: SilverNeedleChart;
     public activeChans: string[] = [];
 

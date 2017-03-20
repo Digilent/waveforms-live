@@ -2,11 +2,10 @@ import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { AlertController, PopoverController } from 'ionic-angular';
 
 //Components
-import { DeviceComponent } from '../device/device.component';
 import { SilverNeedleChart } from '../chart/chart.component';
 
 //Services
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 
@@ -22,7 +21,7 @@ export class DigitalIoComponent {
     public toastService: ToastService;
     public tooltipService: TooltipService;
     public deviceManagerService: DeviceManagerService;
-    public activeDev: DeviceComponent;
+    public activeDev: DeviceService;
     public gpioChans: number[] = [];
     public laChans: number[] = [];
     public laActiveChans: boolean[] = [];

@@ -14,7 +14,7 @@ import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 import { DeviceCardInfo, DeviceConfigureParams } from './device-manager-page.interface';
 
 //Services
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService } from 'dip-angular2/services';
 import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
@@ -511,7 +511,7 @@ export class DeviceManagerPage {
                             bridge: false,
                             deviceBridgeAddress: null,
                             connectedDeviceAddress: null,
-                            outdatedFirmware: false // TODO
+                            outdatedFirmware: false
                         }
                     );
                     this.storage.saveData('savedDevices', JSON.stringify(this.devices));
@@ -653,6 +653,7 @@ export class DeviceManagerPage {
     connectToDevice(deviceIndex: number) {
         if (this.devices[deviceIndex].ipAddress === 'local') {
             this.deviceManagerService.addDeviceFromDescriptor('local', { device: [this.devices[deviceIndex].deviceDescriptor] });
+            console.log(this.deviceManagerService);
             this.navCtrl.setRoot(TestChartCtrlsPage, {
                 tutorialMode: this.tutorialMode
             });

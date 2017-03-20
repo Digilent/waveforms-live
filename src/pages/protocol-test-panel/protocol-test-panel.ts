@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
 
-//Components
-import { TransportComponent } from '../../components/transport/transport.component';
-
 //Services
 import { StorageService } from '../../services/storage/storage.service';
 
@@ -11,8 +8,6 @@ import { StorageService } from '../../services/storage/storage.service';
 })
 
 export class ProtocolTestPanel {
-
-    public transport: TransportComponent;
     public storage: StorageService;
 
 

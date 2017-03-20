@@ -9,7 +9,7 @@ import { DropdownPopoverComponent } from '../../components/dropdown-popover/drop
 import { DropDownMenu } from '../../libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu.component';
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar.component';
-import { DigilentChart } from '../../components/digilent-chart/digilent-chart.component';
+import { DigilentChart } from 'digilent-chart-angular2/components';
 
 @NgModule({
     imports: [

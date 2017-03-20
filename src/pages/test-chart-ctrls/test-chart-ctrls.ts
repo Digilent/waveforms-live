@@ -3,7 +3,6 @@ import { ViewChild, Component } from '@angular/core';
 
 //Components
 import { SilverNeedleChart } from '../../components/chart/chart.component';
-import { DeviceComponent } from '../../components/device/device.component';
 import { TriggerComponent } from '../../components/trigger/trigger.component';
 import { FgenComponent } from '../../components/function-gen/function-gen.component';
 import { DigitalIoComponent } from '../../components/digital-io/digital-io.component';
@@ -11,7 +10,7 @@ import { DcSupplyComponent } from '../../components/dc-supply/dc-supply.componen
 import { YAxisComponent } from '../../components/yaxis-controls/yaxis-controls.component';
 
 //Services
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { StorageService } from '../../services/storage/storage.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
@@ -42,7 +41,7 @@ export class TestChartCtrlsPage {
     public tutorialStage: number = 0;
 
     public deviceManagerService: DeviceManagerService;
-    public activeDevice: DeviceComponent;
+    public activeDevice: DeviceService;
     public storage: StorageService;
 
     public chartReady: boolean = false;
@@ -725,12 +724,7 @@ export class TestChartCtrlsPage {
         let oscBufferArray = [];
         let laBufferArray = null;
         if (this.chart1.oscopeChansActive.indexOf(true) !== -1) {
-            if (this.activeDevice.instruments.osc.dataBufferWriteIndex - 1 < 0) {
-                oscBufferArray = this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBuffer.length - 1];
-            }
-            else {
-                oscBufferArray = this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferWriteIndex - 1];
-            }
+            oscBufferArray = this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex];
         }
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (oscBufferArray[i] == undefined) {
@@ -739,12 +733,7 @@ export class TestChartCtrlsPage {
         }
         currentBufferArray = oscBufferArray;
         if (this.gpioComponent.laActiveChans.indexOf(true) !== -1) {
-            if (this.activeDevice.instruments.la.dataBufferWriteIndex - 1 < 0) {
-                laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBuffer.length - 1];
-            }
-            else {
-                laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferWriteIndex - 1];
-            }
+            laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferReadIndex];
             currentBufferArray = currentBufferArray.concat(laBufferArray);
         }
         /*if (oscBufferArray == null) {

@@ -4,7 +4,7 @@ import { NavParams, Slides, ViewController, PopoverController, LoadingController
 //Services
 import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
-import { DeviceManagerService } from '../../services/device/device-manager.service';
+import { DeviceManagerService } from 'dip-angular2/services';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';

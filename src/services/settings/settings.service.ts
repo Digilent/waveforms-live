@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 //Services
 import { StorageService } from '../storage/storage.service';
-import { DeviceManagerService } from '../device/device-manager.service';
+import { DeviceManagerService } from 'dip-angular2/services';
 
 @Injectable()
 export class SettingsService {
@@ -15,7 +15,7 @@ export class SettingsService {
     public nestedChannels: boolean = false;
     public routeToStore: boolean = true;
     public drawLaOnTimeline: boolean = false;
-    public wflVersion: string = '0.4.3';
+    public wflVersion: string = '0.5.0';
     public useDevBuilds: boolean = false;
 
     public knownFirmwareUrls: { openscopeMz: { prettyName: string, listUrl: string, devListUrl: string, firmwareUrl: string, devFirmwareUrl: string } } = {
