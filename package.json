@@ -1,6 +1,6 @@
 {
     "name": "webwaveforms",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "author": "Digilent",
     "homepage": "http://digilent.com/",
     "main": "electron.js",
@@ -10,7 +10,8 @@
         "build": "ionic-app-scripts build",
         "ionic:build": "ionic-app-scripts build",
         "ionic:serve": "ionic-app-scripts serve",
-        "updateVersion": "node versionManager.js"
+        "manualUpdateVersion": "node versionManager.js",
+        "buildProd": "node buildProd.js"
     },
     "dependencies": {
         "@angular/common": "2.0.0",
