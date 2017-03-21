@@ -10,6 +10,7 @@ import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.c
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { DeviceDataTransferService } from '../../services/device/device-data-transfer.service';
 
 @Component({
     templateUrl: 'trigger.html',
@@ -32,7 +33,6 @@ export class TriggerComponent {
     public showTriggerSettings: boolean = true;
     public devMngSrv: DeviceManagerService;
     public activeDevice: DeviceService;
-    public level: number = 0.5;
     public ignoreFocusOut: boolean = false;
 
     public tutorialMode: boolean = false;
@@ -42,7 +42,8 @@ export class TriggerComponent {
         _popoverCtrl: PopoverController,
         _devMngSrv: DeviceManagerService,
         _tooltipService: TooltipService,
-        _toastService: ToastService
+        _toastService: ToastService,
+        public deviceDataTransferService: DeviceDataTransferService
     ) {
         this.popoverCtrl = _popoverCtrl;
         this.tooltipService = _tooltipService;
@@ -74,6 +75,7 @@ export class TriggerComponent {
             getStatusObject.trigger[channel].forEach((val, index, array) => {
                 if (val.source != undefined && val.source.instrument === 'osc') {
                     this.triggerSource = 'Osc Ch ' + val.source.channel;
+                    this.deviceDataTransferService.triggerSource = this.triggerSource;
                     this.dropPopSource.setActiveSelection(this.triggerSource);
                 }
                 else {
@@ -85,8 +87,9 @@ export class TriggerComponent {
                 if (val.source != undefined && val.source.lowerThreshold != undefined && val.source.upperThreshold != undefined) {
                     this.lowerThresh = (val.source.lowerThreshold).toString();
                     this.upperThresh = (val.source.upperThreshold).toString();
-                    this.level = val.source.upperThreshold / 1000;
-                    console.log(this.lowerThresh, this.upperThresh, this.level);
+                    this.deviceDataTransferService.triggerLevel = val.source.upperThreshold / 1000;
+                    console.log(this.lowerThresh, this.upperThresh, this.deviceDataTransferService.triggerLevel);
+                    this.chart.chart.triggerRedrawOverlay();
                 }
             });
         }
@@ -94,6 +97,8 @@ export class TriggerComponent {
 
     sourceSelect(event) {
         this.triggerSource = event;
+        this.deviceDataTransferService.triggerSource = this.triggerSource;
+        this.chart.chart.triggerRedrawOverlay();
     }
 
     checkForEnter(event) {
@@ -144,52 +149,37 @@ export class TriggerComponent {
         if (trueValue * 1000 > this.activeDevice.instruments.osc.chans[0].inputVoltageMax ||
             trueValue * 1000 - 30 < this.activeDevice.instruments.osc.chans[0].inputVoltageMin) {
             this.toastService.createToast('invalidLevel', true);
-            this.level = 0;
+            this.deviceDataTransferService.triggerLevel = 0;
+            this.chart.chart.triggerRedrawOverlay();
             return;
         }
-        if (this.level === trueValue) {
+        if (this.deviceDataTransferService.triggerLevel === trueValue) {
             console.log('the same');
-            this.level = trueValue * 10 + 1;
+            this.deviceDataTransferService.triggerLevel = trueValue * 10 + 1;
             setTimeout(() => {
-                this.level = trueValue;
-                this.upperThresh = (this.level * 1000).toString();
+                this.deviceDataTransferService.triggerLevel = trueValue;
+                this.chart.chart.triggerRedrawOverlay();
+                this.upperThresh = (this.deviceDataTransferService.triggerLevel * 1000).toString();
                 this.lowerThresh = (parseFloat(this.upperThresh) - 30).toString();
             }, 1);
             return;
         }
-        this.level = trueValue;
-        this.upperThresh = (this.level * 1000).toString();
+        this.deviceDataTransferService.triggerLevel = trueValue;
+        this.upperThresh = (this.deviceDataTransferService.triggerLevel * 1000).toString();
         this.lowerThresh = (parseFloat(this.upperThresh) - 30).toString();
+        this.chart.chart.triggerRedrawOverlay();
         console.log(this.upperThresh, this.lowerThresh);
+    }
+
+    getThresholdsInMillivolts() {
+        return {
+            upperThreshold: Math.round(this.deviceDataTransferService.triggerLevel * 1000),
+            lowerThreshold: Math.round(this.deviceDataTransferService.triggerLevel * 1000 - 30)
+        };
     }
 
     toggleTriggerShow() {
         this.showTriggerSettings = !this.showTriggerSettings;
-    }
-
-    openGenPopover(event) {
-        let chanArray = [];
-        for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
-            chanArray.push('Osc Ch ' + (i + 1));
-        }
-        /*for (let i = 0; i < this.triggerComponent.activeDevice.instruments.la.numChans; i++) {
-            chanArray.push('La ' + (i + 1));
-        }*/
-        /*chanArray.push('Ext');*/
-
-        let genPopover = this.popoverCtrl.create(GenPopover, {
-            dataArray: chanArray
-        });
-
-        genPopover.present({
-            ev: event
-        });
-
-        genPopover.onWillDismiss((data) => {
-            if (data === null) { return; }
-            console.log(data);
-            this.triggerSource = data.option;
-        });
     }
 
     forceTrigger() {

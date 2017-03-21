@@ -3,8 +3,7 @@ import { ModalController, Platform, PopoverController } from 'ionic-angular';
 import { Transfer } from 'ionic-native';
 
 //Components
-import { DeviceService } from 'dip-angular2/services';
-import { WaveformService } from 'dip-angular2/services';
+import { DeviceService, WaveformService } from 'dip-angular2/services';
 import { GenPopover } from '../gen-popover/gen-popover.component';
 import { PinoutPopover } from '../pinout-popover/pinout-popover.component';
 import { DigilentChart } from 'digilent-chart-angular2/components';
@@ -19,7 +18,8 @@ import { Chart, CursorPositions, DataContainer } from './chart.interface';
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
- 
+import { DeviceDataTransferService } from '../../services/device/device-data-transfer.service';
+
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 
@@ -91,6 +91,9 @@ export class SilverNeedleChart {
     public seriesAnchorContainer: any[];
     public seriesAnchorVertPanRef: any;
     public seriesAnchorTouchVertPanRef: any;
+    public triggerLevelVertPanRef: any;
+    public triggerLevelTouchVertPanRef: any;
+    public triggerLevelTouchStartRef: any;
     public unbindCustomEventsRef: any;
     public seriesAnchorTouchStartRef: any;
     public previousYPos: number;
@@ -99,13 +102,15 @@ export class SilverNeedleChart {
     public fftChartOptions: any;
 
     public TODOKILLME: number = 0;
+    public overTriggerLevel: boolean = false;
 
     constructor(
         _modalCtrl: ModalController,
         _platform: Platform,
         _popoverCtrl: PopoverController,
         _settingsService: SettingsService,
-        _tooltipService: TooltipService
+        _tooltipService: TooltipService,
+        public deviceDataTransferService: DeviceDataTransferService
     ) {
         this.modalCtrl = _modalCtrl;
         this.settingsService = _settingsService;
@@ -121,6 +126,9 @@ export class SilverNeedleChart {
         this.seriesAnchorVertPanRef = this.seriesAnchorVertPan.bind(this);
         this.unbindCustomEventsRef = this.unbindCustomEvents.bind(this);
         this.seriesAnchorTouchStartRef = this.seriesAnchorTouchStart.bind(this);
+        this.triggerLevelTouchStartRef = this.triggerLevelAnchorTouchStart.bind(this);
+        this.triggerLevelTouchVertPanRef = this.triggerLevelTouchVertPan.bind(this);
+        this.triggerLevelVertPanRef = this.triggerLevelVertPan.bind(this);
         this.seriesAnchorTouchVertPanRef = this.seriesAnchorTouchVertPan.bind(this);
         let plotArea = $('#flotContainer');
         plotArea.css({
@@ -472,6 +480,7 @@ export class SilverNeedleChart {
         this.chart.setSecsPerDivArray(this.secsPerDivVals);
 
         this.chart.hooks.drawOverlay.push(this.seriesAnchorsHandler.bind(this));
+        this.chart.hooks.drawOverlay.push(this.triggerLevelAnchorHandler.bind(this));
 
         $("#flotContainer").bind("panEvent", (event, panData) => {
             if (panData.axis === 'xaxis') {
@@ -509,11 +518,27 @@ export class SilverNeedleChart {
         });
 
         $("#flotContainer").bind("mousemove", (event) => {
-            if (this.numSeries == undefined) { return; }
             let offsets = this.chart.offset();
             let plotRelXPos = event.clientX - offsets.left;
             let plotRelYPos = event.clientY - offsets.top;
             let getAxes = this.chart.getAxes();
+            //Check if over trigger level
+            let val = this.deviceDataTransferService.triggerLevel;
+            let seriesNum = parseInt(this.deviceDataTransferService.triggerSource.split(' ')[2]) - 1;
+            let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
+            let valPix = getAxes[yIndexer].p2c(this.deviceDataTransferService.triggerLevel);
+            if (plotRelXPos > this.chart.width() - 20 && plotRelXPos < this.chart.width() + 5 && plotRelYPos < valPix + 10 && plotRelYPos > valPix - 10) {
+                this.overTriggerLevel = true;
+                this.chart.getPlaceholder().css('cursor', 'ns-resize');
+                return;
+            }
+            if (this.overTriggerLevel) {
+                this.overTriggerLevel = false;
+                this.chart.getPlaceholder().css('cursor', 'default');
+            }
+
+            if (this.numSeries == undefined) { return; }
+
             for (let i = 0; i < this.numSeries.length; i++) {
                 let yIndexer = 'y' + (this.numSeries[i] === 0 ? '' : (this.numSeries[i] + 1).toString()) + 'axis';
                 let seriesAnchorPixPos = getAxes[yIndexer].p2c(this.currentBufferArray[this.numSeries[i]].seriesOffset);
@@ -544,10 +569,18 @@ export class SilverNeedleChart {
                 $("#flotContainer").bind("mouseup", this.unbindCustomEventsRef);
                 $("#flotContainer").bind("mouseout", this.unbindCustomEventsRef);
                 this.previousYPos = event.clientY;
+                return;
+            }
+            if (this.overTriggerLevel) {
+                this.chart.unbindMoveEvents();
+                $("#flotContainer").bind("mousemove", this.triggerLevelVertPanRef);
+                $("#flotContainer").bind("mouseup", this.unbindCustomEventsRef);
+                $("#flotContainer").bind("mouseout", this.unbindCustomEventsRef);
             }
         });
 
         $("#flotContainer").bind("touchstart", this.seriesAnchorTouchStartRef);
+        $("#flotContainer").bind("touchstart", this.triggerLevelTouchStartRef);
 
         //updateChart();
         this.onLoad(this.chart);
@@ -651,6 +684,28 @@ export class SilverNeedleChart {
         }
     }
 
+    triggerLevelAnchorTouchStart(event) {
+        let offsets = this.chart.offset();
+        let plotRelXPos = event.clientX - offsets.left;
+        let plotRelYPos = event.clientY - offsets.top;
+        let getAxes = this.chart.getAxes();
+        //Check if over trigger level
+        let val = this.deviceDataTransferService.triggerLevel;
+        let seriesNum = parseInt(this.deviceDataTransferService.triggerSource.split(' ')[2]) - 1;
+        let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
+        let valPix = getAxes[yIndexer].p2c(this.deviceDataTransferService.triggerLevel);
+        if (plotRelXPos > this.chart.width() - 20 && plotRelXPos < this.chart.width() + 5 && plotRelYPos < valPix + 10 && plotRelYPos > valPix - 10) {
+            this.overTriggerLevel = true;
+            this.chart.getPlaceholder().css('cursor', 'ns-resize');
+            this.chart.unbindMoveEvents();
+            $("#flotContainer").bind("touchmove", this.triggerLevelTouchVertPanRef);
+            $("#flotContainer").bind("touchend", this.unbindCustomEventsRef);
+            $("#flotContainer").bind("touchleave", this.unbindCustomEventsRef);
+            return;
+        }
+        this.overTriggerLevel = false;
+    }
+
     seriesAnchorsHandler(plot: any, ctx: any) {
         this.flotOverlayRef = ctx;
         let offsets = this.chart.offset();
@@ -686,8 +741,32 @@ export class SilverNeedleChart {
             }
             ctx.restore();
         }
+    }
 
-
+    triggerLevelAnchorHandler(plot: any, ctx: any) {
+        this.flotOverlayRef = ctx;
+        let offsets = this.chart.offset();
+        let getAxes = this.chart.getAxes();
+        let strokeColor = 'green';
+        let lineWidth = 2;
+        let val = this.deviceDataTransferService.triggerLevel;
+        let seriesNum = parseInt(this.deviceDataTransferService.triggerSource.split(' ')[2]) - 1;
+        let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
+        let pix = getAxes[yIndexer].p2c(val);
+        let chartWidth = this.chart.width();
+        ctx.save();
+        ctx.translate(offsets.left + this.chart.width(), pix + 10);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, 10);
+        ctx.lineTo(-10, 5);
+        ctx.closePath();
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
+        ctx.fillStyle = 'black';
+        ctx.fill();
+        ctx.restore();
     }
 
     seriesAnchorVertPan(e) {
@@ -707,6 +786,17 @@ export class SilverNeedleChart {
         this.chart.draw();
         this.voltBase[this.activeSeries - 1] = base;
         this.previousYPos = e.clientY;
+    }
+    
+    triggerLevelVertPan(e) {
+        let getAxes = this.chart.getAxes();
+        let offsets = this.chart.offset();
+        let seriesNum = parseInt(this.deviceDataTransferService.triggerSource.split(' ')[2]) - 1;
+        let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
+        let val = getAxes[yIndexer].c2p(e.clientY - offsets.top);
+        val = Math.max(Math.min(val, this.deviceDescriptor.instruments.osc.chans[seriesNum].inputVoltageMax / 1000), this.deviceDescriptor.instruments.osc.chans[seriesNum].inputVoltageMin / 1000);
+        this.deviceDataTransferService.triggerLevel = val;
+        this.chart.triggerRedrawOverlay();
     }
 
     seriesAnchorTouchVertPan(e) {
@@ -728,9 +818,22 @@ export class SilverNeedleChart {
         this.previousYPos = e.originalEvent.touches[0].clientY;
     }
 
+    triggerLevelTouchVertPan(e) {
+        let getAxes = this.chart.getAxes();
+        let offsets = this.chart.offset();
+        let seriesNum = parseInt(this.deviceDataTransferService.triggerSource.split(' ')[2]) - 1;
+        let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
+        let val = getAxes[yIndexer].c2p(e.originalEvent.touches[0].clientY - offsets.top);
+        val = Math.max(Math.min(val, this.deviceDescriptor.instruments.osc.chans[seriesNum].inputVoltageMax / 1000), this.deviceDescriptor.instruments.osc.chans[seriesNum].inputVoltageMin / 1000);
+        this.deviceDataTransferService.triggerLevel = val;
+        this.chart.triggerRedrawOverlay();
+    }
+
     unbindCustomEvents(e) {
         $("#flotContainer").unbind("mousemove", this.seriesAnchorVertPanRef);
+        $("#flotContainer").unbind("mousemove", this.triggerLevelVertPanRef);
         $("#flotContainer").unbind("touchmove", this.seriesAnchorTouchVertPanRef);
+        $("#flotContainer").unbind("touchmove", this.triggerLevelTouchVertPanRef);
         $("#flotContainer").unbind("mouseup", this.unbindCustomEventsRef);
         $("#flotContainer").unbind("mouseout", this.unbindCustomEventsRef);
         this.chart.getPlaceholder().css('cursor', 'default');
@@ -1688,7 +1791,7 @@ export class SilverNeedleChart {
         }
     }
 
-    calculateDataFromWindow(): {bufferSize: number, sampleFreq: number} {
+    calculateDataFromWindow(): { bufferSize: number, sampleFreq: number } {
         //100 points per division
         if (this.chart == undefined) {
             return {

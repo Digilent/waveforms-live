@@ -447,6 +447,7 @@ export class TestChartCtrlsPage {
             default: trigType = 'risingEdge';
         }
 
+        let thresholds = this.triggerComponent.getThresholdsInMillivolts();
 
         this.theoreticalAcqTime = 0;
 
@@ -455,8 +456,8 @@ export class TestChartCtrlsPage {
         let triggerDelay = Math.max(Math.min(parseFloat(this.chart1.base.toString()), this.activeDevice.instruments.osc.chans[0].delayMax / Math.pow(10, 12)), this.activeDevice.instruments.osc.chans[0].delayMin / Math.pow(10, 12));
 
         if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[2]) ||
-            this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== parseInt(this.triggerComponent.lowerThresh) ||
-            this.previousTrigSettings.upperThreshold !== parseInt(this.triggerComponent.upperThresh)) {
+            this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== thresholds.lowerThreshold ||
+            this.previousTrigSettings.upperThreshold !== thresholds.upperThreshold) {
             setTrigParams = true;
         }
 
@@ -564,8 +565,8 @@ export class TestChartCtrlsPage {
                         instrument: trigSourceArr[0].toLowerCase(),
                         channel: parseInt(trigSourceArr[2]),
                         type: trigType,
-                        lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
-                        upperThreshold: parseInt(this.triggerComponent.upperThresh)
+                        lowerThreshold: thresholds.lowerThreshold,
+                        upperThreshold: thresholds.upperThreshold
                     }
                 ],
                 [
@@ -630,8 +631,8 @@ export class TestChartCtrlsPage {
             instrument: trigSourceArr[0],
             channel: parseInt(trigSourceArr[2]),
             type: trigType,
-            lowerThreshold: parseInt(this.triggerComponent.lowerThresh),
-            upperThreshold: parseInt(this.triggerComponent.upperThresh)
+            lowerThreshold: thresholds.lowerThreshold,
+            upperThreshold: thresholds.upperThreshold
         };
 
 
