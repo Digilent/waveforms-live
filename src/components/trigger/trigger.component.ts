@@ -2,7 +2,6 @@ import { Component, Input, ViewChild, Output, EventEmitter } from '@angular/core
 import { PopoverController } from 'ionic-angular';
 
 //Components
-import { GenPopover } from '../gen-popover/gen-popover.component';
 import { SilverNeedleChart } from '../chart/chart.component';
 import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
 

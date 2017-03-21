@@ -523,7 +523,6 @@ export class SilverNeedleChart {
             let plotRelYPos = event.clientY - offsets.top;
             let getAxes = this.chart.getAxes();
             //Check if over trigger level
-            let val = this.deviceDataTransferService.triggerLevel;
             let seriesNum = parseInt(this.deviceDataTransferService.triggerSource.split(' ')[2]) - 1;
             let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
             let valPix = getAxes[yIndexer].p2c(this.deviceDataTransferService.triggerLevel);
@@ -690,7 +689,6 @@ export class SilverNeedleChart {
         let plotRelYPos = event.clientY - offsets.top;
         let getAxes = this.chart.getAxes();
         //Check if over trigger level
-        let val = this.deviceDataTransferService.triggerLevel;
         let seriesNum = parseInt(this.deviceDataTransferService.triggerSource.split(' ')[2]) - 1;
         let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
         let valPix = getAxes[yIndexer].p2c(this.deviceDataTransferService.triggerLevel);
@@ -753,7 +751,6 @@ export class SilverNeedleChart {
         let seriesNum = parseInt(this.deviceDataTransferService.triggerSource.split(' ')[2]) - 1;
         let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
         let pix = getAxes[yIndexer].p2c(val);
-        let chartWidth = this.chart.width();
         ctx.save();
         ctx.translate(offsets.left + this.chart.width(), pix + 10);
         ctx.beginPath();
