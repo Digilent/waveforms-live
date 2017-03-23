@@ -1,7 +1,7 @@
 import { Component, Output, ViewChild, EventEmitter } from '@angular/core';
 
 //Components
-import { DigilentChart } from 'digilent-chart-angular2/components';
+import { DigilentChart } from 'digilent-chart-angular2/modules';
 
 //Interfaces
 /*import { Chart, DataContainer } from '../chart/chart.interface';*/

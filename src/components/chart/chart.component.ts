@@ -6,7 +6,7 @@ import { Transfer } from 'ionic-native';
 import { DeviceService, WaveformService } from 'dip-angular2/services';
 import { GenPopover } from '../gen-popover/gen-popover.component';
 import { PinoutPopover } from '../pinout-popover/pinout-popover.component';
-import { DigilentChart } from 'digilent-chart-angular2/components';
+import { DigilentChart } from 'digilent-chart-angular2/modules';
 
 //Pages
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';

@@ -82,7 +82,7 @@ export class CommandUtilityService {
             try {
                 typedArray = new Int16Array(data.slice(currentReadIndex, currentReadIndex + chunkLength));
             }
-            catch(e) {
+            catch(e) { 
                 observer.error(e);
                 return;
             }
