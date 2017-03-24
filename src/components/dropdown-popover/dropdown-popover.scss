@@ -31,5 +31,9 @@
         padding-right: 5px;
         text-transform: none;
         color: #CCCCCC;
+        img {
+            max-height: 100%;
+            width: auto;
+        }
     }
 }

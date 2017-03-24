@@ -38,7 +38,7 @@ export class MyApp {
             { title: 'Bode Plot', component: BodePage }
         ];
         this.settingsService = _settingsService;
-        //this.settingsService.changeConsoleLog('none');
+        //this.settingsService.changeConsoleLog('None');
     }
 
     initializeApp() {

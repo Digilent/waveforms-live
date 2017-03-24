@@ -141,11 +141,6 @@ export class DigitalIoComponent {
     }
 
     setMode(mode: string) {
-        if (mode === 'analyzer' && this.activeDev.rootUri !== 'local') {
-            this.toastService.createToast('notImplemented', true);
-            this.selectedMode = 'io';
-            return;
-        }
         this.selectedMode = mode;
     }
 

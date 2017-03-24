@@ -3,9 +3,11 @@ var versionUpdateType = 'patch';
 var currentVersion = '';
 var settingsServiceString = '';
 var packageJsonString = '';
+var configXmlString = '';
 var newVersion = '';
 var packageJsonPath = './package.json';
 var settingsServicePath = './src/services/settings/settings.service.ts';
+var configXmlPath = './config.xml';
 
 //Function Definitions
 var readFile = function readFile(fileName) {
@@ -50,6 +52,20 @@ var readPackageJson = function readPackageJson() {
             .catch((e) => {
                 reject();
                 throw 'Error reading package json';
+            });
+    });
+}
+
+var readConfigXml = function readConfigXml() {
+    return new Promise((resolve, reject) => {
+        readFile(configXmlPath)
+            .then((stringyConfigXml) => {
+                configXmlString = stringyConfigXml;
+                resolve();
+            })
+            .catch((e) => {
+                reject();
+                throw 'Error reading config.xml';
             });
     });
 }
@@ -117,6 +133,15 @@ var updateSettingsService = function updateSettingsService() {
     return writeFile(settingsServicePath, settingsServiceString);
 }
 
+var updateConfigXml = function updateConfigXml() {
+    var versionIndex = configXmlString.indexOf('" version="');
+    if (versionIndex === -1) {
+        throw 'version not found in config xml';
+    }
+    configXmlString = configXmlString.replace(/" version="[0-9]+.[0-9]+.[0-9]+" xmlns="/, '" version="' + newVersion + '" xmlns="');
+    return writeFile(configXmlPath, configXmlString);
+}
+
 //Start
 if (process.argv[2] != undefined) {
     var temp = process.argv[2];
@@ -140,12 +165,18 @@ readPackageJson()
         return readSettingsService();
     })
     .then(() => {
+        return readConfigXml();
+    })
+    .then(() => {
         currentVersion = getCurrentVersion();
         newVersion = getNewVersion();
         return updatePackageJson();
     })
     .then(() => {
         return updateSettingsService();
+    })
+    .then(() => {
+        return updateConfigXml();
     })
     .then(() => {
         console.log('done');
