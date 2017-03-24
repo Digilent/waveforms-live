@@ -12,7 +12,8 @@
         "ionic:serve": "ionic-app-scripts serve",
         "manualUpdateVersion": "node versionManager.js",
         "buildProd": "node buildProd.js",
-        "buildElectron": "ionic build browser --prod && node_modules\\.bin\\electron-packager . --platform=win32 --arch=ia32 --out=electron-builds/windows -icon=src/assets/icon/favicon.ico --overwrite"
+        "buildElectronWindows": "ionic build browser --prod && rm -rf platforms\\browser\\www\\build\\main.js.map && node_modules\\.bin\\electron-packager . --platform=win32 --arch=ia32 --out=electron-builds\\windows -icon=src\\assets\\icon\\favicon.ico --overwrite",
+        "buildElectronLinux": "ionic build browser --prod && rm -rf platforms\\browser\\www\\build\\main.js.map && node_modules\\.bin\\electron-packager . --platform=linux --arch=ia32 --out=electron-builds\\linux -icon=src\\assets\\icon\\favicon.ico --overwrite"
     },
     "dependencies": {
         "@angular/common": "2.0.0",

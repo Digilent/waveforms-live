@@ -65,6 +65,7 @@ export class TestChartCtrlsPage {
     public currentOscReadArray: number[];
     public currentLaReadArray: number[];
     public forceTriggerInterval: number = 100;
+    public currentTriggerType: 'rising' | 'falling' | 'off';
 
     constructor(
         _deviceManagerService: DeviceManagerService,
@@ -447,6 +448,8 @@ export class TestChartCtrlsPage {
             default: trigType = 'risingEdge';
         }
 
+        this.currentTriggerType = this.triggerComponent.edgeDirection;
+
         let thresholds = this.triggerComponent.getThresholdsInMillivolts();
 
         this.theoreticalAcqTime = 0;
@@ -650,7 +653,7 @@ export class TestChartCtrlsPage {
                     resolve(data);
                 },
                 (err) => {
-                    if (err.trigger && err.trigger["1"][0].statusCode === 2684354590) {
+                    if (err.trigger && err.trigger["1"][0].statusCode === 2684354589) {
                         resolve();
                         return;
                     }
@@ -817,11 +820,22 @@ export class TestChartCtrlsPage {
                         break;
                     }
                 }
-                setTimeout(() => {
-                    this.readOscope(this.currentOscReadArray);
-                    this.readLa(this.currentLaReadArray);
-                }, this.theoreticalAcqTime);
+                if (this.currentTriggerType === 'off') {
+                    this.forceTrigger()
+                        .then(() => {
+                            this.readOscope(this.currentOscReadArray);
+                            this.readLa(this.currentLaReadArray);
+                        })
+                        .catch((e) => {
 
+                        });
+                }
+                else {
+                    setTimeout(() => {
+                        this.readOscope(this.currentOscReadArray);
+                        this.readLa(this.currentLaReadArray);
+                    }, this.theoreticalAcqTime);
+                }
             }
         );
 

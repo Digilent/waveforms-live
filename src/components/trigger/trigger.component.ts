@@ -24,7 +24,7 @@ export class TriggerComponent {
     public delay: string = '0';
     public lowerThresh: string = '470';
     public upperThresh: string = '500';
-    public edgeDirection: string = 'rising';
+    public edgeDirection: 'rising' | 'falling' | 'off' = 'rising';
     public triggerSource: string = 'Osc Ch 1';
     public triggerSources: string[] = [];
     public triggerType: string = 'edge';
@@ -198,7 +198,7 @@ export class TriggerComponent {
         );
     }
 
-    setTrigType(type: string) {
+    setTrigType(type: 'rising' | 'falling' | 'off') {
         this.edgeDirection = type;
     }
 
