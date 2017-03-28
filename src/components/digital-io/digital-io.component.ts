@@ -51,8 +51,12 @@ export class DigitalIoComponent {
             this.gpioDirections.push(false);
         }
         for (let i = 0; i < this.activeDev.instruments.la.numChans; i++) {
-            this.laChans.push(i + 1);
-            this.laActiveChans.push(false);
+            let chanNum: number = 0;
+            for (let j = 0; j < this.activeDev.instruments.la.chans[i].numDataBits; j++) {
+                chanNum++;
+                this.laChans.push(chanNum);
+                this.laActiveChans.push(false);
+            }
         }
         this.contentHidden = true;
     }

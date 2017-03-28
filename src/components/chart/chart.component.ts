@@ -857,7 +857,7 @@ export class SilverNeedleChart {
     }
 
     generateChartOptions() {
-        for (let i = 0; i < this.deviceDescriptor.instruments.la.numChans + this.deviceDescriptor.instruments.osc.numChans; i++) {
+        for (let i = 0; i < this.deviceDescriptor.instruments.la.chans[0].numDataBits + this.deviceDescriptor.instruments.osc.numChans; i++) {
             let color;
             let min;
             let max;
@@ -1136,6 +1136,7 @@ export class SilverNeedleChart {
     flotDrawWaveform(initialDraw: boolean, ignoreAutoscale?: boolean) {
         let dataObjects: any[] = [];
         let currentSeries = this.chart.getData();
+        console.log(this.seriesDataContainer);
         for (let i = 0; i < this.numSeries.length; i++) {
             let axesInfo = this.chart.getAxes();
             let bounds = {
@@ -1150,7 +1151,7 @@ export class SilverNeedleChart {
             }
             let decimatedData = this.flotDecimateData(this.numSeries[i], bounds).data;
             if (this.numSeries[i] < this.oscopeChansActive.length || this.settingsService.drawLaOnTimeline) {
-                dataObjects.push(
+                dataObjects.push( 
                     {
                         data: decimatedData,
                         yaxis: 1,
@@ -1161,6 +1162,7 @@ export class SilverNeedleChart {
             }
             this.seriesDataContainer[this.numSeries[i]].data = decimatedData;
         }
+        console.log(this.seriesDataContainer);
         this.chart.setData(this.seriesDataContainer);
         this.chart.draw();
 

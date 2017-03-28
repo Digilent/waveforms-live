@@ -355,6 +355,8 @@ export class TestChartCtrlsPage {
                 this.previousLaSettings.push({
                     sampleFreq: null,
                     bufferSize: null,
+                    bitmask: null,
+                    triggerDelay: null,
                     active: false
                 });
             }
@@ -512,21 +514,28 @@ export class TestChartCtrlsPage {
             }
         }
 
-        let laArray = [[], [], []];
+        let laArray = [[], [], [], [], []];
+        let bitmask = this.calculateBitmask();
         for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
             let samplingParams: { sampleFreq: number, bufferSize: number } = this.chart1.calculateDataFromWindow();
             if (this.previousLaSettings[i] == undefined || this.previousLaSettings[i].sampleFreq !== samplingParams.sampleFreq ||
                 this.previousLaSettings[i].bufferSize !== samplingParams.bufferSize ||
-                this.previousLaSettings[i].active !== this.gpioComponent.laActiveChans[i]) {
+                this.previousLaSettings[i].active !== this.gpioComponent.laActiveChans[i] ||
+                this.previousLaSettings[i].bitmask !==  bitmask ||
+                this.previousLaSettings[i].triggerDelay !== triggerDelay) {
                 setLaParams = true;
                 setTrigParams = true;
             }
             if (this.gpioComponent.laActiveChans[i]) {
-                laArray[0].push(i + 1);
+                laArray[0] = [1]; //TODO actually setup chans for multiple groups
                 laArray[1].push(samplingParams.sampleFreq);
                 laArray[2].push(samplingParams.bufferSize);
+                laArray[3].push(bitmask);
+                laArray[4].push(triggerDelay);
             }
             this.previousLaSettings[i] = {
+                bitmask: bitmask,
+                triggerDelay: triggerDelay,
                 sampleFreq: samplingParams.sampleFreq,
                 bufferSize: samplingParams.bufferSize,
                 active: this.gpioComponent.laActiveChans[i]
@@ -555,7 +564,7 @@ export class TestChartCtrlsPage {
         }
         if ((setLaParams || forceWholeCommand) && laArray[0].length > 0) {
             singleCommand['la'] = {};
-            singleCommand['la']['setParameters'] = [laArray[0], laArray[1], laArray[2]];
+            singleCommand['la']['setParameters'] = [laArray[0], laArray[3], laArray[1], laArray[2], laArray[4]];
         }
         singleCommand['trigger'] = {};
         if (setTrigParams || forceWholeCommand) {
@@ -641,6 +650,17 @@ export class TestChartCtrlsPage {
 
     }
 
+    calculateBitmask(): number {
+        let sum = 0;
+        for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
+            if (this.gpioComponent.laActiveChans[i]) {
+                sum += Math.pow(2, i);
+            }
+        }
+        console.log(sum);
+        return sum;
+    }
+
     forceTrigger(): Promise<any> {
         return new Promise((resolve, reject) => {
             if (!this.readingLa && !this.readingOsc) {
@@ -678,7 +698,7 @@ export class TestChartCtrlsPage {
                 readArray.push(i + 1);
             }
         }*/
-        if (readArray.length < 1) {
+        if (readArray.length < 1) { 
             this.readingLa = false;
             return;
         }
@@ -696,12 +716,12 @@ export class TestChartCtrlsPage {
                     let waitTime = this.readAttemptCount * 100 > 1000 ? 1000 : this.readAttemptCount * 100;
                     setTimeout(() => {
                         this.readLa(readArray);
-                    }, waitTime);
+                    }, waitTime); 
                 }
             },
             () => { }
         );
-    }
+    } 
 
     checkReadStatusAndDraw() {
         if (this.readingOsc || this.readingLa) {
@@ -710,9 +730,9 @@ export class TestChartCtrlsPage {
 
         if (this.chart1.oscopeChansActive.indexOf(true) === -1 && this.gpioComponent.laActiveChans.indexOf(true) === -1) {
             if (this.running) {
-                this.running = false;
+                this.running = false; 
             }
-            return;
+            return; 
         }
 
         let numSeries = [];
@@ -720,7 +740,13 @@ export class TestChartCtrlsPage {
             numSeries.push(this.currentOscReadArray[i] - 1);
         }
         for (let i = 0; i < this.currentLaReadArray.length; i++) {
-            numSeries.push(this.currentLaReadArray[i] - 1 + this.chart1.oscopeChansActive.length);
+            let channelNum = 0;
+            for (let j = 0; j < this.activeDevice.instruments.la.chans[i].numDataBits; j++) {
+                channelNum++;
+                if (this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferReadIndex][j] && this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferReadIndex][j].data) {
+                    numSeries.push(channelNum - 1 + this.chart1.oscopeChansActive.length);
+                }
+            }
         }
         this.chart1.clearExtraSeries(numSeries);
 
@@ -737,6 +763,9 @@ export class TestChartCtrlsPage {
         }
         currentBufferArray = oscBufferArray;
         if (this.gpioComponent.laActiveChans.indexOf(true) !== -1) {
+            console.log(this.activeDevice.instruments.la);
+            console.log(this.activeDevice.instruments.la.dataBufferReadIndex);
+            console.log(numSeries);
             laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferReadIndex];
             currentBufferArray = currentBufferArray.concat(laBufferArray);
         }

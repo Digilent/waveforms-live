@@ -57,7 +57,15 @@
         "sinkCurrentMax": 12000
     },
     "la": {
-        "numChans": 10
+        "numChans": 1,
+        "1": {
+            "bufferDataType": "u16",
+            "numDataBits": 10,
+            "bitmask": 1023,
+            "sampleFreqMin": 6000,
+            "sampleFreqMax": 6250000000,
+            "bufferSizeMax": 32640
+        }
     },
     "osc": {
         "numChans": 2,

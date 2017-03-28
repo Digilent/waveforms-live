@@ -1,6 +1,8 @@
 export interface PreviousLaSettings {
+    bitmask: number | null,
     sampleFreq: number | null,
     bufferSize: number | null,
+    triggerDelay: number | null,
     active: boolean
 }
 

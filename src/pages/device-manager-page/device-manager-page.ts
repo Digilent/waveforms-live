@@ -520,6 +520,7 @@ export class DeviceManagerPage {
                     this.tutorialStage = 3;
                 },
                 (err) => {
+                    console.log(err);
                     loading.dismiss();
                     this.toastService.createToast('timeout', true);
                 },
