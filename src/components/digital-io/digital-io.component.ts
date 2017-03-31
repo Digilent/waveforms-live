@@ -8,6 +8,7 @@ import { SilverNeedleChart } from '../chart/chart.component';
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { DeviceDataTransferService } from '../../services/device/device-data-transfer.service';
 
 @Component({
     templateUrl: 'digital-io.html',
@@ -37,7 +38,8 @@ export class DigitalIoComponent {
         _tooltipService: TooltipService,
         _devManagerService: DeviceManagerService,
         _popoverCtrl: PopoverController,
-        _toastService: ToastService
+        _toastService: ToastService,
+        public dataTransferService: DeviceDataTransferService
     ) {
         this.alertCtrl = _alertCtrl;
         this.toastService = _toastService;
@@ -57,6 +59,7 @@ export class DigitalIoComponent {
                 this.laChans.push(chanNum);
                 this.laActiveChans.push(false);
             }
+            this.dataTransferService.laChanActive = false;
         }
         this.contentHidden = true;
     }
@@ -142,6 +145,7 @@ export class DigitalIoComponent {
             () => { }
         );
         this.laActiveChans[channel] = false;
+        this.dataTransferService.laChanActive = this.laActiveChans.indexOf(true) !== -1;
     }
 
     setMode(mode: string) {
@@ -167,11 +171,16 @@ export class DigitalIoComponent {
     }
 
     toggleLaChan(channel: number) {
+        if (this.dataTransferService.awgPower && !this.laActiveChans[channel] && this.activeDev.transport.getType() !== 'local') {
+            this.toastService.createToast('awgOnNoLa', true);
+            return; 
+        }
         this.laActiveChans[channel] = !this.laActiveChans[channel];
         this.gpioDirections[channel] = false;
         this.gpioVals[channel] = false;
         let seriesNum = channel + this.chart.oscopeChansActive.length;
         this.chart.toggleVisibility(seriesNum);
+        this.dataTransferService.laChanActive = this.laActiveChans.indexOf(true) !== -1;
     }
 
     getButtonState(channel: number) {
@@ -179,15 +188,15 @@ export class DigitalIoComponent {
             return 'A';
         }
         else if (this.gpioDirections[channel]) {
-            return 'O';
+            return 'Out';
         }
-        return 'I';
+        return 'In';
     }
 
     readAllIo(event) {
         let inputChans = [];
         for (let i = 0; i < this.gpioChans.length; i++) {
-            if (this.gpioDirections[i] !== true && this.laActiveChans[i] !== true) {
+            if (this.gpioDirections[i] !== true) {
                 inputChans.push(i + 1);
             }
         }

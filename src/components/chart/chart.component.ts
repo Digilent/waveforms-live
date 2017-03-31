@@ -1136,7 +1136,6 @@ export class SilverNeedleChart {
     flotDrawWaveform(initialDraw: boolean, ignoreAutoscale?: boolean) {
         let dataObjects: any[] = [];
         let currentSeries = this.chart.getData();
-        console.log(this.seriesDataContainer);
         for (let i = 0; i < this.numSeries.length; i++) {
             let axesInfo = this.chart.getAxes();
             let bounds = {
@@ -1162,7 +1161,6 @@ export class SilverNeedleChart {
             }
             this.seriesDataContainer[this.numSeries[i]].data = decimatedData;
         }
-        console.log(this.seriesDataContainer);
         this.chart.setData(this.seriesDataContainer);
         this.chart.draw();
 

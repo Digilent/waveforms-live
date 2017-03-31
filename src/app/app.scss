@@ -277,6 +277,14 @@ ion-checkbox .checkbox-icon.checkbox-checked
     border-radius: 4px;
 }
 
+.alert-wrapper {
+    background-color: #535353 !important;
+    color: white;
+    .alert-sub-title {
+        color: #CCCCCC;
+    }
+}
+
 .move-feature-to-front
 {
     z-index: 1001 !important;

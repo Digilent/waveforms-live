@@ -100,7 +100,7 @@ export class CalibratePage {
             this.calibrationResultsIndicator = 'Error saving calibration. Choose a valid storage location.';
             return;
         }
-        if (this.calibrationResults.indexOf('IDEAL') !== -1) {
+        if (this.calibrationResults.indexOf('IDEAL') !== -1 || this.calibrationResults.indexOf('UNCALIBRATED') !== -1) {
             this.calibrationResultsIndicator = 'Error saving calibration. One or more channels fell back to ideal values. Rerun calibration.';
             return;
         }

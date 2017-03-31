@@ -15,7 +15,7 @@ export class SettingsService {
     public nestedChannels: boolean = false;
     public routeToStore: boolean = true;
     public drawLaOnTimeline: boolean = false;
-    public wflVersion: string = '0.6.0';
+    public wflVersion: string = '0.7.0';
     public useDevBuilds: boolean = false;
 
     public knownFirmwareUrls: { openscopeMz: { prettyName: string, listUrl: string, devListUrl: string, firmwareUrl: string, devFirmwareUrl: string } } = {

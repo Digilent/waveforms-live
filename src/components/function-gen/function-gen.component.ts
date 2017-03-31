@@ -9,6 +9,7 @@ import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { DeviceDataTransferService } from '../../services/device/device-data-transfer.service';
 
 //Interfaces
 import { SettingsObject } from 'dip-angular2/services';
@@ -55,7 +56,8 @@ export class FgenComponent {
         _popoverCtrl: PopoverController,
         _toastService: ToastService,
         _settingsService: SettingsService,
-        _tooltipService: TooltipService
+        _tooltipService: TooltipService,
+        public dataTransferService: DeviceDataTransferService
     ) {
         this.settingsService = _settingsService;
         this.tooltipService = _tooltipService;
@@ -75,10 +77,12 @@ export class FgenComponent {
         this.offset = 0;
         this.dutyCycle = 50;
         this.powerOn = false;
+        this.dataTransferService.awgPower = false;
     }
 
     initializeValues() {
         this.powerOn = false;
+        this.dataTransferService.awgPower = false;
         this.frequency = 1000;
         this.amplitude = 3;
         this.offset = 0;
@@ -90,6 +94,7 @@ export class FgenComponent {
             getStatusObject.awg[channel].forEach((val, index, array) => {
                 if (val.state != undefined) {
                     this.powerOn = val.state === 'running';
+                    this.dataTransferService.awgPower = this.powerOn;
                 }
                 if (val.waveType != undefined && val.waveType !== 'none') {
                     this.waveType = val.waveType;
@@ -140,6 +145,7 @@ export class FgenComponent {
                 console.log(data);
                 for (let channel in data.awg) {
                     this.powerOn = data.awg[channel][0].state === 'running';
+                    this.dataTransferService.awgPower = this.powerOn;
                 }
                 if (this.powerOn) {
                     this.waveType = data.awg['1'][0].waveType;
@@ -393,6 +399,11 @@ export class FgenComponent {
             };
         }
         if (!this.powerOn) {
+            if (this.dataTransferService.laChanActive && this.activeDevice.transport.getType() !== 'local') {
+                this.toastService.createToast('laOnNoAwg');
+                this.awaitingResponse = false;
+                return;
+            }
             let singleCommand = {
                 awg: {
                     setRegularWaveform: [chans, settings],
@@ -414,6 +425,7 @@ export class FgenComponent {
                 () => {
                     //console.log('multi command awg complete');
                     this.powerOn = !this.powerOn;
+                    this.dataTransferService.awgPower = this.powerOn;
                 }
             );
         }
@@ -452,28 +464,6 @@ export class FgenComponent {
             });
     }
 
-    //Run awg
-    run(chans: number[]) {
-        this.activeDevice.instruments.awg.run(chans).subscribe(
-            (data) => {
-                //console.log(data);
-                if (data.statusCode === undefined) {
-                    console.log('AWG Run Successful');
-                    this.powerOn = !this.powerOn;
-                }
-                else {
-                    this.attemptingPowerOff = true;
-                    this.stop(chans);
-                }
-            },
-            (err) => {
-                console.log('AWG Run Failed');
-            },
-            () => {
-
-            });
-    }
-
     //Stop awg
     stop(chans: number[]) {
         this.awaitingResponse = true;
@@ -482,6 +472,7 @@ export class FgenComponent {
                 this.awaitingResponse = false;
                 //console.log(data);
                 this.powerOn = false;
+                this.dataTransferService.awgPower = false;
                 if (data.awg['1'][0].statusCode === 0 && this.attemptingPowerOff) {
                     this.attemptingPowerOff = false;
                     this.toastService.createToast('awgRunError', true);

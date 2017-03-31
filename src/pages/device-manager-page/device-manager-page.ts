@@ -6,6 +6,7 @@ import { TestChartCtrlsPage } from '../../pages/test-chart-ctrls/test-chart-ctrl
 import { DeviceConfigureModal } from '../../pages/device-configure-modal/device-configure-modal';
 import { LoadFirmwarePage } from '../../pages/load-firmware/load-firmware';
 import { UpdateFirmwarePage } from '../../pages/update-firmware/update-firmware';
+import { CalibratePage } from '../../pages/calibrate/calibrate';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
@@ -480,6 +481,7 @@ export class DeviceManagerPage {
                 this.showDevMenu = false;
                 this.toastService.createToast('deviceAdded');
                 this.tutorialStage = 3;
+                this.verifyCalibrationSource(0, this.devices[0].deviceDescriptor.calibrationSource);
             },
             (err) => {
                 loading.dismiss();
@@ -488,6 +490,108 @@ export class DeviceManagerPage {
             },
             () => { }
         );
+    }
+
+    verifyCalibrationSource(deviceIndex: number, calibrationSource: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            console.log(deviceIndex, this.devices[deviceIndex]);
+            /*this.verifyFirmware(deviceIndex)
+                .then((data) => {*/
+                    //Firmware updated
+                    if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
+                        let title = 'Uncalibrated Device';
+                        let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
+                        this.alertWrapper(title, subtitle)
+                            .then((data) => {
+                                return this.toCalibrationPage();
+                            })
+                            .then((data) => {
+                                resolve();
+                            })
+                            .catch((e) => {
+                                reject(e);
+                            });
+                    }
+                /*})*/
+                /*.catch((e) => {
+                    //can't update firmware
+                    if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
+                        let title = 'Uncalibrated Device';
+                        let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
+                        this.alertWrapper(title, subtitle)
+                            .then((data) => {
+                                return this.toCalibrationPage();
+                            })
+                            .then((data) => {
+                                resolve();
+                            })
+                            .catch((e) => {
+                                reject(e);
+                            });
+                    }
+
+                });*/
+        });
+    }
+
+    private verifyFirmware(deviceIndex): Promise<any> {
+        return new Promise((resolve, reject) => {
+            console.log('CALIBRATION SOURCE');
+            console.log(this.devices[deviceIndex].deviceDescriptor.calibrationSource);
+            if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined) {
+                if (this.devices[deviceIndex].bridge) {
+                    let title = 'Outdated Firmware';
+                    let subTitle = 'You will now be taken to the update firmware wizard.';
+                    this.alertWrapper(title, subTitle)
+                        .then((data) => {
+                            //To update firmware page
+                            resolve();
+                        });
+                }
+                else {
+                    //Not connected to bridge so just say they need to connect over usb and use config page
+                    let title = 'Outdated Firmware';
+                    let subTitle = 'Your firmware is outdated. Please connect to your device over USB using the Digilent Agent and use the device configure page to update the firmware.';
+                    this.alertWrapper(title, subTitle)
+                        .then((data) => {
+                            reject(data);
+                        });
+                }
+            }
+            else {
+                resolve();
+            }
+        });
+    }
+
+    toCalibrationPage(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            //Calibrate
+            let modal = this.modalCtrl.create(CalibratePage, undefined, {
+                enableBackdropDismiss: false
+            });
+            modal.onWillDismiss((data) => {
+                /*this.deviceManagerService.transport.writeRead('/', ) getCurrentCalibration().catch((e) => {
+                    console.log(e);
+                });*/
+                resolve(data);
+            });
+            modal.present();
+        });
+    }
+
+    private alertWrapper(title: string, subTitle: string, buttons?: string[]): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let alert = this.alertCtrl.create({
+                title: title,
+                subTitle: subTitle,
+                buttons: buttons == undefined ? ['OK'] : buttons
+            });
+            alert.onWillDismiss((data) => {
+                resolve(data);
+            });
+            alert.present();
+        });
     }
 
     openSimDevice() {

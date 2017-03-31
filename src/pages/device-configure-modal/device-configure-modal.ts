@@ -180,7 +180,8 @@ export class DeviceConfigureModal {
         });
     }
 
-    getCurrentCalibration(): Promise<any> {
+    getCurrentCalibration(routeToCalibrationWizard?: boolean): Promise<any> {
+        routeToCalibrationWizard = routeToCalibrationWizard == undefined ? true : routeToCalibrationWizard;
         return new Promise((resolve, reject) => {
             this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationRead().subscribe(
                 (data) => {
@@ -189,14 +190,29 @@ export class DeviceConfigureModal {
                     if (calibrationObjectString.indexOf('USER') !== -1) {
                         this.currentCalibration = 'USER';
                     }
-                    else if (calibrationObjectString.indexOf('IDEAL') !== -1) {
-                        this.currentCalibration = 'IDEAL';
+                    else if (calibrationObjectString.indexOf('FACTORY') !== -1) {
+                        this.currentCalibration = 'FACTORY';
                     }
-                    else if (calibrationObjectString.indexOf('CALIBRATED') !== -1) {
-                        this.currentCalibration = 'CALIBRATED';
+                    else if (calibrationObjectString.indexOf('UNCALIBRATED') !== -1 || calibrationObjectString.indexOf('IDEAL') !== -1) {
+                        this.currentCalibration = 'UNCALIBRATED';
+                        if (routeToCalibrationWizard) {
+                            this.deviceManagerPageRef.verifyCalibrationSource(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex, 'UNCALIBRATED')
+                            .then(() => {
+                                this.getCurrentCalibration(false)
+                                    .then((data) => {
+                                        resolve(data);
+                                    })
+                                    .catch((e) => {
+                                        reject(e);
+                                    });
+                            })
+                            .catch((e) => {
+                                reject(e);
+                            });
+                        }
                     }
                     else {
-                        this.currentCalibration = 'FACTORY';
+                        this.currentCalibration = 'CALIBRATED';
                     }
                     resolve(data);
                 },

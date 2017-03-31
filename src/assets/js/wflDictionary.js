@@ -71,6 +71,12 @@ var waveformsLiveDictionary = (function() {
         triggerForceNotArmed: {
             english: 'The Device Is Still Arming The Trigger. Please Try Again'
         },
+        awgOnNoLa: {
+            english: 'Cannot Enable The Logic Analyzer Because The Wavegen Is Running'
+        },
+        laOnNoAwg: {
+            english: 'Cannot Turn On The Wavegen Because The LA Is Running'
+        },
 
         //Agent
         //Appears when a user tries to add an agent that already exists.

@@ -87,15 +87,25 @@ export class TestChartCtrlsPage {
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.storage = _storage;
         console.log(this.tutorialMode);
+        let awgData;
         this.getOscStatus()
             .then(() => {
                 return this.getAwgStatus();
             })
-            .then(() => {
+            .then((data) => {
+                awgData = data;
                 return this.getTriggerStatus();
             })
             .then(() => {
                 return this.setGpioToInputs('input');
+            })
+            .then(() => {
+                if (this.activeDevice.deviceModel === 'OpenScope MZ' && awgData.awg["1"][0].state === 'running') {
+                    return Promise.resolve();
+                }
+                else {
+                    return this.applyLaBitmask();
+                }
             })
             .then(() => {
                 return this.getVoltages();
@@ -242,6 +252,36 @@ export class TestChartCtrlsPage {
                 () => {
 
                 }
+            );
+        });
+    }
+
+    applyLaBitmask(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let chanArray: number[] = [];
+            for (let i = 0; i < this.activeDevice.instruments.la.numChans; i++) {
+                chanArray.push(i + 1);
+            }
+            this.activeDevice.instruments.la.getCurrentState(chanArray).subscribe(
+                (data) => {
+                    console.log(data);
+                    for (let group in data.la) {
+                        let binaryString = data.la[group][0].bitmask.toString(2);
+                        console.log(binaryString);
+                        for (let i = 0; i < binaryString.length; i++) {
+                            if (binaryString[i] === '1') {
+                                let channel = binaryString.length - i - 1;
+                                this.gpioComponent.toggleLaChan(channel);
+                            }
+                        }
+                    }
+                    resolve();
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
             );
         });
     }
@@ -484,7 +524,12 @@ export class TestChartCtrlsPage {
                 samplingParams.bufferSize = this.yaxisComponent.lockedSampleState[i].manualSampleSize;
             }
 
-            if (this.previousOscSettings[i] == undefined || this.previousOscSettings[i].offset !== 0 || this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
+            let vOffset = this.chart1.voltBase[i];
+            let maxOffsetAmp = this.activeDevice.instruments.osc.chans[i].adcVpp / (2 * this.activeDevice.instruments.osc.chans[i].gains[j]);
+            vOffset = Math.max(Math.min(vOffset, maxOffsetAmp), -1 * maxOffsetAmp);
+
+            if (this.previousOscSettings[i] == undefined || this.previousOscSettings[i].offset !== vOffset ||
+                this.previousOscSettings[i].gain !== this.activeDevice.instruments.osc.chans[i].gains[j] ||
                 this.previousOscSettings[i].sampleFreqMax !== samplingParams.sampleFreq ||
                 this.previousOscSettings[i].bufferSizeMax !== samplingParams.bufferSize ||
                 this.previousOscSettings[i].delay !== triggerDelay ||
@@ -498,14 +543,14 @@ export class TestChartCtrlsPage {
                     this.theoreticalAcqTime = tempTheoreticalAcqTime;
                 }
                 oscArray[0].push(i + 1);
-                oscArray[1].push(0);
+                oscArray[1].push(vOffset);
                 oscArray[2].push(this.activeDevice.instruments.osc.chans[i].gains[j]);
                 oscArray[3].push(samplingParams.sampleFreq);
                 oscArray[4].push(samplingParams.bufferSize);
                 oscArray[5].push(triggerDelay);
             }
             this.previousOscSettings[i] = {
-                offset: 0,
+                offset: vOffset,
                 gain: this.activeDevice.instruments.osc.chans[i].gains[j],
                 sampleFreqMax: samplingParams.sampleFreq,
                 bufferSizeMax: samplingParams.bufferSize,
@@ -521,7 +566,7 @@ export class TestChartCtrlsPage {
             if (this.previousLaSettings[i] == undefined || this.previousLaSettings[i].sampleFreq !== samplingParams.sampleFreq ||
                 this.previousLaSettings[i].bufferSize !== samplingParams.bufferSize ||
                 this.previousLaSettings[i].active !== this.gpioComponent.laActiveChans[i] ||
-                this.previousLaSettings[i].bitmask !==  bitmask ||
+                this.previousLaSettings[i].bitmask !== bitmask ||
                 this.previousLaSettings[i].triggerDelay !== triggerDelay) {
                 setLaParams = true;
                 setTrigParams = true;
@@ -612,13 +657,11 @@ export class TestChartCtrlsPage {
                             console.log('done force trigger');
                             if (this.activeDevice.transport.getType() !== 'local') {
                                 setTimeout(() => {
-                                    this.readOscope(oscArray[0]);
-                                    this.readLa(laArray[0]);
+                                    this.readBuffers();
                                 }, this.theoreticalAcqTime);
                             }
                             else {
-                                this.readOscope(oscArray[0]);
-                                this.readLa(laArray[0]);
+                                this.readBuffers();
                             }
                         })
                         .catch((e) => {
@@ -628,13 +671,11 @@ export class TestChartCtrlsPage {
                 }
                 if (this.activeDevice.transport.getType() !== 'local') {
                     setTimeout(() => {
-                        this.readOscope(oscArray[0]);
-                        this.readLa(laArray[0]);
+                        this.readBuffers();
                     }, this.theoreticalAcqTime);
                 }
                 else {
-                    this.readOscope(oscArray[0]);
-                    this.readLa(laArray[0]);
+                    this.readBuffers();
                 }
             }
         );
@@ -648,6 +689,26 @@ export class TestChartCtrlsPage {
         };
 
 
+    }
+
+    readBuffers() {
+        console.log('READING OSCOPE');
+        this.readOscope(this.currentOscReadArray)
+            .then(() => {
+                console.log('READING LA');
+                return this.readLa(this.currentLaReadArray);
+            })
+            .then(() => {
+                console.log('CHECKING READ STATUS');
+                this.checkReadStatusAndDraw();
+            })
+            .catch((e) => {
+                this.running = false;
+                this.readingOsc = false;
+                this.readingLa = false;
+                alert('Error reading buffers');
+                console.log(e);
+            });
     }
 
     calculateBitmask(): number {
@@ -692,47 +753,58 @@ export class TestChartCtrlsPage {
         });
     }
 
-    readLa(readArray: number[]) {
+    readLa(readArray: number[]): Promise<any> {
         /*for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
             if (this.gpioComponent.laActiveChans[i]) {
                 readArray.push(i + 1);
             }
         }*/
-        if (readArray.length < 1) { 
-            this.readingLa = false;
-            return;
-        }
-        this.activeDevice.instruments.la.read(readArray).subscribe(
-            (data) => {
+        return new Promise((resolve, reject) => {
+            if (readArray.length < 1) {
                 this.readingLa = false;
-                console.log(data);
-                this.readAttemptCount = 0;
-                this.checkReadStatusAndDraw();
-            },
-            (err) => {
-                if (this.readingLa) {
-                    console.log('attempting read again');
-                    this.readAttemptCount++;
-                    let waitTime = this.readAttemptCount * 100 > 1000 ? 1000 : this.readAttemptCount * 100;
-                    setTimeout(() => {
-                        this.readLa(readArray);
-                    }, waitTime); 
-                }
-            },
-            () => { }
-        );
-    } 
+                resolve();
+                return;
+            }
+            this.activeDevice.instruments.la.read(readArray).subscribe(
+                (data) => {
+                    this.readingLa = false;
+                    console.log(data);
+                    this.readAttemptCount = 0;
+                    resolve();
+                    //this.checkReadStatusAndDraw();
+                },
+                (err) => {
+                    if (this.readingLa) {
+                        console.log('attempting read again');
+                        this.readAttemptCount++;
+                        let waitTime = this.readAttemptCount * 100 > 1000 ? 1000 : this.readAttemptCount * 100;
+                        setTimeout(() => {
+                            this.readLa(readArray)
+                                .then(() => {
+                                    resolve();
+                                })
+                                .catch((e) => {
+                                    reject(e);
+                                });
+                        }, waitTime);
+                    }
+                },
+                () => { }
+            );
+        });
+    }
 
     checkReadStatusAndDraw() {
+        console.log('check read status and draw');
         if (this.readingOsc || this.readingLa) {
             return;
         }
 
         if (this.chart1.oscopeChansActive.indexOf(true) === -1 && this.gpioComponent.laActiveChans.indexOf(true) === -1) {
             if (this.running) {
-                this.running = false; 
+                this.running = false;
             }
-            return; 
+            return;
         }
 
         let numSeries = [];
@@ -786,36 +858,50 @@ export class TestChartCtrlsPage {
         }
     }
 
-    readOscope(readArray: number[]) {
+    readOscope(readArray: number[]): Promise<any> {
         /*let readArray = [];*/
         /*for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
             if (this.chart1.oscopeChansActive[i]) {
                 readArray.push(i + 1);
             }
         }*/
-        if (readArray.length < 1) {
-            this.readingOsc = false;
-            return;
-        }
-        this.activeDevice.instruments.osc.read(readArray).subscribe(
-            (data) => {
+        return new Promise((resolve, reject) => {
+            if (readArray.length < 1) {
                 this.readingOsc = false;
-                this.readAttemptCount = 0;
-                this.checkReadStatusAndDraw();
-            },
-            (err) => {
-                if (this.readingOsc) {
-                    console.log('attempting read again');
-                    this.readAttemptCount++;
-                    let waitTime = this.readAttemptCount * 100 > 1000 ? 1000 : this.readAttemptCount * 100;
-                    setTimeout(() => {
-                        this.readOscope(readArray);
-                    }, waitTime);
-                }
-            },
-            () => {
+                resolve();
+                return;
             }
-        );
+            this.activeDevice.instruments.osc.read(readArray).subscribe(
+                (data) => {
+                    console.log('DATA RECEIVED');
+                    this.readingOsc = false;
+                    this.readAttemptCount = 0;
+                    console.log('resolving');
+                    resolve();
+                    console.log('after resolve');
+                    //this.checkReadStatusAndDraw();
+                },
+                (err) => {
+                    if (this.readingOsc) {
+                        console.log('attempting read again');
+                        this.readAttemptCount++;
+                        let waitTime = this.readAttemptCount * 100 > 1000 ? 1000 : this.readAttemptCount * 100;
+                        setTimeout(() => {
+                            this.readOscope(readArray)
+                                .then(() => {
+                                    resolve();
+                                })
+                                .catch((e) => {
+                                    reject(e);
+                                });
+                        }, waitTime);
+                    }
+                },
+                () => {
+                }
+            );
+        });
+
     }
 
     //Stream osc buffers
@@ -852,8 +938,7 @@ export class TestChartCtrlsPage {
                 if (this.currentTriggerType === 'off') {
                     this.forceTrigger()
                         .then(() => {
-                            this.readOscope(this.currentOscReadArray);
-                            this.readLa(this.currentLaReadArray);
+                            this.readBuffers();
                         })
                         .catch((e) => {
 
@@ -861,8 +946,7 @@ export class TestChartCtrlsPage {
                 }
                 else {
                     setTimeout(() => {
-                        this.readOscope(this.currentOscReadArray);
-                        this.readLa(this.currentLaReadArray);
+                        this.readBuffers();
                     }, this.theoreticalAcqTime);
                 }
             }
