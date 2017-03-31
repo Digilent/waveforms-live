@@ -516,6 +516,10 @@ export class TestChartCtrlsPage {
                 j++;
             }
 
+            if (j > this.activeDevice.instruments.osc.chans[i].gains.length - 1) {
+                j--;
+            }
+
             let samplingParams: { sampleFreq: number, bufferSize: number } = this.chart1.calculateDataFromWindow();
             if (!this.yaxisComponent.lockedSampleState[i].sampleFreqLocked) {
                 samplingParams.sampleFreq = this.yaxisComponent.lockedSampleState[i].manualSampleFreq;
@@ -525,7 +529,7 @@ export class TestChartCtrlsPage {
             }
 
             let vOffset = this.chart1.voltBase[i];
-            let maxOffsetAmp = this.activeDevice.instruments.osc.chans[i].adcVpp / (2 * this.activeDevice.instruments.osc.chans[i].gains[j]);
+            let maxOffsetAmp = this.activeDevice.instruments.osc.chans[i].adcVpp / (2000 * this.activeDevice.instruments.osc.chans[i].gains[j]);
             vOffset = Math.max(Math.min(vOffset, maxOffsetAmp), -1 * maxOffsetAmp);
 
             if (this.previousOscSettings[i] == undefined || this.previousOscSettings[i].offset !== vOffset ||
