@@ -1,20 +1,48 @@
 <div class="la-popover-container">
-    <div class="bitmask-view">
-        {{bitmask}}
-    </div>
-    <ion-row *ngFor="let laChan of laChans, let i = index;">
-        <ion-col>
-            <div class="la-label">
-                LA Ch {{i + 1}}
-            </div>
+    <ion-row>
+        <ion-col class="la-label" center>
+            Set All
         </ion-col>
-        <ion-col>
-            <div>
-                sup
-            </div>
+        <ion-col center class="button-container" text-right>
+            <button ion-button class="icon-only-button-side trigger-img disable-hover" (tap)="setAll('rising')">
+                <img class="custom-image-button" src="assets/img/rising.svg">
+            </button>
+            <button ion-button class="icon-only-button-side trigger-img disable-hover" (tap)="setAll('falling')">
+                <img class="custom-image-button" src="assets/img/falling.svg">
+            </button>
+            <button ion-button class="icon-only-button-side trigger-img disable-hover" (tap)="setAll('either')">
+                <img class="custom-image-button" src="assets/img/falling.svg">
+            </button>
+            <button ion-button class="icon-only-button-side trigger-img disable-hover right-button" (tap)="setAll('off')">
+                Off
+            </button>
         </ion-col>
     </ion-row>
-    <div text-right>
+    <ion-row class="bitmask-view">
+        <ion-col class="la-label">
+            Bitmask
+        </ion-col>
+        <ion-col class="bitmask-container" text-right>
+            {{bitmask}}
+        </ion-col>
+    </ion-row>
+    <ion-row *ngFor="let laChan of laChans, let i = index;">
+        <ion-col class="la-label" center>
+            LA Ch {{i + 1}}
+        </ion-col>
+        <ion-col center class="button-container" text-right>
+            <button ion-button class="icon-only-button-side trigger-img disable-hover" (tap)="setTrigType('rising', i)"  [ngClass]="{'selected-mode':edgeDirections[i]==='rising' || edgeDirections[i]==='either'}">
+                <img class="custom-image-button" src="assets/img/rising.svg">
+            </button>
+            <button ion-button class="icon-only-button-side trigger-img disable-hover" (tap)="setTrigType('falling', i)" [ngClass]="{'selected-mode':edgeDirections[i]==='falling' || edgeDirections[i]==='either'}">
+                <img class="custom-image-button" src="assets/img/falling.svg">
+            </button>
+            <button ion-button class="icon-only-button-side trigger-img disable-hover right-button" (tap)="setTrigType('off', i)" [ngClass]="{'selected-mode':edgeDirections[i]==='off'}">
+                Off
+            </button>
+        </ion-col>
+    </ion-row>
+    <div text-right class="nav-button-container">
         <button ion-button class="text-button-side disable-hover" (click)="close()">
             Close
         </button>

@@ -534,6 +534,26 @@ export class DeviceManagerPage {
         });
     }
 
+    openGettingStartedPopover(event) {
+        let popover = this.popoverCtrl.create(GenPopover, {
+            dataArray: ['OpenScope MZ']
+        });
+        popover.onWillDismiss((data) => {
+            if (data == undefined) { return; }
+            switch (data.option) {
+                case 'OpenScope MZ':
+                    let openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/getting-started', '_blank');
+                    openTab.location;
+                    break;
+                default:
+                    break;
+            }
+        });
+        popover.present({
+            ev: event
+        });
+    }
+
     private verifyFirmware(deviceIndex): Promise<any> {
         return new Promise((resolve, reject) => {
             console.log('CALIBRATION SOURCE');

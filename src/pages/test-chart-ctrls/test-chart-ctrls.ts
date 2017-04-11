@@ -484,6 +484,7 @@ export class TestChartCtrlsPage {
         let setLaParams = false;
 
         let trigSourceArr = this.triggerComponent.triggerSource.split(' ');
+        console.log(trigSourceArr);
         if (trigSourceArr[2] === undefined) {
             trigSourceArr[2] = '1';
         }
@@ -500,8 +501,6 @@ export class TestChartCtrlsPage {
         let thresholds = this.triggerComponent.getThresholdsInMillivolts();
 
         this.theoreticalAcqTime = 0;
-
-        //this.theoreticalAcqTime = 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
 
         let triggerDelay = Math.max(Math.min(parseFloat(this.chart1.base.toString()), this.activeDevice.instruments.osc.chans[0].delayMax / Math.pow(10, 12)), this.activeDevice.instruments.osc.chans[0].delayMin / Math.pow(10, 12));
 
@@ -623,18 +622,39 @@ export class TestChartCtrlsPage {
         }
         singleCommand['trigger'] = {};
         if (setTrigParams || forceWholeCommand) {
+            let sourceObject;
+            if (trigSourceArr[0] === 'LA') {
+                let fallingBitmask = this.triggerComponent.getFallingBitmask();
+                let risingBitmask = this.triggerComponent.getRisingBitmask();
+                if (fallingBitmask === 0 && risingBitmask === 0) {
+                    sourceObject = {
+                        instrument: 'force'
+                    };
+                }
+                else {
+                    sourceObject = {
+                        instrument: 'la',
+                        channel: 1,
+                        risingEdge: risingBitmask,
+                        fallingEdge: fallingBitmask
+                    };
+                }
+            }
+            else {
+                sourceObject = {
+                    instrument: trigSourceArr[0].toLowerCase(),
+                    channel: parseInt(trigSourceArr[2]),
+                    type: trigType,
+                    lowerThreshold: thresholds.lowerThreshold,
+                    upperThreshold: thresholds.upperThreshold
+                };
+            }
             console.log('setting trigger params');
             console.log(this.triggerComponent.lowerThresh, this.triggerComponent.upperThresh);
             singleCommand['trigger']['setParameters'] = [
                 [1],
                 [
-                    {
-                        instrument: trigSourceArr[0].toLowerCase(),
-                        channel: parseInt(trigSourceArr[2]),
-                        type: trigType,
-                        lowerThreshold: thresholds.lowerThreshold,
-                        upperThreshold: thresholds.upperThreshold
-                    }
+                    sourceObject
                 ],
                 [
                     targetsObject

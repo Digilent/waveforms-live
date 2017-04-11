@@ -9,6 +9,11 @@
     </div>
 
     <div class="tutorial-button-container">
+        <div>
+            <button ion-button (tap)="openGettingStartedPopover($event)" class="kickstarter-button disable-hover">
+                Getting Started
+            </button>
+        </div>
         <button ion-button (tap)="executeHelp()" class="kickstarter-button disable-hover" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}" *ngIf="tutorialMode">
             End Tutorial
         </button>

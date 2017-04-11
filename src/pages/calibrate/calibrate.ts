@@ -22,7 +22,7 @@ export class CalibratePage {
     public deviceManagerService: DeviceManagerService;
     public calibrationInstructions: string = 'There was an error loading the calibration instructions for your device.\n' +
     'Check your reference manual for correct setup before starting the calibration process.';
-    public calibrationStatus: string = 'Please wait...';
+    public calibrationStatus: string = 'Ready To Calibrate';
     public calibrationFailed: boolean = false;
     public calibrationSuccessful: boolean = false;
     public calibrationReadAttempts: number = 0;
@@ -156,9 +156,8 @@ export class CalibratePage {
             loading.dismiss();
             this.toSlide(1);
         }).catch((e) => {
-            this.startCalibration();
+            this.calibrationStatus = 'Error resetting the device. Make sure it is still connected and is on the latest firmware.';
             loading.dismiss();
-            this.toSlide(1);
         });
     }
 

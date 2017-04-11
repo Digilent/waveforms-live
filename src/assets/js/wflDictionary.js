@@ -37,6 +37,9 @@ var waveformsLiveDictionary = (function() {
         deviceResetError: {
             english: 'Unable To Reset Device'
         },
+        deviceResetCalibrationError: {
+            english: 'Unable To Reset Device. Make Sure The Device Is Still Connected And Is On The Latest Firmware'
+        },
         //Appears when a user navigates to the instrument panel without an active device (shouldn't happen).
         noActiveDevice: {
             english: 'You Currently Have No Device Connected. Please Visit The Device Manager Page.'
@@ -81,7 +84,7 @@ var waveformsLiveDictionary = (function() {
         //Agent
         //Appears when a user tries to add an agent that already exists.
         agentExists: {
-            english: 'Agent Is Added Already. Use Settings To Configure Current Active Device'
+            english: 'Agent Already Added. Click The More Button On The Agent Card And Select Configure To Change The Active Device'
         },
         //Appears when an agent responds with invalid JSON (should not appear)
         agentInvalidResponse: {

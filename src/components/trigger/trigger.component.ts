@@ -37,6 +37,7 @@ export class TriggerComponent {
 
     public tutorialMode: boolean = false;
     public tutorialStage: 'idle' | 'level' | 'type' = 'idle';
+    public bitmask: string = '';
 
     constructor(
         _popoverCtrl: PopoverController,
@@ -81,7 +82,7 @@ export class TriggerComponent {
                     this.deviceDataTransferService.triggerSource = this.triggerSource;
                     this.dropPopSource.setActiveSelection(this.triggerSource);
                 }
-                else {
+                else if (val.source != undefined && val.source.instrument === 'la') {
                     this.triggerSource = 'LA';
                     this.deviceDataTransferService.triggerSource = this.triggerSource;
                     this.dropPopSource.setActiveSelection(this.triggerSource);
@@ -98,6 +99,9 @@ export class TriggerComponent {
                 }
             });
         }
+        this.translateSeparateBitmasks(911, 3);
+        console.log(this.getRisingBitmask());
+        console.log(this.getFallingBitmask());
     }
 
     sourceSelect(event) {
@@ -209,11 +213,99 @@ export class TriggerComponent {
     }
 
     openLaPopover(event) {
-        let popover = this.popoverCtrl.create(LaPopover);
+        let popover = this.popoverCtrl.create(LaPopover, {
+            bitmask: this.bitmask
+        }, {
+            enableBackdropDismiss: false
+        });
         popover.onWillDismiss((data) => {
             console.log(data);
+            if (data == undefined) { return; }
+            if (data.bitmask) {
+                this.bitmask = data.bitmask;
+            }
         });
-        popover.present();
+        popover.present({
+            ev: event
+        });
+    }
+
+    private translateSeparateBitmasks(risingBitmask: number, fallingBitmask: number) {
+        this.bitmask = '';
+        let rising = risingBitmask.toString(2);
+        let falling = fallingBitmask.toString(2);
+        console.log(rising, falling);
+        let maxLength = Math.max(rising.length, falling.length);
+        for (let i = 0; i < maxLength; i++) {
+            let risingChar = rising.charAt(rising.length - i - 1);
+            let fallingChar = falling.charAt(falling.length - i - 1);
+            console.log(risingChar, fallingChar)
+            if (risingChar && fallingChar) {
+                if (risingChar === '1' && fallingChar === '1') {
+                    this.bitmask = 'e' + this.bitmask;
+                }
+                else if (risingChar === '1') {
+                    this.bitmask = 'r' + this.bitmask;
+                }
+                else if (fallingChar === '1') {
+                    this.bitmask = 'f' + this.bitmask;
+                }
+                else {
+                    this.bitmask = 'x' + this.bitmask;
+                }
+            }
+            else if (risingChar) {
+                if (risingChar === '1') {
+                    this.bitmask = 'r' + this.bitmask;
+                }
+                else {
+                    this.bitmask = 'x' + this.bitmask;
+                }
+            }
+            else {
+                if (fallingChar === '1') {
+                    this.bitmask = 'f' + this.bitmask;
+                }
+                else {
+                    this.bitmask = 'x' + this.bitmask;
+                }
+            }
+        }
+        console.log(this.bitmask);
+    }
+
+    getRisingBitmask() {
+        let risingBitmaskString = '';
+        for (let i = 0; i < this.bitmask.length; i++) {
+            switch (this.bitmask.charAt(i)) {
+                case 'e':
+                    risingBitmaskString += '1';
+                    break;
+                case 'r':
+                    risingBitmaskString += '1';
+                    break;
+                default:
+                    risingBitmaskString += '0';
+            }
+        }
+        return parseInt(risingBitmaskString, 2);
+    }
+
+    getFallingBitmask() {
+        let fallingBitmaskString = '';
+        for (let i = 0; i < this.bitmask.length; i++) {
+            switch (this.bitmask.charAt(i)) {
+                case 'e':
+                    fallingBitmaskString += '1';
+                    break;
+                case 'f':
+                    fallingBitmaskString += '1';
+                    break;
+                default:
+                    fallingBitmaskString += '0';
+            }
+        }
+        return parseInt(fallingBitmaskString, 2);
     }
 
 }

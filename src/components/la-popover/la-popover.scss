@@ -1,4 +1,53 @@
+.la-popover-container
+{
+    padding-top: 8px;
+}
+
 .la-popover-container .la-label
 {
     color: #CCCCCC;
+    padding-left: 16px;
+}
+
+.la-popover-container .trigger-img
+{
+    margin: 0;
+    border-right: none;
+    color: #CCCCCC;
+
+    .button-inner img {
+        max-width: 24px;
+    }
+}
+
+.la-popover-container .right-button
+{
+    border-right: solid black 1px;
+}
+
+.la-popover-container .selected-mode
+{
+    background-color: #4487BA;
+}
+
+.la-popover-container .button-container
+{
+    font-size: 0;
+    padding-right: 16px;
+}
+
+.la-popover-container .nav-button-container
+{
+    padding-right: 16px;
+    padding-bottom: 8px;
+    button {
+        margin-right: 0;
+    }
+}
+
+.la-popover-container .bitmask-container
+{
+    padding-right: 16px;
+    color: #CCCCCC;
+    text-transform: uppercase;
 }
