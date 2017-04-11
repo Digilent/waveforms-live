@@ -1,0 +1,22 @@
+<div class="la-popover-container">
+    <div class="bitmask-view">
+        {{bitmask}}
+    </div>
+    <ion-row *ngFor="let laChan of laChans, let i = index;">
+        <ion-col>
+            <div class="la-label">
+                LA Ch {{i + 1}}
+            </div>
+        </ion-col>
+        <ion-col>
+            <div>
+                sup
+            </div>
+        </ion-col>
+    </ion-row>
+    <div text-right>
+        <button ion-button class="text-button-side disable-hover" (click)="close()">
+            Close
+        </button>
+    </div>
+</div>

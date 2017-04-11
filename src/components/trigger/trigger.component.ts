@@ -4,6 +4,7 @@ import { PopoverController } from 'ionic-angular';
 //Components
 import { SilverNeedleChart } from '../chart/chart.component';
 import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
+import { LaPopover } from '../la-popover/la-popover.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -52,6 +53,9 @@ export class TriggerComponent {
         for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
             this.triggerSources.push('Osc Ch ' + (i + 1));
         }
+        for (let i = 0; i < this.activeDevice.instruments.la.numChans; i++) {
+            this.triggerSources.push('LA');
+        }
     }
 
     endTutorial() {
@@ -78,7 +82,9 @@ export class TriggerComponent {
                     this.dropPopSource.setActiveSelection(this.triggerSource);
                 }
                 else {
-                    //External trigger TODO
+                    this.triggerSource = 'LA';
+                    this.deviceDataTransferService.triggerSource = this.triggerSource;
+                    this.dropPopSource.setActiveSelection(this.triggerSource);
                 }
                 if (val.source != undefined && val.source.type != undefined) {
                     this.edgeDirection = val.source.type === 'risingEdge' ? 'rising' : 'falling';
@@ -200,6 +206,14 @@ export class TriggerComponent {
 
     setTrigType(type: 'rising' | 'falling' | 'off') {
         this.edgeDirection = type;
+    }
+
+    openLaPopover(event) {
+        let popover = this.popoverCtrl.create(LaPopover);
+        popover.onWillDismiss((data) => {
+            console.log(data);
+        });
+        popover.present();
     }
 
 }

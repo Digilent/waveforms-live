@@ -14,6 +14,7 @@ import { DcSupplyComponent } from '../../components/dc-supply/dc-supply.componen
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
+import { LaPopover } from '../../components/la-popover/la-popover.component';
  
 @NgModule({
     imports: [
@@ -21,10 +22,12 @@ import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.co
         IonicModule.forRoot(TestChartCtrlsPage),
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),
-        IonicModule.forRoot(PinoutPopover)
+        IonicModule.forRoot(PinoutPopover),
+        IonicModule.forRoot(LaPopover)
     ],
     declarations: [
         PinoutPopover,
+        LaPopover,
         TestChartCtrlsPage,
         ModalCursorPage,
         MathModalPage,

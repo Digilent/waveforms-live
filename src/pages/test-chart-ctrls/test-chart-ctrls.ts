@@ -66,6 +66,8 @@ export class TestChartCtrlsPage {
     public currentLaReadArray: number[];
     public forceTriggerInterval: number = 100;
     public currentTriggerType: 'rising' | 'falling' | 'off';
+    //TODO: REMOVE?
+    public currentSamplingFrequencies: number[] = [];
 
     constructor(
         _deviceManagerService: DeviceManagerService,
@@ -113,6 +115,9 @@ export class TestChartCtrlsPage {
             .catch((e) => {
                 console.log(e);
             });
+        for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
+            this.currentSamplingFrequencies.push(0);
+        }
     }
 
     resetDevice() {
@@ -540,6 +545,7 @@ export class TestChartCtrlsPage {
                 this.previousOscSettings[i].active !== this.chart1.oscopeChansActive[i]) {
                 setOscParams = true;
                 setTrigParams = true;
+                this.currentSamplingFrequencies[i] = samplingParams.sampleFreq;
             }
             if (this.chart1.oscopeChansActive[i]) {
                 let tempTheoreticalAcqTime = 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);

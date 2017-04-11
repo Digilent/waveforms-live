@@ -36,7 +36,7 @@
 		<ion-grid class="ion-grid-no-padding">
 			<ion-row class="button-row">
 				<ion-col center text-center class="interact-button-col">
-					<div class="trigger-image-container" [tooltip]="edgeButton" [tooltipAnimation]="true" tooltipPlacement="top" onlyForceShow="true"
+					<div class="trigger-image-container" *ngIf="triggerSource !== 'LA'" [tooltip]="edgeButton" [tooltipAnimation]="true" tooltipPlacement="top" onlyForceShow="true"
 						[forceShow]="tutorialStage === 'type' && tutorialMode" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 'type'}">
 
 						<button ion-button class="off-button disable-hover"(tap)="setTrigType('rising')"  [ngClass]="{'selected-mode':edgeDirection==='rising'}"
@@ -51,6 +51,11 @@
 						<button ion-button class="off-button disable-hover off-button-right" (tap)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}"
 							[tooltip]="tooltipService.getTooltip('triggerOff').message" [tooltipAnimation]="true" tooltipPlacement="top">
 							Off
+						</button>
+					</div>
+					<div *ngIf="triggerSource === 'LA'">
+						<button ion-button class="icon-only-button-side disable-hover" (click)="openLaPopover($event)">
+							<img src="assets/img/settings.svg">
 						</button>
 					</div>
 				</ion-col>

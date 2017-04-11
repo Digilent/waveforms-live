@@ -523,13 +523,15 @@ export class SilverNeedleChart {
             let plotRelYPos = event.clientY - offsets.top;
             let getAxes = this.chart.getAxes();
             //Check if over trigger level
-            let seriesNum = parseInt(this.deviceDataTransferService.triggerSource.split(' ')[2]) - 1;
-            let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
-            let valPix = getAxes[yIndexer].p2c(this.deviceDataTransferService.triggerLevel);
-            if (plotRelXPos > this.chart.width() - 20 && plotRelXPos < this.chart.width() + 5 && plotRelYPos < valPix + 10 && plotRelYPos > valPix - 10) {
-                this.overTriggerLevel = true;
-                this.chart.getPlaceholder().css('cursor', 'ns-resize');
-                return;
+            if (this.deviceDataTransferService.triggerSource !== 'LA') {
+                let seriesNum = parseInt(this.deviceDataTransferService.triggerSource.split(' ')[2]) - 1;
+                let yIndexerTrigSrc = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
+                let valPix = getAxes[yIndexerTrigSrc].p2c(this.deviceDataTransferService.triggerLevel);
+                if (plotRelXPos > this.chart.width() - 20 && plotRelXPos < this.chart.width() + 5 && plotRelYPos < valPix + 10 && plotRelYPos > valPix - 10 && this.deviceDataTransferService.triggerSource !== 'LA') {
+                    this.overTriggerLevel = true;
+                    this.chart.getPlaceholder().css('cursor', 'ns-resize');
+                    return;
+                }
             }
             if (this.overTriggerLevel) {
                 this.overTriggerLevel = false;
@@ -742,6 +744,7 @@ export class SilverNeedleChart {
     }
 
     triggerLevelAnchorHandler(plot: any, ctx: any) {
+        if (this.deviceDataTransferService.triggerSource === 'LA') { return; }
         this.flotOverlayRef = ctx;
         let offsets = this.chart.offset();
         let getAxes = this.chart.getAxes();
@@ -784,7 +787,7 @@ export class SilverNeedleChart {
         this.voltBase[this.activeSeries - 1] = base;
         this.previousYPos = e.clientY;
     }
-    
+
     triggerLevelVertPan(e) {
         let getAxes = this.chart.getAxes();
         let offsets = this.chart.offset();
@@ -1150,7 +1153,7 @@ export class SilverNeedleChart {
             }
             let decimatedData = this.flotDecimateData(this.numSeries[i], bounds).data;
             if (this.numSeries[i] < this.oscopeChansActive.length || this.settingsService.drawLaOnTimeline) {
-                dataObjects.push( 
+                dataObjects.push(
                     {
                         data: decimatedData,
                         yaxis: 1,
