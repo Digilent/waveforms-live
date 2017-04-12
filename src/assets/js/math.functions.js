@@ -145,7 +145,12 @@ var mathFunctions = (function () {
         var step = sampleFreq / numSamples;
         for (var i = 0; i < real.length / 2; i++) {
             var magnitude = Math.sqrt(Math.pow(real[i], 2) + Math.pow(imaginary[i], 2));
-            magnitudeFreqArray.push([step * i, (magnitude / numSamples) * 2]);
+            if (i === 0) {
+                magnitudeFreqArray.push([step * i, (magnitude / numSamples)]);
+            }
+            else {
+                magnitudeFreqArray.push([step * i, (magnitude / numSamples) * 2]);
+            }
         }
         return magnitudeFreqArray;
     }
