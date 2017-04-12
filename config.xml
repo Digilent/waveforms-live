@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.digilent.waveformslive" version="0.8.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.digilent.waveformslive" version="0.8.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>WaveForms Live</name>
   <description>Open source instrumentation software.</description>
   <author email="software@digilent.com" href="https://store.digilentinc.com/">Digilent</author>

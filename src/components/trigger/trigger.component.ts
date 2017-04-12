@@ -57,6 +57,9 @@ export class TriggerComponent {
         for (let i = 0; i < this.activeDevice.instruments.la.numChans; i++) {
             this.triggerSources.push('LA');
         }
+        for (let i = 0; i < this.activeDevice.instruments.la.chans[0].numDataBits; i++) {
+            this.bitmask += 'x';
+        }
     }
 
     endTutorial() {
@@ -110,6 +113,11 @@ export class TriggerComponent {
     }
 
     sourceSelect(event) {
+        if (this.deviceDataTransferService.awgPower && event === 'LA') {
+            this.toastService.createToast('awgOnNoLa');
+            this.dropPopSource._applyActiveSelection(this.triggerSource);
+            return;
+        }
         this.triggerSource = event;
         this.deviceDataTransferService.triggerSource = this.triggerSource;
         this.chart.chart.triggerRedrawOverlay();

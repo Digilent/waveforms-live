@@ -399,7 +399,8 @@ export class FgenComponent {
             };
         }
         if (!this.powerOn) {
-            if (this.dataTransferService.laChanActive && this.activeDevice.transport.getType() !== 'local') {
+            console.log(this.dataTransferService);
+            if ((this.dataTransferService.laChanActive || this.dataTransferService.triggerSource === 'LA') && this.activeDevice.transport.getType() !== 'local') {
                 this.toastService.createToast('laOnNoAwg');
                 this.awaitingResponse = false;
                 return;
