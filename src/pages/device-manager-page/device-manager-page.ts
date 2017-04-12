@@ -535,7 +535,7 @@ export class DeviceManagerPage {
     }
 
     openGettingStartedPopover(event) {
-        let popover = this.popoverCtrl.create(GenPopover, {
+        /*let popover = this.popoverCtrl.create(GenPopover, {
             dataArray: ['OpenScope MZ']
         });
         popover.onWillDismiss((data) => {
@@ -551,7 +551,9 @@ export class DeviceManagerPage {
         });
         popover.present({
             ev: event
-        });
+        });*/
+        let openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/getting-started', '_blank');
+        openTab.location;
     }
 
     private verifyFirmware(deviceIndex): Promise<any> {

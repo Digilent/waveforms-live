@@ -54,7 +54,8 @@ export class TestChartCtrlsPage {
         channel: null,
         type: null,
         lowerThreshold: null,
-        upperThreshold: null
+        upperThreshold: null,
+        bitmask: null
     };
     public previousLaSettings: PreviousLaSettings[] = [];
 
@@ -131,7 +132,8 @@ export class TestChartCtrlsPage {
             channel: null,
             type: null,
             lowerThreshold: null,
-            upperThreshold: null
+            upperThreshold: null,
+            bitmask: null
         };
         this.fgenComponent.initializeValues();
         this.activeDevice.resetInstruments().subscribe(
@@ -505,8 +507,8 @@ export class TestChartCtrlsPage {
         let triggerDelay = Math.max(Math.min(parseFloat(this.chart1.base.toString()), this.activeDevice.instruments.osc.chans[0].delayMax / Math.pow(10, 12)), this.activeDevice.instruments.osc.chans[0].delayMin / Math.pow(10, 12));
 
         if (this.previousTrigSettings.instrument !== trigSourceArr[0] || this.previousTrigSettings.channel !== parseInt(trigSourceArr[2]) ||
-            this.previousTrigSettings.type !== trigType || this.previousTrigSettings.lowerThreshold !== thresholds.lowerThreshold ||
-            this.previousTrigSettings.upperThreshold !== thresholds.upperThreshold) {
+            this.previousTrigSettings.type !== this.triggerComponent.edgeDirection || this.previousTrigSettings.lowerThreshold !== thresholds.lowerThreshold ||
+            this.previousTrigSettings.upperThreshold !== thresholds.upperThreshold || this.previousTrigSettings.bitmask !== this.triggerComponent.bitmask) {
             setTrigParams = true;
         }
 
@@ -599,7 +601,7 @@ export class TestChartCtrlsPage {
         this.currentLaReadArray = laArray[0];
         this.currentOscReadArray = oscArray[0];
 
-        let singleCommand = {}
+        let singleCommand = {};
 
         let targetsObject = {};
         if (oscArray[0].length > 0) {
@@ -641,13 +643,20 @@ export class TestChartCtrlsPage {
                 }
             }
             else {
-                sourceObject = {
-                    instrument: trigSourceArr[0].toLowerCase(),
-                    channel: parseInt(trigSourceArr[2]),
-                    type: trigType,
-                    lowerThreshold: thresholds.lowerThreshold,
-                    upperThreshold: thresholds.upperThreshold
-                };
+                if (this.triggerComponent.edgeDirection === 'off') {
+                    sourceObject = {
+                        instrument: 'force'
+                    };
+                }
+                else {
+                    sourceObject = {
+                        instrument: trigSourceArr[0].toLowerCase(),
+                        channel: parseInt(trigSourceArr[2]),
+                        type: trigType,
+                        lowerThreshold: thresholds.lowerThreshold,
+                        upperThreshold: thresholds.upperThreshold
+                    };
+                }
             }
             console.log('setting trigger params');
             console.log(this.triggerComponent.lowerThresh, this.triggerComponent.upperThresh);
@@ -681,24 +690,6 @@ export class TestChartCtrlsPage {
                 this.abortSingle(true);
             },
             () => {
-                if (this.triggerComponent.edgeDirection === 'off') {
-                    this.forceTrigger()
-                        .then(() => {
-                            console.log('done force trigger');
-                            if (this.activeDevice.transport.getType() !== 'local') {
-                                setTimeout(() => {
-                                    this.readBuffers();
-                                }, this.theoreticalAcqTime);
-                            }
-                            else {
-                                this.readBuffers();
-                            }
-                        })
-                        .catch((e) => {
-                            console.log('fail force trigger');
-                        });
-                    return;
-                }
                 if (this.activeDevice.transport.getType() !== 'local') {
                     setTimeout(() => {
                         this.readBuffers();
@@ -713,9 +704,10 @@ export class TestChartCtrlsPage {
         this.previousTrigSettings = {
             instrument: trigSourceArr[0],
             channel: parseInt(trigSourceArr[2]),
-            type: trigType,
+            type: this.triggerComponent.edgeDirection,
             lowerThreshold: thresholds.lowerThreshold,
-            upperThreshold: thresholds.upperThreshold
+            upperThreshold: thresholds.upperThreshold,
+            bitmask: this.triggerComponent.bitmask
         };
 
 

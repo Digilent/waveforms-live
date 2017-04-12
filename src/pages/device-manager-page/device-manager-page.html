@@ -9,7 +9,22 @@
     </div>
 
     <div class="tutorial-button-container">
-        <div>
+        <ion-row wrap class="tutorial-button-wrapper">
+            <ion-col>
+                <button ion-button (tap)="openGettingStartedPopover($event)" class="kickstarter-button digilent-greenify disable-hover">
+                    Getting Started
+                </button>
+            </ion-col>
+            <ion-col>
+                <button ion-button (tap)="executeHelp()" class="kickstarter-button disable-hover" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}" *ngIf="tutorialMode">
+                    End Tutorial
+                </button>
+                <button ion-button (tap)="executeHelp()" class="kickstarter-button disable-hover" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}" *ngIf="!tutorialMode">
+                    Tutorial
+                </button>
+            </ion-col>
+        </ion-row>
+        <!--<div>
             <button ion-button (tap)="openGettingStartedPopover($event)" class="kickstarter-button disable-hover">
                 Getting Started
             </button>
@@ -19,7 +34,7 @@
         </button>
         <button ion-button (tap)="executeHelp()" class="kickstarter-button disable-hover" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}" *ngIf="!tutorialMode">
             Tutorial
-        </button>
+        </button>-->
     </div>
 
     <div class="beta-container">

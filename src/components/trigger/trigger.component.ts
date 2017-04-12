@@ -86,9 +86,17 @@ export class TriggerComponent {
                     this.triggerSource = 'LA';
                     this.deviceDataTransferService.triggerSource = this.triggerSource;
                     this.dropPopSource.setActiveSelection(this.triggerSource);
+                    if (val.source.risingEdge != undefined && val.source.fallingEdge != undefined) {
+                        this.translateSeparateBitmasks(val.source.risingEdge, val.source.fallingEdge, this.activeDevice.instruments.la.chans[0].numDataBits);
+                    }
                 }
-                if (val.source != undefined && val.source.type != undefined) {
-                    this.edgeDirection = val.source.type === 'risingEdge' ? 'rising' : 'falling';
+                if (val.source != undefined) {
+                    if (val.source.type != undefined) {
+                        this.edgeDirection = val.source.type === 'risingEdge' ? 'rising' : 'falling';
+                    }
+                    else if (val.source.instrument === 'force') {
+                        this.edgeDirection = 'off';
+                    }
                 }
                 if (val.source != undefined && val.source.lowerThreshold != undefined && val.source.upperThreshold != undefined) {
                     this.lowerThresh = (val.source.lowerThreshold).toString();
@@ -99,9 +107,6 @@ export class TriggerComponent {
                 }
             });
         }
-        this.translateSeparateBitmasks(911, 3);
-        console.log(this.getRisingBitmask());
-        console.log(this.getFallingBitmask());
     }
 
     sourceSelect(event) {
@@ -230,7 +235,7 @@ export class TriggerComponent {
         });
     }
 
-    private translateSeparateBitmasks(risingBitmask: number, fallingBitmask: number) {
+    private translateSeparateBitmasks(risingBitmask: number, fallingBitmask: number, length: number) {
         this.bitmask = '';
         let rising = risingBitmask.toString(2);
         let falling = fallingBitmask.toString(2);
@@ -271,6 +276,11 @@ export class TriggerComponent {
                 }
             }
         }
+        let paddingString = '';
+        for (let i = 0; i < length - this.bitmask.length; i++) {
+            paddingString += 'x';
+        }
+        this.bitmask = paddingString + this.bitmask;
         console.log(this.bitmask);
     }
 

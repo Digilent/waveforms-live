@@ -33,18 +33,22 @@
                             </button>
                         </div>
                     </ion-item>
-                    <ion-item class="configure-item only-button-item">
+                    <ion-item class="configure-item only-button-item" *ngIf="potentialDevices">
                         <!--<button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="reEnumerateAgent()">Re-Enumerate</button>-->
                         <button ion-button item-right class="text-button-side disable-hover item-button" (click)="retryDeviceEnumeration()"
                             [tooltip]="tooltipService.getTooltip('configDeviceRetryEnumerate').message" [tooltipAnimation]="true" tooltipPlacement="left">
                             <!--<img class="custom-image-button" src="assets/img/info.svg">-->
-                            Connect
+                            {{(deviceConfigure && !invalidEnumeration) ? 'Re-Enumerate' : 'Open'}}
                         </button>
+                    </ion-item>
+                    <ion-item class="configure-item">
+                        <ion-label fixed>Status</ion-label>
+                        <div item-right class="item-content-right">{{(deviceConfigure && !invalidEnumeration) ? 'Connected' : 'Not Connected'}}</div>
                     </ion-item>
                 </ion-list>
             </div>
 
-            <div>
+            <div *ngIf="potentialDevices && deviceConfigure">
                 <ion-list class="section-list">
                     <ion-item-divider class="list-header">Firmware</ion-item-divider>
                     <ion-item class="configure-item">

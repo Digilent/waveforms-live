@@ -1186,7 +1186,7 @@ export class SilverNeedleChart {
         this.shouldShowIndividualPoints();
 
         if (this.showFft) {
-            this.drawFft(true);
+            this.drawFft(false);
         }
 
         let newTime = performance.now();
@@ -1453,6 +1453,10 @@ export class SilverNeedleChart {
 
     //Autoscale all axes on chart
     autoscaleAllAxes() {
+        if (this.showFft) {
+            this.drawFft(true);
+            return;
+        }
         this.autoscaleAxis('x', 0);
         for (let i = 0; i < this.oscopeChansActive.length; i++) {
             if (this.oscopeChansActive[i]) {

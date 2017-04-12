@@ -354,6 +354,20 @@
     max-width: 100%;
 }
 
+.first-tab-container .digilent-greenify
+{
+    background-color: #62a945;
+}
+
+.first-tab-container .tutorial-button-wrapper
+{
+    ion-col {
+        padding: 0;
+        min-width: 100px;
+        overflow: hidden;
+    }
+}
+
 .first-tab-container .kickstarter-button:hover
 {
     border-color: white;

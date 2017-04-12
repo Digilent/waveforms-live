@@ -8,7 +8,7 @@
                         fft
                     </button>
                 </div>
-                <div [hidden]="showFft">
+                <div>
                     <button ion-button class="chart-button disable-hover" (click)="autoscaleAllAxes()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartAutoscale').message" [tooltipAnimation]="true" tooltipPlacement="left">
                         <img class="button-side-svg" src="assets/img/fullscreen.svg" />
                     </button>

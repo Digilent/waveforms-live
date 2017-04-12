@@ -20,5 +20,6 @@ export interface PreviousTrigSettings {
     channel: number | null,
     type: string | null,
     lowerThreshold: number | null,
-    upperThreshold: number | null
+    upperThreshold: number | null,
+    bitmask: string | null
 }
