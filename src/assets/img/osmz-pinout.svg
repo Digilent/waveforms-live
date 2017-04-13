@@ -16,7 +16,7 @@
    id="svg5123"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="osmz-pinout.svg">
+   sodipodi:docname="openscope-mz-pinout.svg">
   <defs
      id="defs5125">
     <marker
@@ -111,8 +111,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="593.14114"
-     inkscape:cy="576.61353"
+     inkscape:cx="364.56971"
+     inkscape:cy="348.0421"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -178,1257 +178,1129 @@
          x="766.289"
          y="1586.3563"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff" /></text>
-    <g
-       id="g10445"
-       transform="translate(-1.2499999e-6,207)">
-      <path
-         inkscape:connector-curvature="0"
-         id="rect10238"
-         d="m 2.4999999e-6,235.36218 1023.9999975,0 0,610 -1023.9999975,0 z"
-         style="opacity:1;fill:#3a3a3a;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:6.36299992;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
-      <g
-         transform="matrix(0.744216,0,0,0.744216,33.82935,-571.04729)"
-         id="g10240">
-        <g
-           id="g9936">
-          <rect
-             style="opacity:1;fill:#ffa510;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-             id="use6409"
-             width="45"
-             height="45"
-             x="151.78571"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876"
-             y="1104.6017"
-             x="-866.5863"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1104.6017"
-               x="-866.5863"
-               id="tspan6878"
-               sodipodi:role="line">AI1+/OSC1</tspan></text>
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990"
-             y="1435.2769"
-             x="148.85602"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1435.2769"
-               x="148.85602"
-               id="tspan6992"
-               sodipodi:role="line">1+</tspan></text>
-        </g>
-        <g
-           id="g9943"
-           transform="translate(7.158905,0)">
-          <rect
-             style="opacity:1;fill:#4487ba;fill-opacity:1;fill-rule:evenodd"
-             id="use6413"
-             width="45"
-             height="45"
-             x="212.10713"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-0"
-             y="1146.3646"
-             x="-824.82343"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1146.3646"
-               x="-824.82343"
-               id="tspan6878-9"
-               sodipodi:role="line">AI2+/OSC2</tspan></text>
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4"
-             y="1435.1987"
-             x="210.43721"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1435.1987"
-               x="210.43721"
-               id="tspan6992-0"
-               sodipodi:role="line">2+</tspan></text>
-        </g>
-        <g
-           id="g9958"
-           transform="translate(19.714264,0)">
-          <rect
-             style="opacity:1;fill:#ff0000;fill-opacity:1;fill-rule:evenodd"
-             id="use6421"
-             width="45"
-             height="45"
-             x="332.75"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2"
-             y="1435.2769"
-             x="333.66797"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1435.2769"
-               x="333.66797"
-               id="tspan6992-0-2"
-               sodipodi:role="line">V1</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-2"
-             y="1232.4938"
-             x="-740.56683"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1232.4938"
-               x="-740.56683"
-               id="tspan6878-6-5"
-               sodipodi:role="line">DC1</tspan></text>
-        </g>
-        <g
-           id="g9965"
-           transform="translate(25.852112,0)">
-          <rect
-             style="opacity:1;fill:#eaea00;fill-opacity:1;fill-rule:evenodd"
-             id="use6425"
-             width="45"
-             height="45"
-             x="393.07141"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6"
-             y="1435.2769"
-             x="387.15344"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1435.2769"
-               x="387.15344"
-               id="tspan6992-0-2-4"
-               sodipodi:role="line">W1</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-5"
-             y="1270.4242"
-             x="-700.00208"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1270.4242"
-               x="-700.00208"
-               id="tspan6878-6-1"
-               sodipodi:role="line">AWG1</tspan></text>
-        </g>
-        <g
-           id="g9980"
-           transform="translate(39.428528,0)">
-          <rect
-             style="opacity:1;fill:#ac9d93;fill-opacity:1;fill-rule:evenodd"
-             id="use6433"
-             width="45"
-             height="45"
-             x="513.71429"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6"
-             y="1434.9644"
-             x="519.43695"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1434.9644"
-               x="519.43695"
-               id="tspan6992-0-2-4-8"
-               sodipodi:role="line">TI</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-6"
-             y="1364.1422"
-             x="-606.58551"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1364.1422"
-               x="-606.58551"
-               id="tspan6878-6-0"
-               sodipodi:role="line">Trigger In</tspan></text>
-        </g>
-        <g
-           id="g9994"
-           transform="translate(52.57135,0)">
-          <rect
-             style="opacity:1;fill:#00d400;fill-opacity:1;fill-rule:evenodd"
-             id="use6441"
-             width="45"
-             height="45"
-             x="634.35718"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9-3"
-             y="1435.2769"
-             x="646.66187"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1435.2769"
-               x="646.66187"
-               id="tspan6992-0-2-4-8-0-2"
-               sodipodi:role="line">1</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-27"
-             y="1456.6036"
-             x="-516.45703"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1456.6036"
-               x="-516.45703"
-               id="tspan6878-6-59"
-               sodipodi:role="line">D1</tspan></text>
-        </g>
-        <g
-           id="g10001"
-           transform="translate(59.142761,0)">
-          <rect
-             style="opacity:1;fill:#8800aa;fill-opacity:1;fill-rule:evenodd"
-             id="use6445"
-             width="45"
-             height="45"
-             x="694.67859"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9-1"
-             y="1435.1987"
-             x="706.22156"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1435.1987"
-               x="706.22156"
-               id="tspan6992-0-2-4-8-0-7"
-               sodipodi:role="line">2</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-27-6"
-             y="1496.9373"
-             x="-476.12369"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1496.9373"
-               x="-476.12369"
-               id="tspan6878-6-59-5"
-               sodipodi:role="line">D2</tspan></text>
-        </g>
-        <g
-           id="g10008"
-           transform="translate(65.714233,0)">
-          <rect
-             style="opacity:1;fill:#784421;fill-opacity:1;fill-rule:evenodd"
-             id="use6449"
-             width="45"
-             height="45"
-             x="755"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9-7"
-             y="1434.9546"
-             x="766.28906"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1434.9546"
-               x="766.28906"
-               id="tspan6992-0-2-4-8-0-73"
-               sodipodi:role="line">3</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-27-7"
-             y="1539.881"
-             x="-433.17999"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1539.881"
-               x="-433.17999"
-               id="tspan6878-6-59-7"
-               sodipodi:role="line">D3</tspan></text>
-        </g>
-        <g
-           id="g10015"
-           transform="translate(72.285706,0)">
-          <rect
-             style="opacity:1;fill:#ff5080;fill-opacity:1;fill-rule:evenodd"
-             id="use6453"
-             width="45"
-             height="45"
-             x="815.32141"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9-39"
-             y="1434.9644"
-             x="826.46399"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1434.9644"
-               x="826.46399"
-               id="tspan6992-0-2-4-8-0-3"
-               sodipodi:role="line">4</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-27-0"
-             y="1581.3539"
-             x="-391.70712"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1581.3539"
-               x="-391.70712"
-               id="tspan6878-6-59-6"
-               sodipodi:role="line">D4</tspan></text>
-        </g>
-        <g
-           id="g10022"
-           transform="translate(78.857056,0)">
-          <rect
-             style="opacity:1;fill:#00d400;fill-opacity:1;fill-rule:evenodd"
-             id="use6457"
-             width="45"
-             height="45"
-             x="875.64288"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9-8"
-             y="1434.7202"
-             x="886.57062"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1434.7202"
-               x="886.57062"
-               id="tspan6992-0-2-4-8-0-0"
-               sodipodi:role="line">5</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-27-9"
-             y="1625.2782"
-             x="-347.78281"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1625.2782"
-               x="-347.78281"
-               id="tspan6878-6-59-1"
-               sodipodi:role="line">D5</tspan></text>
-        </g>
-        <g
-           id="g10029"
-           transform="translate(85.428467,0)">
-          <rect
-             style="opacity:1;fill:#8800aa;fill-opacity:1;fill-rule:evenodd"
-             id="use6461"
-             width="45"
-             height="45"
-             x="935.96429"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9-70"
-             y="1434.9546"
-             x="946.64789"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1434.9546"
-               x="946.64789"
-               id="tspan6992-0-2-4-8-0-5"
-               sodipodi:role="line">6</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-27-04"
-             y="1667.1792"
-             x="-305.88181"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1667.1792"
-               x="-305.88181"
-               id="tspan6878-6-59-73"
-               sodipodi:role="line">D6</tspan></text>
-        </g>
-        <g
-           id="g10036"
-           transform="translate(92,0)">
-          <rect
-             style="opacity:1;fill:#784421;fill-opacity:1;fill-rule:evenodd"
-             id="use6465"
-             width="45"
-             height="45"
-             x="996.28571"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9-80"
-             y="1434.9644"
-             x="1007.1646"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1434.9644"
-               x="1007.1646"
-               id="tspan6992-0-2-4-8-0-29"
-               sodipodi:role="line">7</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-27-69"
-             y="1709.9158"
-             x="-263.14526"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1709.9158"
-               x="-263.14526"
-               id="tspan6878-6-59-8"
-               sodipodi:role="line">D7</tspan></text>
-        </g>
-        <g
-           id="g9987"
-           transform="translate(45.999939,0)">
-          <rect
-             style="opacity:1;fill:#ff5080;fill-opacity:1;fill-rule:evenodd"
-             id="use6437"
-             width="45"
-             height="45"
-             x="574.03571"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9"
-             y="1434.9546"
-             x="585.0318"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1434.9546"
-               x="585.0318"
-               id="tspan6992-0-2-4-8-0"
-               sodipodi:role="line">0</tspan></text>
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-27-67"
-             y="1411.0497"
-             x="-562.01093"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1411.0497"
-               x="-562.01093"
-               id="tspan6878-6-59-9"
-               sodipodi:role="line">D0</tspan></text>
-        </g>
-        <g
-           id="g9950"
-           transform="translate(13.142853,0)">
-          <rect
-             style="opacity:1;fill-opacity:1;fill-rule:evenodd"
-             id="use6417"
-             width="45"
-             height="45"
-             x="272.42856"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4"
-             y="1189.0529"
-             x="-782.13519"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1189.0529"
-               x="-782.13519"
-               id="tspan6878-6"
-               sodipodi:role="line">GND</tspan></text>
-          <g
-             id="g9603">
-            <path
-               style="fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutL)"
-               d="m 295,1408.2196 0,17.849"
-               id="path8615"
-               inkscape:connector-curvature="0" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-               id="rect9577"
-               width="6.250319"
-               height="12.879445"
-               x="291.87485"
-               y="1409.4512" />
-          </g>
-        </g>
-        <g
-           id="g9972"
-           transform="translate(32.857147,0)">
-          <rect
-             style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd"
-             id="use6429"
-             width="45"
-             height="45"
-             x="453.39285"
-             y="1446.1785"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-4-6-4"
-             y="1317.0139"
-             x="-654.17413"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1317.0139"
-               x="-654.17413"
-               id="tspan6878-6-0-1"
-               sodipodi:role="line">GND</tspan></text>
-          <g
-             id="g9603-8"
-             transform="translate(180.89285,0)">
-            <path
-               style="fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutL-8)"
-               d="m 295,1408.2196 0,17.849"
-               id="path8615-2"
-               inkscape:connector-curvature="0" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-               id="rect9577-7"
-               width="6.250319"
-               height="12.879445"
-               x="291.87485"
-               y="1409.4512" />
-          </g>
-        </g>
-        <g
-           id="g10111">
-          <g
-             id="g7064">
-            <rect
-               style="opacity:1;fill:#ffa510;fill-opacity:1;fill-rule:evenodd"
-               id="use6411"
-               width="45"
-               height="45"
-               x="151.78571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469"
-               width="15"
-               height="45"
-               x="166.78571"
-               y="1497.9285" />
-          </g>
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-9"
-             y="1582.6786"
-             x="153.95367"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1582.6786"
-               x="153.95367"
-               id="tspan6992-9"
-               sodipodi:role="line">1-</tspan></text>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8"
-             y="1025.6399"
-             x="1248.1082"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="1025.6399"
-               x="1248.1082"
-               id="tspan6878-2"
-               sodipodi:role="line">GND/AI1-</tspan></text>
-        </g>
-        <g
-           id="g10120"
-           transform="translate(6.5714264,0)">
-          <g
-             transform="translate(8.5714264,0)"
-             id="g7068">
-            <rect
-               style="opacity:1;fill:#4487ba;fill-opacity:1;fill-rule:evenodd"
-               id="use6415"
-               width="45"
-               height="45"
-               x="203.53571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-6"
-               width="15"
-               height="45"
-               x="218.53571"
-               y="1497.9285" />
-          </g>
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-1"
-             y="1582.6005"
-             x="215.53487"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1582.6005"
-               x="215.53487"
-               id="tspan6992-0-4"
-               sodipodi:role="line">2-</tspan></text>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2"
-             y="983.87708"
-             x="1289.871"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="983.87708"
-               x="1289.871"
-               id="tspan6878-2-0"
-               sodipodi:role="line">GND/AI2-</tspan></text>
-        </g>
-        <g
-           id="g10129"
-           transform="translate(13.142853,0)">
-          <rect
-             style="opacity:1;fill-opacity:1;fill-rule:evenodd"
-             id="use6419"
-             width="45"
-             height="45"
-             x="272.42856"
-             y="1497.9285"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <g
-             id="g9603-8-9-9"
-             transform="translate(-0.07144165,146.00085)">
-            <path
-               style="fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutL-8-8-4)"
-               d="m 295,1408.2196 0,17.849"
-               id="path8615-2-7-3"
-               inkscape:connector-curvature="0" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-               id="rect9577-7-1-8"
-               width="6.250319"
-               height="12.879445"
-               x="291.87485"
-               y="1409.4512" />
-          </g>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-7"
-             y="938.53918"
-             x="1335.2089"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="938.53918"
-               x="1335.2089"
-               id="tspan6878-2-0-8"
-               sodipodi:role="line">GND</tspan></text>
-        </g>
-        <g
-           id="g10137"
-           transform="translate(19.754367,0)">
-          <rect
-             style="opacity:1;fill:#e3dedb;fill-opacity:1;fill-rule:evenodd"
-             id="use6423"
-             width="45"
-             height="45"
-             x="332.75"
-             y="1497.9285"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-5"
-             y="1582.6786"
-             x="331.64648"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1582.6786"
-               x="331.64648"
-               id="tspan6992-0-2-3"
-               sodipodi:role="line">V2</tspan></text>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9"
-             y="897.12512"
-             x="1374.7504"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="897.12512"
-               x="1374.7504"
-               id="tspan6878-2-0-5"
-               sodipodi:role="line">DC2</tspan></text>
-        </g>
-        <g
-           id="g10144"
-           transform="translate(26.285706,0)">
-          <g
-             transform="translate(34.285706,0)"
-             id="g7072">
-            <rect
-               style="opacity:1;fill:#eaea00;fill-opacity:1;fill-rule:evenodd"
-               id="use6427"
-               width="45"
-               height="45"
-               x="358.78571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-2"
-               width="15"
-               height="45"
-               x="373.78571"
-               y="1497.9285" />
-          </g>
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-5"
-             y="1582.6786"
-             x="394.22375"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1582.6786"
-               x="394.22375"
-               id="tspan6992-0-2-4-5"
-               sodipodi:role="line">C1</tspan></text>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-5"
-             y="853.40662"
-             x="1418.4689"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="853.40662"
-               x="1418.4689"
-               id="tspan6878-2-0-5-5"
-               sodipodi:role="line">INT/CLK1</tspan></text>
-        </g>
-        <g
-           id="g10153"
-           transform="translate(32.857117,0)">
-          <rect
-             style="opacity:1;fill-opacity:1;fill-rule:evenodd"
-             id="use6431"
-             width="45"
-             height="45"
-             x="453.39285"
-             y="1497.9285"
-             inkscape:tile-x0="151.78571"
-             inkscape:tile-y0="1098.8724" />
-          <g
-             id="g9603-8-9"
-             transform="translate(180.89285,145.68835)">
-            <path
-               style="fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutL-8-8)"
-               d="m 295,1408.2196 0,17.849"
-               id="path8615-2-7"
-               inkscape:connector-curvature="0" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:2.5;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-               id="rect9577-7-1"
-               width="6.250319"
-               height="12.879445"
-               x="291.87485"
-               y="1409.4512" />
-          </g>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-4"
-             y="809.52527"
-             x="1464.2228"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="809.52527"
-               x="1464.2228"
-               id="tspan6878-2-0-5-2"
-               sodipodi:role="line">GND</tspan></text>
-        </g>
-        <g
-           id="g10161"
-           transform="translate(39.428528,0)">
-          <g
-             transform="translate(51.428589,0)"
-             id="g7076">
-            <rect
-               style="opacity:1;fill:#ac9d93;fill-opacity:1;fill-rule:evenodd"
-               id="use6435"
-               width="45"
-               height="45"
-               x="462.28571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-3"
-               width="15"
-               height="45"
-               x="477.28571"
-               y="1497.9285" />
-          </g>
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-1"
-             y="1582.3661"
-             x="513.36273"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1582.3661"
-               x="513.36273"
-               id="tspan6992-0-2-4-8-6"
-               sodipodi:role="line">T0</tspan></text>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-1"
-             y="766.9281"
-             x="1507.2802"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="766.9281"
-               x="1507.2802"
-               id="tspan6878-2-0-5-6"
-               sodipodi:role="line">Trigger Out</tspan></text>
-        </g>
-        <g
-           id="g10170"
-           transform="translate(45.999939,0)">
-          <g
-             transform="translate(60,0)"
-             id="g7080">
-            <rect
-               style="opacity:1;fill:#ff5080;fill-opacity:1;fill-rule:evenodd"
-               id="use6439"
-               width="45"
-               height="45"
-               x="514.03571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-1"
-               width="15"
-               height="45"
-               x="529.03571"
-               y="1497.9285" />
-          </g>
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9-36"
-             y="1582.3563"
-             x="585.0318"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1582.3563"
-               x="585.0318"
-               id="tspan6992-0-2-4-8-0-9"
-               sodipodi:role="line">8</tspan></text>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-12"
-             y="722.64465"
-             x="1549.2308"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="722.64465"
-               x="1549.2308"
-               id="tspan6878-2-0-5-9"
-               sodipodi:role="line">DO8</tspan></text>
-        </g>
-        <g
-           id="g10179"
-           transform="translate(52.57135,0)">
-          <g
-             transform="translate(68.571472,0)"
-             id="g7084">
-            <rect
-               style="opacity:1;fill:#00d400;fill-opacity:1;fill-rule:evenodd"
-               id="use6443"
-               width="45"
-               height="45"
-               x="565.78571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-24"
-               width="15"
-               height="45"
-               x="580.78571"
-               y="1497.9285" />
-          </g>
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9-3-3"
-             y="1582.6786"
-             x="645.48022"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1582.6786"
-               x="645.48022"
-               id="tspan6992-0-2-4-8-0-2-3"
-               sodipodi:role="line">9</tspan></text>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-8"
-             y="679.92871"
-             x="1591.9468"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="679.92871"
-               x="1591.9468"
-               id="tspan6878-2-0-5-3"
-               sodipodi:role="line">DO9</tspan></text>
-        </g>
-        <g
-           id="g10188"
-           transform="translate(59.142761,0)">
-          <g
-             transform="translate(77.142883,0)"
-             id="g7088">
-            <rect
-               style="opacity:1;fill:#8800aa;fill-opacity:1;fill-rule:evenodd"
-               id="use6447"
-               width="45"
-               height="45"
-               x="617.53571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-4"
-               width="15"
-               height="45"
-               x="632.53571"
-               y="1497.9285" />
-          </g>
-          <text
-             sodipodi:linespacing="125%"
-             id="text6990-4-2-6-6-9-1-4"
-             y="1582.6005"
-             x="693.80945"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff"
-               y="1582.6005"
-               x="693.80945"
-               id="tspan6992-0-2-4-8-0-7-6"
-               sodipodi:role="line">C2</tspan></text>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-7"
-             y="637.32495"
-             x="1634.5505"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="637.32495"
-               x="1634.5505"
-               id="tspan6878-2-0-5-93"
-               sodipodi:role="line">INT/CLK2</tspan></text>
-        </g>
-        <g
-           id="g10197"
-           transform="translate(65.714233,0)">
-          <g
-             transform="translate(85.714294,0)"
-             id="g7092">
-            <rect
-               style="opacity:1;fill:#784421;fill-opacity:1;fill-rule:evenodd"
-               id="use6451"
-               width="45"
-               height="45"
-               x="669.28571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-11"
-               width="15"
-               height="45"
-               x="684.28571"
-               y="1497.9285" />
-          </g>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-83"
-             y="593.66455"
-             x="1679.655"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="593.66455"
-               x="1679.655"
-               id="tspan6878-2-0-5-0"
-               sodipodi:role="line">SDI/SDO</tspan></text>
-        </g>
-        <g
-           id="g10204"
-           transform="translate(72.285706,0)">
-          <g
-             transform="translate(94.285706,0)"
-             id="g7096">
-            <rect
-               style="opacity:1;fill:#ff5080;fill-opacity:1;fill-rule:evenodd"
-               id="use6455"
-               width="45"
-               height="45"
-               x="721.03571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-110"
-               width="15"
-               height="45"
-               x="736.03571"
-               y="1497.9285" />
-          </g>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-6"
-             y="551.01086"
-             x="1722.3087"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="551.01086"
-               x="1722.3087"
-               id="tspan6878-2-0-5-1"
-               sodipodi:role="line">SDI/SDO/UART_TX</tspan></text>
-        </g>
-        <g
-           id="g10211"
-           transform="translate(78.857056,0)">
-          <g
-             transform="translate(102.85718,0)"
-             id="g7100">
-            <rect
-               style="opacity:1;fill:#00d400;fill-opacity:1;fill-rule:evenodd"
-               id="use6459"
-               width="45"
-               height="45"
-               x="772.78571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-8"
-               width="15"
-               height="45"
-               x="787.78571"
-               y="1497.9285" />
-          </g>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-0"
-             y="508.35712"
-             x="1764.9625"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="508.35712"
-               x="1764.9625"
-               id="tspan6878-2-0-5-08"
-               sodipodi:role="line">SPI_CLK/UART_CTS</tspan></text>
-        </g>
-        <g
-           id="g10218"
-           transform="translate(85.428467,0)">
-          <g
-             transform="translate(111.42859,0)"
-             id="g7104">
-            <rect
-               style="opacity:1;fill:#8800aa;fill-opacity:1;fill-rule:evenodd"
-               id="use6463"
-               width="45"
-               height="45"
-               x="824.53571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-29"
-               width="15"
-               height="45"
-               x="839.53571"
-               y="1497.9285" />
-          </g>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-79"
-             y="465.7034"
-             x="1807.6162"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="465.7034"
-               x="1807.6162"
-               id="tspan6878-2-0-5-7"
-               sodipodi:role="line">SPI_CS/UART_RTS/PWM1</tspan></text>
-        </g>
-        <g
-           id="g10225"
-           transform="translate(92,0)">
-          <g
-             transform="translate(120,0)"
-             id="g7060">
-            <rect
-               style="opacity:1;fill:#784421;fill-opacity:1;fill-rule:evenodd"
-               id="use6467"
-               width="45"
-               height="45"
-               x="876.28571"
-               y="1497.9285"
-               inkscape:tile-x0="151.78571"
-               inkscape:tile-y0="1098.8724" />
-            <rect
-               style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
-               id="rect6469-67"
-               width="15"
-               height="45"
-               x="891.28571"
-               y="1497.9285" />
-          </g>
-          <text
-             inkscape:transform-center-y="27.274124"
-             transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
-             sodipodi:linespacing="125%"
-             id="text6876-8-2-9-45"
-             y="422.85928"
-             x="1849.3019"
-             style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             xml:space="preserve"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.5px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff"
-               y="422.85928"
-               x="1849.3019"
-               id="tspan6878-2-0-5-70"
-               sodipodi:role="line">UART_RX/PWM2</tspan></text>
-        </g>
-      </g>
-    </g>
+    <path
+       style="opacity:1;fill:#3a3a3a;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:6.36299992;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+       d="m 1.25e-6,442.36218 1023.99999875,0 0,610.00002 -1023.99999875,0 z"
+       id="rect10238"
+       inkscape:connector-curvature="0" />
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="146.7907"
+       height="33.489719"
+       width="33.489719"
+       id="use6409"
+       style="opacity:1;fill:#ffa510;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-363.58612"
+       y="588.56293"
+       id="text6876"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878"
+         x="-363.58612"
+         y="588.56293"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">AI1+/OSC1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="144.61038"
+       y="704.1087"
+       id="text6990"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992"
+         x="144.61038"
+         y="704.1087"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">1+</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="197.01064"
+       height="33.489719"
+       width="33.489719"
+       id="use6413"
+       style="opacity:1;fill:#4487ba;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-328.73822"
+       y="623.41083"
+       id="text6876-0"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-9"
+         x="-328.73822"
+         y="623.41083"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">AI2+/OSC2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="195.76785"
+       y="704.0506"
+       id="text6990-4"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0"
+         x="195.76785"
+         y="704.0506"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">2+</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="296.13889"
+       height="33.489719"
+       width="33.489719"
+       id="use6421"
+       style="opacity:1;fill:#ff0000;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="296.82205"
+       y="704.1087"
+       id="text6990-4-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2"
+         x="296.82205"
+         y="704.1087"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">V1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-259.42596"
+       y="694.1167"
+       id="text6876-4-2"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-5"
+         x="-259.42596"
+         y="694.1167"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">DC1</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="345.59894"
+       height="33.489719"
+       width="33.489719"
+       id="use6425"
+       style="opacity:1;fill:#eaea00;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="341.1947"
+       y="704.1087"
+       id="text6990-4-2-6"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4"
+         x="341.1947"
+         y="704.1087"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">W1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-226.00705"
+       y="725.57507"
+       id="text6876-4-5"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-1"
+         x="-226.00705"
+         y="725.57507"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">AWG1</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="445.48709"
+       height="33.489719"
+       width="33.489719"
+       id="use6433"
+       style="opacity:1;fill:#ac9d93;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="449.74597"
+       y="703.87616"
+       id="text6990-4-2-6-6"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8"
+         x="449.74597"
+         y="703.87616"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">TI</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-149.3405"
+       y="802.466"
+       id="text6876-4-6"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-0"
+         x="-149.3405"
+         y="802.466"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">Trigger In</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="545.05255"
+       height="33.489719"
+       width="33.489719"
+       id="use6441"
+       style="opacity:1;fill:#00d400;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="554.2099"
+       y="704.1087"
+       id="text6990-4-2-6-6-9-3"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-2"
+         x="554.2099"
+         y="704.1087"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-75.349159"
+       y="878.19354"
+       id="text6876-4-27"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-59"
+         x="-75.349159"
+         y="878.19354"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">D2</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="594.83527"
+       height="33.489719"
+       width="33.489719"
+       id="use6445"
+       style="opacity:1;fill:#8800aa;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="603.42572"
+       y="704.0506"
+       id="text6990-4-2-6-6-9-1"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-7"
+         x="603.42572"
+         y="704.0506"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">3</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-41.874298"
+       y="911.66858"
+       id="text6876-4-27-6"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-59-5"
+         x="-41.874298"
+         y="911.66858"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">D3</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="644.61804"
+       height="33.489719"
+       width="33.489719"
+       id="use6449"
+       style="opacity:1;fill:#784421;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="653.01953"
+       y="703.8689"
+       id="text6990-4-2-6-6-9-7"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-73"
+         x="653.01953"
+         y="703.8689"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">4</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-6.4567418"
+       y="947.08618"
+       id="text6876-4-27-7"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-59-7"
+         x="-6.4567418"
+         y="947.08618"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">D4</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="694.40076"
+       height="33.489719"
+       width="33.489719"
+       id="use6453"
+       style="opacity:1;fill:#ff5080;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="702.69324"
+       y="703.87616"
+       id="text6990-4-2-6-6-9-39"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-3"
+         x="702.69324"
+         y="703.87616"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="27.866205"
+       y="981.40918"
+       id="text6876-4-27-0"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-59-6"
+         x="27.866205"
+         y="981.40918"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">D5</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="744.18347"
+       height="33.489719"
+       width="33.489719"
+       id="use6457"
+       style="opacity:1;fill:#00d400;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="752.3161"
+       y="703.69446"
+       id="text6990-4-2-6-6-9-8"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-0"
+         x="752.3161"
+         y="703.69446"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">6</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="64.013489"
+       y="1017.5565"
+       id="text6876-4-27-9"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-59-1"
+         x="64.013489"
+         y="1017.5565"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">D6</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="793.96619"
+       height="33.489719"
+       width="33.489719"
+       id="use6461"
+       style="opacity:1;fill:#8800aa;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="801.91711"
+       y="703.8689"
+       id="text6990-4-2-6-6-9-70"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-5"
+         x="801.91711"
+         y="703.8689"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="98.655029"
+       y="1052.198"
+       id="text6876-4-27-04"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-59-73"
+         x="98.655029"
+         y="1052.198"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">D7</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="843.74896"
+       height="33.489719"
+       width="33.489719"
+       id="use6465"
+       style="opacity:1;fill:#784421;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="851.84521"
+       y="703.87616"
+       id="text6990-4-2-6-6-9-80"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-29"
+         x="851.84521"
+         y="703.87616"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">8</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="133.91846"
+       y="1087.4614"
+       id="text6876-4-27-69"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-59-8"
+         x="133.91846"
+         y="1087.4614"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">D8</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="495.26981"
+       height="33.489719"
+       width="33.489719"
+       id="use6437"
+       style="opacity:1;fill:#ff5080;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="503.45328"
+       y="703.8689"
+       id="text6990-4-2-6-6-9"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0"
+         x="503.45328"
+         y="703.8689"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-112.70924"
+       y="840.83344"
+       id="text6876-4-27-67"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-59-9"
+         x="-112.70924"
+         y="840.83344"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">D1</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="246.35616"
+       height="33.489719"
+       width="33.489719"
+       id="use6417"
+       style="opacity:1;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-293.81995"
+       y="658.3291"
+       id="text6876-4"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6"
+         x="-293.81995"
+         y="658.3291"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">GND</tspan></text>
+    <path
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.86054003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutL)"
+       d="m 263.15419,683.97227 0,13.28351"
+       id="path8615"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.86054003;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+       id="rect9577"
+       width="4.6515875"
+       height="9.5850887"
+       x="260.8284"
+       y="684.88879" />
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="712.22186"
+       x="395.70438"
+       height="33.489719"
+       width="33.489719"
+       id="use6429"
+       style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-188.21483"
+       y="763.9342"
+       id="text6876-4-6-4"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan6878-6-0-1"
+         x="-188.21483"
+         y="763.9342"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">GND</tspan></text>
+    <path
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.86054003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutL-8)"
+       d="m 412.44924,683.97227 0,13.28351"
+       id="path8615-2"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.86054003;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+       id="rect9577-7"
+       width="4.6515875"
+       height="9.5850887"
+       x="410.12344"
+       y="684.88879" />
+    <rect
+       style="opacity:1;fill:#ffa510;fill-opacity:1;fill-rule:evenodd"
+       id="use6411"
+       width="33.489719"
+       height="33.489719"
+       x="146.7907"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469"
+       width="11.16324"
+       height="33.489719"
+       x="157.95393"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="148.40414"
+       y="813.80743"
+       id="text6990-9"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-9"
+         x="148.40414"
+         y="813.80743"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">1-</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="695.36273"
+       y="481.95636"
+       id="text6876-8"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2"
+         x="695.36273"
+         y="481.95636"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">GND/AI1-</tspan></text>
+    <rect
+       style="opacity:1;fill:#4487ba;fill-opacity:1;fill-rule:evenodd"
+       id="use6415"
+       width="33.489719"
+       height="33.489719"
+       x="196.57343"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-6"
+       width="11.16324"
+       height="33.489719"
+       x="207.73668"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="199.1244"
+       y="813.74927"
+       id="text6990-4-1"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-4"
+         x="199.1244"
+         y="813.74927"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">2-</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="729.90143"
+       y="447.41763"
+       id="text6876-8-2"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0"
+         x="729.90143"
+         y="447.41763"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">GND/AI2-</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="750.73505"
+       x="246.35616"
+       height="33.489719"
+       width="33.489719"
+       id="use6419"
+       style="opacity:1;fill-opacity:1;fill-rule:evenodd" />
+    <path
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.86054003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutL-8-8-4)"
+       d="m 263.10102,792.62844 0,13.28351"
+       id="path8615-2-7-3"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.86054003;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+       id="rect9577-7-1-8"
+       width="4.6515875"
+       height="9.5850887"
+       x="260.77524"
+       y="793.54498" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="767.10077"
+       y="410.21832"
+       id="text6876-8-2-7"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-8"
+         x="767.10077"
+         y="410.21832"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">GND</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="750.73505"
+       x="296.16873"
+       height="33.489719"
+       width="33.489719"
+       id="use6423"
+       style="opacity:1;fill:#e3dedb;fill-opacity:1;fill-rule:evenodd" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="295.34747"
+       y="813.80743"
+       id="text6990-4-2-5"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-3"
+         x="295.34747"
+         y="813.80743"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">V2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="800.00739"
+       y="375.91806"
+       id="text6876-8-2-9"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5"
+         x="800.00739"
+         y="375.91806"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">DC2</tspan></text>
+    <rect
+       style="opacity:1;fill:#eaea00;fill-opacity:1;fill-rule:evenodd"
+       id="use6427"
+       width="33.489719"
+       height="33.489719"
+       x="345.92163"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-2"
+       width="11.16324"
+       height="33.489719"
+       x="357.08487"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="346.77921"
+       y="813.80743"
+       id="text6990-4-2-6-5"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-5"
+         x="346.77921"
+         y="813.80743"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">C1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="835.98047"
+       y="339.94501"
+       id="text6876-8-2-9-5"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-5"
+         x="835.98047"
+         y="339.94501"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">INT/CLK1</tspan></text>
+    <rect
+       inkscape:tile-y0="1098.8724"
+       inkscape:tile-x0="151.78571"
+       y="750.73505"
+       x="395.70435"
+       height="33.489719"
+       width="33.489719"
+       id="use6431"
+       style="opacity:1;fill-opacity:1;fill-rule:evenodd" />
+    <path
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.86054003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutL-8-8)"
+       d="m 412.44921,792.39587 0,13.28351"
+       id="path8615-2-7"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.86054003;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+       id="rect9577-7-1"
+       width="4.6515875"
+       height="9.5850887"
+       x="410.12341"
+       y="793.31244" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="873.48938"
+       y="303.82965"
+       id="text6876-8-2-9-4"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-2"
+         x="873.48938"
+         y="303.82965"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">GND</tspan></text>
+    <rect
+       style="opacity:1;fill:#ac9d93;fill-opacity:1;fill-rule:evenodd"
+       id="use6435"
+       width="33.489719"
+       height="33.489719"
+       x="445.48709"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-3"
+       width="11.16324"
+       height="33.489719"
+       x="456.65033"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="445.22546"
+       y="813.57489"
+       id="text6990-4-2-6-6-1"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-6"
+         x="445.22546"
+         y="813.57489"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">T0</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="908.99152"
+       y="268.67001"
+       id="text6876-8-2-9-1"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-6"
+         x="908.99152"
+         y="268.67001"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">Trigger Out</tspan></text>
+    <rect
+       style="opacity:1;fill:#ff5080;fill-opacity:1;fill-rule:evenodd"
+       id="use6439"
+       width="33.489719"
+       height="33.489719"
+       x="495.26981"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-1"
+       width="11.16324"
+       height="33.489719"
+       x="506.43304"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="503.45328"
+       y="813.56763"
+       id="text6990-4-2-6-6-9-36"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-9"
+         x="503.45328"
+         y="813.56763"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">9</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="943.67004"
+       y="232.25543"
+       id="text6876-8-2-9-12"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-9"
+         x="943.67004"
+         y="232.25543"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">DO9</tspan></text>
+    <rect
+       style="opacity:1;fill:#00d400;fill-opacity:1;fill-rule:evenodd"
+       id="use6443"
+       width="33.489719"
+       height="33.489719"
+       x="545.05255"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-24"
+       width="11.16324"
+       height="33.489719"
+       x="556.21582"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="543.62085"
+       y="813.80743"
+       id="text6990-4-2-6-6-9-3-3"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-2-3"
+         x="543.62085"
+         y="813.80743"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="978.91809"
+       y="197.0074"
+       id="text6876-8-2-9-8"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-3"
+         x="978.91809"
+         y="197.0074"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">DO10</tspan></text>
+    <rect
+       style="opacity:1;fill:#8800aa;fill-opacity:1;fill-rule:evenodd"
+       id="use6447"
+       width="33.489719"
+       height="33.489719"
+       x="594.83527"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-4"
+       width="11.16324"
+       height="33.489719"
+       x="605.99847"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="594.18842"
+       y="813.74927"
+       id="text6990-4-2-6-6-9-1-4"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-7-6"
+         x="594.18842"
+         y="813.74927"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">C2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1014.0826"
+       y="161.84286"
+       id="text6876-8-2-9-7"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-93"
+         x="1014.0826"
+         y="161.84286"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">INT/CLK2</tspan></text>
+    <rect
+       style="opacity:1;fill:#784421;fill-opacity:1;fill-rule:evenodd"
+       id="use6451"
+       width="33.489719"
+       height="33.489719"
+       x="644.61798"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-11"
+       width="11.16324"
+       height="33.489719"
+       x="655.78125"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1051.1083"
+       y="125.89191"
+       id="text6876-8-2-9-83"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-0"
+         x="1051.1083"
+         y="125.89191"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">SDI/SDO</tspan></text>
+    <rect
+       style="opacity:1;fill:#ff5080;fill-opacity:1;fill-rule:evenodd"
+       id="use6455"
+       width="33.489719"
+       height="33.489719"
+       x="694.40076"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-110"
+       width="11.16324"
+       height="33.489719"
+       x="705.56403"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1086.3101"
+       y="90.690186"
+       id="text6876-8-2-9-6"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-1"
+         x="1086.3101"
+         y="90.690186"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">SDI/SDO/UART_TX</tspan></text>
+    <rect
+       style="opacity:1;fill:#00d400;fill-opacity:1;fill-rule:evenodd"
+       id="use6459"
+       width="33.489719"
+       height="33.489719"
+       x="744.18347"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-8"
+       width="11.16324"
+       height="33.489719"
+       x="755.34674"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1121.5117"
+       y="55.48848"
+       id="text6876-8-2-9-0"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-08"
+         x="1121.5117"
+         y="55.48848"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">SPI_CLK/UART_CTS</tspan></text>
+    <rect
+       style="opacity:1;fill:#8800aa;fill-opacity:1;fill-rule:evenodd"
+       id="use6463"
+       width="33.489719"
+       height="33.489719"
+       x="793.96619"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-29"
+       width="11.16324"
+       height="33.489719"
+       x="805.12939"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1156.7135"
+       y="20.28676"
+       id="text6876-8-2-9-79"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-7"
+         x="1156.7135"
+         y="20.28676"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">SPI_CS/UART_RTS/PWM1</tspan></text>
+    <rect
+       style="opacity:1;fill:#784421;fill-opacity:1;fill-rule:evenodd"
+       id="use6467"
+       width="33.489719"
+       height="33.489719"
+       x="843.74896"
+       y="750.73505"
+       inkscape:tile-x0="151.78571"
+       inkscape:tile-y0="1098.8724" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-opacity:1"
+       id="rect6469-67"
+       width="11.16324"
+       height="33.489719"
+       x="854.91223"
+       y="750.73505" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="1191.1948"
+       y="-15.056721"
+       id="text6876-8-2-9-45"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+       inkscape:transform-center-y="27.274124"><tspan
+         sodipodi:role="line"
+         id="tspan6878-2-0-5-70"
+         x="1191.1948"
+         y="-15.056721"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.18701935px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';fill:#ffffff">UART_RX/PWM2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="643.97119"
+       y="813.80743"
+       id="text6990-4-2-6-6-9-1-4-4"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-7-6-8"
+         x="643.97119"
+         y="813.80743"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">P1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="693.75397"
+       y="813.80743"
+       id="text6990-4-2-6-6-9-1-4-9"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-7-6-6"
+         x="693.75397"
+         y="813.80743"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">P2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="743.53668"
+       y="813.80743"
+       id="text6990-4-2-6-6-9-1-4-5"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-7-6-7"
+         x="743.53668"
+         y="813.80743"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">P3</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="793.31934"
+       y="813.80743"
+       id="text6990-4-2-6-6-9-1-4-99"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-7-6-4"
+         x="793.31934"
+         y="813.80743"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">P4</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:29.76864052px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="843.10217"
+       y="813.80743"
+       id="text6990-4-2-6-6-9-1-4-8"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6992-0-2-4-8-0-7-6-70"
+         x="843.10217"
+         y="813.80743"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.76864052px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#ffffff">P5</tspan></text>
   </g>
 </svg>

@@ -33,3 +33,32 @@
     font-size: 14px;
     color: white;
 }
+
+.keith-container
+{
+    position: fixed;
+    z-index: 2000;
+    bottom: 0;
+    transform: translate(0%, 100%);
+    transition: 1s;
+    width: 100%;
+    font-size: 0;
+}
+
+.keith-container.show-keith
+{
+    transform: translate(0%, 0%);
+    transition: 1s;
+    transition-timing-function: ease-in-out;
+}
+
+.keith-img-wrapper
+{
+    display: inline-block;
+    font-size: 0;
+}
+
+.keith-img
+{
+    max-width: 100%;
+}

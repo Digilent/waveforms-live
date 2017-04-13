@@ -1,4 +1,12 @@
+<div class="keith-container" [ngClass]="{'show-keith': showKeith}" text-center>
+    <div class="keith-img-wrapper">
+        <img class="keith-img" src="assets/img/keith.svg">
+    </div>
+</div>
+
+
 <ion-content class="settings-body">
+
     <div>
         <ion-row>
             <ion-col class="back-button-col" center>
@@ -74,7 +82,7 @@
 
 </ion-content>
 
-<ion-footer>
+<ion-footer (tap)="keithifyMeCaptain()">
     <ion-toolbar>
         <ion-row>
             <ion-col center>

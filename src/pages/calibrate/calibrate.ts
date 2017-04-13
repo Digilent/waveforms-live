@@ -134,6 +134,7 @@ export class CalibratePage {
     }
 
     getCalibrationInstructions() {
+        console.log(this.deviceManagerService);
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationGetInstructions().subscribe(
             (data) => {
                 console.log(data);

@@ -283,6 +283,29 @@ ion-checkbox .checkbox-icon.checkbox-checked
     .alert-sub-title {
         color: #CCCCCC;
     }
+    .alert-button-group button {
+        margin-top: 0.1rem;
+        margin-right: 0.1rem;
+        margin-bottom: 0.1rem;
+        margin-left: 0.1rem;
+        font-size: 10px;
+        height: 25px;
+        font-weight: 400;
+        min-width: 87px;
+        background-color: #535353;
+        border: solid black 1px;
+        border-radius: 0px;
+        box-shadow: none;
+        text-align: center;
+        color: #CCCCCC;
+        .button-inner {
+            justify-content: space-around;
+        }
+    }
+
+    .alert-button-group button:hover {
+        border: solid white 1px;
+    }
 }
 
 .move-feature-to-front

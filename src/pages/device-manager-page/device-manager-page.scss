@@ -253,10 +253,13 @@
 
 .first-tab-container .device-manager-card .card-button
 {
-    min-width: 35px;
+    //min-width: 35px;
     margin: 0.4rem 0.2rem;
     color: #4487BA;
     font-size: 18px;
+    img {
+        height: 100%;
+    }
 }
 
 .first-tab-container .select-device-card .input-wrapper

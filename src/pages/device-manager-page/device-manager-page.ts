@@ -512,6 +512,9 @@ export class DeviceManagerPage {
                                 reject(e);
                             });
                     }
+                    else {
+                        resolve();
+                    }
                 /*})*/
                 /*.catch((e) => {
                     //can't update firmware
@@ -843,12 +846,18 @@ export class DeviceManagerPage {
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
                 loadingInstance.dismiss();
-                this.devices[deviceIndex].deviceDescriptor = success.device[0];
-                this.storage.saveData('savedDevices', JSON.stringify(this.devices));
                 this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);
-                this.navCtrl.setRoot(TestChartCtrlsPage, {
-                    tutorialMode: this.tutorialMode
-                });
+                this.devices[deviceIndex].deviceDescriptor = success.device[0];
+                this.verifyCalibrationSource(deviceIndex, success.device[0].calibrationSource)
+                    .then((data) => {
+                        this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                        this.navCtrl.setRoot(TestChartCtrlsPage, {
+                            tutorialMode: this.tutorialMode
+                        });
+                    })
+                    .catch((e) => {
+
+                    });
             },
             (err) => {
                 console.log(err);

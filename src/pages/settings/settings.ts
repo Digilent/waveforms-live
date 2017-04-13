@@ -28,6 +28,10 @@ export class SettingsPage {
     public currentSelectedDeviceInfoArray: string[] = [];
     public showAdvancedSettings: boolean = false;
 
+    private keithCount: number = 0;
+    private keithTimer: number = 0;
+    public showKeith: boolean = false;
+
     constructor(_storageService: StorageService, _popCtrl: PopoverController, _settingsService: SettingsService, public navCtrl: NavController) {
         this.storageService = _storageService;
         this.settingsService = _settingsService;
@@ -72,5 +76,34 @@ export class SettingsPage {
 
     done() {
         this.navCtrl.pop();
+    }
+
+    private presentTheAlmightKeith() {
+        this.showKeith = true;
+        setTimeout(() => {
+            this.showKeith = false;
+        }, 3000);
+    }
+    
+    keithifyMeCaptain() {
+        if (this.showKeith) {
+            return;
+        }
+        if (this.keithCount === 0) {
+            this.keithTimer = performance.now();
+            this.keithCount++;
+            return;
+        }
+        let currentTime = performance.now();
+        if (currentTime - this.keithTimer < 5000) {
+            this.keithCount++;
+            if (this.keithCount > 6) {
+                this.presentTheAlmightKeith();
+                this.keithCount = 0;
+            }
+        }
+        else {
+            this.keithCount = 0;
+        }
     }
 }

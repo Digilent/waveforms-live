@@ -187,14 +187,14 @@ export class DeviceConfigureModal {
                 (data) => {
                     console.log(data);
                     let calibrationObjectString = JSON.stringify(data.device[0].calibrationData);
-                    if (calibrationObjectString.indexOf('USER') !== -1) {
-                        this.currentCalibration = 'USER';
+                    if (calibrationObjectString.indexOf('USER') !== -1 || calibrationObjectString.indexOf('SD') !== -1 || calibrationObjectString.indexOf('sd') !== -1) {
+                        this.currentCalibration = 'SD';
                     }
-                    else if (calibrationObjectString.indexOf('FACTORY') !== -1) {
-                        this.currentCalibration = 'FACTORY';
+                    else if (calibrationObjectString.indexOf('FACTORY') !== -1 || calibrationObjectString.indexOf('FLASH') !== -1 || calibrationObjectString.indexOf('flash') !== -1) {
+                        this.currentCalibration = 'Flash';
                     }
                     else if (calibrationObjectString.indexOf('UNCALIBRATED') !== -1 || calibrationObjectString.indexOf('IDEAL') !== -1) {
-                        this.currentCalibration = 'UNCALIBRATED';
+                        this.currentCalibration = 'Uncalibrated';
                         if (routeToCalibrationWizard) {
                             this.deviceManagerPageRef.verifyCalibrationSource(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex, 'UNCALIBRATED')
                             .then(() => {
@@ -212,7 +212,7 @@ export class DeviceConfigureModal {
                         }
                     }
                     else {
-                        this.currentCalibration = 'CALIBRATED';
+                        this.currentCalibration = 'Calibrated';
                     }
                     resolve(data);
                 },

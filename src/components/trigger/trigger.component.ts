@@ -113,7 +113,8 @@ export class TriggerComponent {
     }
 
     sourceSelect(event) {
-        if (this.deviceDataTransferService.awgPower && event === 'LA') {
+        console.log(this.activeDevice);
+        if (this.deviceDataTransferService.awgPower && event === 'LA' && this.activeDevice.rootUri !== 'local') {
             this.toastService.createToast('awgOnNoLa');
             this.dropPopSource._applyActiveSelection(this.triggerSource);
             return;
