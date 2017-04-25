@@ -17,7 +17,7 @@
                         <div [ngClass]="{'instrument-header': !settingsService.nestedChannels}">{{settingsService.nestedChannels === false ? 'Osc' : ''}} {{names[i]}}</div>
                     </ion-col>
                     <ion-col class="header-side-col" center text-right>
-                        <button ion-button clear (tap)="toggleVisibility(i, $event)" class="header-button disable-hover" [style.background-color]="getSeriesColor(i)" [ngClass]="{'series-on': chart.oscopeChansActive[i]}">
+                        <button ion-button clear [disabled]="running" (tap)="toggleVisibility(i, $event)" class="header-button disable-hover" [style.background-color]="getSeriesColor(i)" [ngClass]="{'series-on': chart.oscopeChansActive[i]}">
                             <img class="button-side-svg" src="assets/img/power.svg" />
                         </button>
                     </ion-col>

@@ -15,7 +15,7 @@ export class SettingsService {
     public nestedChannels: boolean = false;
     public routeToStore: boolean = true;
     public drawLaOnTimeline: boolean = false;
-    public wflVersion: string = '0.9.0';
+    public wflVersion: string = '0.11.0';
     public useDevBuilds: boolean = false;
 
     public knownFirmwareUrls: { openscopeMz: { prettyName: string, listUrl: string, devListUrl: string, firmwareUrl: string, devFirmwareUrl: string } } = {
@@ -89,9 +89,11 @@ export class SettingsService {
             window.console.log = this.bothLog.bind(this);
         }
         else if (type === 'None') {
-            window.console.log = function () { };
+            window.console.log = this.log;
         }
     }
+
+    log() {}
 
     localStorageLog(argumentArray?) {
         let appLog;

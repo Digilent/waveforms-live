@@ -176,7 +176,7 @@ export class LoadFirmwarePage {
         this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
             (data) => {
                 data = this.arrayBufferToObject(data);
-                if (data.agent == undefined || data.agent[0].statusCode !== 0) {
+                if (data.agent == undefined || data.agent[0].statusCode !== 0 || data.agent[0].status === 'error') {
                     this.firmwareStatus = 'Error uploading firmware';
                     this.errorUpdatingFirmware = true;
                     return;
@@ -284,7 +284,6 @@ export class LoadFirmwarePage {
                     resolve(data);
                 },
                 (err) => {
-                    console.log(err);
                     reject(err);
                 },
                 () => { }
@@ -307,7 +306,6 @@ export class LoadFirmwarePage {
             ]
         };
         let temp = this.commandUtilityService.createChunkedArrayBuffer(commandObject, firmwareArrayBuffer);
-        console.log(temp);
         return temp;
     }
 

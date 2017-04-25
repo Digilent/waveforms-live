@@ -89,7 +89,6 @@ export class TestChartCtrlsPage {
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.storage = _storage;
-        console.log(this.tutorialMode);
         let awgData;
         this.getOscStatus()
             .then(() => {
@@ -122,7 +121,6 @@ export class TestChartCtrlsPage {
     }
 
     resetDevice() {
-        console.log('reset device');
         let loading = this.displayLoading();
         this.chart1.initializeValues();
         this.previousLaSettings = [];
@@ -180,7 +178,6 @@ export class TestChartCtrlsPage {
         return new Promise((resolve, reject) => {
             this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
                 (data) => {
-                    console.log(data);
                     this.dcComponent.initializeFromGetStatus(data);
                     resolve(data);
                 },
@@ -203,7 +200,6 @@ export class TestChartCtrlsPage {
             }
             this.activeDevice.instruments.osc.getCurrentState(chans).subscribe(
                 (data) => {
-                    console.log(data);
                     this.chart1.initializeFromGetStatus(data);
                     resolve(data);
                 },
@@ -249,7 +245,6 @@ export class TestChartCtrlsPage {
             }
             this.activeDevice.instruments.gpio.setParameters(chanArray, valArray).subscribe(
                 (data) => {
-                    console.log('set direction');
                     resolve(data);
                 },
                 (err) => {
@@ -271,10 +266,8 @@ export class TestChartCtrlsPage {
             }
             this.activeDevice.instruments.la.getCurrentState(chanArray).subscribe(
                 (data) => {
-                    console.log(data);
                     for (let group in data.la) {
                         let binaryString = data.la[group][0].bitmask.toString(2);
-                        console.log(binaryString);
                         for (let i = 0; i < binaryString.length; i++) {
                             if (binaryString[i] === '1') {
                                 let channel = binaryString.length - i - 1;
@@ -297,7 +290,6 @@ export class TestChartCtrlsPage {
         return new Promise((resolve, reject) => {
             this.activeDevice.instruments.trigger.getCurrentState([1]).subscribe(
                 (data) => {
-                    console.log(data);
                     this.triggerComponent.initializeFromGetStatus(data);
                     resolve(data);
                 },
@@ -327,7 +319,6 @@ export class TestChartCtrlsPage {
     }
 
     fgenTutorialFinished(event) {
-        console.log(event);
         this.startTriggerTutorial();
     }
 
@@ -337,7 +328,6 @@ export class TestChartCtrlsPage {
     }
 
     triggerTutorialFinished(event) {
-        console.log(event);
         this.tutorialStage = 3;
     }
 
@@ -382,7 +372,6 @@ export class TestChartCtrlsPage {
     //Alert user with toast if no active device is set
     ngOnInit() {
         if (this.deviceManagerService.activeDeviceIndex === undefined) {
-            console.log('in if');
             this.toastService.createToast('noActiveDevice', true);
         }
         else {
@@ -426,7 +415,6 @@ export class TestChartCtrlsPage {
         ignoreResponse = ignoreResponse == undefined ? false : ignoreResponse;
         this.activeDevice.instruments.trigger.stop([1]).subscribe(
             (data) => {
-                console.log(data);
                 if (this.running) {
                     this.running = false;
                 }
@@ -486,12 +474,10 @@ export class TestChartCtrlsPage {
         let setLaParams = false;
 
         let trigSourceArr = this.triggerComponent.triggerSource.split(' ');
-        console.log(trigSourceArr);
         if (trigSourceArr[2] === undefined) {
             trigSourceArr[2] = '1';
         }
         let trigType;
-        console.log(this.triggerComponent.edgeDirection);
         switch (this.triggerComponent.edgeDirection) {
             case 'rising': trigType = 'risingEdge'; break;
             case 'falling': trigType = 'fallingEdge'; break;
@@ -609,7 +595,6 @@ export class TestChartCtrlsPage {
             this.readingOsc = true;
         }
         if (laArray[0].length > 0) {
-            console.log('adding la');
             targetsObject['la'] = laArray[0];
             this.readingLa = true;
         }
@@ -658,8 +643,6 @@ export class TestChartCtrlsPage {
                     };
                 }
             }
-            console.log('setting trigger params');
-            console.log(this.triggerComponent.lowerThresh, this.triggerComponent.upperThresh);
             singleCommand['trigger']['setParameters'] = [
                 [1],
                 [
@@ -728,7 +711,6 @@ export class TestChartCtrlsPage {
                 this.running = false;
                 this.readingOsc = false;
                 this.readingLa = false;
-                alert('Error reading buffers');
                 console.log(e);
             });
     }
@@ -740,39 +722,7 @@ export class TestChartCtrlsPage {
                 sum += Math.pow(2, i);
             }
         }
-        console.log(sum);
         return sum;
-    }
-
-    forceTrigger(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            if (!this.readingLa && !this.readingOsc) {
-                reject();
-                return;
-            }
-            this.activeDevice.instruments.trigger.forceTrigger([1]).subscribe(
-                (data) => {
-                    console.log(data);
-                    resolve(data);
-                },
-                (err) => {
-                    if (err.trigger && err.trigger["1"][0].statusCode === 2684354589) {
-                        resolve();
-                        return;
-                    }
-                    setTimeout(() => {
-                        return this.forceTrigger()
-                            .then((data) => {
-                                resolve(data);
-                            })
-                            .catch((e) => {
-                                reject();
-                            });
-                    }, this.forceTriggerInterval);
-                },
-                () => { }
-            );
-        });
     }
 
     readLa(readArray: number[]): Promise<any> {
@@ -822,12 +772,12 @@ export class TestChartCtrlsPage {
             return;
         }
 
-        if (this.chart1.oscopeChansActive.indexOf(true) === -1 && this.gpioComponent.laActiveChans.indexOf(true) === -1) {
+        /*if (this.chart1.oscopeChansActive.indexOf(true) === -1 && this.gpioComponent.laActiveChans.indexOf(true) === -1) {
             if (this.running) {
                 this.running = false;
             }
             return;
-        }
+        }*/
 
         let numSeries = [];
         for (let i = 0; i < this.currentOscReadArray.length; i++) {
@@ -847,7 +797,7 @@ export class TestChartCtrlsPage {
         let currentBufferArray;
         let oscBufferArray = [];
         let laBufferArray = null;
-        if (this.chart1.oscopeChansActive.indexOf(true) !== -1) {
+        if (this.currentOscReadArray.length > 0) {
             oscBufferArray = this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex];
         }
         for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
@@ -856,10 +806,7 @@ export class TestChartCtrlsPage {
             }
         }
         currentBufferArray = oscBufferArray;
-        if (this.gpioComponent.laActiveChans.indexOf(true) !== -1) {
-            console.log(this.activeDevice.instruments.la);
-            console.log(this.activeDevice.instruments.la.dataBufferReadIndex);
-            console.log(numSeries);
+        if (this.currentLaReadArray.length > 0) {
             laBufferArray = this.activeDevice.instruments.la.dataBuffer[this.activeDevice.instruments.la.dataBufferReadIndex];
             currentBufferArray = currentBufferArray.concat(laBufferArray);
         }
@@ -895,12 +842,9 @@ export class TestChartCtrlsPage {
             }
             this.activeDevice.instruments.osc.read(readArray).subscribe(
                 (data) => {
-                    console.log('DATA RECEIVED');
                     this.readingOsc = false;
                     this.readAttemptCount = 0;
-                    console.log('resolving');
                     resolve();
-                    console.log('after resolve');
                     //this.checkReadStatusAndDraw();
                 },
                 (err) => {
@@ -926,6 +870,107 @@ export class TestChartCtrlsPage {
 
     }
 
+    checkAndSetParams(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let setOscParams = false;
+            let setLaParams = false;
+            let currentTheoreticalAcqTime = this.theoreticalAcqTime;
+            //Recalc acq time
+            this.theoreticalAcqTime = 0;
+            for (let i = 0; i < this.currentOscReadArray.length; i++) {
+                let samplingParams: { sampleFreq: number, bufferSize: number } = this.chart1.calculateDataFromWindow();
+                if (!this.yaxisComponent.lockedSampleState[i].sampleFreqLocked) {
+                    samplingParams.sampleFreq = this.yaxisComponent.lockedSampleState[i].manualSampleFreq;
+                }
+                if (!this.yaxisComponent.lockedSampleState[i].sampleSizeLocked) {
+                    samplingParams.bufferSize = this.yaxisComponent.lockedSampleState[i].manualSampleSize;
+                }
+                if (this.previousOscSettings[this.currentOscReadArray[i] - 1].sampleFreqMax !== samplingParams.sampleFreq ||
+                    this.previousOscSettings[this.currentOscReadArray[i] - 1].bufferSizeMax !== samplingParams.bufferSize) {
+                    setOscParams = true;
+                    this.currentSamplingFrequencies[this.currentOscReadArray[i] - 1] = samplingParams.sampleFreq;
+
+
+                    let tempTheoreticalAcqTime = 1000 * (samplingParams.bufferSize / samplingParams.sampleFreq);
+                    if (tempTheoreticalAcqTime > this.theoreticalAcqTime) {
+                        this.theoreticalAcqTime = tempTheoreticalAcqTime;
+                    }
+
+                    this.previousOscSettings[this.currentOscReadArray[i] - 1].sampleFreqMax = samplingParams.sampleFreq;
+                    this.previousOscSettings[this.currentOscReadArray[i] - 1].bufferSizeMax = samplingParams.bufferSize;
+                }
+            }
+            for (let i = 0; i < this.currentLaReadArray.length; i++) {
+                let samplingParams: { sampleFreq: number, bufferSize: number } = this.chart1.calculateDataFromWindow();
+                if (this.previousLaSettings[this.currentLaReadArray[i] - 1].sampleFreq !== samplingParams.sampleFreq ||
+                    this.previousLaSettings[this.currentLaReadArray[i] - 1].bufferSize !== samplingParams.bufferSize) {
+                    setLaParams = true;
+                }
+                this.previousLaSettings[this.currentLaReadArray[i] - 1].sampleFreq = samplingParams.sampleFreq;
+                this.previousLaSettings[this.currentLaReadArray[i] - 1].bufferSize = samplingParams.bufferSize;
+            }
+            if (setOscParams) {
+                let params: { chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[], delays: number[] } = {
+                    chans: [],
+                    offsets: [],
+                    gains: [],
+                    sampleFreqs: [],
+                    bufferSizes: [],
+                    delays: []
+                };
+                for (let i = 0; i < this.currentOscReadArray.length; i++) {
+                    params.chans.push(this.currentOscReadArray[i] - 1);
+                    params.offsets.push(this.previousOscSettings[this.currentOscReadArray[i] - 1].offset);
+                    params.gains.push(this.previousOscSettings[this.currentOscReadArray[i] - 1].gain);
+                    params.sampleFreqs.push(this.previousOscSettings[this.currentOscReadArray[i] - 1].sampleFreqMax);
+                    params.bufferSizes.push(this.previousOscSettings[this.currentOscReadArray[i] - 1].bufferSizeMax);
+                    params.delays.push(this.previousOscSettings[this.currentOscReadArray[i] - 1].delay);
+                }
+                this.activeDevice.instruments.osc.setParameters(this.currentOscReadArray, params.offsets, params.gains, params.sampleFreqs, params.bufferSizes, params.delays)
+                    .flatMap((data) => {
+                        if (setLaParams) {
+                            let params: { chans: number[], bitmasks: number[], sampleFreqs: number[], bufferSizes: number[], delays: number[] } = {
+                                chans: [],
+                                bitmasks: [],
+                                sampleFreqs: [],
+                                bufferSizes: [],
+                                delays: []
+                            };
+                            for (let i = 0; i < this.currentLaReadArray.length; i++) {
+                                params.chans.push(this.currentLaReadArray[i] - 1);
+                                params.bitmasks.push(this.previousLaSettings[this.currentLaReadArray[i] - 1].bitmask);
+                                params.sampleFreqs.push(this.previousLaSettings[this.currentLaReadArray[i] - 1].sampleFreq);
+                                params.bufferSizes.push(this.previousLaSettings[this.currentLaReadArray[i] - 1].bufferSize);
+                                params.delays.push(this.previousLaSettings[this.currentLaReadArray[i] - 1].triggerDelay);
+                            }
+                            return this.activeDevice.instruments.la.setParameters(this.currentLaReadArray, params.bitmasks, params.sampleFreqs, params.bufferSizes, params.delays);
+                        }
+                        else {
+                            return Promise.resolve(data);
+                        }
+                    })
+                    .subscribe(
+                        (data) => {
+                            console.log(data);
+                            resolve();
+                        },
+                        (err) => {
+                            console.log(err);
+                            reject(err);
+                        },
+                        () => { }
+                    );
+            }
+            if (setLaParams) {
+
+            }
+            if (!setOscParams && !setLaParams) {
+                this.theoreticalAcqTime = currentTheoreticalAcqTime;
+                resolve();
+            }
+        });
+    }
+
     //Stream osc buffers
     runClick() {
         if (this.readingOsc || this.readingLa) { return; }
@@ -935,50 +980,44 @@ export class TestChartCtrlsPage {
             this.singleClick();
             return;
         }
-        this.activeDevice.instruments.trigger.single([1]).subscribe(
-            (data) => {
+        this.checkAndSetParams()
+            .then(() => {
+                this.activeDevice.instruments.trigger.single([1]).subscribe(
+                    (data) => {
 
-            },
-            (err) => {
-                this.running = false;
-                console.log('error trigger single');
-            },
-            () => {
-                this.triggerStatus = 'Armed';
-                for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
-                    if (this.gpioComponent.laActiveChans[i]) {
-                        this.readingLa = true;
-                        break;
-                    }
-                }
-                for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
-                    if (this.chart1.oscopeChansActive[i]) {
-                        this.readingOsc = true;
-                        break;
-                    }
-                }
-                if (this.currentTriggerType === 'off') {
-                    this.forceTrigger()
-                        .then(() => {
+                    },
+                    (err) => {
+                        this.running = false;
+                        console.log('error trigger single');
+                    },
+                    () => {
+                        this.triggerStatus = 'Armed';
+                        for (let i = 0; i < this.gpioComponent.laActiveChans.length; i++) {
+                            if (this.gpioComponent.laActiveChans[i]) {
+                                this.readingLa = true;
+                                break;
+                            }
+                        }
+                        for (let i = 0; i < this.chart1.oscopeChansActive.length; i++) {
+                            if (this.chart1.oscopeChansActive[i]) {
+                                this.readingOsc = true;
+                                break;
+                            }
+                        }
+                        setTimeout(() => {
                             this.readBuffers();
-                        })
-                        .catch((e) => {
-
-                        });
-                }
-                else {
-                    setTimeout(() => {
-                        this.readBuffers();
-                    }, this.theoreticalAcqTime);
-                }
-            }
-        );
-
+                        }, this.theoreticalAcqTime);
+                    }
+                );
+            })
+            .catch((e) => {
+                console.log('ERROR SETTINGS OSC PARAMS DURING RUN');
+                console.log(e);
+            });
     }
 
     //Stop dc stream
     stopClick() {
-        console.log('stop');
         this.running = false;
         this.abortSingle(true);
     }

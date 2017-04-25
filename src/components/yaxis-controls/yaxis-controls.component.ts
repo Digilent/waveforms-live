@@ -17,6 +17,7 @@ import { LockInfoContainer } from './yaxis-controls.interface';
 })
 export class YAxisComponent {
     @Input() chart: SilverNeedleChart;
+    @Input() running: boolean;
     public settingsService: SettingsService;
     public numSeries: number[] = [0, 1];
     public storageEventListener: EventEmitter<any>;
