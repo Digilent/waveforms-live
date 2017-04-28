@@ -291,6 +291,7 @@ export class TestChartCtrlsPage {
             this.activeDevice.instruments.trigger.getCurrentState([1]).subscribe(
                 (data) => {
                     this.triggerComponent.initializeFromGetStatus(data);
+                    this.yaxisComponent.initializeFromGetStatus(data);
                     resolve(data);
                 },
                 (err) => {

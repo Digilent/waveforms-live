@@ -1,0 +1,12 @@
+<div class="chart-annotation-container" [ngClass]="{'hide-component': !show}" [style.top]="topPix" [style.left]="leftPix" [style.borderColor]="borderColor" (mousedown)="onMousedown($event)">
+    <ion-row class="chart-annotation-content">
+        <ion-col center class="annotation-background">
+            {{contents}}
+        </ion-col>
+        <ion-col center class="annotation-background button-container">
+            <button ion-button class="icon-only-button-side disable-hover chart-annotation-close-button" (click)="kill($event)">
+                <img src="assets/img/close.svg">
+            </button>
+        </ion-col>
+    </ion-row>
+</div>

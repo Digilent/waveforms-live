@@ -66,6 +66,9 @@ var mathFunctions = (function () {
         var series = chartRef.getData();
         var getAxes = chartRef.getAxes();
         var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+        //get full buffer
+        minIndex = 0;
+        maxIndex = series[seriesNum].data.length - 1;
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
         var real = activeIndices.map((element) => {
             return element[1];
@@ -124,7 +127,7 @@ var mathFunctions = (function () {
     var getPeakToPeak = function getPeakToPeak(chartRef, seriesNum, minIndex, maxIndex) {
         var max = getMax(chartRef, seriesNum, minIndex, maxIndex);
         var min = getMin(chartRef, seriesNum, minIndex, maxIndex);
-        var p2p = Math.abs(parseFloat(max)) + Math.abs(parseFloat(min));
+        var p2p = parseFloat(max) - parseFloat(min);
 
         return p2p;
     }
@@ -159,6 +162,9 @@ var mathFunctions = (function () {
         var series = chartRef.getData();
         var getAxes = chartRef.getAxes();
         var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+        //get full buffer
+        minIndex = 0;
+        maxIndex = series[seriesNum].data.length - 1;
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
         var real = activeIndices.map(function(element) {
             return element[1];
@@ -187,6 +193,9 @@ var mathFunctions = (function () {
         var series = chartRef.getData();
         var getAxes = chartRef.getAxes();
         var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+        //get full buffer
+        minIndex = 0;
+        maxIndex = series[seriesNum].data.length - 1;
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
         var real = activeIndices.map((element) => {
             return element[1];

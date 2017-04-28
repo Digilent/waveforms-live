@@ -46,7 +46,7 @@ export class ModalCursorPage {
         this.chartComponent = this.params.get('chartComponent');
         for (let i = 0; i < this.chartComponent.currentBufferArray.length; i++) {
             if (this.chartComponent.currentBufferArray[i] !== undefined && this.chartComponent.currentBufferArray[i].y !== undefined) {
-                this.activeChans.push('Osc ' + (i + 1));
+                this.activeChans.push((i < this.activeDevice.instruments.osc.numChans ? 'Osc ' : 'LA ') + (i < this.activeDevice.instruments.osc.numChans ? i + 1 : i + 1 - this.activeDevice.instruments.osc.numChans));
             }
         }
         if (this.activeChans.indexOf(this.chartComponent.cursor1Chan) === -1) {
@@ -94,14 +94,14 @@ export class ModalCursorPage {
             });
         }
         else if (type === 'cursor1Chan' || 'cursor2Chan') {
-            let activeChans = [];
+            /*let activeChans = [];
             for (let i = 0; i < this.chartComponent.oscopeChansActive.length; i++) {
                 if (this.chartComponent.currentBufferArray[i] !== undefined && this.chartComponent.currentBufferArray[i].y !== undefined) {
                     activeChans.push('Osc ' + (i + 1));
                 }
-            }
+            }*/
             popover = this.popoverCtrl.create(GenPopover, {
-                dataArray: activeChans
+                dataArray: this.activeChans
             });
         }
         else {

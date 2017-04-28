@@ -125,7 +125,8 @@
             * Event Functions
             **************************************************************/
             function chartMouseDown(e) {
-
+                if ((e.button && e.button === 2) || (e.which && e.which === 3)) { return; }
+                
                 if ((e.button && e.button === 1) || (e.which && e.which === 2)) {
                     e.preventDefault();
                     var offsets = plot.offset();

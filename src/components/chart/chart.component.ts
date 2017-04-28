@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, ViewChild, trigger, state, style, transition, animate } from '@angular/core';
+import { Component, Output, EventEmitter, ViewChild, trigger, state, style, transition, animate, ViewContainerRef, ComponentFactoryResolver, ComponentRef } from '@angular/core';
 import { ModalController, Platform, PopoverController } from 'ionic-angular';
 import { Transfer } from 'ionic-native';
 
@@ -7,6 +7,8 @@ import { DeviceService, WaveformService } from 'dip-angular2/services';
 import { GenPopover } from '../gen-popover/gen-popover.component';
 import { PinoutPopover } from '../pinout-popover/pinout-popover.component';
 import { DigilentChart } from 'digilent-chart-angular2/modules';
+
+import { ChartAnnotationComponent } from '../chart-annotation/chart-annotation.component';
 
 //Pages
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
@@ -104,13 +106,17 @@ export class SilverNeedleChart {
     public TODOKILLME: number = 0;
     public overTriggerLevel: boolean = false;
 
+    private annotationRefs: { ref: ComponentRef<ChartAnnotationComponent>, id: number, view: 'chart' | 'fft' }[] = [];
+
     constructor(
         _modalCtrl: ModalController,
         _platform: Platform,
         _popoverCtrl: PopoverController,
         _settingsService: SettingsService,
         _tooltipService: TooltipService,
-        public deviceDataTransferService: DeviceDataTransferService
+        public deviceDataTransferService: DeviceDataTransferService,
+        private containerRef: ViewContainerRef,
+        private compFactoryResolver: ComponentFactoryResolver
     ) {
         this.modalCtrl = _modalCtrl;
         this.settingsService = _settingsService;
@@ -583,8 +589,59 @@ export class SilverNeedleChart {
         $("#flotContainer").bind("touchstart", this.seriesAnchorTouchStartRef);
         $("#flotContainer").bind("touchstart", this.triggerLevelTouchStartRef);
 
+        $("#flotContainer").bind("contextmenu", (event) => {
+            this.addAnnotation(event);
+            return false;
+        });
+
         //updateChart();
         this.onLoad(this.chart);
+    }
+
+    fftChartContext(event) {
+        this.addAnnotation(event);
+        return false;
+    }
+
+    addAnnotation(event) {
+        let offsetX = event.clientX - event.offsetX;
+        let offsetY = event.clientY - event.offsetY;
+        let flotTipEl = document.getElementsByClassName('flotTip')[0];
+        if (flotTipEl == undefined) { return; }
+        let innerHTML = flotTipEl.innerHTML;
+        if (innerHTML == undefined || innerHTML === '') { return; }
+        let attributes: any = flotTipEl.attributes[1].value.split('; ');
+        attributes[attributes.length - 1] = attributes[attributes.length - 1].slice(0, -1);
+        let attrObj: any = {};
+        for (let i = 0; i < attributes.length; i++) {
+            let kvArray = attributes[i].split(': ');
+            attrObj[kvArray[0]] = kvArray[1] || '';
+        }
+        if (attrObj.left == undefined || attrObj.top == undefined || attrObj.border == undefined) { return; }
+        attrObj.border = attrObj.border.match(/rgb\([0-9]+, [0-9]+, [0-9]+\)/)[0];
+        attrObj.top = (parseInt(attrObj.top) - offsetY) + 'px';
+        attrObj.left = (parseInt(attrObj.left) - offsetX) + 'px';
+        let factory = this.compFactoryResolver.resolveComponentFactory(ChartAnnotationComponent);
+        let annotationRef: ComponentRef<ChartAnnotationComponent> = this.containerRef.createComponent(factory);
+        let timeStamp = performance.now();
+        annotationRef.instance.show = true;
+        annotationRef.instance.contents = document.getElementsByClassName('flotTip')[0].innerHTML;
+        annotationRef.instance.setStyles(attrObj.left, attrObj.top, attrObj.border);
+        annotationRef.instance.closeAnnotation.subscribe((data) => {
+            annotationRef.instance.closeAnnotation.unsubscribe();
+            for (let i = 0; i < this.annotationRefs.length; i++) {
+                if (this.annotationRefs[i].id === timeStamp) {
+                    this.annotationRefs[i].ref.destroy();
+                    this.annotationRefs.splice(i, 1);
+                }
+            }
+        });
+        this.annotationRefs.push({
+            ref: annotationRef,
+            id: timeStamp,
+            view: this.showFft ? 'fft' : 'chart'
+        });
+        console.log(this.annotationRefs);
     }
 
     getFftArray(seriesNum: number, minIndex: number, maxIndex: number) {
@@ -592,10 +649,17 @@ export class SilverNeedleChart {
     }
 
     toggleFft() {
+        console.log(this.annotationRefs);
         this.showFft = !this.showFft;
         if (this.showFft) {
             this.drawFft(true);
         }
+        if (this.annotationRefs.length > 0) {
+            for (let i = 0; i < this.annotationRefs.length; i++) {
+                this.annotationRefs[i].ref.instance.show = this.annotationRefs[i].view === (this.showFft ? 'fft' : 'chart');
+            }
+        }
+        console.log(this.annotationRefs);
     }
 
     drawFft(autoscale?: boolean) {
@@ -1189,6 +1253,10 @@ export class SilverNeedleChart {
             this.drawFft(false);
         }
 
+        if (this.selectedMathInfo.length > 0) {
+            this.updateMath();
+        }
+
         let newTime = performance.now();
         let fps = 1000 / (newTime - this.TODOKILLME);
         this.TODOKILLME = newTime;
@@ -1329,14 +1397,27 @@ export class SilverNeedleChart {
         });
     }
 
+    private parseCursorChans(): number[] {
+        let mappedVals = [];
+        mappedVals[0] = this.cursor1Chan.slice(-1);
+        mappedVals[0] = (this.cursor1Chan.indexOf('Osc') !== -1) ? mappedVals[0] : (parseInt(mappedVals[0]) + this.oscopeChansActive.length).toString();
+        mappedVals[1] = this.cursor2Chan.slice(-1);
+        mappedVals[1] = (this.cursor2Chan.indexOf('Osc') !== -1) ? mappedVals[1] : (parseInt(mappedVals[1]) + this.oscopeChansActive.length).toString();
+        return mappedVals;
+    }
+
     //Adds correct cursors from selection
     handleCursors() {
-        this.activeChannels[0] = parseInt(this.cursor1Chan.slice(-1));
-        this.activeChannels[1] = parseInt(this.cursor2Chan.slice(-1));
+        let mappedVals = this.parseCursorChans();
+        this.activeChannels[0] = mappedVals[0];
+        this.activeChannels[1] = mappedVals[1];
+        console.log(mappedVals, this.activeChannels);
         this.removeCursors();
         if (this.cursorType.toLowerCase() === 'time') {
             for (let i = 0; i < 2; i++) {
                 let series = this.chart.getData();
+                console.log(series);
+                console.log(this.activeChannels[i] - 1);
                 let color = series[this.activeChannels[i] - 1].color
                 let options = {
                     name: 'cursor' + (i + 1),

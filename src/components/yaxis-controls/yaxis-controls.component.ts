@@ -52,6 +52,31 @@ export class YAxisComponent {
         }
     }
 
+    initializeFromGetStatus(getStatusObject: any) {
+        for (let channel in getStatusObject.trigger) {
+            getStatusObject.trigger[channel].forEach((val, index, array) => {
+                if (val.targets != undefined && val.targets.osc != undefined) {
+                    for (let i = 0; i < this.chart.oscopeChansActive.length; i++) {
+                        console.log(val.targets.osc);
+                        console.log(this.chart.oscopeChansActive[i]);
+                        console.log(val.targets.osc.indexOf(i + 1));
+                        console.log(i);
+                        console.log('shoud turn on? ');
+                        console.log(val.targets.osc.indexOf(i + 1) > -1 && !this.chart.oscopeChansActive[i]);
+                        if (val.targets.osc.indexOf(i + 1) > -1 && !this.chart.oscopeChansActive[i]) {
+                            console.log('toggling vis on channel' + i);
+                            this.toggleVisibility(i, null);
+                        }
+                        else if (val.targets.osc.indexOf(i + 1) === -1 && this.chart.oscopeChansActive[i]) {
+                            console.log('toggling off channel');
+                            this.toggleVisibility(i, null);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     toggleSampleLock(channel: number) {
         if (this.lockedSampleState[channel].sampleSizeLocked) {
             this.lockedSampleState[channel].manualSampleSize = this.chart.calculateDataFromWindow().bufferSize;

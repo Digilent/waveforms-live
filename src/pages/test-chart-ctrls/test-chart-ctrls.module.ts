@@ -15,6 +15,7 @@ import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
 import { LaPopover } from '../../components/la-popover/la-popover.component';
+import { ChartAnnotationComponent } from '../../components/chart-annotation/chart-annotation.component';
  
 @NgModule({
     imports: [
@@ -23,7 +24,8 @@ import { LaPopover } from '../../components/la-popover/la-popover.component';
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),
         IonicModule.forRoot(PinoutPopover),
-        IonicModule.forRoot(LaPopover)
+        IonicModule.forRoot(LaPopover),
+        IonicModule.forRoot(ChartAnnotationComponent)
     ],
     declarations: [
         PinoutPopover,
@@ -38,7 +40,8 @@ import { LaPopover } from '../../components/la-popover/la-popover.component';
         TriggerComponent,
         FgenComponent,
         DigitalIoComponent,
-        DcSupplyComponent
+        DcSupplyComponent,
+        ChartAnnotationComponent
     ],
     exports: [TestChartCtrlsPage]
 })

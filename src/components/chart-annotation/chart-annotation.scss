@@ -1,0 +1,40 @@
+.chart-annotation-container
+{
+    position: absolute;
+    background-color: transparent;
+    font-size: 12px;
+    border: solid white 2px;
+    cursor: pointer;
+}
+
+.chart-annotation-container .chart-annotation-close-button
+{
+    height: 16px;
+    width: 16px;
+    margin: 0;
+}
+
+.chart-annotation-container .chart-annotation-content
+{
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.chart-annotation-container .annotation-background
+{
+    background-color: transparent;
+}
+
+.chart-annotation-container .button-container
+{
+    font-size: 0;
+    height: 100%;
+    max-width: 26px;
+    padding-left: 4px;
+    flex-grow: 0;
+}
+
+.chart-annotation-container.hide-component
+{
+    display: none;
+}
