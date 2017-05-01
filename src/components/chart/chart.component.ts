@@ -929,7 +929,7 @@ export class SilverNeedleChart {
             let min;
             let max;
             if (i > this.deviceDescriptor.instruments.osc.numChans - 1) {
-                color = 'green';
+                color = 'rgb(0,128,0)';
                 //40V range looks good. First should range from 9 to 10 and the second from 8 to 9
                 let offset = (i - this.deviceDescriptor.instruments.osc.numChans);
                 offset *= 1.25;

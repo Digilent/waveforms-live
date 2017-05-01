@@ -42,7 +42,6 @@ export class ChartAnnotationComponent {
         this.startingCoords.x = event.clientX;
         this.startingCoords.y = event.clientY;
         this.elementRef.nativeElement.onmousemove = this.elementRef.nativeElement.parentElement.firstElementChild.onmousemove = (e) => {
-            console.log(e);
             let diffX = this.startingCoords.x - e.clientX;
             let diffY = this.startingCoords.y - e.clientY;
             this.topPix = (parseInt(this.topPix) - diffY) + 'px';
