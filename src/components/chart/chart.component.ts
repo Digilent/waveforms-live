@@ -641,7 +641,6 @@ export class SilverNeedleChart {
             id: timeStamp,
             view: this.showFft ? 'fft' : 'chart'
         });
-        console.log(this.annotationRefs);
     }
 
     getFftArray(seriesNum: number, minIndex: number, maxIndex: number) {

@@ -18,7 +18,6 @@ export class ChartAnnotationComponent {
         private elementRef: ElementRef
     ) {
         console.log('chart annotation constructor');
-        console.log(this.elementRef);
     }
 
     kill(event) {
