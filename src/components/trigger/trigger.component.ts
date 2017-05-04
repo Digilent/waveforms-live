@@ -149,7 +149,7 @@ export class TriggerComponent {
         else if (value.indexOf('M') !== -1) {
             trueValue = parsedValue * Math.pow(10, 6);
         }
-        else if (value.indexOf('k') !== -1) {
+        else if (value.indexOf('k') !== -1 || value.indexOf('K') !== -1) {
             trueValue = parsedValue * Math.pow(10, 3);
         }
         else if (value.indexOf('m') !== -1) {
