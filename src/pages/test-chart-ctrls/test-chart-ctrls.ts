@@ -365,9 +365,9 @@ export class TestChartCtrlsPage {
     ngOnDestroy() {
         if (this.running) {
             this.running = false;
-            this.readingLa = false;
-            this.readingOsc = false;
         }
+        this.readingLa = false;
+        this.readingOsc = false;
     }
 
     //Alert user with toast if no active device is set
@@ -465,6 +465,9 @@ export class TestChartCtrlsPage {
         this.readAttemptCount = 0;
         forceWholeCommand = forceWholeCommand == undefined ? false : forceWholeCommand;
 
+        let tempOscPrevSettings: PreviousOscSettings[] = this.createTempOscPrevSettings();
+        let tempLaPrevSettings: PreviousLaSettings[] = this.createTempLaPrevSettings();
+
         if (this.chart1.oscopeChansActive.indexOf(true) === -1 && this.gpioComponent.laActiveChans.indexOf(true) === -1) {
             this.toastService.createToast('noChannelsActive', true);
             return;
@@ -547,7 +550,7 @@ export class TestChartCtrlsPage {
                 oscArray[4].push(samplingParams.bufferSize);
                 oscArray[5].push(triggerDelay);
             }
-            this.previousOscSettings[i] = {
+            tempOscPrevSettings[i] = {
                 offset: vOffset,
                 gain: this.activeDevice.instruments.osc.chans[i].gains[j],
                 sampleFreqMax: samplingParams.sampleFreq,
@@ -576,7 +579,7 @@ export class TestChartCtrlsPage {
                 laArray[3].push(bitmask);
                 laArray[4].push(triggerDelay);
             }
-            this.previousLaSettings[i] = {
+            tempLaPrevSettings[i] = {
                 bitmask: bitmask,
                 triggerDelay: triggerDelay,
                 sampleFreq: samplingParams.sampleFreq,
@@ -667,13 +670,24 @@ export class TestChartCtrlsPage {
             },
             (err) => {
                 console.log(err);
+                if (this.running) {
+                    this.running = false;
+                    this.readingOsc = false;
+                    this.readingLa = false;
+                }
                 if (err.agent != undefined) {
                     this.toastService.createToast('agentNoActiveDevice');
+                }
+                if (err.command) {
+                    this.displayErrorFromCommand(err.command);
                 }
                 //Might still acquiring from previous session
                 this.abortSingle(true);
             },
             () => {
+                console.warn('complete');
+                this.previousOscSettings = tempOscPrevSettings;
+                this.previousLaSettings = tempLaPrevSettings;
                 if (this.activeDevice.transport.getType() !== 'local') {
                     setTimeout(() => {
                         this.readBuffers();
@@ -695,6 +709,18 @@ export class TestChartCtrlsPage {
         };
 
 
+    }
+
+    displayErrorFromCommand(command) {
+        let errorToDisplay = 'genericSingleError';
+        switch (command) {
+            case 'setParameters':
+                errorToDisplay = 'oscSetParamError';
+                break;
+            default:
+                break;
+        }
+        this.toastService.createToast(errorToDisplay, true);
     }
 
     readBuffers() {
@@ -871,11 +897,35 @@ export class TestChartCtrlsPage {
 
     }
 
+    createTempOscPrevSettings(): PreviousOscSettings[] {
+        //Need to copy previous instead of setting equal so that setting values on temp doesn't set values on the perm
+        let tempOscPrevSettings: PreviousOscSettings[] = [];
+        for (let i = 0; i < this.previousOscSettings.length; i++) {
+            let settingsCopy: PreviousOscSettings = Object.assign({}, this.previousOscSettings[i]);
+            tempOscPrevSettings.push(settingsCopy);
+        }
+        return tempOscPrevSettings
+    }
+
+    createTempLaPrevSettings(): PreviousLaSettings[] {
+        //Need to copy previous instead of setting equal so that setting values on temp doesn't set values on the perm
+        let tempLaPrevSettings: PreviousLaSettings[] = [];
+        for (let i = 0; i < this.previousLaSettings.length; i++) {
+            let settingsCopy: PreviousLaSettings = Object.assign({}, this.previousLaSettings[i]);
+            tempLaPrevSettings.push(settingsCopy);
+        }
+        return tempLaPrevSettings;
+    }
+
     checkAndSetParams(): Promise<any> {
         return new Promise((resolve, reject) => {
             let setOscParams = false;
             let setLaParams = false;
             let currentTheoreticalAcqTime = this.theoreticalAcqTime;
+
+            let tempOscPrevSettings: PreviousOscSettings[] = this.createTempOscPrevSettings();
+            let tempLaPrevSettings: PreviousLaSettings[] = this.createTempLaPrevSettings();
+            
             //Recalc acq time
             this.theoreticalAcqTime = 0;
             for (let i = 0; i < this.currentOscReadArray.length; i++) {
@@ -896,9 +946,12 @@ export class TestChartCtrlsPage {
                     if (tempTheoreticalAcqTime > this.theoreticalAcqTime) {
                         this.theoreticalAcqTime = tempTheoreticalAcqTime;
                     }
+                    
+                    tempOscPrevSettings[this.currentOscReadArray[i] - 1].sampleFreqMax = samplingParams.sampleFreq;
+                    tempOscPrevSettings[this.currentOscReadArray[i] - 1].bufferSizeMax = samplingParams.bufferSize;
 
-                    this.previousOscSettings[this.currentOscReadArray[i] - 1].sampleFreqMax = samplingParams.sampleFreq;
-                    this.previousOscSettings[this.currentOscReadArray[i] - 1].bufferSizeMax = samplingParams.bufferSize;
+                    /*this.previousOscSettings[this.currentOscReadArray[i] - 1].sampleFreqMax = samplingParams.sampleFreq;
+                    this.previousOscSettings[this.currentOscReadArray[i] - 1].bufferSizeMax = samplingParams.bufferSize;*/
                 }
             }
             for (let i = 0; i < this.currentLaReadArray.length; i++) {
@@ -907,8 +960,12 @@ export class TestChartCtrlsPage {
                     this.previousLaSettings[this.currentLaReadArray[i] - 1].bufferSize !== samplingParams.bufferSize) {
                     setLaParams = true;
                 }
-                this.previousLaSettings[this.currentLaReadArray[i] - 1].sampleFreq = samplingParams.sampleFreq;
-                this.previousLaSettings[this.currentLaReadArray[i] - 1].bufferSize = samplingParams.bufferSize;
+
+                tempLaPrevSettings[this.currentLaReadArray[i] - 1].sampleFreq = samplingParams.sampleFreq;
+                tempLaPrevSettings[this.currentLaReadArray[i] - 1].bufferSize = samplingParams.bufferSize;
+
+                /*this.previousLaSettings[this.currentLaReadArray[i] - 1].sampleFreq = samplingParams.sampleFreq;
+                this.previousLaSettings[this.currentLaReadArray[i] - 1].bufferSize = samplingParams.bufferSize;*/
             }
             if (setOscParams) {
                 let params: { chans: number[], offsets: number[], gains: number[], sampleFreqs: number[], bufferSizes: number[], delays: number[] } = {
@@ -921,11 +978,11 @@ export class TestChartCtrlsPage {
                 };
                 for (let i = 0; i < this.currentOscReadArray.length; i++) {
                     params.chans.push(this.currentOscReadArray[i] - 1);
-                    params.offsets.push(this.previousOscSettings[this.currentOscReadArray[i] - 1].offset);
-                    params.gains.push(this.previousOscSettings[this.currentOscReadArray[i] - 1].gain);
-                    params.sampleFreqs.push(this.previousOscSettings[this.currentOscReadArray[i] - 1].sampleFreqMax);
-                    params.bufferSizes.push(this.previousOscSettings[this.currentOscReadArray[i] - 1].bufferSizeMax);
-                    params.delays.push(this.previousOscSettings[this.currentOscReadArray[i] - 1].delay);
+                    params.offsets.push(tempOscPrevSettings[this.currentOscReadArray[i] - 1].offset);
+                    params.gains.push(tempOscPrevSettings[this.currentOscReadArray[i] - 1].gain);
+                    params.sampleFreqs.push(tempOscPrevSettings[this.currentOscReadArray[i] - 1].sampleFreqMax);
+                    params.bufferSizes.push(tempOscPrevSettings[this.currentOscReadArray[i] - 1].bufferSizeMax);
+                    params.delays.push(tempOscPrevSettings[this.currentOscReadArray[i] - 1].delay);
                 }
                 this.activeDevice.instruments.osc.setParameters(this.currentOscReadArray, params.offsets, params.gains, params.sampleFreqs, params.bufferSizes, params.delays)
                     .flatMap((data) => {
@@ -939,10 +996,10 @@ export class TestChartCtrlsPage {
                             };
                             for (let i = 0; i < this.currentLaReadArray.length; i++) {
                                 params.chans.push(this.currentLaReadArray[i] - 1);
-                                params.bitmasks.push(this.previousLaSettings[this.currentLaReadArray[i] - 1].bitmask);
-                                params.sampleFreqs.push(this.previousLaSettings[this.currentLaReadArray[i] - 1].sampleFreq);
-                                params.bufferSizes.push(this.previousLaSettings[this.currentLaReadArray[i] - 1].bufferSize);
-                                params.delays.push(this.previousLaSettings[this.currentLaReadArray[i] - 1].triggerDelay);
+                                params.bitmasks.push(tempLaPrevSettings[this.currentLaReadArray[i] - 1].bitmask);
+                                params.sampleFreqs.push(tempLaPrevSettings[this.currentLaReadArray[i] - 1].sampleFreq);
+                                params.bufferSizes.push(tempLaPrevSettings[this.currentLaReadArray[i] - 1].bufferSize);
+                                params.delays.push(tempLaPrevSettings[this.currentLaReadArray[i] - 1].triggerDelay);
                             }
                             return this.activeDevice.instruments.la.setParameters(this.currentLaReadArray, params.bitmasks, params.sampleFreqs, params.bufferSizes, params.delays);
                         }
@@ -953,6 +1010,8 @@ export class TestChartCtrlsPage {
                     .subscribe(
                         (data) => {
                             console.log(data);
+                            this.previousOscSettings = tempOscPrevSettings;
+                            this.previousLaSettings = tempLaPrevSettings;
                             resolve();
                         },
                         (err) => {
@@ -1014,6 +1073,20 @@ export class TestChartCtrlsPage {
             .catch((e) => {
                 console.log('ERROR SETTINGS OSC PARAMS DURING RUN');
                 console.log(e);
+                for (let instrument in e) {
+                    for (let channel in e[instrument]) {
+                        e[instrument][channel].forEach((value, index, array) => {
+                            if (value.command) {
+                                this.displayErrorFromCommand(value.command);
+                            }
+                        });
+                    }
+                }
+                if (this.running) {
+                    this.running = false;
+                }
+                this.readingLa = false;
+                this.readingOsc = false;
             });
     }
 

@@ -85,7 +85,6 @@ export class LaPopover {
     private loadBitmask(bitmask: string) {
         this.bitmask = bitmask;
         for (let i = 0; i < bitmask.length; i++) {
-            let index = bitmask.length - i - 1;
             switch (bitmask.charAt(bitmask.length - i - 1)) {
                 case 'e':
                     this.edgeDirections[i] = 'either';

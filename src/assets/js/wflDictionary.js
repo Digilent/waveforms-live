@@ -80,6 +80,12 @@ var waveformsLiveDictionary = (function() {
         laOnNoAwg: {
             english: 'Cannot Turn On The Wavegen Because The LA Is Running'
         },
+        oscSetParamError: {
+            english: 'Error Setting Oscilloscope Parameters. Please Try Again'
+        },
+        genericSingleError: {
+            english: 'Error Starting Acquisition. Please Try Again'
+        },
 
         //Agent
         //Appears when a user tries to add an agent that already exists.
