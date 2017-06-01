@@ -86,7 +86,7 @@
             </ion-col>
             <ion-col class="controls-wrapper">
                 <xaxis-controls [chart]="chart1"></xaxis-controls>
-                <trigger #triggerComponent [chart]="chart1" (triggerTutotrialFinish)="triggerTutorialFinished($event)"></trigger>
+                <trigger #triggerComponent [chart]="chart1" (triggerTutotrialFinish)="triggerTutorialFinished($event)" [running]="running"></trigger>
                 <yaxis-controls #yaxisComponent [chart]="chart1" [running]="running"></yaxis-controls>
                 <fgen #fgenComponent (fgenTutorialFinish)="fgenTutorialFinished($event)"></fgen>
                 <digital-io #gpioComponent [chart]="chart1"></digital-io>

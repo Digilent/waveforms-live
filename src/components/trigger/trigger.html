@@ -40,21 +40,21 @@
 						[forceShow]="tutorialStage === 'type' && tutorialMode" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 'type'}">
 
 						<button ion-button class="off-button disable-hover"(tap)="setTrigType('rising')"  [ngClass]="{'selected-mode':edgeDirection==='rising'}"
-							[tooltip]="tooltipService.getTooltip('triggerRisingEdge').message" [tooltipAnimation]="true" tooltipPlacement="top">
+							[tooltip]="tooltipService.getTooltip('triggerRisingEdge').message" [tooltipAnimation]="true" tooltipPlacement="top" [disabled]="running">
 							<img class="custom-image-button" src="assets/img/rising.svg">
 						</button>
 						<button ion-button class="off-button disable-hover" (tap)="setTrigType('falling')" [ngClass]="{'selected-mode':edgeDirection==='falling'}"
-							[tooltip]="tooltipService.getTooltip('triggerFallingEdge').message" [tooltipAnimation]="true" tooltipPlacement="top">
+							[tooltip]="tooltipService.getTooltip('triggerFallingEdge').message" [tooltipAnimation]="true" tooltipPlacement="top" [disabled]="running">
 							<img class="custom-image-button" src="assets/img/falling.svg">
 						</button>
 						
 						<button ion-button class="off-button disable-hover off-button-right" (tap)="setTrigType('off')" [ngClass]="{'selected-mode':edgeDirection==='off'}"
-							[tooltip]="tooltipService.getTooltip('triggerOff').message" [tooltipAnimation]="true" tooltipPlacement="top">
+							[tooltip]="tooltipService.getTooltip('triggerOff').message" [tooltipAnimation]="true" tooltipPlacement="top" [disabled]="running">
 							Off
 						</button>
 					</div>
 					<div *ngIf="triggerSource === 'LA'">
-						<button ion-button class="text-button-side disable-hover" (click)="openLaPopover($event)">
+						<button ion-button class="text-button-side disable-hover" (click)="openLaPopover($event)" [disabled]="running">
 							Configure
 						</button>
 					</div>

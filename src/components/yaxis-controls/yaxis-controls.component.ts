@@ -146,6 +146,7 @@ export class YAxisComponent {
             this.lockedSampleState[channel].manualSampleFreq = trueValue;
         }
         else if (sampleType === 'numSamples') {
+            trueValue = (trueValue % 2) === 0 ? trueValue : trueValue + 1;
             trueValue = Math.max(Math.min(trueValue, this.chart.deviceDescriptor.instruments.osc.chans[channel].bufferSizeMax), 2);
             this.lockedSampleState[channel].manualSampleSize = trueValue;
         }

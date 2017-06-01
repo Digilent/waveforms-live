@@ -9,7 +9,7 @@ var mathFunctions = (function () {
         var getAxes = chartRef.getAxes();
         var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
-        var yArray = activeIndices.map((element) => {
+        var yArray = activeIndices.map(function (element) {
             return element[1];
         });
         var value = Math.max(...yArray);
@@ -21,7 +21,7 @@ var mathFunctions = (function () {
         var getAxes = chartRef.getAxes();
         var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
-        var yArray = activeIndices.map((element) => {
+        var yArray = activeIndices.map(function (element) {
             return element[1];
         });
         var value = Math.min(...yArray);
@@ -70,7 +70,7 @@ var mathFunctions = (function () {
         minIndex = 0;
         maxIndex = series[seriesNum].data.length - 1;
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
-        var real = activeIndices.map((element) => {
+        var real = activeIndices.map(function (element) {
             return element[1];
         });
         var sampleFreq = 1 / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]);
@@ -98,7 +98,7 @@ var mathFunctions = (function () {
         var getAxes = chartRef.getAxes();
         var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
-        var yArray = activeIndices.map((element) => {
+        var yArray = activeIndices.map(function (element) {
             return element[1];
         });
         for (var i = 0; i < yArray.length; i++) {
@@ -114,7 +114,7 @@ var mathFunctions = (function () {
         var getAxes = chartRef.getAxes();
         var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
-        var yArray = activeIndices.map((element) => {
+        var yArray = activeIndices.map(function (element) {
             return element[1];
         });
         for (var i = 0; i < yArray.length; i++) {
@@ -137,7 +137,7 @@ var mathFunctions = (function () {
         var getAxes = chartRef.getAxes();
         var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
-        var real = activeIndices.map((element) => {
+        var real = activeIndices.map(function (element) {
             return element[1];
         });
         var sampleFreq = 1 / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]);
@@ -197,7 +197,7 @@ var mathFunctions = (function () {
         minIndex = 0;
         maxIndex = series[seriesNum].data.length - 1;
         var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
-        var real = activeIndices.map((element) => {
+        var real = activeIndices.map(function (element) {
             return element[1];
         });
         var sampleFreq = 1 / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]);

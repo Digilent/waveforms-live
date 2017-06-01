@@ -18,6 +18,7 @@ import { DeviceDataTransferService } from '../../services/device/device-data-tra
 })
 export class TriggerComponent {
     @Input() chart: SilverNeedleChart;
+    @Input() running: boolean;
     @Output('triggerTutotrialFinish') triggerTutotrialFinish = new EventEmitter();
     @ViewChild('dropPopSource') dropPopSource: DropdownPopoverComponent;
     public toastService: ToastService;

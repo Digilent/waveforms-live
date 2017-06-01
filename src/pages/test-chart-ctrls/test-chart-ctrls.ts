@@ -99,7 +99,7 @@ export class TestChartCtrlsPage {
                 return this.getTriggerStatus();
             })
             .then(() => {
-                return this.setGpioToInputs('input');
+                return this.readCurrentGpioStates();
             })
             .then(() => {
                 if (this.activeDevice.deviceModel === 'OpenScope MZ' && awgData.awg["1"][0].state === 'running') {
@@ -229,6 +229,60 @@ export class TestChartCtrlsPage {
                     console.log('error getting awg status');
                     console.log(err);
                     reject(err);
+                },
+                () => { }
+            );
+        });
+    }
+
+    readCurrentGpioStates(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let chanArray = [];
+            for (let i = 0; i < this.activeDevice.instruments.gpio.numChans; i++) {
+                chanArray.push(i + 1);
+            }
+            this.activeDevice.instruments.gpio.read(chanArray).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    if (err.gpio) {
+                        let setToInputChanArray = [];
+                        let inputStringArray = [];
+                        for (let channel in err.gpio) {
+                            for (let command in err.gpio[channel]) {
+                                if (err.gpio[channel][command].statusCode === 1073741826 && err.gpio[channel][command].direction === 'tristate') {
+                                    setToInputChanArray.push(parseInt(channel));
+                                    inputStringArray.push('input');
+                                }
+                                else if (err.gpio[channel][command].statusCode === 1073741826 && err.gpio[channel][command].direction === 'output') {
+                                    this.gpioComponent.gpioVals[parseInt(channel) - 1] = err.gpio[channel][command].value !== 0;
+                                    this.gpioComponent.gpioDirections[parseInt(channel) - 1] = true;
+                                }
+                            }
+                        }
+                        if (setToInputChanArray.length > 0) {
+                            this.activeDevice.instruments.gpio.setParameters(setToInputChanArray, inputStringArray).subscribe(
+                                (data) => {
+                                    console.log(data);
+                                    resolve(data);
+                                },
+                                (err) => {
+                                    console.log(err);
+                                    reject(err);
+                                },
+                                () => { }
+                            );
+                        }
+                        else {
+                            resolve(err);
+                        }
+                    }
+                    else {
+                        reject(err);
+                    }
                 },
                 () => { }
             );
@@ -678,14 +732,16 @@ export class TestChartCtrlsPage {
                 if (err.agent != undefined) {
                     this.toastService.createToast('agentNoActiveDevice');
                 }
-                if (err.command) {
+                else if (err.command) {
                     this.displayErrorFromCommand(err.command);
+                }
+                else {
+                    this.toastService.createToast('deviceDroppedConnection', true);
                 }
                 //Might still acquiring from previous session
                 this.abortSingle(true);
             },
             () => {
-                console.warn('complete');
                 this.previousOscSettings = tempOscPrevSettings;
                 this.previousLaSettings = tempLaPrevSettings;
                 if (this.activeDevice.transport.getType() !== 'local') {
@@ -805,7 +861,6 @@ export class TestChartCtrlsPage {
             }
             return;
         }*/
-
         let numSeries = [];
         for (let i = 0; i < this.currentOscReadArray.length; i++) {
             numSeries.push(this.currentOscReadArray[i] - 1);
@@ -925,7 +980,7 @@ export class TestChartCtrlsPage {
 
             let tempOscPrevSettings: PreviousOscSettings[] = this.createTempOscPrevSettings();
             let tempLaPrevSettings: PreviousLaSettings[] = this.createTempLaPrevSettings();
-            
+
             //Recalc acq time
             this.theoreticalAcqTime = 0;
             for (let i = 0; i < this.currentOscReadArray.length; i++) {
@@ -946,7 +1001,7 @@ export class TestChartCtrlsPage {
                     if (tempTheoreticalAcqTime > this.theoreticalAcqTime) {
                         this.theoreticalAcqTime = tempTheoreticalAcqTime;
                     }
-                    
+
                     tempOscPrevSettings[this.currentOscReadArray[i] - 1].sampleFreqMax = samplingParams.sampleFreq;
                     tempOscPrevSettings[this.currentOscReadArray[i] - 1].bufferSizeMax = samplingParams.bufferSize;
 
@@ -986,6 +1041,7 @@ export class TestChartCtrlsPage {
                 }
                 this.activeDevice.instruments.osc.setParameters(this.currentOscReadArray, params.offsets, params.gains, params.sampleFreqs, params.bufferSizes, params.delays)
                     .flatMap((data) => {
+                        console.log(data);
                         if (setLaParams) {
                             let params: { chans: number[], bitmasks: number[], sampleFreqs: number[], bufferSizes: number[], delays: number[] } = {
                                 chans: [],
@@ -1021,8 +1077,33 @@ export class TestChartCtrlsPage {
                         () => { }
                     );
             }
-            if (setLaParams) {
-
+            if (setLaParams && !setOscParams) {
+                let params: { chans: number[], bitmasks: number[], sampleFreqs: number[], bufferSizes: number[], delays: number[] } = {
+                    chans: [],
+                    bitmasks: [],
+                    sampleFreqs: [],
+                    bufferSizes: [],
+                    delays: []
+                };
+                for (let i = 0; i < this.currentLaReadArray.length; i++) {
+                    params.chans.push(this.currentLaReadArray[i] - 1);
+                    params.bitmasks.push(tempLaPrevSettings[this.currentLaReadArray[i] - 1].bitmask);
+                    params.sampleFreqs.push(tempLaPrevSettings[this.currentLaReadArray[i] - 1].sampleFreq);
+                    params.bufferSizes.push(tempLaPrevSettings[this.currentLaReadArray[i] - 1].bufferSize);
+                    params.delays.push(tempLaPrevSettings[this.currentLaReadArray[i] - 1].triggerDelay);
+                }
+                this.activeDevice.instruments.la.setParameters(this.currentLaReadArray, params.bitmasks, params.sampleFreqs, params.bufferSizes, params.delays).subscribe(
+                    (data) => {
+                        console.log(data);
+                        this.previousLaSettings = tempLaPrevSettings;
+                        resolve();
+                    },
+                    (err) => {
+                        console.log(err);
+                        reject(err);
+                    },
+                    () => { }
+                );
             }
             if (!setOscParams && !setLaParams) {
                 this.theoreticalAcqTime = currentTheoreticalAcqTime;

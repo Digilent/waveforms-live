@@ -648,7 +648,6 @@ export class SilverNeedleChart {
     }
 
     toggleFft() {
-        console.log(this.annotationRefs);
         this.showFft = !this.showFft;
         if (this.showFft) {
             this.drawFft(true);
@@ -658,7 +657,6 @@ export class SilverNeedleChart {
                 this.annotationRefs[i].ref.instance.show = this.annotationRefs[i].view === (this.showFft ? 'fft' : 'chart');
             }
         }
-        console.log(this.annotationRefs);
     }
 
     drawFft(autoscale?: boolean) {
@@ -1327,18 +1325,26 @@ export class SilverNeedleChart {
         let csvContent = 'data:text/csv;charset=utf-8,';
         let maxLength = series[this.numSeries[0]].data.length;
         for (let i = 0; i < this.numSeries.length; i++) {
-            if (series[this.numSeries[i]].length > maxLength) {
-                maxLength = series[this.numSeries[i]].length;
+            if (series[this.numSeries[i]].data.length > maxLength) {
+                maxLength = series[this.numSeries[i]].data.length;
             }
+            let seriesNum = this.numSeries[i] + 1;
+            let instrument = 'Osc';
+            if (seriesNum > this.oscopeChansActive.length) {
+                instrument = 'LA';
+                seriesNum -= this.oscopeChansActive.length;
+            }
+            csvContent += instrument + ' Ch ' + seriesNum + ' s,' + instrument + ' Ch ' + seriesNum + ' V,,';
         }
+        csvContent += '\n';
         for (let i = 0; i < maxLength; i++) {
             for (let j = 0; j < this.numSeries.length; j++) {
                 let seriesNum = this.numSeries[j];
                 if (series[seriesNum].data[i] != undefined) {
-                    csvContent += series[seriesNum].data[i].join(',') + ',';
+                    csvContent += series[seriesNum].data[i].join(',') + ',,';
                 }
                 else {
-                    csvContent += ',';
+                    csvContent += ',,';
                 }
             }
             csvContent += '\n';
@@ -1410,13 +1416,10 @@ export class SilverNeedleChart {
         let mappedVals = this.parseCursorChans();
         this.activeChannels[0] = mappedVals[0];
         this.activeChannels[1] = mappedVals[1];
-        console.log(mappedVals, this.activeChannels);
         this.removeCursors();
         if (this.cursorType.toLowerCase() === 'time') {
             for (let i = 0; i < 2; i++) {
                 let series = this.chart.getData();
-                console.log(series);
-                console.log(this.activeChannels[i] - 1);
                 let color = series[this.activeChannels[i] - 1].color
                 let options = {
                     name: 'cursor' + (i + 1),
@@ -1750,11 +1753,19 @@ export class SilverNeedleChart {
 
     exportCanvasAsPng() {
         let canvas = this.chart.getCanvas();
+        let width = canvas.width;
+        let height = canvas.height;
+        let blackCanvas = document.createElement('canvas');
+        blackCanvas.width = width;
+        blackCanvas.height = height;
         let overlayCanvas = this.flotOverlayRef.canvas;
-        let ctx = canvas.getContext("2d");
+        let ctx = blackCanvas.getContext("2d");
         ctx.save();
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(canvas, 0, 0);
         ctx.drawImage(overlayCanvas, 0, 0);
-        let data = canvas.toDataURL();
+        let data = blackCanvas.toDataURL();
         ctx.restore();
 
         if (this.platform.is('cordova') && (this.platform.is('android') || this.platform.is('ios'))) {

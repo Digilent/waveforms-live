@@ -37,6 +37,9 @@ var waveformsLiveDictionary = (function() {
         deviceResetError: {
             english: 'Unable To Reset Device'
         },
+        deviceDroppedConnection: {
+            english: 'No Response From Device'
+        },
         deviceResetCalibrationError: {
             english: 'Unable To Reset Device. Make Sure The Device Is Still Connected And Is On The Latest Firmware'
         },
@@ -267,7 +270,7 @@ var waveformsLiveDictionary = (function() {
             english: 'Falling Edge Trigger'
         },
         triggerOff: {
-            english: 'No Trigger?'
+            english: 'Auto Force'
         },
         triggerForce: {
             english: 'Force Trigger'

@@ -39,7 +39,7 @@
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
                         <div class="dummy-border" [tooltip]="getChannelTooltip(i, 'gpio')" [tooltipAnimation]="true" tooltipPlacement="left" [ngClass]="{'button-output': gpioDirections[i]}">
-                            <button (tap)="toggleChannel(i)" class="channel-button" [disabled]="!gpioDirections[i]" [ngClass]="{'button-on': gpioVals[i]}">
+                            <button (tap)="toggleChannel(i)" class="channel-button" [disabled]="!gpioDirections[i]" [ngClass]="{'button-on': gpioVals[i], 'la-mode la-mode-border': laActiveChans[i], 'direction-mode direction-mode-border': gpioDirections[i]}">
                                 <span class="button-indicator">{{getButtonState(i)}}</span>
                             </button>
                         </div>

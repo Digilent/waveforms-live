@@ -35,6 +35,11 @@
     transform: rotate(90deg);
 }
 
+.chart-component-wrapper .chart-bottom-container
+{
+    flex: 0 0 auto;
+}
+
 .chart-component-wrapper .chart-component-container-div
 {
     display: block;

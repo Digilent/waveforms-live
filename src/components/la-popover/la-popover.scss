@@ -1,12 +1,14 @@
 .la-popover-container
 {
     padding-top: 8px;
+    border: solid black 1px;
 }
 
 .la-popover-container .la-label
 {
     color: #CCCCCC;
     padding-left: 16px;
+    max-width: 102px;
 }
 
 .la-popover-container .trigger-img

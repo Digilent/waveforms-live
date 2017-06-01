@@ -69,23 +69,23 @@ export class DigitalIoComponent {
     }
 
     getChannelTooltip(channel: number, state: 'analyzer' | 'gpio' | 'direction') {
-        let buttonState = this.getButtonState(channel);
+        let buttonState: ButtonState = this.getButtonState(channel);
         let mode = 'Input';
         if (buttonState === 'A') {
             mode = 'Analyzer';
         }
-        else if (buttonState === 'O') {
+        else if (buttonState === 'Out') {
             mode = 'Output';
         }
         
         if (state === 'analyzer') {
-            if (buttonState === 'I' || buttonState === 'O') {
+            if (buttonState === 'In' || buttonState === 'Out') {
                 return 'Mode: ' + mode + '. Click to change to analyzer';
             }
             return 'Mode: ' + mode + '. Click to change to input';
         }
         else if (state === 'gpio') {
-            if (buttonState === 'I') {
+            if (buttonState === 'In') {
                 return 'Mode: ' + mode + '. Value: ' + (this.gpioVals[channel] ? 'High' : 'Low');
             }
             else if (buttonState === 'A') {
@@ -94,7 +94,7 @@ export class DigitalIoComponent {
             return 'Mode: ' + mode + '. Click to toggle ' + (this.gpioVals[channel] ? 'Low' : 'High');
         }
         else {
-            if (buttonState === 'I' || buttonState === 'A') {
+            if (buttonState === 'In' || buttonState === 'A') {
                 return 'Mode: ' + mode + '. Click to change to output';
             }
             return 'Mode: ' + mode + '. Click to change to input';
@@ -183,7 +183,7 @@ export class DigitalIoComponent {
         this.dataTransferService.laChanActive = this.laActiveChans.indexOf(true) !== -1;
     }
 
-    getButtonState(channel: number) {
+    getButtonState(channel: number): ButtonState {
         if (this.laActiveChans[channel]) {
             return 'A';
         }
@@ -214,3 +214,5 @@ export class DigitalIoComponent {
         );
     }
 }
+
+export type ButtonState = 'A' | 'In' | 'Out';

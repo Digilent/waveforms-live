@@ -156,6 +156,7 @@ ion-checkbox .checkbox-icon.checkbox-checked
 .scroll-content 
 {
     overflow: auto;
+    padding: 0 !important;
 }
 
 @media only screen and (min-height: 768px) and (min-width: 768px) {
