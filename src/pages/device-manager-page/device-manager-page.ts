@@ -60,6 +60,7 @@ export class DeviceManagerPage {
     public showDevMenu: boolean = false;
     public selectedSimulatedDevice: string = 'OpenScope MZ';
     public deviceBridgeAddress = 'http://localhost:42135';
+    public minFirmwareVersion: string = '0.533.0';
 
     public devices: DeviceCardInfo[] = [];
 
@@ -123,7 +124,7 @@ export class DeviceManagerPage {
 
     getFirmwareVersionsForDevices() {
         for (let i = 0; i < this.devices.length; i++) {
-            if (this.devices[i].bridge) {
+            if (this.devices[i].ipAddress !== 'local') {
                 //TODO: read device enum for ip address and then call device man service getFirmwareVersionsFromUrl
                 this.deviceManagerService.getLatestFirmwareVersionFromUrl(this.listUrl).then((latestFirmwareVersion) => {
                     this.determineIfOutdatedFirmware(latestFirmwareVersion, i);
@@ -481,6 +482,7 @@ export class DeviceManagerPage {
                 this.showDevMenu = false;
                 this.toastService.createToast('deviceAdded');
                 this.tutorialStage = 3;
+                this.verifyFirmware(0);
                 this.verifyCalibrationSource(0, this.devices[0].deviceDescriptor.calibrationSource);
             },
             (err) => {
@@ -559,11 +561,17 @@ export class DeviceManagerPage {
         openTab.location;
     }
 
-    private verifyFirmware(deviceIndex): Promise<any> {
+    verifyFirmware(deviceIndex): Promise<any> {
         return new Promise((resolve, reject) => {
-            console.log('CALIBRATION SOURCE');
-            console.log(this.devices[deviceIndex].deviceDescriptor.calibrationSource);
-            if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined) {
+            let firmwareObject = this.devices[deviceIndex].deviceDescriptor.firmwareVersion;
+            let weightedFirmware = firmwareObject.patch + 1000 * firmwareObject.minor + 1000000 * firmwareObject.major;
+            let minFirmwareArray = this.minFirmwareVersion.split('.');
+            let weightedMinFirmware = parseInt(minFirmwareArray[2]) + 1000 * parseInt(minFirmwareArray[1]) + 1000000 * parseInt(minFirmwareArray[0]);
+            console.log('FIRMWARE NEW ENOUGH?');
+            console.log(weightedFirmware >= weightedMinFirmware);
+            //TODO remove this resolve
+            resolve();
+            /*if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined) {
                 if (this.devices[deviceIndex].bridge) {
                     let title = 'Outdated Firmware';
                     let subTitle = 'You will now be taken to the update firmware wizard.';
@@ -585,7 +593,7 @@ export class DeviceManagerPage {
             }
             else {
                 resolve();
-            }
+            }*/
         });
     }
 
@@ -661,10 +669,10 @@ export class DeviceManagerPage {
 
     openUpdateFirmware(deviceIndex: number) {
         if (!this.devices[deviceIndex].bridge) {
-            this.toastService.createToast('agentConnectError', true);
+            this.toastService.createToast('deviceOutdatedFirmware', true);
             return;
         }
-        let loading = this.displayLoading()
+        let loading = this.displayLoading();
         this.agentSetActiveDeviceAndEnterJson(this.devices[deviceIndex])
             .then((possibleError) => {
                 loading.dismiss();

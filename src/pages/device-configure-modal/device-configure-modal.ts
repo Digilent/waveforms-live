@@ -440,6 +440,9 @@ export class DeviceConfigureModal {
                                 this.deviceManagerService.addDeviceFromDescriptor(this.deviceObject.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                                 this.deviceConfigure = true;
                                 this.getNicStatus('wlan0').then(() => {
+                                    return this.deviceManagerPageRef.verifyFirmware(0);
+                                })
+                                .then((data) => {
                                     this.getCurrentCalibration().catch((e) => { });
                                 }).catch((e) => {
                                     this.getCurrentCalibration().catch((e) => { });
@@ -458,6 +461,9 @@ export class DeviceConfigureModal {
                                 this.deviceManagerPageRef.deviceManagerService.addDeviceFromDescriptor(this.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                             }
                             this.getNicStatus('wlan0').then(() => {
+                                return this.deviceManagerPageRef.verifyFirmware(0);
+                            })
+                            .then((data) => {
                                 this.getCurrentCalibration().catch((e) => { });
                             }).catch((e) => {
                                 this.getCurrentCalibration().catch((e) => { });
