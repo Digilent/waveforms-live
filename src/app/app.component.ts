@@ -28,7 +28,6 @@ export class MyApp {
         _settingsService: SettingsService
     ) {
         this.initializeApp();
-
         // set our app's pages
         this.pages = [
             //{ title: 'Instrument Panel', component: TestChartCtrlsPage },
@@ -39,6 +38,12 @@ export class MyApp {
         ];
         this.settingsService = _settingsService;
         //this.settingsService.changeConsoleLog('None');
+        
+        (<any>document).addEventListener("keydown", (event) => {
+            if ((event.code === 'KeyS' || event.keyCode === 83) && event.ctrlKey) {
+                event.preventDefault();
+            }
+        });
     }
 
     initializeApp() {
