@@ -21,6 +21,7 @@ export class MyApp {
     public rootPage: any = DeviceManagerPage;
     public pages: Array<{ title: string, component: any }>;
     public settingsService: SettingsService;
+    public isMobile: boolean = false;
 
     constructor(
         public platform: Platform,
@@ -38,6 +39,9 @@ export class MyApp {
         ];
         this.settingsService = _settingsService;
         //this.settingsService.changeConsoleLog('None');
+        if ((this.platform.is('ios') || this.platform.is('android')) && this.platform.is('mobileweb')) {
+            this.isMobile = true;
+        }
         
         (<any>document).addEventListener("keydown", (event) => {
             if ((event.code === 'KeyS' || event.keyCode === 83) && event.ctrlKey) {
@@ -76,6 +80,15 @@ export class MyApp {
         }
         else {
             this.nav.push(page.component);
+        }
+    }
+
+    openAppStore() {
+        if (this.platform.is('android')) {
+            window.location.href = this.settingsService.androidAppLink;
+        }
+        else if (this.platform.is('ios')) {
+            window.location.href = this.settingsService.iosAppLink;
         }
     }
 }

@@ -41,7 +41,7 @@ var waveformsLiveDictionary = (function() {
             english: 'No Response From Device'
         },
         deviceOutdatedFirmware: {
-            english: 'Please use the Digilent Agent To Update Firmware'
+            english: 'Please Use The Digilent Agent To Update Firmware'
         },
         deviceResetCalibrationError: {
             english: 'Unable To Reset Device. Make Sure The Device Is Still Connected And Is On The Latest Firmware'

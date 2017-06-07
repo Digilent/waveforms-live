@@ -103,8 +103,8 @@ export class DeviceManagerPage {
         this.deviceManagerService = _deviceManagerService;
         this.storage = _storage;
         this.storage.getData('routeToStore').then((data) => {
-            if ((data == null || data === true) && !this.platform.is('cordova') && (this.platform.is('android') || this.platform.is('ios'))) {
-                //this.routeToStore();
+            if ((data == null || data === true) && this.platform.is('mobileweb') && (this.platform.is('android') || this.platform.is('ios'))) {
+                this.routeToStore();
             }
         });
         this.storage.getData('useDevBuilds').then((data) => {
@@ -201,31 +201,20 @@ export class DeviceManagerPage {
         let alert = this.alertCtrl.create();
         alert.setTitle('We Have An App! Would You Like to Download It?');
 
-        alert.addInput({
-            type: 'checkbox',
-            label: 'Do Not Show Again',
-            value: 'value1'
-        });
-
-        alert.addButton('Cancel');
+        alert.addButton('No');
         alert.addButton({
-            text: 'Okay',
+            text: 'Yes',
             handler: data => {
-                console.log('Checkbox data:', data);
-                if (data.length > 0) {
-                    this.settingsService.setRouteToStore(false);
+                if (this.platform.is('android')) {
+                    window.location.href = this.settingsService.androidAppLink;
                 }
-                else {
-                    if (this.platform.is('android')) {
-                        window.location.href = "market://details?id=com.digilent";
-                    }
-                    else if (this.platform.is('ios')) {
-                        window.location.href = "https://itunes.apple.com/us/app/solitaire/id593715088";
-                    }
+                else if (this.platform.is('ios')) {
+                    window.location.href = this.settingsService.iosAppLink;
                 }
             }
         });
         alert.present();
+        this.settingsService.setRouteToStore(false);
     }
 
     ionViewDidEnter() {
@@ -482,8 +471,15 @@ export class DeviceManagerPage {
                 this.showDevMenu = false;
                 this.toastService.createToast('deviceAdded');
                 this.tutorialStage = 3;
-                this.verifyFirmware(0);
-                this.verifyCalibrationSource(0, this.devices[0].deviceDescriptor.calibrationSource);
+                this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);
+                this.getFirmwareVersionsForDevices();
+                this.verifyFirmware(0)
+                    .then((data) => {
+                        this.verifyCalibrationSource(0, this.devices[0].deviceDescriptor.calibrationSource);
+                    })
+                    .catch((e) => {
+                        this.verifyCalibrationSource(0, this.devices[0].deviceDescriptor.calibrationSource);
+                    });
             },
             (err) => {
                 loading.dismiss();
@@ -499,43 +495,43 @@ export class DeviceManagerPage {
             console.log(deviceIndex, this.devices[deviceIndex]);
             /*this.verifyFirmware(deviceIndex)
                 .then((data) => {*/
-                    //Firmware updated
-                    if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
-                        let title = 'Uncalibrated Device';
-                        let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
-                        this.alertWrapper(title, subtitle)
-                            .then((data) => {
-                                return this.toCalibrationPage();
-                            })
-                            .then((data) => {
-                                resolve();
-                            })
-                            .catch((e) => {
-                                reject(e);
-                            });
-                    }
-                    else {
+            //Firmware updated
+            if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
+                let title = 'Uncalibrated Device';
+                let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
+                this.alertWrapper(title, subtitle)
+                    .then((data) => {
+                        return this.toCalibrationPage();
+                    })
+                    .then((data) => {
                         resolve();
-                    }
-                /*})*/
-                /*.catch((e) => {
-                    //can't update firmware
-                    if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
-                        let title = 'Uncalibrated Device';
-                        let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
-                        this.alertWrapper(title, subtitle)
-                            .then((data) => {
-                                return this.toCalibrationPage();
-                            })
-                            .then((data) => {
-                                resolve();
-                            })
-                            .catch((e) => {
-                                reject(e);
-                            });
-                    }
+                    })
+                    .catch((e) => {
+                        reject(e);
+                    });
+            }
+            else {
+                resolve();
+            }
+            /*})*/
+            /*.catch((e) => {
+                //can't update firmware
+                if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
+                    let title = 'Uncalibrated Device';
+                    let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
+                    this.alertWrapper(title, subtitle)
+                        .then((data) => {
+                            return this.toCalibrationPage();
+                        })
+                        .then((data) => {
+                            resolve();
+                        })
+                        .catch((e) => {
+                            reject(e);
+                        });
+                }
 
-                });*/
+            });*/
         });
     }
 
@@ -557,7 +553,7 @@ export class DeviceManagerPage {
         popover.present({
             ev: event
         });*/
-        let openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/getting-started', '_blank');
+        let openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/start', '_blank');
         openTab.location;
     }
 
@@ -567,33 +563,53 @@ export class DeviceManagerPage {
             let weightedFirmware = firmwareObject.patch + 1000 * firmwareObject.minor + 1000000 * firmwareObject.major;
             let minFirmwareArray = this.minFirmwareVersion.split('.');
             let weightedMinFirmware = parseInt(minFirmwareArray[2]) + 1000 * parseInt(minFirmwareArray[1]) + 1000000 * parseInt(minFirmwareArray[0]);
-            console.log('FIRMWARE NEW ENOUGH?');
-            console.log(weightedFirmware >= weightedMinFirmware);
-            //TODO remove this resolve
-            resolve();
-            /*if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined) {
-                if (this.devices[deviceIndex].bridge) {
-                    let title = 'Outdated Firmware';
-                    let subTitle = 'You will now be taken to the update firmware wizard.';
-                    this.alertWrapper(title, subTitle)
-                        .then((data) => {
-                            //To update firmware page
-                            resolve();
-                        });
-                }
-                else {
-                    //Not connected to bridge so just say they need to connect over usb and use config page
-                    let title = 'Outdated Firmware';
-                    let subTitle = 'Your firmware is outdated. Please connect to your device over USB using the Digilent Agent and use the device configure page to update the firmware.';
-                    this.alertWrapper(title, subTitle)
-                        .then((data) => {
-                            reject(data);
-                        });
-                }
+            let oldFirmware = weightedFirmware < weightedMinFirmware;
+            console.log('OLD FIRMWARE?');
+            console.log(oldFirmware);
+            if (this.devices[deviceIndex].bridge && oldFirmware) {
+                //Agent
+                let title = 'Firmware Update Required';
+                let subtitle = 'You will now be taken to the update firmware wizard.';
+                this.alertWrapper(title, subtitle)
+                    .then((data) => {
+                        this.openUpdateFirmware(deviceIndex)
+                            .then((data) => {
+                                console.log(data);
+                                resolve(data);
+                            })
+                            .catch((e) => {
+                                console.log(e);
+                                reject(e);
+                            });
+                    })
+                    .catch((e) => {
+                        reject(e);
+                    });
+            }
+            else if (!this.devices[deviceIndex].bridge && oldFirmware) {
+                //WIFI
+                let title = 'Firmware Update Required';
+                let subtitle = 'Your firmware is outdated. Please connect to your device over USB using the Digilent Agent and use the device configure page to update the firmware.';
+                this.alertWrapper(title, subtitle, [{
+                    text: 'To Agent',
+                    handler: (data) => {
+                        let openTab = window.open('https://reference.digilentinc.com/learn/instrumentation/tutorials/openscope-mz/update-firmware', '_blank');
+                        openTab.location;
+                    }
+                }, {
+                    text: 'OK',
+                    handler: (data) => { }
+                }])
+                    .then((data) => {
+                        resolve();
+                    })
+                    .catch((e) => {
+                        reject(e);
+                    });
             }
             else {
-                resolve();
-            }*/
+                resolve('firmware up to date');
+            }
         });
     }
 
@@ -613,12 +629,12 @@ export class DeviceManagerPage {
         });
     }
 
-    private alertWrapper(title: string, subTitle: string, buttons?: string[]): Promise<any> {
+    private alertWrapper(title: string, subTitle: string, buttons?: { text: string, handler: (data) => void }[]): Promise<any> {
         return new Promise((resolve, reject) => {
             let alert = this.alertCtrl.create({
                 title: title,
                 subTitle: subTitle,
-                buttons: buttons == undefined ? ['OK'] : buttons
+                buttons: buttons == undefined ? ['OK'] : <any>buttons
             });
             alert.onWillDismiss((data) => {
                 resolve(data);
@@ -667,47 +683,52 @@ export class DeviceManagerPage {
         }
     }
 
-    openUpdateFirmware(deviceIndex: number) {
-        if (!this.devices[deviceIndex].bridge) {
-            this.toastService.createToast('deviceOutdatedFirmware', true);
-            return;
-        }
-        let loading = this.displayLoading();
-        this.agentSetActiveDeviceAndEnterJson(this.devices[deviceIndex])
-            .then((possibleError) => {
-                loading.dismiss();
-                if (possibleError && possibleError.error && possibleError.error === 'jsonMode') {
-                    this.toastService.createToast('agentEnterJsonError', true);
-                    return;
-                }
-                let modal = this.modalCtrl.create(UpdateFirmwarePage, {
-                    agentAddress: this.devices[deviceIndex].deviceBridgeAddress,
-                    deviceObject: this.devices[deviceIndex]
-                }, {
-                        enableBackdropDismiss: false
+    openUpdateFirmware(deviceIndex: number): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (!this.devices[deviceIndex].bridge) {
+                this.toastService.createToast('deviceOutdatedFirmware', true);
+                reject('Not an agent device');
+                return;
+            }
+            let loading = this.displayLoading();
+            this.agentSetActiveDeviceAndEnterJson(this.devices[deviceIndex])
+                .then((possibleError) => {
+                    loading.dismiss();
+                    if (possibleError && possibleError.error && possibleError.error === 'jsonMode') {
+                        this.toastService.createToast('agentEnterJsonError', true);
+                        return;
+                    }
+                    let modal = this.modalCtrl.create(UpdateFirmwarePage, {
+                        agentAddress: this.devices[deviceIndex].deviceBridgeAddress,
+                        deviceObject: this.devices[deviceIndex]
+                    }, {
+                            enableBackdropDismiss: false
+                        });
+                    modal.onWillDismiss((data) => {
+                        this.deviceManagerService.connect(this.devices[deviceIndex].deviceBridgeAddress).subscribe(
+                            (data) => {
+                                if (data.device && data.device[0].statusCode === 0) {
+                                    this.devices[deviceIndex].deviceDescriptor = data.device[0];
+                                    this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                                    this.getFirmwareVersionsForDevices();
+                                }
+                                resolve();
+                            },
+                            (err) => {
+                                reject(err);
+                            },
+                            () => { }
+                        );
                     });
-                modal.onWillDismiss((data) => {
-                    this.deviceManagerService.connect(this.devices[deviceIndex].deviceBridgeAddress).subscribe(
-                        (data) => {
-                            if (data.device && data.device[0].statusCode === 0) {
-                                this.devices[deviceIndex].deviceDescriptor = data.device[0];
-                                this.storage.saveData('savedDevices', JSON.stringify(this.devices));
-                                this.getFirmwareVersionsForDevices();
-                            }
-                        },
-                        (err) => {
-
-                        },
-                        () => { }
-                    );
+                    modal.present();
+                })
+                .catch((e) => {
+                    loading.dismiss();
+                    this.toastService.createToast('agentConnectError', true);
+                    console.log(e);
+                    reject(e);
                 });
-                modal.present();
-            })
-            .catch((e) => {
-                loading.dismiss();
-                this.toastService.createToast('agentConnectError', true);
-                console.log(e);
-            });
+        });
     }
 
     openLoadFirmware() {
@@ -856,7 +877,10 @@ export class DeviceManagerPage {
                 loadingInstance.dismiss();
                 this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);
                 this.devices[deviceIndex].deviceDescriptor = success.device[0];
-                this.verifyCalibrationSource(deviceIndex, success.device[0].calibrationSource)
+                this.verifyFirmware(deviceIndex)
+                    .then((data) => {
+                        return this.verifyCalibrationSource(deviceIndex, success.device[0].calibrationSource);
+                    })
                     .then((data) => {
                         this.storage.saveData('savedDevices', JSON.stringify(this.devices));
                         this.navCtrl.setRoot(TestChartCtrlsPage, {
@@ -864,7 +888,7 @@ export class DeviceManagerPage {
                         });
                     })
                     .catch((e) => {
-
+                        console.log(e);
                     });
             },
             (err) => {

@@ -108,11 +108,13 @@ export class DeviceConfigureModal {
                             this.dropdownPopRef.setActiveSelection(this.deviceObject.connectedDeviceAddress);
                             this.selectedPotentialDeviceIndex = this.potentialDevices.indexOf(this.deviceObject.connectedDeviceAddress);
                         }
-                        this.getCurrentCalibration().then(() => {
-                            loading.dismiss();
-                        }).catch((e) => {
-                            loading.dismiss();
-                        });
+                        loading.dismiss();
+                        this.deviceManagerPageRef.verifyFirmware(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex)
+                            .then(() => {
+                                return this.getCurrentCalibration();
+                            })
+                            .then(() => { })
+                            .catch((e) => { });
                     })
                     .catch((e) => {
                         console.log('Error setting active from existing');
@@ -131,6 +133,9 @@ export class DeviceConfigureModal {
                         if (data.device && data.device[0].statusCode === 0) {
                             this.deviceConfigure = true;
                             this.getNicStatus('wlan0')
+                                .then(() => {
+                                    return this.deviceManagerPageRef.verifyFirmware(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex)
+                                })
                                 .then(() => {
                                     return this.getCurrentCalibration();
                                 })
@@ -196,18 +201,18 @@ export class DeviceConfigureModal {
                         this.currentCalibration = 'Uncalibrated';
                         if (routeToCalibrationWizard) {
                             this.deviceManagerPageRef.verifyCalibrationSource(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex, 'UNCALIBRATED')
-                            .then(() => {
-                                this.getCurrentCalibration(false)
-                                    .then((data) => {
-                                        resolve(data);
-                                    })
-                                    .catch((e) => {
-                                        reject(e);
-                                    });
-                            })
-                            .catch((e) => {
-                                reject(e);
-                            });
+                                .then(() => {
+                                    this.getCurrentCalibration(false)
+                                        .then((data) => {
+                                            resolve(data);
+                                        })
+                                        .catch((e) => {
+                                            reject(e);
+                                        });
+                                })
+                                .catch((e) => {
+                                    reject(e);
+                                });
                         }
                     }
                     else {
@@ -434,19 +439,21 @@ export class DeviceConfigureModal {
                             this.invalidEnumeration = false;
 
                             if (this.deviceObject != undefined) {
+                                this.deviceObject.deviceDescriptor = data.device[0];
                                 this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
                                 this.deviceObject.ipAddress = this.deviceObject.deviceBridgeAddress + ' - ' + this.deviceObject.connectedDeviceAddress;
                                 this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices));
                                 this.deviceManagerService.addDeviceFromDescriptor(this.deviceObject.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                                 this.deviceConfigure = true;
+                                this.deviceManagerPageRef.getFirmwareVersionsForDevices();
                                 this.getNicStatus('wlan0').then(() => {
-                                    return this.deviceManagerPageRef.verifyFirmware(0);
+                                    return this.deviceManagerPageRef.verifyFirmware(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex);
                                 })
-                                .then((data) => {
-                                    this.getCurrentCalibration().catch((e) => { });
-                                }).catch((e) => {
-                                    this.getCurrentCalibration().catch((e) => { });
-                                });
+                                    .then((data) => {
+                                        this.getCurrentCalibration().catch((e) => { });
+                                    }).catch((e) => {
+                                        this.getCurrentCalibration().catch((e) => { });
+                                    });
                                 return;
                             }
 
@@ -463,11 +470,11 @@ export class DeviceConfigureModal {
                             this.getNicStatus('wlan0').then(() => {
                                 return this.deviceManagerPageRef.verifyFirmware(0);
                             })
-                            .then((data) => {
-                                this.getCurrentCalibration().catch((e) => { });
-                            }).catch((e) => {
-                                this.getCurrentCalibration().catch((e) => { });
-                            });
+                                .then((data) => {
+                                    this.getCurrentCalibration().catch((e) => { });
+                                }).catch((e) => {
+                                    this.getCurrentCalibration().catch((e) => { });
+                                });
                         },
                         (err) => {
                             console.log(err);
@@ -530,7 +537,17 @@ export class DeviceConfigureModal {
                 (data) => {
                     if (data.device && data.device[0].statusCode === 0) {
                         this.updateDeviceEnumeration(data.device[0]);
-                        this.deviceManagerPageRef.getFirmwareVersionsForDevices();
+                        console.log('MODAL DISMISS');
+                        if (data.device[0].calibrationSource != undefined) {
+                            console.log('CALLING VERIFY CALIBRATION SOURCE');
+                            this.deviceManagerPageRef.verifyCalibrationSource(this.deviceArrayIndex, data.device[0].calibrationSource)
+                                .then((data) => {
+                                    console.log(data);
+                                })
+                                .catch((e) => {
+                                    console.log(e);
+                                });
+                        }
                     }
                 },
                 (err) => {
@@ -558,8 +575,8 @@ export class DeviceConfigureModal {
         let modal = this.modalCtrl.create(WifiSetupPage, {
             deviceObject: this.deviceObject
         }, {
-            enableBackdropDismiss: false
-        });
+                enableBackdropDismiss: false
+            });
         modal.onWillDismiss((data) => {
             if (data == undefined) { return; }
             if (data.toDeviceManagerPage) {

@@ -1,26 +1,29 @@
 <ion-menu [content]="content" class="skinned-menu" swipeEnabled="false">
 
-  <ion-header>
-    <ion-toolbar>
-      <div class="menu-logo-container">
-        <img class="menu-logo" src="assets/img/waveforms-live.svg">
-      </div>
-    </ion-toolbar>
-  </ion-header>
+    <ion-header>
+        <ion-toolbar>
+            <div class="menu-logo-container">
+                <img class="menu-logo" src="assets/img/waveforms-live.svg">
+            </div>
+        </ion-toolbar>
+    </ion-header>
 
-  <ion-content>
-    <ion-list>
-      <button ion-item *ngFor="let p of pages" (click)="openPage(p)">
-        {{p.title}}
-      </button>
-      <button ion-item (click)="toFeedBack()">
-        Feedback And Support
-      </button>
-      <button ion-item (click)="toReference()">
-        Documentation
-      </button>
-    </ion-list>
-  </ion-content>
+    <ion-content>
+        <ion-list>
+            <button ion-item *ngFor="let p of pages" (tap)="openPage(p)">
+                {{p.title}}
+            </button>
+            <button ion-item (tap)="toFeedBack()">
+                Feedback And Support
+            </button>
+            <button ion-item (tap)="toReference()">
+                Documentation
+            </button>
+            <button *ngIf="isMobile" ion-item (tap)="openAppStore()">
+                Get App
+            </button>
+        </ion-list>
+    </ion-content>
 
 </ion-menu>
 

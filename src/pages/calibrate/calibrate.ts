@@ -208,7 +208,7 @@ export class CalibratePage {
             (err) => {
                 console.log(err);
                 this.calibrationFailed = true;
-                if (err.device[0].statusCode === 2684354573) {
+                if (err.device && err.device[0].statusCode === 2684354573) {
                     this.calibrationStatus = 'Error running calibration. Please check your setup and try again.';
                     return;
                 }

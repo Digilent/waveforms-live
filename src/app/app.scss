@@ -279,10 +279,17 @@ ion-checkbox .checkbox-icon.checkbox-checked
 }
 
 .alert-wrapper {
+    border-radius: 2px !important;
     background-color: #535353 !important;
     color: white;
     .alert-sub-title {
         color: #CCCCCC;
+    }
+    .alert-checkbox-group {
+        border: none;
+        button {
+            color: #CCCCCC;
+        }
     }
     .alert-button-group button {
         margin-top: 0.1rem;

@@ -289,7 +289,6 @@ export class FgenComponent {
             return;
         }
         this.waveType = waveType;
-        console.log(this.waveType);
         if (this.tutorialMode) {
             this.highlightPower();
         }
