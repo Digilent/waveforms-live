@@ -60,7 +60,7 @@ export class DeviceManagerPage {
     public showDevMenu: boolean = false;
     public selectedSimulatedDevice: string = 'OpenScope MZ';
     public deviceBridgeAddress = 'http://localhost:42135';
-    public minFirmwareVersion: string = '0.533.0';
+    public minFirmwareVersion: string = '1.4.0';
 
     public devices: DeviceCardInfo[] = [];
 
