@@ -134,6 +134,7 @@ export class DeviceConfigureModal {
                             this.deviceConfigure = true;
                             this.getNicStatus('wlan0')
                                 .then(() => {
+                                    loading.dismiss();
                                     return this.deviceManagerPageRef.verifyFirmware(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex)
                                 })
                                 .then(() => {
@@ -143,7 +144,6 @@ export class DeviceConfigureModal {
                                     return this.getCurrentCalibration();
                                 })
                                 .then(() => {
-                                    loading.dismiss();
                                 })
                                 .catch((e) => {
                                     loading.dismiss();
