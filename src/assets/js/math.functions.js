@@ -62,18 +62,27 @@ var mathFunctions = (function () {
         }
     }
 
-    var getAmplitude = function getAmplitude(chartRef, seriesNum, minIndex, maxIndex) {
-        var series = chartRef.getData();
-        var getAxes = chartRef.getAxes();
-        var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
-        //get full buffer
-        minIndex = 0;
-        maxIndex = series[seriesNum].data.length - 1;
-        var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+    var getAmplitude = function getAmplitude(chartRef, seriesNum, minIndex, maxIndex, rawDataArray) {
+        var activeIndices;
+        var sampleFreq;
+        if (rawDataArray == undefined) {
+            var series = chartRef.getData();
+            var getAxes = chartRef.getAxes();
+            var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+            minIndex = 0;
+            maxIndex = series[seriesNum].data.length - 1;
+            activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+            sampleFreq = 1 / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]);
+        }
+        else {
+            minIndex = 0;
+            maxIndex = rawDataArray.length - 1;
+            activeIndices = rawDataArray;
+            sampleFreq = 1 / (rawDataArray[1][0] - rawDataArray[0][0]);
+        }
         var real = activeIndices.map(function (element) {
             return element[1];
         });
-        var sampleFreq = 1 / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]);
         var imaginary = new Array(real.length).fill(0);
         var numSamples = real.length;
         transformBluestein(real, imaginary);
@@ -158,18 +167,27 @@ var mathFunctions = (function () {
         return magnitudeFreqArray;
     }
 
-    var getFrequency = function getFrequency(chartRef, seriesNum, minIndex, maxIndex) {
-        var series = chartRef.getData();
-        var getAxes = chartRef.getAxes();
-        var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
-        //get full buffer
-        minIndex = 0;
-        maxIndex = series[seriesNum].data.length - 1;
-        var activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+    var getFrequency = function getFrequency(chartRef, seriesNum, minIndex, maxIndex, rawDataArray) {
+        var activeIndices;
+        var sampleFreq;
+        if (rawDataArray == undefined) {
+            var series = chartRef.getData();
+            var getAxes = chartRef.getAxes();
+            var yIndexer = 'y' + (seriesNum === 0 ? '' : (seriesNum + 1).toString()) + 'axis';
+            minIndex = 0;
+            maxIndex = series[seriesNum].data.length - 1;
+            activeIndices = series[seriesNum].data.slice(minIndex, maxIndex);
+            sampleFreq = 1 / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]);
+        }
+        else {
+            minIndex = 0;
+            maxIndex = rawDataArray.length - 1;
+            activeIndices = rawDataArray;
+            sampleFreq = 1 / (rawDataArray[1][0] - rawDataArray[0][0]);
+        }
         var real = activeIndices.map(function(element) {
             return element[1];
         });
-        var sampleFreq = 1 / (series[seriesNum].data[1][0] - series[seriesNum].data[0][0]);
         var imaginary = new Array(real.length).fill(0);
         var numSamples = real.length;
         transformBluestein(real, imaginary);

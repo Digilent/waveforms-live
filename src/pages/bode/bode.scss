@@ -8,6 +8,20 @@
 .bode-container .bode-component-wrapper
 {
     width: 100%;
-    height: calc(100% - 54px);
+    height: 100%;
     position: relative;
+}
+
+.bode-container .page-row
+{
+    height: calc(100% - 54px);
+    ion-col {
+        padding: 0;
+        height: 100%;
+    }
+}
+
+.bode-container .controls-container
+{
+    max-width: 200px;
 }

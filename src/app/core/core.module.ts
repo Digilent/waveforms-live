@@ -7,6 +7,7 @@ import { DeviceManagerService } from 'dip-angular2/services';
 import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { UtilityService } from '../../services/utility/utility.service';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
         SettingsService,
         ToastService,
         TooltipService,
+        UtilityService,
         DeviceDataTransferService
     ]
 })

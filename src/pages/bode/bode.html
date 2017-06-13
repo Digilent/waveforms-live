@@ -11,7 +11,26 @@
             </ion-col>
         </ion-row>
     </div>
-    <div class="bode-component-wrapper">
-        <bode-plot></bode-plot>
-    </div>
+    <ion-row class="page-row">
+        <ion-col>
+            <div class="bode-component-wrapper">
+                <bode-plot #bodeComponent></bode-plot>
+            </div>
+        </ion-col>
+        <ion-col class="controls-container">
+            <ion-item>
+                <ion-label>Start Freq</ion-label>
+                <ion-input [ngModel]="startFreq | unitFormat:'Hz'" (focusout)="inputLeave($event, 'startFreq')" (keypress)="checkForEnter($event, 'startFreq')"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Stop Freq</ion-label>
+                <ion-input [ngModel]="stopFreq | unitFormat:'Hz'" (focusout)="inputLeave($event, 'stopFreq')" (keypress)="checkForEnter($event, 'stopFreq')"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Steps Per Decade</ion-label>
+                <ion-input [(ngModel)]="stepsPerDec"></ion-input>
+            </ion-item>
+            <button ion-button (click)="start()">hey</button>
+        </ion-col>
+    </ion-row>
 </ion-content>
