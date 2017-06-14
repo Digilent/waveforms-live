@@ -6,6 +6,7 @@ import { BodePlotComponent } from '../../components/bode-plot/bode-plot.componen
 
 //Services
 import { UtilityService } from '../../services/utility/utility.service';
+import { LoadingService } from '../../services/loading/loading.service';
 
 @Component({
     templateUrl: "bode.html"
@@ -17,16 +18,29 @@ export class BodePage {
     public stopFreq: number = 10000;
     public stepsPerDec: string = '10';
     public ignoreFocusOut: boolean = false;
+    public sweepType: SweepType = 'Log';
+    public sweepTypeArray: SweepType[] = ['Log', 'Linear'];
+    public vertScale: SweepType;
 
     constructor(
         _navCtrl: NavController,
-        private utilityService: UtilityService
+        private utilityService: UtilityService,
+        private loadingService: LoadingService
     ) {
         this.navCtrl = _navCtrl;
     }
 
     parseInputVal(input:  BodeInput) {
         
+    }
+
+    select(event, type: 'vert' | 'sweep') {
+        if (type === 'vert') {
+            this.sweepType = event;
+        }
+        else if (type === 'sweep') {
+            this.vertScale = event;
+        }
     }
     
     checkForEnter(event, input: BodeInput) {
@@ -60,9 +74,19 @@ export class BodePage {
     }
 
     start() {
-        this.bodeComponent.startSweep(this.startFreq, this.stopFreq, parseInt(this.stepsPerDec));
+        let loading = this.loadingService.displayLoading('Generating Bode Plot. Please wait...');
+        this.bodeComponent.startSweep(this.startFreq, this.stopFreq, parseInt(this.stepsPerDec))
+            .then((data) => {
+                loading.dismiss();
+                console.log(data);
+            })
+            .catch((e) => {
+                loading.dismiss();
+                console.log(e);
+            });
     }
 
 }
 
 export type BodeInput = 'startFreq' | 'stopFreq';
+export type SweepType = 'Log' | 'Linear';

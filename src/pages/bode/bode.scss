@@ -25,3 +25,29 @@
 {
     max-width: 200px;
 }
+
+.bode-container ion-grid ion-row
+{
+    padding-top: 5px;
+    font-weight: 400;
+}
+
+.bode-container .page-row .input-col {
+    padding: 0;
+    padding-right: 6px;
+}
+
+.bode-container .page-row .input-label {
+    color: #CCCCCC;
+    min-width: 80px;
+    padding-right: 0px;
+    padding-left: 15px;
+    padding-top: 0px;
+    padding-bottom: 0;
+}
+
+.bode-container .start-button
+{
+    margin-top: 0;
+    margin-right: 5px;
+}

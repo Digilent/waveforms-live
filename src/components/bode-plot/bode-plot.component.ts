@@ -44,6 +44,8 @@ export class BodePlotComponent {
             show: true
         }
     }];
+    private startTime: number;
+    private timeoutTimer: number = 20000; //20 seconds
 
     constructor(
         private deviceManagerService: DeviceManagerService
@@ -72,6 +74,7 @@ export class BodePlotComponent {
                 })
                 .subscribe(
                     (data) => {
+                        this.startTime = performance.now();
                         this.readOsc()
                             .then((data) => {
                                 console.log('read osc return');
@@ -93,8 +96,13 @@ export class BodePlotComponent {
 
     startSweep(startFreq: number, stopFreq: number, stepsPerDec: number): Promise<any> {
         this.bodeDataContainer[0].data = [];
+        let getAxes = this.bodePlot.digilentChart.getAxes();
+        getAxes.xaxis.options.min = startFreq;
+        getAxes.xaxis.options.max = stopFreq;
+        this.bodePlot.digilentChart.setupGrid();
+        this.bodePlot.digilentChart.draw();
         return new Promise((resolve, reject) => {
-            let frequencyArray = this.buildFrequencyArray(startFreq, stopFreq, stepsPerDec);
+            let frequencyArray = this.buildLogPointArray(startFreq, stopFreq, stepsPerDec);
             frequencyArray.reduce((previous, current, index, arr) => {
                 return previous.then((data) => {
                     console.log(data);
@@ -104,23 +112,25 @@ export class BodePlotComponent {
                     return this.setAwgAndSingle(arr[index]);
                 }).catch((e) => {
                     console.log(e);
-                    alert(e);
+                    return Promise.reject(e);
                 });
             }, Promise.resolve())
                 .then((data) => {
                     console.log('DONE');
                     console.log(data);
                     console.log(this.bodeDataContainer);
-                    this.bodePlot.setData(this.bodeDataContainer, true);
+                    resolve('done');
                 })
                 .catch((e) => {
                     console.log('promise chain catch');
+                    reject(e);
                 });
         });
     }
 
     private buildFrequencyArray(startFreq: number, stopFreq: number, stepsPerDec: number): number[] {
         let frequencyArray = [];
+        let testFreqArray = [];
         let frequency = startFreq;
         let step = (frequency * 10) / stepsPerDec;
         frequencyArray.push(frequency);
@@ -137,7 +147,46 @@ export class BodePlotComponent {
         if (frequencyArray.indexOf(stopFreq) === -1) {
             frequencyArray.push(stopFreq);
         }
+
+        let start = 200;
+        let finish = 10000;
+        let decades = 0;
+        while (start * Math.pow(10, ++decades) < finish) { }
+        let points = 10 * decades;
+        let logStep = decades / points;
+        for (let i = 0; i <= points; i++) {
+            testFreqArray.push(Math.pow(10, 2 + logStep * i));
+        }
+        console.log(testFreqArray);
+
         return frequencyArray;
+    }
+
+    private buildLogPointArray(start: number, finish: number, stepsPerDec: number): number[] {
+        console.log(start, finish);
+        let testFreqArray = []; 
+        let decades = 0;
+        while (start * Math.pow(10, ++decades) < finish) { }
+        let points = stepsPerDec * decades;
+        let logStep = decades / points;
+        let startPow = parseInt(start.toExponential().split('e')[1]);
+        console.log(startPow);
+        for (let i = 0; i <= points; i++) {
+            testFreqArray.push(Math.pow(10, logStep * i) * start); 
+        }
+        if (testFreqArray[testFreqArray.length - 1] > finish) {
+            let index = testFreqArray.length - 1;
+            for (let i = testFreqArray.length - 1; testFreqArray[i] > finish; i--) {
+                index = i;
+            }
+            console.log(index);
+            testFreqArray.splice(index, testFreqArray.length - index);
+        }
+        if (testFreqArray.indexOf(finish) === -1) {
+            testFreqArray.push(finish);
+        }
+        console.log(testFreqArray);
+        return testFreqArray;
     }
 
     private setAwg(newFreq: number): Observable<any> {
@@ -226,6 +275,10 @@ export class BodePlotComponent {
                         reject('page destroyed');
                         return; 
                     }
+                    if (performance.now() - this.startTime > this.timeoutTimer) {
+                        reject('timeout');
+                        return;
+                    }
                     setTimeout(() => {
                         this.readOsc()
                             .then((data) => {
@@ -249,6 +302,7 @@ export class BodePlotComponent {
         freq: freq*/
         this.bodeDataContainer[0].data.push([freq, 20 * Math.log10(amp / 1)])
         console.log(amp, freq);
+        this.bodePlot.setData(this.bodeDataContainer, false);
     }
 
     setBaselineAmp() {
@@ -258,26 +312,25 @@ export class BodePlotComponent {
     plotLoaded() {
         this.bodePlot.setData([{
             data: [
-                [100, 20 * Math.log10(.9904 / .9995)],
-                [200, 20 * Math.log10(.9585 / .9995)],
-                [300, 20 * Math.log10(.887 / .9995)],
-                [400, 20 * Math.log10(.807 / .9995)],
-                [500, 20 * Math.log10(.895 / .9995)],
-                [600, 20 * Math.log10(.860 / .9995)],
-                [700, 20 * Math.log10(.823 / .9995)],
-                [800, 20 * Math.log10(.787 / .9995)],
-                [900, 20 * Math.log10(.756 / .9995)],
-                [1000, 20 * Math.log10(.724 / .9995)],
-                [1050, 20 * Math.log10(.660 / .9995)],
-                [2000, 20 * Math.log10(.473 / .9995)],
-                [3000, 20 * Math.log10(.330 / .9995)],
-                [4000, 20 * Math.log10(.253 / .9995)],
-                [5000, 20 * Math.log10(.206 / .9995)],
-                [6000, 20 * Math.log10(.173 / .9995)],
-                [7000, 20 * Math.log10(.150 / .9995)],
-                [8000, 20 * Math.log10(.130 / .9995)],
-                [9000, 20 * Math.log10(.117 / .9995)],
-                [10000, 20 * Math.log10(.105 / .9995)]
+                [100, -0.1031],
+                [200, -0.2602],
+                [300, -0.5276],
+                [400, -0.8498],
+                [500, -1.254],
+                [600, -1.6502],
+                [700, -2.696],
+                [800, -2.5254],
+                [900, -3.5316],
+                [1000, -3.4558],
+                [2000, -7.44],
+                [3000, -10.396],
+                [4000, -12.287],
+                [5000, -14.3851],
+                [6000, -15.9033],
+                [7000, -17.2034],
+                [8000, -17.9318],
+                [9000, -19.03359],
+                [10000, -19.6577]
             ],
             yaxis: 1,
             lines: {
@@ -340,6 +393,7 @@ export class BodePlotComponent {
                 position: 'left',
                 axisLabel: 'Amplitude (dB)',
                 axisLabelColour: '#666666',
+                axisLabelPadding: 20,
                 axisLabelUseCanvas: true,
                 show: true,
                 tickColor: '#666666',

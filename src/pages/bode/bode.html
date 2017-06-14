@@ -18,19 +18,78 @@
             </div>
         </ion-col>
         <ion-col class="controls-container">
-            <ion-item>
-                <ion-label>Start Freq</ion-label>
-                <ion-input [ngModel]="startFreq | unitFormat:'Hz'" (focusout)="inputLeave($event, 'startFreq')" (keypress)="checkForEnter($event, 'startFreq')"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label>Stop Freq</ion-label>
-                <ion-input [ngModel]="stopFreq | unitFormat:'Hz'" (focusout)="inputLeave($event, 'stopFreq')" (keypress)="checkForEnter($event, 'stopFreq')"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label>Steps Per Decade</ion-label>
-                <ion-input [(ngModel)]="stepsPerDec"></ion-input>
-            </ion-item>
-            <button ion-button (click)="start()">hey</button>
+
+            <ion-grid class="ion-grid-no-padding">
+
+                <ion-row class="item-row">
+                    <ion-col center class="input-label">
+                        <span>Start Freq</span>
+                    </ion-col>
+                    <ion-col center class="input-col">
+                        <div class="label-flex">
+                            <div class="label-left">
+                                <input class="custom-input" step="any" [ngModel]="startFreq | unitFormat:'Hz'" (focusout)="inputLeave($event, 'startFreq')" (keypress)="checkForEnter($event, 'startFreq')" />
+                            </div>
+                        </div>
+                    </ion-col>
+                </ion-row>
+
+                <ion-row class="item-row">
+                    <ion-col center class="input-label">
+                        <span>Stop Freq</span>
+                    </ion-col>
+                    <ion-col center class="input-col">
+                        <div class="label-flex">
+                            <div class="label-left">
+                                <input class="custom-input" step="any" [ngModel]="stopFreq | unitFormat:'Hz'" (focusout)="inputLeave($event, 'stopFreq')" (keypress)="checkForEnter($event, 'stopFreq')" />
+                            </div>
+                        </div>
+                    </ion-col>
+                </ion-row>
+
+                <ion-row class="item-row">
+                    <ion-col center class="input-label">
+                        <span>Steps/</span>
+                    </ion-col>
+                    <ion-col center class="input-col">
+                        <div class="label-flex">
+                            <div class="label-left">
+                                <input class="custom-input" step="any" [(ngModel)]="stepsPerDec" />
+                            </div>
+                        </div>
+                    </ion-col>
+                </ion-row>
+
+                <ion-row class="item-row">
+                    <ion-col center class="input-label">
+                        <span>Sweep Type</span>
+                    </ion-col>
+                    <ion-col class="input-col" center>
+                        <div class="label-flex">
+                            <div class="label-left">
+                                <dropdown-popover [dataArray]="sweepTypeArray" (onSelection)="select($event, 'sweep')"></dropdown-popover>
+                            </div>
+                        </div>
+                    </ion-col>
+                </ion-row>
+                <ion-row class="item-row">
+                    <ion-col center class="input-label">
+                        <span>Y Axis Type</span>
+                    </ion-col>
+                    <ion-col class="input-col" center>
+                        <div class="label-flex">
+                            <div class="label-left">
+                                <dropdown-popover [dataArray]="sweepTypeArray" (onSelection)="select($event, 'vert')"></dropdown-popover>
+                            </div>
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+
+            <div text-right>
+                <button ion-button (click)="start()" class="text-button-side disable-hover start-button">Start</button>
+            </div>
+
         </ion-col>
     </ion-row>
 </ion-content>

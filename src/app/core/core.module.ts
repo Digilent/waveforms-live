@@ -6,6 +6,7 @@ import { DeviceDataTransferService } from '../../services/device/device-data-tra
 import { DeviceManagerService } from 'dip-angular2/services';
 import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
+import { LoadingService } from '../../services/loading/loading.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 import { UtilityService } from '../../services/utility/utility.service';
 
@@ -20,6 +21,7 @@ import { UtilityService } from '../../services/utility/utility.service';
         ToastService,
         TooltipService,
         UtilityService,
+        LoadingService,
         DeviceDataTransferService
     ]
 })
