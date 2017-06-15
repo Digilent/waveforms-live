@@ -227,7 +227,7 @@ export class DeviceManagerPage {
 
     openPopover(event, arrayIndex: number) {
         let genPopover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['Connect', 'Configure', 'Documentation', 'Remove']
+            dataArray: ['Instrument Panel', 'Configure', 'Documentation', 'Remove']
         });
         genPopover.present({
             ev: event
@@ -238,7 +238,7 @@ export class DeviceManagerPage {
                 this.devices.splice(arrayIndex, 1);
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
             }
-            else if (data.option === 'Connect') {
+            else if (data.option === 'Instrument Panel') {
                 this.connectToDevice(arrayIndex);
             }
             else if (data.option === 'Configure') {

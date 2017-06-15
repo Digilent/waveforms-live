@@ -1,0 +1,32 @@
+<ion-content class="calibration-container">
+
+    <ion-slides #bodeSlider>
+
+        <ion-slide class="slide-container">
+            <div class="content-container">
+                <div class="slide-header">Bode Calibration</div>
+                <div class="bode-slide-content">
+                    Please connect Osc Ch 1 to Wavegen Ch 1 and click begin.
+                </div>
+                <div class="navigation-button-container">
+                    <ion-row>
+                        <ion-col text-left>
+                            <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal(false)">
+                                <img class="custom-image-button" src="assets/img/close.svg" />
+                                Close
+                            </button>
+                        </ion-col>
+                        <ion-col text-right>
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="runBodeInit()">
+                                Begin
+                                <img class="custom-image-button" src="assets/img/arrow-forward.svg">
+                            </button>
+                        </ion-col>
+                    </ion-row>
+                </div>
+            </div>
+        </ion-slide>
+
+    </ion-slides>
+
+</ion-content>

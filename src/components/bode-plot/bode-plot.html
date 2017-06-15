@@ -1,3 +1,10 @@
-<div class="bode-component-container">
-    <digilent-chart #bodePlot [flotOptions]="bodePlotOptions" chartId="bodePlot" (chartLoad)="plotLoaded()"></digilent-chart>
+<div class="bode-component-wrapper">
+    <div class="bode-component-container">
+        <digilent-chart #bodePlot [flotOptions]="bodePlotOptions" chartId="bodePlot" (chartLoad)="plotLoaded()"></digilent-chart>
+    </div>
+    <div class="button-container">
+        <button ion-button class="chart-button disable-hover" (tap)="autoscaleAllAxes()" [tooltip]="tooltipService.getTooltip('chartAutoscale').message" [tooltipAnimation]="true" tooltipPlacement="left">
+            <img class="button-side-svg" src="assets/img/fullscreen.svg" />
+        </button>
+    </div>
 </div>

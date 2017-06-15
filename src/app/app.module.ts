@@ -6,8 +6,8 @@ import { CoreModule } from './core/core.module';
 import { SettingsModule } from '../pages/settings/settings.module';
 import { InstrumentPanelModule } from '../pages/test-chart-ctrls/test-chart-ctrls.module';
 import { DeviceManagerPageModule } from '../pages/device-manager-page/device-manager-page.module';
-import { ProtocolTestPanelModule } from '../pages/protocol-test-panel/protocol-test-panel.module';
 import { BodePageModule } from '../pages/bode/bode.module'; 
+import { BodeModalPageModule } from '../pages/bode-modal/bode-modal.module';
 
 //Services
 import { CommandUtilityService } from '../services/device/command-utility.service';
@@ -17,12 +17,12 @@ import { CommandUtilityService } from '../services/device/command-utility.servic
         MyApp,
     ],
     imports: [
-        ProtocolTestPanelModule,
         CoreModule,
         SettingsModule,
         InstrumentPanelModule,
         DeviceManagerPageModule,
         BodePageModule,
+        BodeModalPageModule,
         IonicModule.forRoot(MyApp)
     ],
     bootstrap: [IonicApp],

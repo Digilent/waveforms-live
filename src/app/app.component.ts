@@ -5,12 +5,12 @@ import { StatusBar, Splashscreen } from 'ionic-native';
 //Pages
 import { TestChartCtrlsPage } from '../pages/test-chart-ctrls/test-chart-ctrls';
 import { SettingsPage } from '../pages/settings/settings';
-import { ProtocolTestPanel } from '../pages/protocol-test-panel/protocol-test-panel';
 import { DeviceManagerPage } from '../pages/device-manager-page/device-manager-page';
 import { BodePage } from '../pages/bode/bode';
 
 //Services
 import { SettingsService } from '../services/settings/settings.service';
+import { DeviceManagerService } from 'dip-angular2/services';
 
 @Component({
     templateUrl: 'app.html'
@@ -26,16 +26,15 @@ export class MyApp {
     constructor(
         public platform: Platform,
         public menu: MenuController,
-        _settingsService: SettingsService
+        _settingsService: SettingsService,
+        public deviceManagerService: DeviceManagerService
     ) {
         this.initializeApp();
         // set our app's pages
         this.pages = [
             //{ title: 'Instrument Panel', component: TestChartCtrlsPage },
             { title: 'Device Manager', component: DeviceManagerPage },
-            { title: 'Settings', component: SettingsPage },
-            { title: 'Test Panel', component: ProtocolTestPanel },
-            { title: 'Bode Plot', component: BodePage }
+            { title: 'Settings', component: SettingsPage }
         ];
         this.settingsService = _settingsService;
         //this.settingsService.changeConsoleLog('None');
@@ -57,6 +56,11 @@ export class MyApp {
             StatusBar.styleDefault();
             Splashscreen.hide();
         });
+    }
+
+    openBode() {
+        this.nav.push(BodePage);
+        this.menu.close();
     }
 
     toFeedBack() {

@@ -1,11 +1,17 @@
 import { Component, Output, ViewChild, EventEmitter } from '@angular/core';
+import { ModalController } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
+
+//Pages
+import { BodeModalPage } from '../../pages/bode-modal/bode-modal';
 
 //Components
 import { DigilentChart } from 'digilent-chart-angular2/modules';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
+import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { LoadingService } from '../../services/loading/loading.service';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
@@ -46,12 +52,30 @@ export class BodePlotComponent {
     }];
     private startTime: number;
     private timeoutTimer: number = 20000; //20 seconds
+    private initialAmplitude: number = 1;
+    private currentDataFormat: 'log' | 'linear' = 'log';
+    private logLabel = 'Amplitude (dB)';
+    private linLabel = 'Amplitude (V)';
+    private startFreq: number;
+    private stopFreq: number;
 
     constructor(
-        private deviceManagerService: DeviceManagerService
+        private deviceManagerService: DeviceManagerService,
+        public tooltipService: TooltipService,
+        private modalCtrl: ModalController,
+        private loadingService: LoadingService
     ) {
-        this.bodePlotOptions = this.generateBodeOptions();
+        this.bodePlotOptions = this.generateBodeOptions(true, true);
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+        this.activeDevice.resetInstruments().subscribe(
+            (data) => {
+                console.log(data);
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => { }
+        );
         if (this.activeDevice == undefined) {
             throw 'No Active Device';
         }
@@ -94,70 +118,73 @@ export class BodePlotComponent {
         
     }
 
-    startSweep(startFreq: number, stopFreq: number, stepsPerDec: number): Promise<any> {
+    startSweep(startFreq: number, stopFreq: number, stepsPerDec: number, logX: boolean, logY: boolean, sweepType: SweepType): Promise<any> {
+        this.startFreq = startFreq;
+        this.stopFreq = stopFreq;
         this.bodeDataContainer[0].data = [];
+        this.currentDataFormat = logY ? 'log' : 'linear';
+
         let getAxes = this.bodePlot.digilentChart.getAxes();
+        getAxes.yaxis.options.axisLabel = logY ? this.logLabel : this.linLabel;
+        console.log(getAxes);
         getAxes.xaxis.options.min = startFreq;
         getAxes.xaxis.options.max = stopFreq;
         this.bodePlot.digilentChart.setupGrid();
         this.bodePlot.digilentChart.draw();
         return new Promise((resolve, reject) => {
-            let frequencyArray = this.buildLogPointArray(startFreq, stopFreq, stepsPerDec);
-            frequencyArray.reduce((previous, current, index, arr) => {
-                return previous.then((data) => {
-                    console.log(data);
-                    console.log(previous, index);
-                    console.log(arr.length);
-                    console.log('continuing!!!');
-                    return this.setAwgAndSingle(arr[index]);
-                }).catch((e) => {
-                    console.log(e);
-                    return Promise.reject(e);
-                });
-            }, Promise.resolve())
+            this.displayBodeModal()
                 .then((data) => {
-                    console.log('DONE');
                     console.log(data);
-                    console.log(this.bodeDataContainer);
-                    resolve('done');
+                    if (!data) {
+                        reject('interrupted');
+                        return;
+                    }
+                    console.log('TODO DATA');
+                    let loading = this.loadingService.displayLoading('Generating Bode Plot. Please wait...');
+                    let frequencyArray;
+                    if (sweepType === 'Log') {
+                        frequencyArray = this.buildLogPointArray(startFreq, stopFreq, stepsPerDec);
+                    }
+                    else if (sweepType === 'Linear') {
+                        frequencyArray = this.buildFrequencyArray(startFreq, stopFreq, stepsPerDec);
+                    }
+                    frequencyArray.reduce((previous, current, index, arr) => {
+                        return previous.then((data) => {
+                            console.log(data);
+                            console.log(previous, index);
+                            console.log(arr.length);
+                            console.log('continuing!!!');
+                            return this.setAwgAndSingle(arr[index]);
+                        }).catch((e) => {
+                            console.log(e);
+                            return Promise.reject(e);
+                        });
+                    }, Promise.resolve())
+                        .then((data) => {
+                            console.log('DONE');
+                            console.log(data);
+                            console.log(this.bodeDataContainer);
+                            loading.dismiss();
+                            resolve('done');
+                        })
+                        .catch((e) => {
+                            console.log('promise chain catch');
+                            loading.dismiss();
+                            reject(e);
+                        });
                 })
                 .catch((e) => {
-                    console.log('promise chain catch');
-                    reject(e);
+                    //TODO display error
                 });
         });
     }
 
     private buildFrequencyArray(startFreq: number, stopFreq: number, stepsPerDec: number): number[] {
         let frequencyArray = [];
-        let testFreqArray = [];
-        let frequency = startFreq;
-        let step = (frequency * 10) / stepsPerDec;
-        frequencyArray.push(frequency);
-        while (frequency + step <= stopFreq) {
-            console.log('STEP');
-            console.log(step);
-            for (let i = 0; i < stepsPerDec - 1 && frequency + step <= stopFreq; i++) {
-                frequency = frequency + step;
-                frequencyArray.push(frequency);
-                console.log(frequency);
-            }
-            step = (frequency * 10) / stepsPerDec;
+        let step = (stopFreq - startFreq) / stepsPerDec;
+        for (let i = startFreq; i <= stopFreq; i = i + step) {
+            frequencyArray.push(i);
         }
-        if (frequencyArray.indexOf(stopFreq) === -1) {
-            frequencyArray.push(stopFreq);
-        }
-
-        let start = 200;
-        let finish = 10000;
-        let decades = 0;
-        while (start * Math.pow(10, ++decades) < finish) { }
-        let points = 10 * decades;
-        let logStep = decades / points;
-        for (let i = 0; i <= points; i++) {
-            testFreqArray.push(Math.pow(10, 2 + logStep * i));
-        }
-        console.log(testFreqArray);
 
         return frequencyArray;
     }
@@ -222,6 +249,19 @@ export class BodePlotComponent {
                     },
                     () => { }
                 );
+        });
+    }
+
+    private displayBodeModal(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let modal = this.modalCtrl.create(BodeModalPage, {
+                bodePlotComponent: this
+            });
+            modal.onWillDismiss((data) => {
+                console.log(data);
+                resolve(data);
+            });
+            modal.present();
         });
     }
 
@@ -300,49 +340,58 @@ export class BodePlotComponent {
         let freq = mathFunctions.getFrequency(this.bodePlot.digilentChart, 0, 0, 1000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
         /*db: 20 * Math.log10(amp / 1),
         freq: freq*/
-        this.bodeDataContainer[0].data.push([freq, 20 * Math.log10(amp / 1)])
+        console.log('CURRENT DATA FORMAT');
+        console.log(this.currentDataFormat);
+        this.bodeDataContainer[0].data.push([freq, this.currentDataFormat === 'log' ? 20 * Math.log10(amp / this.initialAmplitude) : amp]);
+        console.log('AMP AND FREQ');
         console.log(amp, freq);
+        console.log(this.bodePlotOptions);
         this.bodePlot.setData(this.bodeDataContainer, false);
     }
 
-    setBaselineAmp() {
+    setBaselineAmp(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.setAwgAndSingle(this.startFreq)
+                .then((data) => {
+                    console.log(data);
+                    this.initialAmplitude = mathFunctions.getAmplitude(this.bodePlot.digilentChart, 0, 0, 1000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
+                    resolve(this.initialAmplitude);
+                })
+                .catch((e) => {
+                    console.log(e);
+                    reject(e);
+                });
 
+        });
+    }
+
+    transformToLog(axis: 'y' | 'x') {
+        if (axis === 'y' && this.currentDataFormat === 'log') { return; }
+        let getAxes = this.bodePlot.digilentChart.getAxes();
+        getAxes.yaxis.options.axisLabel = this.logLabel;
+        for (let i = 0; i < this.bodeDataContainer[0].data.length; i++) {
+            this.bodeDataContainer[0].data[i][axis === 'y' ? 1 : 0] = (axis === 'y' ? 20 * Math.log10(this.bodeDataContainer[0].data[i][1] / this.initialAmplitude) : Math.log10(this.bodeDataContainer[0].data[i][0]));
+        }
+        this.currentDataFormat = 'log';
+        this.bodePlot.setData(this.bodeDataContainer);
+    }
+
+    transformToLinear(axis: 'y' | 'x') {
+        if (axis === 'y' && this.currentDataFormat === 'linear') { return; }
+        let getAxes = this.bodePlot.digilentChart.getAxes();
+        getAxes.yaxis.options.axisLabel = this.linLabel;
+        for (let i = 0; i < this.bodeDataContainer[0].data.length; i++) {
+            this.bodeDataContainer[0].data[i][axis === 'y' ? 1 : 0] = (axis === 'y' ? this.initialAmplitude * Math.pow(10, this.bodeDataContainer[0].data[i][1] / 20) : Math.pow(10, this.bodeDataContainer[0].data[i][0]));
+        }
+        this.currentDataFormat = 'linear';
+        this.bodePlot.setData(this.bodeDataContainer);
     }
 
     plotLoaded() {
-        this.bodePlot.setData([{
-            data: [
-                [100, -0.1031],
-                [200, -0.2602],
-                [300, -0.5276],
-                [400, -0.8498],
-                [500, -1.254],
-                [600, -1.6502],
-                [700, -2.696],
-                [800, -2.5254],
-                [900, -3.5316],
-                [1000, -3.4558],
-                [2000, -7.44],
-                [3000, -10.396],
-                [4000, -12.287],
-                [5000, -14.3851],
-                [6000, -15.9033],
-                [7000, -17.2034],
-                [8000, -17.9318],
-                [9000, -19.03359],
-                [10000, -19.6577]
-            ],
-            yaxis: 1,
-            lines: {
-                show: true
-            },
-            points: {
-                show: true
-            }
-        }], true);
+        
     }
 
-    generateBodeOptions() {
+    generateBodeOptions(logX: boolean, logY: boolean) {
         let fftChartOptions = {
             series: {
                 lines: {
@@ -363,7 +412,7 @@ export class BodePlotComponent {
                 margin: {
                     top: 15,
                     left: 10,
-                    right: 27,
+                    right: 28,
                     bottom: 10
                 }
             },
@@ -391,7 +440,7 @@ export class BodePlotComponent {
             cursorMoveOnPan: true,
             yaxis: {
                 position: 'left',
-                axisLabel: 'Amplitude (dB)',
+                axisLabel: this.linLabel,
                 axisLabelColour: '#666666',
                 axisLabelPadding: 20,
                 axisLabelUseCanvas: true,
@@ -403,14 +452,48 @@ export class BodePlotComponent {
             },
             xaxis: {
                 tickColor: '#666666',
-                transform: ((xVal) => { return xVal === 0 ? 0.0001 : Math.log10(xVal) }),
-                inverseTransform: ((xVal) => { return xVal === 0.0001 ? 0 : Math.pow(10, xVal) }),
-                tickFormatter: ((val, axis) => { return this.unitFormatPipeInstance.transform(val, 'Hz') }),
+                ticks: this.tickGenerator,
+                tickFormatter: ((val, axis) => { 
+                    let intVal = parseInt(val);
+                    if (intVal === 1 || intVal === 10 || intVal === 100 || intVal === 1000 || intVal === 10000 || intVal === 100000 || intVal === 1000000 || intVal === 10000000) {
+                        return this.unitFormatPipeInstance.transform(val, 'Hz');
+                    }
+                    return '';
+                }),
                 font: {
                     color: '#666666'
                 }
             }
         }
+        if (logY) {
+            console.log('changing label to DB!!!!!!');
+            fftChartOptions.yaxis.axisLabel = this.logLabel;
+        }
+        if (logX) {
+            fftChartOptions.xaxis['transform'] = ((xVal) => { return xVal === 0 ? 0.0001 : Math.log10(xVal) });
+            fftChartOptions.xaxis['inverseTransform'] = ((xVal) => { return xVal === 0.0001 ? 0 : Math.pow(10, xVal) });
+        }
+        console.log(fftChartOptions);
         return fftChartOptions;
     }
+
+    autoscaleAllAxes() {
+        this.bodePlot.setData(this.bodeDataContainer, true);
+    }
+
+    private tickGenerator(axis): number[] {
+        let min = axis.min;
+        let max = axis.max;
+        let startPow = parseInt(parseFloat(min).toExponential().split('e')[1]);
+        let finishPow = parseInt(parseFloat(max).toExponential().split('e')[1]);
+        let ticks = [];
+        for (let i = startPow; i < finishPow; i++) {
+            for (let j = 1; j < 11; j++) {
+                ticks.push(j * Math.pow(10, i));
+            }
+        }
+        return ticks;
+    }
 }
+
+export type SweepType = 'Log' | 'Linear';

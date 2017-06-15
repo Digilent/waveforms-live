@@ -2,18 +2,16 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
-import { ProtocolTestPanel } from './protocol-test-panel';
-
+import { BodeModalPage } from './bode-modal';
+ 
 @NgModule({
     imports: [
         SharedModule,
-        IonicModule.forRoot(ProtocolTestPanel)
+        IonicModule.forRoot(BodeModalPage)
     ],
     declarations: [
-        ProtocolTestPanel
+        BodeModalPage
     ],
-    exports: [
-        ProtocolTestPanel
-    ]
+    exports: [BodeModalPage]
 })
-export class ProtocolTestPanelModule { }
+export class BodeModalPageModule { }

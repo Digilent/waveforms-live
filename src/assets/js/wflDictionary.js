@@ -92,6 +92,12 @@ var waveformsLiveDictionary = (function() {
         genericSingleError: {
             english: 'Error Starting Acquisition. Please Try Again'
         },
+        bodeInvalidRange: {
+            english: 'Error Starting. Invalid Frequency Range'
+        },
+        bodeAborted: {
+            english: 'Bode Plot Aborted'
+        },
 
         //Agent
         //Appears when a user tries to add an agent that already exists.
@@ -238,6 +244,9 @@ var waveformsLiveDictionary = (function() {
         },
         chartToggleFft: {
             english: 'Toggle FFT View'
+        },
+        chartToBode: {
+            english: 'To Bode Page'
         },
         chartResetDevice: {
             english: 'Reset Device And ReInitialize'

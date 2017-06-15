@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, ViewChild, trigger, state, style, transition, animate, ViewContainerRef, ComponentFactoryResolver, ComponentRef } from '@angular/core';
-import { ModalController, Platform, PopoverController } from 'ionic-angular';
+import { ModalController, Platform, PopoverController, NavController } from 'ionic-angular';
 import { Transfer } from 'ionic-native';
 
 //Components
@@ -13,6 +13,7 @@ import { ChartAnnotationComponent } from '../chart-annotation/chart-annotation.c
 //Pages
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
+import { BodePage } from '../../pages/bode/bode';
 
 //Interfaces
 import { Chart, CursorPositions, DataContainer } from './chart.interface';
@@ -116,7 +117,8 @@ export class SilverNeedleChart {
         _tooltipService: TooltipService,
         public deviceDataTransferService: DeviceDataTransferService,
         private containerRef: ViewContainerRef,
-        private compFactoryResolver: ComponentFactoryResolver
+        private compFactoryResolver: ComponentFactoryResolver,
+        private navCtrl: NavController
     ) {
         this.modalCtrl = _modalCtrl;
         this.settingsService = _settingsService;
@@ -394,6 +396,15 @@ export class SilverNeedleChart {
             }
         }
         return fftChartOptions;
+    }
+
+    toBode() {
+        this.navCtrl.push(BodePage, {
+            onBodeDismiss: (() => {
+                console.log('bode dismiss');
+                this.resetDevice.emit();
+            })
+        });
     }
 
     generateFftYaxisOptions() {

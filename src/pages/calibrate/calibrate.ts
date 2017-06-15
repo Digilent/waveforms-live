@@ -51,7 +51,7 @@ export class CalibratePage {
         this.getCalibrationInstructions();
     }
 
-    //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it
+    //Need to use this lifecycle hook to make sure the slider exists before trying to get a reference to it
     ionViewDidEnter() {
         let swiperInstance: any = this.slider.getSlider();
         if (swiperInstance == undefined) {
