@@ -412,7 +412,10 @@ export class FgenComponent {
             }
             this.activeDevice.multiCommand(singleCommand).subscribe(
                 (data) => {
-                    //console.log(data);
+                    console.log(data);
+                    if (data.command && data.command == 'setRegularWaveform') {
+                        this.frequency = data.actualSignalFreq / 1000;
+                    }
                     this.awaitingResponse = false;
                 },
                 (err) => {

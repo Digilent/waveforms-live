@@ -12,6 +12,7 @@ import { DigilentChart } from 'digilent-chart-angular2/modules';
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 import { LoadingService } from '../../services/loading/loading.service';
+import { StorageService } from '../../services/storage/storage.service';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
@@ -51,19 +52,21 @@ export class BodePlotComponent {
         }
     }];
     private startTime: number;
-    private timeoutTimer: number = 20000; //20 seconds
-    private initialAmplitude: number = 1;
+    private timeoutTimer: number = 120000; //20 seconds
+    public initialAmplitude: number = 1;
     private currentDataFormat: 'log' | 'linear' = 'log';
     private logLabel = 'Amplitude (dB)';
     private linLabel = 'Amplitude (V)';
     private startFreq: number;
     private stopFreq: number;
+    private calibrationData: number[][];
 
     constructor(
         private deviceManagerService: DeviceManagerService,
         public tooltipService: TooltipService,
         private modalCtrl: ModalController,
-        private loadingService: LoadingService
+        private loadingService: LoadingService,
+        private storageService: StorageService
     ) {
         this.bodePlotOptions = this.generateBodeOptions(true, true);
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
@@ -79,18 +82,25 @@ export class BodePlotComponent {
         if (this.activeDevice == undefined) {
             throw 'No Active Device';
         }
+        this.loadPreviousCalibration()
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((e) => {
+                console.log(e);
+            });
     }
 
     ngOnDestroy() {
         this.destroyed = true;
     }
 
-    setAwgAndSingle(newFreq: number): Promise<any> {
+    setAwgAndSingle(newFreq: number, doNotPlotPoint?: boolean): Promise<any> {
         return new Promise((resolve, reject) => {
             this.setAwg(newFreq)
                 .flatMap((data) => {
                     console.log(data);
-                    return this.setOsc(Math.min(500 * data / 1000, this.activeDevice.instruments.osc.chans[this.oscchan - 1].sampleFreqMax / 1000))
+                    return this.setOsc(Math.min(10 * data / 1000, this.activeDevice.instruments.osc.chans[this.oscchan - 1].sampleFreqMax / 1000))
                 })
                 .flatMap((data) => {
                     console.log(data);
@@ -99,7 +109,7 @@ export class BodePlotComponent {
                 .subscribe(
                     (data) => {
                         this.startTime = performance.now();
-                        this.readOsc()
+                        this.readOsc(doNotPlotPoint)
                             .then((data) => {
                                 console.log('read osc return');
                                 resolve(data);
@@ -252,6 +262,83 @@ export class BodePlotComponent {
         });
     }
 
+    private saveCalibration(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.saveCalibrationToDevice()
+                .then((data) => {
+                    console.log(data);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+            this.saveCalibrationToLocalStorage()
+                .then((data) => {
+                    console.log(data);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        });
+    }
+
+    private saveCalibrationToDevice(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            reject('not implemented');
+        });
+    }
+
+    private saveCalibrationToLocalStorage(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.storageService.saveData('bodeCalibration', JSON.stringify({
+                bodeCalibrationData: this.calibrationData
+            }));
+        });
+    }
+
+    private loadPreviousCalibration(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.loadPreviousCalibrationFromDevice()
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((e) => {
+                    this.loadPreviousCalibrationFromLocalStorage()
+                        .then((data) => {
+                            resolve(data);
+                        })
+                        .catch((e) => {
+                            reject(e);
+                        });
+                });
+        });
+    }
+
+    private loadPreviousCalibrationFromDevice(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            reject('not implemented');
+        });
+    }
+
+    private loadPreviousCalibrationFromLocalStorage(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.storageService.getData('bodeCalibration')
+                .then((data) => {
+                    if (data != undefined) {
+                        console.log(data);
+                        resolve(data);
+                    }
+                    else {
+                        console.log('no bode calibration data found');
+                        reject('not found');
+                    }
+                })
+                .catch((e) => {
+                    console.log(e);
+                    reject(e);
+                });
+        });
+    }
+
     private displayBodeModal(): Promise<any> {
         return new Promise((resolve, reject) => {
             let modal = this.modalCtrl.create(BodeModalPage, {
@@ -267,15 +354,14 @@ export class BodePlotComponent {
 
     private setOsc(sampleFreq: number): Observable<any> {
         return Observable.create((observer) => {
-            this.activeDevice.instruments.osc.setParameters([this.oscchan], [this.vOffset], [0.25], [sampleFreq], [1000], [0])
+
+            let bufferSize = (Math.floor(sampleFreq) % 2 === 0 ? Math.floor(sampleFreq) : Math.floor(sampleFreq) + 1);
+            console.log(bufferSize);
+            this.activeDevice.instruments.osc.setParameters([this.oscchan], [this.vOffset], [1], [sampleFreq], [Math.min(Math.max(10, bufferSize), 32000)], [0])
                 .flatMap((data) => {
                     console.log(data);
                     let sourceObject = {
-                        instrument: 'osc',
-                        channel: this.oscchan,
-                        type: 'risingEdge',
-                        lowerThreshold: this.vOffset * 1000 - 30,
-                        upperThreshold: this.vOffset * 1000
+                        instrument: 'force'
                     };
                     let targetsObject = {
                         osc: [this.oscchan]
@@ -301,11 +387,15 @@ export class BodePlotComponent {
         return this.activeDevice.instruments.trigger.single([1]);
     }
 
-    private readOsc(): Promise<any> {
+    private readOsc(doNotPlotPoint?: boolean): Promise<any> {
         return new Promise((resolve, reject) => {
             this.activeDevice.instruments.osc.read([this.oscchan]).subscribe(
                 (data) => {
                     console.log(data);
+                    if (doNotPlotPoint != undefined && doNotPlotPoint === true) {
+                        resolve(data);
+                        return;
+                    }
                     this.calculateFft();
                     resolve(data);
                 },
@@ -320,7 +410,7 @@ export class BodePlotComponent {
                         return;
                     }
                     setTimeout(() => {
-                        this.readOsc()
+                        this.readOsc(doNotPlotPoint)
                             .then((data) => {
                                 resolve(data);
                             })
@@ -336,12 +426,16 @@ export class BodePlotComponent {
 
     private calculateFft() {
         console.log(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex]);
-        let amp = mathFunctions.getAmplitude(this.bodePlot.digilentChart, 0, 0, 1000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
-        let freq = mathFunctions.getFrequency(this.bodePlot.digilentChart, 0, 0, 1000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
+        let amp = mathFunctions.getAmplitude(this.bodePlot.digilentChart, 0, 0, 32000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
+        let freq = mathFunctions.getFrequency(this.bodePlot.digilentChart, 0, 0, 32000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
         /*db: 20 * Math.log10(amp / 1),
         freq: freq*/
         console.log('CURRENT DATA FORMAT');
         console.log(this.currentDataFormat);
+        //Stop at 10mV floor
+        if (amp < 0.01) {
+            return;
+        }
         this.bodeDataContainer[0].data.push([freq, this.currentDataFormat === 'log' ? 20 * Math.log10(amp / this.initialAmplitude) : amp]);
         console.log('AMP AND FREQ');
         console.log(amp, freq);
@@ -351,10 +445,10 @@ export class BodePlotComponent {
 
     setBaselineAmp(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.setAwgAndSingle(this.startFreq)
+            this.setAwgAndSingle(this.startFreq, true)
                 .then((data) => {
                     console.log(data);
-                    this.initialAmplitude = mathFunctions.getAmplitude(this.bodePlot.digilentChart, 0, 0, 1000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
+                    this.initialAmplitude = mathFunctions.getAmplitude(this.bodePlot.digilentChart, 0, 0, 32000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
                     resolve(this.initialAmplitude);
                 })
                 .catch((e) => {

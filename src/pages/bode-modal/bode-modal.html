@@ -6,7 +6,7 @@
             <div class="content-container">
                 <div class="slide-header">Bode Calibration</div>
                 <div class="bode-slide-content">
-                    Please connect Osc Ch 1 to Wavegen Ch 1 and click begin.
+                    Please connect Osc Ch 1 to Wavegen Ch 1 and click calibrate.
                 </div>
                 <div class="navigation-button-container">
                     <ion-row>
@@ -18,7 +18,26 @@
                         </ion-col>
                         <ion-col text-right>
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="runBodeInit()">
-                                Begin
+                                Calibrate
+                                <img class="custom-image-button" src="assets/img/arrow-forward.svg">
+                            </button>
+                        </ion-col>
+                    </ion-row>
+                </div>
+            </div>
+        </ion-slide>
+
+        <ion-slide class="slide-container">
+            <div class="content-container">
+                <div class="slide-header">Calibration Complete</div>
+                <div class="bode-slide-content">
+                    Calibration completed. Measured amplitude was {{initialAmplitude}}. Connect Osc Ch 1 and Wavegen Ch 1 back to your circuit and click start.
+                </div>
+                <div class="navigation-button-container">
+                    <ion-row>
+                        <ion-col text-right>
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal(true)">
+                                Start
                                 <img class="custom-image-button" src="assets/img/arrow-forward.svg">
                             </button>
                         </ion-col>
