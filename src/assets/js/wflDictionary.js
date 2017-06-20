@@ -98,6 +98,9 @@ var waveformsLiveDictionary = (function() {
         bodeAborted: {
             english: 'Bode Plot Aborted'
         },
+        bodeCalibrate: {
+            english: 'Calibrate'
+        },
 
         //Agent
         //Appears when a user tries to add an agent that already exists.

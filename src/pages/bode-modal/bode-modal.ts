@@ -7,6 +7,9 @@ import { BodePlotComponent } from '../../components/bode-plot/bode-plot.componen
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 
+//Services
+import { LoadingService } from '../../services/loading/loading.service';
+
 @Component({
     templateUrl: 'bode-modal.html',
 })
@@ -14,13 +17,15 @@ export class BodeModalPage {
     @ViewChild('bodeSlider') slider: Slides;
     private bodePlotComponent: BodePlotComponent;
     private unitFormatPipe: UnitFormatPipe;
-    public initialAmplitude: string;
+    private exitAfterCalibration: boolean;
 
     constructor(
         private viewCtrl: ViewController,
-        private navParams: NavParams
+        private navParams: NavParams,
+        private loadingService: LoadingService
     ) {
         this.bodePlotComponent = this.navParams.get('bodePlotComponent');
+        this.exitAfterCalibration = this.navParams.get('exit');
         this.unitFormatPipe = new UnitFormatPipe();
     }
 
@@ -34,17 +39,29 @@ export class BodeModalPage {
             return;
         }
         swiperInstance.lockSwipes();
+        if (this.bodePlotComponent.calibrationData == undefined) {
+            this.runBodeInit();
+        }
+        else {
+            this.toSlide(1, true);
+        }
     }
 
     runBodeInit() {
-        this.bodePlotComponent.setBaselineAmp()
+        let loading = this.loadingService.displayLoading('Running Calibration...');
+        this.bodePlotComponent.calibrate()
             .then((data) => {
                 console.log(data);
+                loading.dismiss();
+                if (this.exitAfterCalibration) {
+                    this.closeModal(true);
+                    return;
+                }
                 this.toSlide(1);
-                this.initialAmplitude = this.unitFormatPipe.transform(this.bodePlotComponent.initialAmplitude, 'V');
             })
             .catch((e) => {
                 console.log(e);
+                loading.dismiss();
                 //TODO display error
             });
     }

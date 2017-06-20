@@ -71,7 +71,10 @@ export class BodePage {
 
     formatInputAndUpdate(event, input:  BodeInput) {
         let min = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
-        let max = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;    
+        let max = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
+        max = Math.min(max, this.activeDevice.instruments.osc.chans[0].sampleFreqMax / 1000 / 10);
+        //The max frequency has to be 10x less than the max allowable so the sampling frequency can be 10x signal frequency 
+        //for FFT step size to hit signal frequency perfectly 
         switch (input) {
             case 'startFreq':     
                 this.startFreq = Math.min(Math.max(min, this.utilityService.parseBaseNumberVal(event)), max);

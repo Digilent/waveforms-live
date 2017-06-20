@@ -53,13 +53,12 @@ export class BodePlotComponent {
     }];
     private startTime: number;
     private timeoutTimer: number = 120000; //20 seconds
-    public initialAmplitude: number = 1;
     private currentDataFormat: 'log' | 'linear' = 'log';
     private logLabel = 'Amplitude (dB)';
     private linLabel = 'Amplitude (V)';
     private startFreq: number;
     private stopFreq: number;
-    private calibrationData: number[][];
+    public calibrationData: number[][];
 
     constructor(
         private deviceManagerService: DeviceManagerService,
@@ -85,6 +84,7 @@ export class BodePlotComponent {
         this.loadPreviousCalibration()
             .then((data) => {
                 console.log(data);
+                this.calibrationData = data;
             })
             .catch((e) => {
                 console.log(e);
@@ -100,7 +100,8 @@ export class BodePlotComponent {
             this.setAwg(newFreq)
                 .flatMap((data) => {
                     console.log(data);
-                    return this.setOsc(Math.min(10 * data / 1000, this.activeDevice.instruments.osc.chans[this.oscchan - 1].sampleFreqMax / 1000))
+                    let samplingObject = this.calcIdealSampleFreqAndBufferSize(data);
+                    return this.setOsc(samplingObject.sampleFreq, samplingObject.bufferSize);
                 })
                 .flatMap((data) => {
                     console.log(data);
@@ -189,6 +190,59 @@ export class BodePlotComponent {
         });
     }
 
+    private interpolateAmp(freq: number): number {
+        let i = 0;
+        console.log('INTERPOLATING');
+        console.log(this.calibrationData);
+        console.log('FREQUENCY TO INTERPOLATE');
+        console.log(freq);
+        
+        for (; this.calibrationData[i][0] < freq; i++) { }
+        console.log('FOUND INDEX');
+        console.log(i);
+        console.log(this.calibrationData);
+        if (i === 0) {
+            return this.calibrationData[i][1];
+        }
+        else if (i >= this.calibrationData.length) {
+            return this.calibrationData[this.calibrationData.length - 1][1];
+        }
+        let slope = (this.calibrationData[i][1] - this.calibrationData[i - 1][1]) / (this.calibrationData[i][0] - this.calibrationData[i - 1][0]);
+        let b = this.calibrationData[i][1] - this.calibrationData[i][0] * slope;
+        console.log('INTERPOLATED AMP');
+        console.log(slope * freq + b);
+        return slope * freq + b;
+    }
+
+    private calcIdealSampleFreqAndBufferSize(waveFreq: number): { sampleFreq: number, bufferSize: number } {
+        let sampleFreq;
+        let bufferSize;
+
+        if (waveFreq <= 1000) {
+            //Small periods relatively high sample freq
+            let prime = 3;
+            sampleFreq = 1000 * waveFreq;
+            bufferSize = 1000 * prime;
+        }
+        else if (waveFreq <= this.activeDevice.instruments.osc.chans[0].sampleFreqMax / 10000) {
+            //Larger periods relatively small sample freq
+            let prime = 373;
+            sampleFreq = 10 * waveFreq;
+            bufferSize = 10 * prime;
+        }
+        else {
+            //Not supported
+            sampleFreq = this.activeDevice.instruments.osc.chans[0].sampleFreqMax / 1000;
+            bufferSize = 23604;
+        }
+
+        if (bufferSize % 2 === 1) {
+            bufferSize++;
+        }
+
+        return { sampleFreq: sampleFreq, bufferSize: bufferSize };
+    }
+
     private buildFrequencyArray(startFreq: number, stopFreq: number, stepsPerDec: number): number[] {
         let frequencyArray = [];
         let step = (stopFreq - startFreq) / stepsPerDec;
@@ -241,7 +295,7 @@ export class BodePlotComponent {
                 })
                 .flatMap((data) => {
                     console.log(data);
-                    actualSignalFreq = data.awg[this.awgChan.toString()][0].actualSignalFreq;
+                    actualSignalFreq = data.awg[this.awgChan.toString()][0].actualSignalFreq / 1000;
                     return this.activeDevice.instruments.awg.run([this.awgChan]);
                 })
                 .subscribe(
@@ -267,16 +321,27 @@ export class BodePlotComponent {
             this.saveCalibrationToDevice()
                 .then((data) => {
                     console.log(data);
+                    this.saveCalibrationToLocalStorage()
+                        .then((data) => {
+                            console.log(data);
+                            resolve(data);
+                        })
+                        .catch((e) => {
+                            console.log(e);
+                            reject(e);
+                        });
                 })
                 .catch((e) => {
                     console.log(e);
-                });
-            this.saveCalibrationToLocalStorage()
-                .then((data) => {
-                    console.log(data);
-                })
-                .catch((e) => {
-                    console.log(e);
+                    this.saveCalibrationToLocalStorage()
+                        .then((data) => {
+                            console.log(data);
+                            resolve(data);
+                        })
+                        .catch((e) => {
+                            console.log(e);
+                            reject(e);
+                        });
                 });
         });
     }
@@ -292,6 +357,7 @@ export class BodePlotComponent {
             this.storageService.saveData('bodeCalibration', JSON.stringify({
                 bodeCalibrationData: this.calibrationData
             }));
+            resolve('done');
         });
     }
 
@@ -325,7 +391,15 @@ export class BodePlotComponent {
                 .then((data) => {
                     if (data != undefined) {
                         console.log(data);
-                        resolve(data);
+                        let parsedData;
+                        try {
+                            parsedData = JSON.parse(data);
+                        }
+                        catch(e) {
+                            reject(e);
+                            return;
+                        }
+                        resolve(parsedData.bodeCalibrationData);
                     }
                     else {
                         console.log('no bode calibration data found');
@@ -339,11 +413,15 @@ export class BodePlotComponent {
         });
     }
 
-    private displayBodeModal(): Promise<any> {
+    private displayBodeModal(exitAfterCalibrate?: boolean): Promise<any> {
         return new Promise((resolve, reject) => {
-            let modal = this.modalCtrl.create(BodeModalPage, {
+            let navParams = {
                 bodePlotComponent: this
-            });
+            };
+            if (exitAfterCalibrate) {
+                navParams['exit'] = true;
+            }
+            let modal = this.modalCtrl.create(BodeModalPage, navParams);
             modal.onWillDismiss((data) => {
                 console.log(data);
                 resolve(data);
@@ -352,10 +430,8 @@ export class BodePlotComponent {
         });
     }
 
-    private setOsc(sampleFreq: number): Observable<any> {
+    private setOsc(sampleFreq: number, bufferSize: number): Observable<any> {
         return Observable.create((observer) => {
-
-            let bufferSize = (Math.floor(sampleFreq) % 2 === 0 ? Math.floor(sampleFreq) : Math.floor(sampleFreq) + 1);
             console.log(bufferSize);
             this.activeDevice.instruments.osc.setParameters([this.oscchan], [this.vOffset], [1], [sampleFreq], [Math.min(Math.max(10, bufferSize), 32000)], [0])
                 .flatMap((data) => {
@@ -424,38 +500,86 @@ export class BodePlotComponent {
         });
     }
 
-    private calculateFft() {
+    private calculateFft(onlyCalculate?: boolean) {
         console.log(this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex]);
-        let amp = mathFunctions.getAmplitude(this.bodePlot.digilentChart, 0, 0, 32000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
-        let freq = mathFunctions.getFrequency(this.bodePlot.digilentChart, 0, 0, 32000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
+        let amp = mathFunctions.getAmplitude(this.bodePlot.digilentChart, 0, 0, 0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
+        let freq = mathFunctions.getFrequency(this.bodePlot.digilentChart, 0, 0, 0, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
         /*db: 20 * Math.log10(amp / 1),
         freq: freq*/
+        if (onlyCalculate) {
+            return { freq: freq, amp: amp };
+        }
         console.log('CURRENT DATA FORMAT');
         console.log(this.currentDataFormat);
         //Stop at 10mV floor
         if (amp < 0.01) {
             return;
         }
-        this.bodeDataContainer[0].data.push([freq, this.currentDataFormat === 'log' ? 20 * Math.log10(amp / this.initialAmplitude) : amp]);
+        let interpVal = this.interpolateAmp(freq);
+        this.bodeDataContainer[0].data.push([freq, this.currentDataFormat === 'log' ? 20 * Math.log10(amp / interpVal) : amp]);
         console.log('AMP AND FREQ');
         console.log(amp, freq);
         console.log(this.bodePlotOptions);
         this.bodePlot.setData(this.bodeDataContainer, false);
+        return { freq: freq, amp: amp };
     }
 
-    setBaselineAmp(): Promise<any> {
+    //Required to handle promise catch
+    openCalibrationModal() {
+        this.displayBodeModal(true)
+            .then((data) => {
+                console.log(data);
+                if (!data) {
+                    //TODO calibration fail
+                    return;
+                }
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    }
+
+    calibrate(): Promise<any> {
+        this.calibrationData = [];
         return new Promise((resolve, reject) => {
-            this.setAwgAndSingle(this.startFreq, true)
-                .then((data) => {
+            let frequencyArray = this.buildLogPointArray(1, 1000000, 2);
+            console.log('CALIBRATION FREQ ARR');
+            console.log(frequencyArray);
+            frequencyArray.reduce((previous, current, index, arr) => {
+                return previous.then((data) => {
                     console.log(data);
-                    this.initialAmplitude = mathFunctions.getAmplitude(this.bodePlot.digilentChart, 0, 0, 32000, this.activeDevice.instruments.osc.dataBuffer[this.activeDevice.instruments.osc.dataBufferReadIndex][this.oscchan - 1].data);
-                    resolve(this.initialAmplitude);
+                    if (data == undefined) {
+                        return this.setAwgAndSingle(arr[index], true);
+                    }
+                    console.log(previous, index);
+                    console.log(arr.length);
+                    let fftCalc = this.calculateFft(true);
+                    this.calibrationData.push([fftCalc.freq, fftCalc.amp]);
+                    console.log('continuing!!!');
+                    return this.setAwgAndSingle(arr[index], true);
+                }).catch((e) => {
+                    console.log(e);
+                    return Promise.reject(e);
+                });
+            }, Promise.resolve())
+                .then((data) => {
+                    let fftCalc = this.calculateFft(true);
+                    this.calibrationData.push([fftCalc.freq, fftCalc.amp]);
+                    console.log('DONE');
+                    console.log(data);
+                    console.log(this.calibrationData);
+                    this.saveCalibration()
+                        .then((data) => {
+                            resolve(this.calibrationData);
+                        })
+                        .catch((e) => {
+                            reject(e);
+                        });
                 })
                 .catch((e) => {
-                    console.log(e);
+                    console.log('promise chain catch');
                     reject(e);
                 });
-
         });
     }
 
@@ -464,7 +588,8 @@ export class BodePlotComponent {
         let getAxes = this.bodePlot.digilentChart.getAxes();
         getAxes.yaxis.options.axisLabel = this.logLabel;
         for (let i = 0; i < this.bodeDataContainer[0].data.length; i++) {
-            this.bodeDataContainer[0].data[i][axis === 'y' ? 1 : 0] = (axis === 'y' ? 20 * Math.log10(this.bodeDataContainer[0].data[i][1] / this.initialAmplitude) : Math.log10(this.bodeDataContainer[0].data[i][0]));
+            let interpVal = this.interpolateAmp(this.bodeDataContainer[0].data[i][0]);
+            this.bodeDataContainer[0].data[i][axis === 'y' ? 1 : 0] = (axis === 'y' ? 20 * Math.log10(this.bodeDataContainer[0].data[i][1] / interpVal) : Math.log10(this.bodeDataContainer[0].data[i][0]));
         }
         this.currentDataFormat = 'log';
         this.bodePlot.setData(this.bodeDataContainer);
@@ -475,7 +600,8 @@ export class BodePlotComponent {
         let getAxes = this.bodePlot.digilentChart.getAxes();
         getAxes.yaxis.options.axisLabel = this.linLabel;
         for (let i = 0; i < this.bodeDataContainer[0].data.length; i++) {
-            this.bodeDataContainer[0].data[i][axis === 'y' ? 1 : 0] = (axis === 'y' ? this.initialAmplitude * Math.pow(10, this.bodeDataContainer[0].data[i][1] / 20) : Math.pow(10, this.bodeDataContainer[0].data[i][0]));
+            let interpVal = this.interpolateAmp(this.bodeDataContainer[0].data[i][0]);
+            this.bodeDataContainer[0].data[i][axis === 'y' ? 1 : 0] = (axis === 'y' ? interpVal * Math.pow(10, this.bodeDataContainer[0].data[i][1] / 20) : Math.pow(10, this.bodeDataContainer[0].data[i][0]));
         }
         this.currentDataFormat = 'linear';
         this.bodePlot.setData(this.bodeDataContainer);
@@ -529,7 +655,8 @@ export class BodePlotComponent {
                 }
             },
             zoomPan: {
-                enabled: true
+                enabled: true,
+                secsPerDivisionValues: this.generateNiceNumArray(1, 500000)
             },
             cursorMoveOnPan: true,
             yaxis: {
@@ -575,18 +702,71 @@ export class BodePlotComponent {
         this.bodePlot.setData(this.bodeDataContainer, true);
     }
 
+    TODOREMOVE() {
+        console.log(this.bodePlot.digilentChart.getSecsPerDivArray());
+        console.log(this.bodePlot.digilentChart.getActiveXIndex());
+        console.log(this.bodePlot.digilentChart.getSecsPerDivArray()[this.bodePlot.digilentChart.getActiveXIndex()]);
+        let getAxes = this.bodePlot.digilentChart.getAxes();
+        console.log(getAxes.xaxis.min, getAxes.xaxis.max);
+    }
+
     private tickGenerator(axis): number[] {
         let min = axis.min;
         let max = axis.max;
+        console.log(min, max);
         let startPow = parseInt(parseFloat(min).toExponential().split('e')[1]);
         let finishPow = parseInt(parseFloat(max).toExponential().split('e')[1]);
+        console.log(startPow, finishPow);
         let ticks = [];
         for (let i = startPow; i < finishPow; i++) {
             for (let j = 1; j < 11; j++) {
                 ticks.push(j * Math.pow(10, i));
             }
         }
+        console.log(ticks);
         return ticks;
+    }
+
+    private generateNiceNumArray(min: number, max: number) {
+        let niceNumArray = [];
+        let currentPow = Math.ceil(Math.log10(min));
+        let current = min * Math.pow(10, -1 * currentPow);
+        let i = 0;
+        while (current * Math.pow(10, currentPow) <= max) {
+            niceNumArray[i] = this.decimalAdjust('round', current * Math.pow(10, currentPow), currentPow);
+            if (current === 1) {
+                current = 2;
+            }
+            else if (current === 2) {
+                current = 5;
+            }
+            else {
+                current = 1;
+                currentPow++;
+            }
+            i++;
+        }
+        return niceNumArray;
+    }
+
+    //Used to fix floating point errors when computing nicenumarray
+    private decimalAdjust(type, value, exp) {
+        // If the exp is undefined or zero...
+        if (typeof exp === 'undefined' || +exp === 0) {
+            return Math[type](value);
+        }
+        value = +value;
+        exp = +exp;
+        // If the value is not a number or the exp is not an integer...
+        if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+            return NaN;
+        }
+        // Shift
+        value = value.toString().split('e');
+        value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+        // Shift back
+        value = value.toString().split('e');
+        return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
     }
 }
 
