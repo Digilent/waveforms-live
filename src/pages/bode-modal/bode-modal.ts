@@ -31,20 +31,21 @@ export class BodeModalPage {
 
     //Need to use this lifecycle hook to make sure the slider exists before trying to get a reference to it
     ionViewDidEnter() {
+        this.getSwiperInstance();
+        if (this.bodePlotComponent.calibrationData != undefined && !this.exitAfterCalibration) {
+            this.toSlide(1, true);
+        }
+    }
+
+    getSwiperInstance() {
         let swiperInstance: any = this.slider.getSlider();
         if (swiperInstance == undefined) {
             setTimeout(() => {
-                this.ionViewDidEnter();
+                this.getSwiperInstance();
             }, 20);
             return;
         }
         swiperInstance.lockSwipes();
-        if (this.bodePlotComponent.calibrationData == undefined) {
-            this.runBodeInit();
-        }
-        else {
-            this.toSlide(1, true);
-        }
     }
 
     runBodeInit() {
@@ -53,10 +54,6 @@ export class BodeModalPage {
             .then((data) => {
                 console.log(data);
                 loading.dismiss();
-                if (this.exitAfterCalibration) {
-                    this.closeModal(true);
-                    return;
-                }
                 this.toSlide(1);
             })
             .catch((e) => {

@@ -37,8 +37,8 @@
                     <ion-row>
                         <ion-col text-right>
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal(true)">
-                                Start
-                                <img class="custom-image-button" src="assets/img/arrow-forward.svg">
+                                {{exitAfterCalibration ? 'Done' : 'Start'}}
+                                <img class="custom-image-button" [src]="exitAfterCalibration ? 'assets/img/check.svg' : 'assets/img/arrow-forward.svg'">
                             </button>
                         </ion-col>
                     </ion-row>
