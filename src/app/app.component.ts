@@ -32,7 +32,6 @@ export class MyApp {
         this.initializeApp();
         // set our app's pages
         this.pages = [
-            //{ title: 'Instrument Panel', component: TestChartCtrlsPage },
             { title: 'Device Manager', component: DeviceManagerPage },
             { title: 'Settings', component: SettingsPage }
         ];

@@ -654,10 +654,6 @@ export class BodePlotComponent {
                     tooltipel[0].style.borderRightColor = color;
                 }
             },
-            zoomPan: {
-                enabled: true,
-                secsPerDivisionValues: this.generateNiceNumArray(1, 500000)
-            },
             cursorMoveOnPan: true,
             yaxis: {
                 position: 'left',
@@ -700,14 +696,6 @@ export class BodePlotComponent {
 
     autoscaleAllAxes() {
         this.bodePlot.setData(this.bodeDataContainer, true);
-    }
-
-    TODOREMOVE() {
-        console.log(this.bodePlot.digilentChart.getSecsPerDivArray());
-        console.log(this.bodePlot.digilentChart.getActiveXIndex());
-        console.log(this.bodePlot.digilentChart.getSecsPerDivArray()[this.bodePlot.digilentChart.getActiveXIndex()]);
-        let getAxes = this.bodePlot.digilentChart.getAxes();
-        console.log(getAxes.xaxis.min, getAxes.xaxis.max);
     }
 
     private tickGenerator(axis): number[] {

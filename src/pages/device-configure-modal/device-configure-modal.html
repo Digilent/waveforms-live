@@ -63,7 +63,7 @@
 
             <div *ngIf="deviceConfigure && !invalidEnumeration">
                 <ion-list class="section-list">
-                    <ion-item-divider class="list-header">Wifi Settings</ion-item-divider>
+                    <ion-item-divider class="list-header">Network Settings</ion-item-divider>
                     <ion-item class="configure-item first-item">
                         <ion-label>Name</ion-label>
                         <div item-right class="item-content-right hostname-input-wrapper">
@@ -73,6 +73,10 @@
                     <ion-item class="configure-item">
                         <ion-label>Device Address</ion-label>
                         <div item-right class="item-content-right">{{deviceObject.connectedDeviceAddress || deviceObject.ipAddress}}</div>
+                    </ion-item>
+                    <ion-item class="configure-item">
+                        <ion-label>MAC Address</ion-label>
+                        <div item-right class="item-content-right">{{deviceObject.deviceDescriptor.macAddress}}</div>
                     </ion-item>
                     <ion-item class="configure-item">
                         <ion-label>Wifi Status</ion-label>

@@ -10,7 +10,7 @@ export class SettingsService {
     public storageService: StorageService;
     public deviceManagerService: DeviceManagerService;
     public defaultConsoleLog;
-    public logArguments;
+    public logArguments = [];
     public logLength: number = 50;
     public nestedChannels: boolean = false;
     public routeToStore: boolean = true;
@@ -32,6 +32,24 @@ export class SettingsService {
 
     constructor(_storageService: StorageService, _deviceManagerService: DeviceManagerService) {
         console.log('settings service constructor');
+        window.addEventListener('beforeunload', (event) => {
+            let appLog;
+            console.warn('DATA');
+            console.warn(this.logArguments);
+            /*if (data === null) {
+                appLog = {log:[]};
+            }
+            else {
+                appLog = JSON.parse(data);
+                console.warn('parsed existing');
+                console.warn(appLog);
+            }
+            if (appLog.log.length === this.logLength) {
+                appLog.log.shift();
+            }
+            appLog.log = appLog.log.concat(this.logArguments);*/
+            this.storageService.saveData('appLog', JSON.stringify({log:this.logArguments}));
+        });
         this.storageService = _storageService;
         this.deviceManagerService = _deviceManagerService;
         this.defaultConsoleLog = window.console.log;
@@ -44,6 +62,11 @@ export class SettingsService {
             if (data != undefined) {
                 this.useDevBuilds = JSON.parse(data);
             }
+        });
+        this.storageService.getData('appLog').then((data) => {
+            if (data == undefined) { return; }
+            let parsedData = JSON.parse(data);
+            this.logArguments = parsedData.log;
         });
     }
 
@@ -99,24 +122,40 @@ export class SettingsService {
 
     localStorageLog(argumentArray?) {
         let appLog;
-        this.logArguments = [];
+            console.warn('ARG');
         for (let i = 0; i < arguments.length; i++) {
-            this.logArguments.push(arguments[i]);
+            console.warn(arguments[i]);
+            console.warn(arguments[i][0]);
+            let arg = arguments[i][0];
+            if (typeof(arg) === 'object') {
+                arg = JSON.stringify(arg);
+            }
+            this.logArguments.push(arg);
         }
+        console.warn('LOG ARGS');
+        console.warn(this.logArguments);
 
-        this.storageService.getData('appLog').then(function (data) {
+        /*this.storageService.getData('appLog').then((data) => {
+            console.warn('DATA');
+            console.warn(data);
             if (data === null) {
-                appLog = [];
+                appLog = {log:[]};
             }
             else {
                 appLog = JSON.parse(data);
+                console.warn('parsed existing');
+                console.warn(appLog);
             }
-            if (appLog.length === this.logLength) {
-                appLog.shift();
+            if (appLog.log.length === this.logLength) {
+                appLog.log.shift();
             }
-            appLog.push(this.logArguments);
+            appLog.log = appLog.log.concat(this.logArguments);
             this.storageService.saveData('appLog', JSON.stringify(appLog));
-        }.bind(this));
+        });*/
+    }
+
+    pushLogToLocalStorage() {
+
     }
 
     bothLog() {
@@ -139,9 +178,12 @@ export class SettingsService {
             }
             else {
                 let appLog = JSON.parse(data);
-                for (let log of appLog) {
+                /*for (let log of appLog) {
+                    console.warn(log);
                     let logCall = '';
                     for (let parameter of log) {
+                        console.warn(parameter);
+                        console.warn(typeof(parameter));
                         if (typeof (parameter) === 'object') {
                             logCall += JSON.stringify(parameter) + ' ';
                         }
@@ -150,6 +192,10 @@ export class SettingsService {
                         }
                     }
                     csvContent += logCall + '\r\n';
+                }*/
+                for (let i = 0; i < appLog.log.length; i++) {
+                    console.warn(appLog.log[i]);
+                    csvContent += appLog.log[i] + '\r\n';
                 }
             }
 
