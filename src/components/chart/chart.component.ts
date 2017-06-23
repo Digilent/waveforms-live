@@ -22,6 +22,7 @@ import { Chart, CursorPositions, DataContainer } from './chart.interface';
 import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 import { DeviceDataTransferService } from '../../services/device/device-data-transfer.service';
+import { ExportService } from '../../services/export/export.service';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
@@ -118,7 +119,8 @@ export class SilverNeedleChart {
         public deviceDataTransferService: DeviceDataTransferService,
         private containerRef: ViewContainerRef,
         private compFactoryResolver: ComponentFactoryResolver,
-        private navCtrl: NavController
+        private navCtrl: NavController,
+        private exportService: ExportService
     ) {
         this.modalCtrl = _modalCtrl;
         this.settingsService = _settingsService;
@@ -1331,41 +1333,28 @@ export class SilverNeedleChart {
 
     //Exports series data from chart to a csv on client side
     exportCsv(fileName: string) {
-        let series = this.chart.getData();
-        fileName = fileName + '.csv';
-        let csvContent = 'data:text/csv;charset=utf-8,';
-        let maxLength = series[this.numSeries[0]].data.length;
-        for (let i = 0; i < this.numSeries.length; i++) {
-            if (series[this.numSeries[i]].data.length > maxLength) {
-                maxLength = series[this.numSeries[i]].data.length;
-            }
-            let seriesNum = this.numSeries[i] + 1;
-            let instrument = 'Osc';
-            if (seriesNum > this.oscopeChansActive.length) {
-                instrument = 'LA';
-                seriesNum -= this.oscopeChansActive.length;
-            }
-            csvContent += instrument + ' Ch ' + seriesNum + ' s,' + instrument + ' Ch ' + seriesNum + ' V,,';
+        console.log(this.seriesDataContainer);
+        let oscChanArray = [];
+        let laChanArray = [];
+        for (let i = 0; i < this.oscopeChansActive.length; i++) {
+            oscChanArray.push(i);
         }
-        csvContent += '\n';
-        for (let i = 0; i < maxLength; i++) {
-            for (let j = 0; j < this.numSeries.length; j++) {
-                let seriesNum = this.numSeries[j];
-                if (series[seriesNum].data[i] != undefined) {
-                    csvContent += series[seriesNum].data[i].join(',') + ',,';
-                }
-                else {
-                    csvContent += ',,';
-                }
-            }
-            csvContent += '\n';
+        for (let i = oscChanArray.length; i < this.seriesDataContainer.length; i++) {
+            laChanArray.push(i);
         }
-        let encodedUri = encodeURI(csvContent);
-        let link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
+        this.exportService.exportGenericCsv(fileName, this.seriesDataContainer, this.numSeries, [{
+            instrument: 'Osc',
+            seriesNumberOffset: 0,
+            xUnit: 's',
+            yUnit: 'V',
+            channels: oscChanArray
+        }, {
+            instrument: 'LA',
+            seriesNumberOffset: this.oscopeChansActive.length,
+            xUnit: 's',
+            yUnit: 'V',
+            channels: laChanArray
+        }]);
     }
 
     //Opens cursor modal menu and sets data on modal dismiss
@@ -1763,41 +1752,7 @@ export class SilverNeedleChart {
     }
 
     exportCanvasAsPng() {
-        let canvas = this.chart.getCanvas();
-        let width = canvas.width;
-        let height = canvas.height;
-        let blackCanvas = document.createElement('canvas');
-        blackCanvas.width = width;
-        blackCanvas.height = height;
-        let overlayCanvas = this.flotOverlayRef.canvas;
-        let ctx = blackCanvas.getContext("2d");
-        ctx.save();
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(canvas, 0, 0);
-        ctx.drawImage(overlayCanvas, 0, 0);
-        let data = blackCanvas.toDataURL();
-        ctx.restore();
-
-        if (this.platform.is('cordova') && (this.platform.is('android') || this.platform.is('ios'))) {
-            this.platform.ready().then(() => {
-                const fileTransfer = new Transfer();
-                //const imageLocation = `${cordova.file.applicationDirectory}www/assets/img/${data}`;
-                fileTransfer.download(data, cordova.file.dataDirectory + 'file.png').then(
-                    (entry) => {
-                    },
-                    (error) => {
-                    }
-                );
-            });
-        }
-        else {
-            let link = document.createElement("a");
-            link.setAttribute("href", data);
-            link.setAttribute("download", 'WaveFormsLiveChart.png');
-            document.body.appendChild(link);
-            link.click();
-        }
+        this.exportService.exportCanvasAsPng(this.chart.getCanvas(), this.flotOverlayRef.canvas);
     }
 
     updateMath() {

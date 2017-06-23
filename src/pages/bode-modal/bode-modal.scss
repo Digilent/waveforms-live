@@ -2,5 +2,27 @@
 {
     font-size: 14px;
     color: #CCCCCC;
-    padding: 0 16px 0 16px;
+    padding: 16px;
+}
+
+.calibration-container .bode-calibration-results
+{
+    max-height: 280px;
+    font-size: 12px;
+    overflow: auto;
+    color: #CCCCCC;
+    background-color: #3A3A3A;
+}
+
+.calibration-container .bode-header-row
+{
+    font-size: 14px;
+    color: white;
+}
+
+@media screen and (max-width: 768px) {
+    .calibration-container .bode-calibration-results {
+        max-height: 80%;
+    }
+
 }

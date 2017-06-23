@@ -1,5 +1,5 @@
 import { Component, Output, ViewChild, EventEmitter } from '@angular/core';
-import { ModalController } from 'ionic-angular';
+import { ModalController, PopoverController } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
 
 //Pages
@@ -7,12 +7,14 @@ import { BodeModalPage } from '../../pages/bode-modal/bode-modal';
 
 //Components
 import { DigilentChart } from 'digilent-chart-angular2/modules';
+import { GenPopover } from '../gen-popover/gen-popover.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 import { LoadingService } from '../../services/loading/loading.service';
 import { StorageService } from '../../services/storage/storage.service';
+import { ExportService } from '../../services/export/export.service';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
@@ -59,13 +61,16 @@ export class BodePlotComponent {
     private startFreq: number;
     private stopFreq: number;
     public calibrationData: number[][];
+    private flotOverlayRef: any;
 
     constructor(
         private deviceManagerService: DeviceManagerService,
         public tooltipService: TooltipService,
         private modalCtrl: ModalController,
         private loadingService: LoadingService,
-        private storageService: StorageService
+        private storageService: StorageService,
+        private exportService: ExportService,
+        private popoverCtrl: PopoverController
     ) {
         this.bodePlotOptions = this.generateBodeOptions(true, true);
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
@@ -93,6 +98,39 @@ export class BodePlotComponent {
 
     ngOnDestroy() {
         this.destroyed = true;
+    }
+
+    openExportPop(event) {
+        let popover = this.popoverCtrl.create(GenPopover, {
+            dataArray: ['Export CSV', 'Export PNG']
+        });
+        popover.onWillDismiss((data) => {
+            if (data == null) { return; }
+            if (data.option === 'Export CSV') {
+                this.exportCsv('WaveformsLiveData');
+            }
+            else if (data.option === 'Export PNG') {
+                this.exportCanvasAsPng();
+            }
+        });
+        popover.present({
+            ev: event
+        });
+    }
+
+    exportCsv(fileName: string) {
+        this.exportService.exportGenericCsv(fileName, this.bodeDataContainer, [0], [{
+            instrument: 'Osc',
+            seriesNumberOffset: 0,
+            xUnit: 'Hz',
+            yUnit: this.currentDataFormat === 'log' ? 'dB' : 'V',
+            channels: [0]
+        }]);
+    }
+
+    exportCanvasAsPng() {
+        this.bodePlot.digilentChart.triggerRedrawOverlay();
+        this.exportService.exportCanvasAsPng(this.bodePlot.digilentChart.getCanvas(), this.flotOverlayRef.canvas);
     }
 
     setAwgAndSingle(newFreq: number, doNotPlotPoint?: boolean): Promise<any> {
@@ -608,7 +646,11 @@ export class BodePlotComponent {
     }
 
     plotLoaded() {
-        
+        this.bodePlot.digilentChart.hooks.drawOverlay.push(this.getOverlayRef.bind(this));
+    }
+
+    getOverlayRef(plot: any, ctx: any) {
+        this.flotOverlayRef = ctx;
     }
 
     generateBodeOptions(logX: boolean, logY: boolean) {
@@ -713,48 +755,6 @@ export class BodePlotComponent {
         }
         console.log(ticks);
         return ticks;
-    }
-
-    private generateNiceNumArray(min: number, max: number) {
-        let niceNumArray = [];
-        let currentPow = Math.ceil(Math.log10(min));
-        let current = min * Math.pow(10, -1 * currentPow);
-        let i = 0;
-        while (current * Math.pow(10, currentPow) <= max) {
-            niceNumArray[i] = this.decimalAdjust('round', current * Math.pow(10, currentPow), currentPow);
-            if (current === 1) {
-                current = 2;
-            }
-            else if (current === 2) {
-                current = 5;
-            }
-            else {
-                current = 1;
-                currentPow++;
-            }
-            i++;
-        }
-        return niceNumArray;
-    }
-
-    //Used to fix floating point errors when computing nicenumarray
-    private decimalAdjust(type, value, exp) {
-        // If the exp is undefined or zero...
-        if (typeof exp === 'undefined' || +exp === 0) {
-            return Math[type](value);
-        }
-        value = +value;
-        exp = +exp;
-        // If the value is not a number or the exp is not an integer...
-        if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
-            return NaN;
-        }
-        // Shift
-        value = value.toString().split('e');
-        value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
-        // Shift back
-        value = value.toString().split('e');
-        return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
     }
 }
 

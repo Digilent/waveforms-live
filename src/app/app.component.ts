@@ -6,7 +6,6 @@ import { StatusBar, Splashscreen } from 'ionic-native';
 import { TestChartCtrlsPage } from '../pages/test-chart-ctrls/test-chart-ctrls';
 import { SettingsPage } from '../pages/settings/settings';
 import { DeviceManagerPage } from '../pages/device-manager-page/device-manager-page';
-import { BodePage } from '../pages/bode/bode';
 
 //Services
 import { SettingsService } from '../services/settings/settings.service';
@@ -55,11 +54,6 @@ export class MyApp {
             StatusBar.styleDefault();
             Splashscreen.hide();
         });
-    }
-
-    openBode() {
-        this.nav.push(BodePage);
-        this.menu.close();
     }
 
     toFeedBack() {

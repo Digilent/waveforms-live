@@ -9,7 +9,7 @@ import { ToastService } from '../../services/toast/toast.service';
 import { LoadingService } from '../../services/loading/loading.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 import { UtilityService } from '../../services/utility/utility.service';
-
+import { ExportService } from '../../services/export/export.service';
 
 @NgModule({
     imports: [],
@@ -22,6 +22,7 @@ import { UtilityService } from '../../services/utility/utility.service';
         TooltipService,
         UtilityService,
         LoadingService,
+        ExportService,
         DeviceDataTransferService
     ]
 })

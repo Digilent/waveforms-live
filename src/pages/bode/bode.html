@@ -28,7 +28,7 @@
                     <ion-col center class="input-col">
                         <div class="label-flex">
                             <div class="label-left">
-                                <input class="custom-input" step="any" [ngModel]="startFreq | unitFormat:'Hz'" (focusout)="inputLeave($event, 'startFreq')" (keypress)="checkForEnter($event, 'startFreq')" />
+                                <input class="custom-input" step="any" [ngModel]="startFreq | unitFormat:'Hz'" (mousewheel)="frequencyMousewheel($event, 'startFreq')" (focusout)="inputLeave($event, 'startFreq')" (keypress)="checkForEnter($event, 'startFreq')" />
                             </div>
                         </div>
                     </ion-col>
@@ -41,7 +41,7 @@
                     <ion-col center class="input-col">
                         <div class="label-flex">
                             <div class="label-left">
-                                <input class="custom-input" step="any" [ngModel]="stopFreq | unitFormat:'Hz'" (focusout)="inputLeave($event, 'stopFreq')" (keypress)="checkForEnter($event, 'stopFreq')" />
+                                <input class="custom-input" step="any" [ngModel]="stopFreq | unitFormat:'Hz'" (mousewheel)="frequencyMousewheel($event, 'stopFreq')" (focusout)="inputLeave($event, 'stopFreq')" (keypress)="checkForEnter($event, 'stopFreq')" />
                             </div>
                         </div>
                     </ion-col>
@@ -54,7 +54,7 @@
                     <ion-col center class="input-col">
                         <div class="label-flex">
                             <div class="label-left">
-                                <input class="custom-input" step="any" [(ngModel)]="stepsPerDec" />
+                                <input class="custom-input" step="any" [(ngModel)]="stepsPerDec" (mousewheel)="stepMousewheel($event)" />
                             </div>
                         </div>
                     </ion-col>

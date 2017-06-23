@@ -33,6 +33,24 @@
                 <div class="bode-slide-content">
                     Calibration completed. Measured amplitude was TODO. Connect Osc Ch 1 and Wavegen Ch 1 back to your circuit and click start.
                 </div>
+                <div class="bode-calibration-results">
+                    <ion-row class="bode-header-row">
+                        <ion-col>
+                            Frequency
+                        </ion-col>
+                        <ion-col>
+                            Amplitude
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngFor="let pair of bodePlotComponent.calibrationData">
+                        <ion-col>
+                            {{pair[0] | unitFormat:'Hz'}} 
+                        </ion-col>
+                        <ion-col>
+                            {{pair[1] | unitFormat:'V'}}
+                        </ion-col>
+                    </ion-row>
+                </div>
                 <div class="navigation-button-container">
                     <ion-row>
                         <ion-col text-right>

@@ -66,8 +66,19 @@
     top: 11px;
     right: 0;
     width: 25px;
-    height: 90px;
+    height: 200px;
+    max-height: calc(100% - 11px);
     z-index: 5;
+    overflow: auto;
+}
+
+.chart-container-container .chart-button-container::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+.chart-container-container .chart-button-container::-webkit-scrollbar-thumb {
+    background: #4487BA;
 }
 
 .pinoutPopover .popover-content

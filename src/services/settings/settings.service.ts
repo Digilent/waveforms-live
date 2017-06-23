@@ -33,36 +33,25 @@ export class SettingsService {
     constructor(_storageService: StorageService, _deviceManagerService: DeviceManagerService) {
         console.log('settings service constructor');
         window.addEventListener('beforeunload', (event) => {
-            let appLog;
-            console.warn('DATA');
-            console.warn(this.logArguments);
-            /*if (data === null) {
-                appLog = {log:[]};
-            }
-            else {
-                appLog = JSON.parse(data);
-                console.warn('parsed existing');
-                console.warn(appLog);
-            }
-            if (appLog.log.length === this.logLength) {
-                appLog.log.shift();
-            }
-            appLog.log = appLog.log.concat(this.logArguments);*/
             this.storageService.saveData('appLog', JSON.stringify({log:this.logArguments}));
         });
+
         this.storageService = _storageService;
         this.deviceManagerService = _deviceManagerService;
         this.defaultConsoleLog = window.console.log;
+
         this.storageService.getData('routeToStore').then((data) => {
             if (data != null) {
                 this.routeToStore = JSON.parse(data);
             }
         });
+
         this.storageService.getData('useDevBuilds').then((data) => {
             if (data != undefined) {
                 this.useDevBuilds = JSON.parse(data);
             }
         });
+
         this.storageService.getData('appLog').then((data) => {
             if (data == undefined) { return; }
             let parsedData = JSON.parse(data);
@@ -104,7 +93,6 @@ export class SettingsService {
 
     changeConsoleLog(type: 'Local Storage' | 'Both' | 'None' | 'Console') {
         if (type === 'Console') {
-            console.log('hey');
             window.console.log = this.defaultConsoleLog;
         }
         else if (type === 'Local Storage') {
@@ -121,37 +109,17 @@ export class SettingsService {
     log() {}
 
     localStorageLog(argumentArray?) {
-        let appLog;
-            console.warn('ARG');
         for (let i = 0; i < arguments.length; i++) {
-            console.warn(arguments[i]);
-            console.warn(arguments[i][0]);
             let arg = arguments[i][0];
             if (typeof(arg) === 'object') {
                 arg = JSON.stringify(arg);
             }
             this.logArguments.push(arg);
         }
-        console.warn('LOG ARGS');
-        console.warn(this.logArguments);
-
-        /*this.storageService.getData('appLog').then((data) => {
-            console.warn('DATA');
-            console.warn(data);
-            if (data === null) {
-                appLog = {log:[]};
-            }
-            else {
-                appLog = JSON.parse(data);
-                console.warn('parsed existing');
-                console.warn(appLog);
-            }
-            if (appLog.log.length === this.logLength) {
-                appLog.log.shift();
-            }
-            appLog.log = appLog.log.concat(this.logArguments);
-            this.storageService.saveData('appLog', JSON.stringify(appLog));
-        });*/
+        let logLength = this.logArguments.length;
+        if (logLength > this.logLength) {
+            this.logArguments = this.logArguments.slice(logLength - this.logLength);
+        }
     }
 
     pushLogToLocalStorage() {
@@ -170,45 +138,26 @@ export class SettingsService {
     }
 
     exportLogFile() {
-        this.storageService.getData('appLog').then((data) => {
-            let fileName = 'OpenScopeLogs.txt';
-            let csvContent = 'data:text/csv;charset=utf-8,';
-            if (data === null) {
-                csvContent += 'No Logs Found\n';
+        let fileName = 'OpenScopeLogs.txt';
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        if (this.logArguments.length === 0) {
+            csvContent += 'No Logs Found\n';
+        }
+        else {
+            for (let i = 0; i < this.logArguments.length; i++) {
+                csvContent += this.logArguments[i] + '\r\n';
             }
-            else {
-                let appLog = JSON.parse(data);
-                /*for (let log of appLog) {
-                    console.warn(log);
-                    let logCall = '';
-                    for (let parameter of log) {
-                        console.warn(parameter);
-                        console.warn(typeof(parameter));
-                        if (typeof (parameter) === 'object') {
-                            logCall += JSON.stringify(parameter) + ' ';
-                        }
-                        else {
-                            logCall += parameter + ' ';
-                        }
-                    }
-                    csvContent += logCall + '\r\n';
-                }*/
-                for (let i = 0; i < appLog.log.length; i++) {
-                    console.warn(appLog.log[i]);
-                    csvContent += appLog.log[i] + '\r\n';
-                }
-            }
-
-            let encodedUri = encodeURI(csvContent);
-            let link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", fileName);
-            document.body.appendChild(link);
-            link.click();
-        });
+        }
+        let encodedUri = encodeURI(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
     }
 
     clearAppLog() {
+        this.logArguments = [];
         this.storageService.removeDataByKey('appLog');
     }
 
