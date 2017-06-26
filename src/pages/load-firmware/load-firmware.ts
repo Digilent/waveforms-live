@@ -95,7 +95,7 @@ export class LoadFirmwarePage {
 
     getFirmwareFromUrl(firmwareUrl: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.deviceManagerService.transport.getRequest(firmwareUrl).subscribe(
+            this.deviceManagerService.transport.getRequest(firmwareUrl, 30000).subscribe(
                 (data) => {
                     if (data.indexOf('Error') !== -1) { reject('Error getting file'); return; }
                     let buf = new ArrayBuffer(data.length);

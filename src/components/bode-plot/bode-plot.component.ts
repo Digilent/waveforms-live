@@ -61,6 +61,7 @@ export class BodePlotComponent {
     private startFreq: number;
     private stopFreq: number;
     public calibrationData: number[][];
+    private localStorageCalibrationData: any;
     private flotOverlayRef: any;
 
     constructor(
@@ -392,9 +393,9 @@ export class BodePlotComponent {
 
     private saveCalibrationToLocalStorage(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.storageService.saveData('bodeCalibration', JSON.stringify({
-                bodeCalibrationData: this.calibrationData
-            }));
+            if (this.activeDevice.macAddress == undefined) { resolve(); return; }
+            this.localStorageCalibrationData[this.activeDevice.macAddress] = this.calibrationData;
+            this.storageService.saveData('bodeCalibration', JSON.stringify(this.localStorageCalibrationData));
             resolve('done');
         });
     }
@@ -427,7 +428,7 @@ export class BodePlotComponent {
         return new Promise((resolve, reject) => {
             this.storageService.getData('bodeCalibration')
                 .then((data) => {
-                    if (data != undefined) {
+                    if (data != undefined && this.activeDevice.macAddress != undefined) {
                         console.log(data);
                         let parsedData;
                         try {
@@ -437,7 +438,16 @@ export class BodePlotComponent {
                             reject(e);
                             return;
                         }
-                        resolve(parsedData.bodeCalibrationData);
+                        this.localStorageCalibrationData = parsedData;
+                        console.log(parsedData);
+                        console.log(this.activeDevice.macAddress);
+                        console.log(parsedData[this.activeDevice.macAddress]);
+                        if (parsedData[this.activeDevice.macAddress] != undefined) {
+                            resolve(parsedData[this.activeDevice.macAddress]);
+                        }
+                        else {
+                            reject('not found');
+                        }
                     }
                     else {
                         console.log('no bode calibration data found');

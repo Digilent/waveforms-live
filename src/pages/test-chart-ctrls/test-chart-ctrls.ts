@@ -118,6 +118,7 @@ export class TestChartCtrlsPage {
         for (let i = 0; i < this.activeDevice.instruments.osc.numChans; i++) {
             this.currentSamplingFrequencies.push(0);
         }
+        console.log(this.deviceManagerService.devices[0]);
     }
 
     resetDevice() {

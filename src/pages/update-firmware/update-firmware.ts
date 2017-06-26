@@ -102,7 +102,7 @@ export class UpdateFirmwarePage {
 
     getFirmwareFromUrl(firmwareUrl: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.deviceManagerService.transport.getRequest(firmwareUrl).subscribe(
+            this.deviceManagerService.transport.getRequest(firmwareUrl, 30000).subscribe(
                 (data) => {
                     //console.log(data);
                     console.log('got hex file');

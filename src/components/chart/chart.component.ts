@@ -1,6 +1,5 @@
 import { Component, Output, EventEmitter, ViewChild, trigger, state, style, transition, animate, ViewContainerRef, ComponentFactoryResolver, ComponentRef } from '@angular/core';
 import { ModalController, Platform, PopoverController, NavController } from 'ionic-angular';
-import { Transfer } from 'ionic-native';
 
 //Components
 import { DeviceService, WaveformService } from 'dip-angular2/services';

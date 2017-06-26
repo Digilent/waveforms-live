@@ -111,6 +111,9 @@ var waveformsLiveDictionary = (function() {
         agentInvalidResponse: {
             english: 'Invalid Response From Agent'
         },
+        agentNoResponse: {
+            english: 'Error Connecting To The Digilent Agent. Please Make Sure the Digilent Agent Is Running'
+        },
         //Appears when the agent enumerates and does not find any devices.
         agentEnumerateError: {
             english: 'No UART Devices Found'

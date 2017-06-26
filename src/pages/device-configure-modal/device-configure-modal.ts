@@ -79,6 +79,7 @@ export class DeviceConfigureModal {
             this.bridgeConfigure = true;
         }
         if (this.deviceObject != null) {
+            console.log(this.deviceObject);
             this.invalidEnumeration = false;
             let addDeviceAddress = this.deviceObject.bridge ? this.deviceObject.deviceBridgeAddress : this.deviceObject.ipAddress;
             this.deviceManagerService.addDeviceFromDescriptor(addDeviceAddress, { device: [this.deviceObject.deviceDescriptor] });
@@ -396,6 +397,8 @@ export class DeviceConfigureModal {
     }
 
     selectDevice(selectedIndex: number) {
+        this.deviceConfigure = false;
+        this.invalidEnumeration = true;
         let command = {
             "agent": [
                 {
@@ -419,6 +422,9 @@ export class DeviceConfigureModal {
                     console.log('Error Parsing Set Active Device Response');
                     console.log(e);
                     loading.dismiss();
+                    this.invalidEnumeration = true;
+                    this.deviceManagerPageRef.toastService.createToast('agentConnectError', true);
+                    return;
                 }
                 if (data.agent[0] == undefined || data.agent[0].statusCode > 0) {
                     console.log('Agent StatusCode Error');
@@ -427,6 +433,7 @@ export class DeviceConfigureModal {
                     this.deviceManagerPageRef.toastService.createToast('agentConnectError', true);
                     return;
                 }
+                this.deviceConfigure = true;
                 this.enterJsonMode().then(() => {
                     this.deviceManagerService.connect(this.deviceBridgeAddress).subscribe(
                         (data) => {
@@ -486,6 +493,15 @@ export class DeviceConfigureModal {
                     );
                 }).catch((e) => {
                     loading.dismiss();
+                    /*this.deviceObject = {
+                        deviceDescriptor: {},
+                        ipAddress: '',
+                        hostname: 'Hostname',
+                        bridge: this.bridgeConfigure,
+                        deviceBridgeAddress: this.deviceBridgeAddress,
+                        connectedDeviceAddress: this.potentialDevices[selectedIndex],
+                        outdatedFirmware: false
+                    };*/
                 });
 
 

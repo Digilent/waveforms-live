@@ -58,6 +58,9 @@
                     <ion-item class="configure-item only-button-item" *ngIf="deviceObject && deviceObject.ipAddress !== 'local' && deviceObject.bridge">
                         <button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Update Firmware</button>
                     </ion-item>
+                    <ion-item class="configure-item only-button-item" *ngIf="deviceObject == undefined">
+                        <button ion-button item-right class="text-button-side item-button disable-hover" clear (click)="openCorrectFirmwareModal()">Load Firmware</button>
+                    </ion-item>
                 </ion-list>
             </div>
 

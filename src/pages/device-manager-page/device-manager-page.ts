@@ -235,6 +235,10 @@ export class DeviceManagerPage {
         genPopover.onWillDismiss((data) => {
             if (data === null) { return; }
             if (data.option === 'Remove') {
+                console.log(this.devices);
+                console.log(arrayIndex);
+                
+                this.agentReleaseActiveDevice(this.devices[arrayIndex]);
                 this.devices.splice(arrayIndex, 1);
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices));
             }
@@ -247,6 +251,32 @@ export class DeviceManagerPage {
             else if (data.option === 'Documentation') {
                 this.openDeviceReference(arrayIndex);
             }
+        });
+    }
+
+    agentReleaseActiveDevice(device: DeviceCardInfo): Promise<any> {
+        if (!device.bridge) { return Promise.resolve(); }
+
+        let command = {
+            "agent": [
+                {
+                    "command": "releaseActiveDevice"
+                }
+            ]
+        };
+
+        this.deviceManagerService.transport.setHttpTransport(device.deviceBridgeAddress);
+
+        return new Promise((resolve, reject) => {
+            this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
+                (arrayBuffer) => {
+                    resolve();
+                },
+                (err) => {
+                    resolve();
+                },
+                () => { }
+            );
         });
     }
 
@@ -356,7 +386,7 @@ export class DeviceManagerPage {
             (err) => {
                 console.log(err);
                 loading.dismiss();
-                this.toastService.createToast('agentInvalidResponse', true);
+                this.toastService.createToast('agentNoResponse', true);
             },
             () => {
 
@@ -874,6 +904,7 @@ export class DeviceManagerPage {
     sendEnumerationCommandAndLoadInstrumentPanel(ipAddress: string, loadingInstance, deviceIndex) {
         this.deviceManagerService.connect(ipAddress).subscribe(
             (success) => {
+                console.log(success);
                 loadingInstance.dismiss();
                 this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);
                 this.devices[deviceIndex].deviceDescriptor = success.device[0];
