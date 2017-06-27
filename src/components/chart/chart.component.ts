@@ -22,6 +22,7 @@ import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 import { DeviceDataTransferService } from '../../services/device/device-data-transfer.service';
 import { ExportService } from '../../services/export/export.service';
+import { DeviceManagerService } from 'dip-angular2/services';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
@@ -119,7 +120,8 @@ export class SilverNeedleChart {
         private containerRef: ViewContainerRef,
         private compFactoryResolver: ComponentFactoryResolver,
         private navCtrl: NavController,
-        private exportService: ExportService
+        private exportService: ExportService,
+        private deviceManagerService: DeviceManagerService
     ) {
         this.modalCtrl = _modalCtrl;
         this.settingsService = _settingsService;
@@ -1385,7 +1387,7 @@ export class SilverNeedleChart {
         });
         modal.present();*/
         let popover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['Export CSV', 'Export PNG']
+            dataArray: ['Export CSV', 'Export PNG'/*, 'Export Binary'*/]
         });
         popover.onWillDismiss((data) => {
             if (data == null) { return; }
@@ -1394,6 +1396,9 @@ export class SilverNeedleChart {
             }
             else if (data.option === 'Export PNG') {
                 this.exportCanvasAsPng();
+            }
+            else if (data.option === 'Export Binary') {
+                this.exportService.exportBinary('LogicAnalyzerData', this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].instruments.la.rawData);
             }
         });
         popover.present({

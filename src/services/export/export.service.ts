@@ -88,6 +88,18 @@ export class ExportService {
         link.click();
     }
 
+    exportBinary(fileName: string, arrayBuffer: ArrayBuffer) {
+        //It's little endian
+        fileName = fileName + '.raw';
+        let blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+        let encodedUri = URL.createObjectURL(blob);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+    }
+
     private getInstrumentLabel(labels: CsvLabel[], seriesNum: number): string {
         for (let i = 0; i < labels.length; i++) {
             if (labels[i].channels.indexOf(seriesNum) !== -1) {

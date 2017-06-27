@@ -1,8 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavParams, Slides, ViewController, LoadingController } from 'ionic-angular';
+import { NavParams, Slides, ViewController, LoadingController, AlertController } from 'ionic-angular';
 
 //Components
-import { ProgressBarComponent } from  '../../components/progress-bar/progress-bar.component';
+import { ProgressBarComponent } from '../../components/progress-bar/progress-bar.component';
 
 //Services
 import { StorageService } from '../../services/storage/storage.service';
@@ -25,6 +25,7 @@ export class CalibratePage {
     public calibrationStatus: string = 'Ready To Calibrate';
     public calibrationFailed: boolean = false;
     public calibrationSuccessful: boolean = false;
+    private calibrationSaved: boolean = false;
     public calibrationReadAttempts: number = 0;
     public maxCalibrationReadAttempts: number = 10;
     public timeBetweenReadAttempts: number = 2000;
@@ -40,7 +41,8 @@ export class CalibratePage {
         _params: NavParams,
         _viewCtrl: ViewController,
         _deviceManagerService: DeviceManagerService,
-        public loadingCtrl: LoadingController
+        public loadingCtrl: LoadingController,
+        private alertCtrl: AlertController
     ) {
         this.deviceManagerService = _deviceManagerService;
         this.storageService = _storageService;
@@ -64,7 +66,41 @@ export class CalibratePage {
     }
 
     closeModal() {
-        this.viewCtrl.dismiss();
+        if (this.calibrationSuccessful && !this.calibrationSaved) {
+            //Good calibration but not saved.
+            this.presentConfirmNoSaveAlert()
+                .catch((e) => {
+                    console.log(e);
+                    this.viewCtrl.dismiss();
+                });
+        }
+        else {
+            this.viewCtrl.dismiss();
+        }
+    }
+
+    private presentConfirmNoSaveAlert(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let alert = this.alertCtrl.create({
+                title: 'Calibration Not Saved',
+                message: 'Would you like to save your calibration?',
+                buttons: [
+                    {
+                        text: 'No',
+                        handler: () => {
+                            reject();
+                        }
+                    },
+                    {
+                        text: 'Yes',
+                        handler: () => {
+                            resolve();
+                        }
+                    }
+                ]
+            });
+            alert.present();
+        });
     }
 
     selectStorage(event) {
@@ -94,23 +130,26 @@ export class CalibratePage {
         this.getStorageLocations();
     }
 
-    saveCalibrationToDevice() {
+    saveCalibrationToDevice(): Promise<any> {
+        this.calibrationSaved = true;
         this.calibrationResultsIndicator = 'Saving calibration.';
         if (this.selectedLocation === 'No Location Selected') {
             this.calibrationResultsIndicator = 'Error saving calibration. Choose a valid storage location.';
-            return;
+            return Promise.resolve();
         }
         if (this.calibrationResults.indexOf('IDEAL') !== -1 || this.calibrationResults.indexOf('UNCALIBRATED') !== -1) {
             this.calibrationResultsIndicator = 'Error saving calibration. One or more channels fell back to ideal values. Rerun calibration.';
-            return;
+            return Promise.resolve();
         }
         console.log(this.selectedLocation);
         this.saveCalibration(this.selectedLocation)
             .then(() => {
                 this.calibrationResultsIndicator = 'Save successful';
+                return Promise.resolve();
             })
             .catch((err) => {
                 this.calibrationResultsIndicator = 'Error saving calibration.';
+                return Promise.resolve();
             });
     }
 
@@ -300,8 +339,8 @@ export class CalibratePage {
                     this.calibrationReadAttempts++;
                     setTimeout(() => {
                         this.readCalibrationAfterCalibrating();
-                    }, this.timeBetweenReadAttempts); 
-                    return; 
+                    }, this.timeBetweenReadAttempts);
+                    return;
                 }
                 if (err.device && err.device[0].statusCode === 8) {
                     if (this.calibrationReadAttempts < this.maxCalibrationReadAttempts) {

@@ -77,7 +77,7 @@
                         <ion-label>Device Address</ion-label>
                         <div item-right class="item-content-right">{{deviceObject.connectedDeviceAddress || deviceObject.ipAddress}}</div>
                     </ion-item>
-                    <ion-item class="configure-item">
+                    <ion-item class="configure-item" *ngIf="deviceObject.deviceDescriptor.macAddress != undefined">
                         <ion-label>MAC Address</ion-label>
                         <div item-right class="item-content-right">{{deviceObject.deviceDescriptor.macAddress}}</div>
                     </ion-item>

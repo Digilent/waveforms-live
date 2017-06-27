@@ -8,11 +8,11 @@
                         fft
                     </button>
                 </div>
-                <div>
+                <!--<div>
                     <button ion-button class="chart-button disable-hover" (tap)="toBode()" [tooltip]="tooltipService.getTooltip('chartToBode').message" [tooltipAnimation]="true" tooltipPlacement="left">
                         <img class="buttons-side-svg" src="assets/img/bode.svg">
                     </button>
-                </div>
+                </div>-->
                 <div>
                     <button ion-button class="chart-button disable-hover" (tap)="autoscaleAllAxes()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartAutoscale').message" [tooltipAnimation]="true" tooltipPlacement="left">
                         <img class="button-side-svg" src="assets/img/fullscreen.svg" />
