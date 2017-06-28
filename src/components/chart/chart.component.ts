@@ -1387,7 +1387,7 @@ export class SilverNeedleChart {
         });
         modal.present();*/
         let popover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['Export CSV', 'Export PNG'/*, 'Export Binary'*/]
+            dataArray: ['Export CSV', 'Export PNG', 'Export Osc Binary', 'Export LA Binary']
         });
         popover.onWillDismiss((data) => {
             if (data == null) { return; }
@@ -1397,8 +1397,11 @@ export class SilverNeedleChart {
             else if (data.option === 'Export PNG') {
                 this.exportCanvasAsPng();
             }
-            else if (data.option === 'Export Binary') {
-                this.exportService.exportBinary('LogicAnalyzerData', this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].instruments.la.rawData);
+            else if (data.option === 'Export Osc Binary') {
+                this.exportService.exportBinary('WaveFormsLiveOscPacket', this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].instruments.osc.rawPacket);
+            }
+            else if (data.option === 'Export LA Binary') {
+                this.exportService.exportBinary('WaveFormsLiveLAPacket', this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].instruments.la.rawPacket);
             }
         });
         popover.present({
