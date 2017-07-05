@@ -66,13 +66,13 @@
                     <ion-item class="configure-item collapse-card" [@expand]="showMainAdvanced">
                         <ion-label>NIC</ion-label>
                         <div item-right class="item-content-right dropdown-popover-item-right">
-                            <dropdown-popover [dataArray]="availableNics" (onSelection)="nicSelection($event)"></dropdown-popover>
+                            <dropdown-popover [forcePopover]="true" [dataArray]="availableNics" (onSelection)="nicSelection($event)"></dropdown-popover>
                         </div>
                     </ion-item>
                     <ion-item class="configure-item collapse-card" [@expand]="showMainAdvanced">
                         <ion-label>Storage Location</ion-label>
                         <div item-right class="item-content-right dropdown-popover-item-right">
-                            <dropdown-popover [dataArray]="storageLocations" (onSelection)="storageSelection($event)"></dropdown-popover>
+                            <dropdown-popover [forcePopover]="true" [dataArray]="storageLocations" (onSelection)="storageSelection($event)"></dropdown-popover>
                         </div>
                     </ion-item>
                     <ion-item class="configure-item collapse-card" *ngIf="currentNicStatus.status === 'connected' && deviceObject && deviceObject.bridge" [@expand]="showMainAdvanced">
@@ -118,7 +118,7 @@
                     <ion-item class="card-info" *ngIf="customNetworkConfig">
                         <ion-label>Security Type</ion-label>
                         <div item-right class="item-content-right dropdown-popover-item-right">
-                            <dropdown-popover [dataArray]="securityTypes" (onSelection)="customNetworkSecuritySelect($event)"></dropdown-popover>
+                            <dropdown-popover [forcePopover]="true" [dataArray]="securityTypes" (onSelection)="customNetworkSecuritySelect($event)"></dropdown-popover>
                         </div>
                     </ion-item>
 

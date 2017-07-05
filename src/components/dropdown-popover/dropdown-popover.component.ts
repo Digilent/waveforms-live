@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ElementRef, ViewChild } from '@angular/core';
 import { PopoverController, Platform } from 'ionic-angular';
 
 //Components
@@ -11,6 +11,7 @@ import { GenPopover } from '../gen-popover/gen-popover.component';
 
 export class DropdownPopoverComponent {
     @Input() dataArray: string[];
+    @Input() forcePopover: boolean = false;
     @Output() onSelection = new EventEmitter();
     public popoverCtrl: PopoverController;
     public platform: Platform;
@@ -19,7 +20,7 @@ export class DropdownPopoverComponent {
     public noArrayMessage: string = 'None';
     public elementRef: ElementRef;
     public viewInitialized: boolean = false;
-    public awaitingViewInit: {waiting: boolean, value: string} = {waiting: false, value: ''};
+    public awaitingViewInit: { waiting: boolean, value: string } = { waiting: false, value: '' };
 
     constructor(
         _popoverCtrl: PopoverController,

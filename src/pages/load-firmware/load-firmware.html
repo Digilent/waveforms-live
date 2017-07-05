@@ -9,7 +9,7 @@
                     <ion-item class="configure-item">
                         <ion-label>Device</ion-label>
                         <div item-right class="item-content-right dropdown-popover-item-right">
-                            <dropdown-popover [dataArray]="knownDevicePrettyNames" (onSelection)="dropdownDeviceChange($event)"></dropdown-popover>
+                            <dropdown-popover [forcePopover]="true" [dataArray]="knownDevicePrettyNames" (onSelection)="dropdownDeviceChange($event)"></dropdown-popover>
                         </div>
                     </ion-item>
                     <ion-item class="configure-item">

@@ -1,11 +1,11 @@
 <div class="dropdown-popover-container">    
-    <div *ngIf="isMobile">
-        <button ion-button icon-right (click)="openGenPopover($event)" class="popover-button">
-            {{currentlySelected}}
+    <div *ngIf="isMobile || forcePopover">
+        <button ion-button icon-right (click)="openGenPopover($event)" class="popover-button disable-hover">
+            <span>{{currentlySelected}}</span>
             <img class="custom-image-button" src="assets/img/arrow-dropdown.svg">
         </button>
     </div>
-    <div *ngIf="!isMobile">
+    <div *ngIf="!isMobile && !forcePopover">
         <select (change)="selectionChange($event)" class="dropdown-select" #selectElement>
             <option *ngFor="let option of dataArray" [value]="option">{{option}}</option>
         </select>

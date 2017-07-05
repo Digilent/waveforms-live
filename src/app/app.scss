@@ -278,6 +278,18 @@ ion-checkbox .checkbox-icon.checkbox-checked
     border-radius: 4px;
 }
 
+dropdown-popover[ng-reflect-force-popover="true"] {
+    button.popover-button.disable-hover[ion-button] {
+        margin: 0;
+        height: 25px;
+        font-size: 14px;
+        font-weight: 400;
+        .button-inner span {
+            padding-top: 1px;
+        }
+    }
+}
+
 .alert-wrapper {
     border-radius: 2px !important;
     background-color: #535353 !important;

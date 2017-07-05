@@ -17,7 +17,7 @@
                     <ion-item class="configure-item">
                         <ion-label>Available Firmware Versions</ion-label>
                         <div item-right class="item-content-right dropdown-popover-item-right">
-                            <dropdown-popover [dataArray]="availableFirmwareVersions" (onSelection)="availableFirmwareVersionsChange($event)"></dropdown-popover>
+                            <dropdown-popover [forcePopover]="true" [dataArray]="availableFirmwareVersions" (onSelection)="availableFirmwareVersionsChange($event)"></dropdown-popover>
                         </div>
                     </ion-item>
                     <ion-item class="configure-item" *ngIf="hexFileStaged">

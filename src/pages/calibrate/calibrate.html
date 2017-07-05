@@ -94,7 +94,7 @@
                 <div text-center>
                     <ion-item class="calibration-dropdown-popover-container">
                         <span class="storage-label">Storage Location</span>
-                        <dropdown-popover [dataArray]="storageLocations" (onSelection)="selectStorage($event)"></dropdown-popover>
+                        <dropdown-popover [forcePopover]="true" [dataArray]="storageLocations" (onSelection)="selectStorage($event)"></dropdown-popover>
                         <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" item-right (click)="getStorageLocations()">
                             <img class="custom-image-button" src="assets/img/refresh.svg">
                         </button>
@@ -141,7 +141,7 @@
                 <div text-center>
                     <ion-item class="calibration-dropdown-popover-container">
                         <span class="storage-label">Storage Location</span>
-                        <dropdown-popover [dataArray]="storageLocations" (onSelection)="selectStorage($event)"></dropdown-popover>
+                        <dropdown-popover [forcePopover]="true" [dataArray]="storageLocations" (onSelection)="selectStorage($event)"></dropdown-popover>
                         <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" item-right (click)="getStorageLocations()">
                             <img class="custom-image-button" src="assets/img/refresh.svg">
                         </button>
