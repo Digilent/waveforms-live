@@ -31,7 +31,7 @@
             <div class="content-container">
                 <div class="slide-header">Calibration Complete</div>
                 <div class="bode-slide-content">
-                    See calibration data below. Connect Osc Ch 1 and Wavegen Ch 1 back to your circuit and click start.
+                    See calibration data below. {{exitAfterCalibration ? '' : 'Connect Osc Ch 1 and Wavegen Ch 1 back to your circuit and click start.'}}
                 </div>
                 <div class="bode-calibration-results">
                     <ion-row class="bode-header-row">

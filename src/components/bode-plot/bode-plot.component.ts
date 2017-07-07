@@ -63,6 +63,7 @@ export class BodePlotComponent {
     public calibrationData: number[][];
     private localStorageCalibrationData: any;
     private flotOverlayRef: any;
+    private fileName: string = 'bodeCalibrationData.json';
 
     constructor(
         private deviceManagerService: DeviceManagerService,
@@ -75,26 +76,26 @@ export class BodePlotComponent {
     ) {
         this.bodePlotOptions = this.generateBodeOptions(true, true);
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
-        this.activeDevice.resetInstruments().subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+        this.activeDevice.resetInstruments()
+            .flatMap((data) => {
+                return this.getStorageLocations();
+            })
+            .flatMap((data) => {
+                return this.loadPreviousCalibration();
+            })
+            .subscribe(
+                (data) => {
+                    console.log(data);
+                    this.calibrationData = data;
+                },
+                (err) => {
+                    console.log(err);
+                },
+                () => { }
+            );
         if (this.activeDevice == undefined) {
             throw 'No Active Device';
         }
-        this.loadPreviousCalibration()
-            .then((data) => {
-                console.log(data);
-                this.calibrationData = data;
-            })
-            .catch((e) => {
-                console.log(e);
-            });
     }
 
     ngOnDestroy() {
@@ -147,25 +148,25 @@ export class BodePlotComponent {
                     return this.single();
                 })
                 .subscribe(
-                    (data) => {
-                        this.startTime = performance.now();
-                        this.readOsc(doNotPlotPoint)
-                            .then((data) => {
-                                console.log('read osc return');
-                                resolve(data);
-                            })
-                            .catch((e) => {
-                                reject(e);
-                            });
-                    },
-                    (err) => {
-                        console.log(err);
-                        reject(err);
-                    },
-                    () => { }
+                (data) => {
+                    this.startTime = performance.now();
+                    this.readOsc(doNotPlotPoint)
+                        .then((data) => {
+                            console.log('read osc return');
+                            resolve(data);
+                        })
+                        .catch((e) => {
+                            reject(e);
+                        });
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
                 );
         });
-        
+
     }
 
     startSweep(startFreq: number, stopFreq: number, stepsPerDec: number, logX: boolean, logY: boolean, sweepType: SweepType): Promise<any> {
@@ -235,7 +236,7 @@ export class BodePlotComponent {
         console.log(this.calibrationData);
         console.log('FREQUENCY TO INTERPOLATE');
         console.log(freq);
-        
+
         for (; this.calibrationData[i][0] < freq; i++) { }
         console.log('FOUND INDEX');
         console.log(i);
@@ -294,7 +295,7 @@ export class BodePlotComponent {
 
     private buildLogPointArray(start: number, finish: number, stepsPerDec: number): number[] {
         console.log(start, finish);
-        let testFreqArray = []; 
+        let testFreqArray = [];
         let decades = 0;
         while (start * Math.pow(10, ++decades) < finish) { }
         let points = stepsPerDec * decades;
@@ -302,7 +303,7 @@ export class BodePlotComponent {
         let startPow = parseInt(start.toExponential().split('e')[1]);
         console.log(startPow);
         for (let i = 0; i <= points; i++) {
-            testFreqArray.push(Math.pow(10, logStep * i) * start); 
+            testFreqArray.push(Math.pow(10, logStep * i) * start);
         }
         if (testFreqArray[testFreqArray.length - 1] > finish) {
             let index = testFreqArray.length - 1;
@@ -338,19 +339,19 @@ export class BodePlotComponent {
                     return this.activeDevice.instruments.awg.run([this.awgChan]);
                 })
                 .subscribe(
-                    (data) => {
-                        console.log(data);
-                        setTimeout(() => {
-                            console.log('done waiting for awg start up');
-                            observer.next(actualSignalFreq);
-                            observer.complete();
-                        }, data.awg[this.awgChan.toString()][0].wait);
-                    },
-                    (err) => {
-                        observer.error(err);
+                (data) => {
+                    console.log(data);
+                    setTimeout(() => {
+                        console.log('done waiting for awg start up');
+                        observer.next(actualSignalFreq);
                         observer.complete();
-                    },
-                    () => { }
+                    }, data.awg[this.awgChan.toString()][0].wait);
+                },
+                (err) => {
+                    observer.error(err);
+                    observer.complete();
+                },
+                () => { }
                 );
         });
     }
@@ -386,8 +387,24 @@ export class BodePlotComponent {
     }
 
     private saveCalibrationToDevice(): Promise<any> {
+        let str = JSON.stringify(this.calibrationData);
+        var buf = new ArrayBuffer(str.length);
+        var bufView = new Uint8Array(buf);
+        for (let i = 0; i < str.length; i++) {
+            bufView[i] = str.charCodeAt(i);
+        }
         return new Promise((resolve, reject) => {
-            reject('not implemented');
+            this.activeDevice.file.write('sd0', this.fileName, buf).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve('done');
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
         });
     }
 
@@ -405,6 +422,7 @@ export class BodePlotComponent {
             this.loadPreviousCalibrationFromDevice()
                 .then((data) => {
                     resolve(data);
+                    this.loadPreviousCalibrationFromLocalStorage().catch((e) => {});
                 })
                 .catch((e) => {
                     this.loadPreviousCalibrationFromLocalStorage()
@@ -418,9 +436,43 @@ export class BodePlotComponent {
         });
     }
 
+    private getStorageLocations(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.activeDevice.storageGetLocations().subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
+    }
+
     private loadPreviousCalibrationFromDevice(): Promise<any> {
         return new Promise((resolve, reject) => {
-            reject('not implemented');
+            this.activeDevice.file.read('sd0', this.fileName, 0, -1).subscribe(
+                (data) => {
+                    console.log(data);
+                    let parsedData;
+                    try {
+                        parsedData = JSON.parse(data.file);
+                    }
+                    catch(e) {
+                        reject(e);
+                        return;
+                    }
+                    resolve(parsedData);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
         });
     }
 
@@ -434,7 +486,7 @@ export class BodePlotComponent {
                         try {
                             parsedData = JSON.parse(data);
                         }
-                        catch(e) {
+                        catch (e) {
                             reject(e);
                             return;
                         }
@@ -525,9 +577,9 @@ export class BodePlotComponent {
                 },
                 (err) => {
                     console.log(err);
-                    if (this.destroyed) { 
+                    if (this.destroyed) {
                         reject('page destroyed');
-                        return; 
+                        return;
                     }
                     if (performance.now() - this.startTime > this.timeoutTimer) {
                         reject('timeout');
@@ -722,7 +774,7 @@ export class BodePlotComponent {
             xaxis: {
                 tickColor: '#666666',
                 ticks: this.tickGenerator,
-                tickFormatter: ((val, axis) => { 
+                tickFormatter: ((val, axis) => {
                     let intVal = parseInt(val);
                     if (intVal === 1 || intVal === 10 || intVal === 100 || intVal === 1000 || intVal === 10000 || intVal === 100000 || intVal === 1000000 || intVal === 10000000) {
                         return this.unitFormatPipeInstance.transform(val, 'Hz');
