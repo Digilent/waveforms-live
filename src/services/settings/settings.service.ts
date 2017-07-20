@@ -15,10 +15,10 @@ export class SettingsService {
     public nestedChannels: boolean = false;
     public routeToStore: boolean = true;
     public drawLaOnTimeline: boolean = false;
-    public wflVersion: string = '1.0.7';
+    public wflVersion: string = '1.1.0';
     public useDevBuilds: boolean = false;
     public androidAppLink = "market://details?id=com.digilent.waveformslive";
-    public iosAppLink = "https://itunes.apple.com/us/app/solitaire/id1244242035";
+    public iosAppLink = "https://itunes.apple.com/us/app/waveforms-live/id1244242035";
 
     public knownFirmwareUrls: { openscopeMz: { prettyName: string, listUrl: string, devListUrl: string, firmwareUrl: string, devFirmwareUrl: string } } = {
         openscopeMz: {
@@ -56,6 +56,13 @@ export class SettingsService {
             if (data == undefined) { return; }
             let parsedData = JSON.parse(data);
             this.logArguments = parsedData.log;
+        });
+
+        this.storageService.getData('httpTimeout').then((data) => {
+            console.log(data);
+            if (data == undefined) { return; }
+            let parsedData = JSON.parse(data);
+            this.deviceManagerService.setHttpTimeout(parsedData.timeout);
         });
     }
 
@@ -159,6 +166,12 @@ export class SettingsService {
     clearAppLog() {
         this.logArguments = [];
         this.storageService.removeDataByKey('appLog');
+    }
+
+    setHttpTimeout(newTimeout: number) {
+        this.deviceManagerService.setHttpTimeout(newTimeout);
+        console.log(this.deviceManagerService.getHttpTimeout());
+        this.storageService.saveData('httpTimeout', JSON.stringify({timeout: this.deviceManagerService.getHttpTimeout()}));
     }
 
 

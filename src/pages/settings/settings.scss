@@ -17,6 +17,15 @@
     text-align: center;
 }
 
+.settings-body .timeout-container
+{
+    display: flex;
+    align-items: center;
+    input {
+        margin-right: 8px;
+        max-width: 100px;
+    }
+}
 
 .settings-body .item-button
 {

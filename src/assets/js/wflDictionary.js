@@ -21,6 +21,9 @@ var waveformsLiveDictionary = (function() {
         selectOutput: {
             english: 'Click A Channel To Set It As An Output'
         },
+        upgradeFirmware: {
+            english: 'This Feature Requires A Newer Firmware Version'
+        },
 
         //Device
         //Appears when a device is added successfully on the device manager page.

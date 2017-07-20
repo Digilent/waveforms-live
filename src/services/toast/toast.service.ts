@@ -13,20 +13,20 @@ export class ToastService {
         this.toastCtrl = _toastCtrl;
     }
 
-    createToast(key: string, showCloseButton?: boolean, stringToConcat?: string) {
+    createToast(key: string, showCloseButton?: boolean, stringToConcat?: string, duration?: number) {
         return new Promise<any>((resolve, reject) => {
             showCloseButton = showCloseButton || false;
             stringToConcat = stringToConcat || '';
+            duration = duration == undefined ? 3000 : duration;
             let messageToDisplayObject = this.getMessage(key);
             if (messageToDisplayObject.statusCode > 0) {
                 reject(messageToDisplayObject);
                 return;
             }
-
             let toast = this.toastCtrl.create({
                 message: messageToDisplayObject.message + stringToConcat,
                 showCloseButton: showCloseButton,
-                duration: 3000,
+                duration: duration,
                 position: 'bottom'
             });
             toast.present();

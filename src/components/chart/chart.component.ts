@@ -20,6 +20,7 @@ import { Chart, CursorPositions, DataContainer } from './chart.interface';
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { ToastService } from '../../services/toast/toast.service';
 import { DeviceDataTransferService } from '../../services/device/device-data-transfer.service';
 import { ExportService } from '../../services/export/export.service';
 import { DeviceManagerService } from 'dip-angular2/services';
@@ -110,6 +111,8 @@ export class SilverNeedleChart {
 
     private annotationRefs: { ref: ComponentRef<ChartAnnotationComponent>, id: number, view: 'chart' | 'fft' }[] = [];
 
+    private minBodeFirmwareVersion: string = '1.37.0';
+
     constructor(
         _modalCtrl: ModalController,
         _platform: Platform,
@@ -121,7 +124,8 @@ export class SilverNeedleChart {
         private compFactoryResolver: ComponentFactoryResolver,
         private navCtrl: NavController,
         private exportService: ExportService,
-        private deviceManagerService: DeviceManagerService
+        private deviceManagerService: DeviceManagerService,
+        private toastService: ToastService
     ) {
         this.modalCtrl = _modalCtrl;
         this.settingsService = _settingsService;
@@ -402,6 +406,14 @@ export class SilverNeedleChart {
     }
 
     toBode() {
+        let currentFirmwareContainer = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].firmwareVersion;
+        let minFirmwareSplit = this.minBodeFirmwareVersion.split('.');
+        let weightedMinFirmwareVersion = 1000000 * parseInt(minFirmwareSplit[0]) + 1000 * parseInt(minFirmwareSplit[1]) + parseInt(minFirmwareSplit[2]);
+        let weightedCurrFirmwareVersion = 1000000 * currentFirmwareContainer.major + 1000 * currentFirmwareContainer.minor + currentFirmwareContainer.patch;
+        if (weightedCurrFirmwareVersion < weightedMinFirmwareVersion) {
+            this.toastService.createToast('upgradeFirmware', true, '. Please Upload At Least Version ' + this.minBodeFirmwareVersion + '.', 8000);
+            return;
+        }
         this.navCtrl.push(BodePage, {
             onBodeDismiss: (() => {
                 console.log('bode dismiss');

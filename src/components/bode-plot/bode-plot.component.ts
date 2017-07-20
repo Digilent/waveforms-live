@@ -394,7 +394,7 @@ export class BodePlotComponent {
             bufView[i] = str.charCodeAt(i);
         }
         return new Promise((resolve, reject) => {
-            this.activeDevice.file.write('sd0', this.fileName, buf).subscribe(
+            this.activeDevice.file.write('flash', this.fileName, buf).subscribe(
                 (data) => {
                     console.log(data);
                     resolve('done');
@@ -454,7 +454,7 @@ export class BodePlotComponent {
 
     private loadPreviousCalibrationFromDevice(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.activeDevice.file.read('sd0', this.fileName, 0, -1).subscribe(
+            this.activeDevice.file.read('flash', this.fileName, 0, -1).subscribe(
                 (data) => {
                     console.log(data);
                     let parsedData;

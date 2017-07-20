@@ -71,6 +71,13 @@
                                 <button ion-button class="text-button-side item-button disable-hover" (click)="clearAppLog()">Clear App Log</button>
                             </div>
                         </ion-item>
+                        <ion-item class="configure-item only-button-item">
+                            <ion-label>Http Timeout</ion-label>
+                            <div item-right class="timeout-container">
+                                <input class="custom-input" step="any" [ngModel]="timeout | unitFormat:'sec'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
+                                <button ion-button class="text-button-side item-button disable-hover" [disabled]="timeout * 1000 === currentTimeout" (click)="setTimeout()">Set</button>
+                            </div>
+                        </ion-item>
                         <ion-item class="configure-item">
                             <ion-label>Use Dev Firmware Builds</ion-label>
                             <ion-toggle [(ngModel)]="settingsService.useDevBuilds" (ngModelChange)="saveDevBuilds($event)"></ion-toggle>
