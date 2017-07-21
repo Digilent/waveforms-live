@@ -411,6 +411,9 @@ export class BodePlotComponent {
     private saveCalibrationToLocalStorage(): Promise<any> {
         return new Promise((resolve, reject) => {
             if (this.activeDevice.macAddress == undefined) { resolve(); return; }
+            if (this.localStorageCalibrationData == undefined) {
+                this.localStorageCalibrationData = {};
+            }
             this.localStorageCalibrationData[this.activeDevice.macAddress] = this.calibrationData;
             this.storageService.saveData('bodeCalibration', JSON.stringify(this.localStorageCalibrationData));
             resolve('done');
