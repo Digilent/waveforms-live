@@ -69,7 +69,7 @@
     height: 200px;
     max-height: calc(100% - 11px);
     z-index: 5;
-    overflow: auto;
+    overflow: visible;
 }
 
 .chart-container-container .chart-button-container::-webkit-scrollbar {

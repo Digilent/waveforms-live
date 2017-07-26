@@ -183,49 +183,71 @@ export class BodePlotComponent {
         this.bodePlot.digilentChart.setupGrid();
         this.bodePlot.digilentChart.draw();
         return new Promise((resolve, reject) => {
-            this.displayBodeModal()
-                .then((data) => {
-                    console.log(data);
-                    if (!data) {
-                        reject('interrupted');
+            if (this.calibrationData != undefined) {
+                this.runSweep(startFreq, stopFreq, stepsPerDec, sweepType)
+                    .then((data) => {
+                        resolve(data);
                         return;
-                    }
-                    console.log('TODO DATA');
-                    let loading = this.loadingService.displayLoading('Generating Bode Plot. Please wait...');
-                    let frequencyArray;
-                    if (sweepType === 'Log') {
-                        frequencyArray = this.buildLogPointArray(startFreq, stopFreq, stepsPerDec);
-                    }
-                    else if (sweepType === 'Linear') {
-                        frequencyArray = this.buildFrequencyArray(startFreq, stopFreq, stepsPerDec);
-                    }
-                    frequencyArray.reduce((previous, current, index, arr) => {
-                        return previous.then((data) => {
-                            console.log(data);
-                            console.log(previous, index);
-                            console.log(arr.length);
-                            console.log('continuing!!!');
-                            return this.setAwgAndSingle(arr[index]);
-                        }).catch((e) => {
-                            console.log(e);
-                            return Promise.reject(e);
-                        });
-                    }, Promise.resolve())
-                        .then((data) => {
-                            console.log('DONE');
-                            console.log(data);
-                            console.log(this.bodeDataContainer);
-                            loading.dismiss();
-                            resolve('done');
-                        })
-                        .catch((e) => {
-                            console.log('promise chain catch');
-                            loading.dismiss();
-                            reject(e);
-                        });
+                    })
+                    .catch((e) => {
+                        reject(e);
+                        return;
+                    });
+            }
+            else {
+                this.displayBodeModal()
+                    .then((data) => {
+                        console.log(data);
+                        if (!data) {
+                            reject('interrupted');
+                            return;
+                        }
+                        return this.runSweep(startFreq, stopFreq, stepsPerDec, sweepType);
+                    })
+                    .then((data) => {
+                        resolve(data);
+                    })
+                    .catch((e) => {
+                        //TODO display error
+                        reject(e);
+                    });
+            }
+        });
+    }
+
+    private runSweep(startFreq: number, stopFreq: number, stepsPerDec: number, sweepType: SweepType) {
+        return new Promise((resolve, reject) => {
+            let loading = this.loadingService.displayLoading('Generating Bode Plot. Please wait...');
+            let frequencyArray;
+            if (sweepType === 'Log') {
+                frequencyArray = this.buildLogPointArray(startFreq, stopFreq, stepsPerDec);
+            }
+            else if (sweepType === 'Linear') {
+                frequencyArray = this.buildFrequencyArray(startFreq, stopFreq, stepsPerDec);
+            }
+            frequencyArray.reduce((previous, current, index, arr) => {
+                return previous.then((data) => {
+                    console.log(data);
+                    console.log(previous, index);
+                    console.log(arr.length);
+                    console.log('continuing!!!');
+                    return this.setAwgAndSingle(arr[index]);
+                }).catch((e) => {
+                    console.log(e);
+                    return Promise.reject(e);
+                });
+            }, Promise.resolve())
+                .then((data) => {
+                    console.log('DONE');
+                    console.log(data);
+                    console.log(this.bodeDataContainer);
+                    loading.dismiss();
+                    resolve('done');
                 })
                 .catch((e) => {
-                    //TODO display error
+                    console.log('promise chain catch');
+                    loading.dismiss();
+                    reject(e);
                 });
         });
     }

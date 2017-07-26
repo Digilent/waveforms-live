@@ -25,13 +25,13 @@ export class ExportService {
         let ctx = blackCanvas.getContext("2d");
         ctx.save();
         ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, chartCanvas.width, chartCanvas.height);
+        ctx.fillRect(0, 0, blackCanvas.width, blackCanvas.height);
         ctx.drawImage(chartCanvas, 0, 0);
         ctx.drawImage(overlayCanvas, 0, 0);
         ctx.textAlign = 'end';
         ctx.font = "16px Segoe UI";
         ctx.fillStyle = "#CCCCCC";
-        ctx.fillText('waveformslive.com', width - 24, height + 16);
+        ctx.fillText('waveformslive.com', width - 8, height + 8);
         let data = blackCanvas.toDataURL();
         ctx.restore();
 
