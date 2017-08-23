@@ -14,6 +14,11 @@
                     </button>
                 </div>
                 <div>
+                    <button ion-button class="chart-button disable-hover" (tap)="toLogger()" [tooltip]="tooltipService.getTooltip('chartToLogger').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                        <img class="buttons-side-svg" src="assets/img/logger.svg">
+                    </button>
+                </div>
+                <div>
                     <button ion-button class="chart-button disable-hover" (tap)="autoscaleAllAxes()" [disabled]="currentBufferArray.length === 0" [tooltip]="tooltipService.getTooltip('chartAutoscale').message" [tooltipAnimation]="true" tooltipPlacement="left">
                         <img class="button-side-svg" src="assets/img/fullscreen.svg" />
                     </button>

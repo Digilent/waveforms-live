@@ -123,6 +123,9 @@ export class TestChartCtrlsPage {
 
     resetDevice() {
         let loading = this.displayLoading();
+        if (this.running) {
+            this.stopClick();
+        }
         this.chart1.initializeValues();
         this.previousLaSettings = [];
         this.previousOscSettings = [];
@@ -1174,6 +1177,10 @@ export class TestChartCtrlsPage {
 
     //Stop dc stream
     stopClick() {
+        console.log('stop click!');
+        if (!this.running) {
+            return;
+        }
         this.running = false;
         this.abortSingle(true);
     }

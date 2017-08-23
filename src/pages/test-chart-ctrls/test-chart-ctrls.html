@@ -68,7 +68,7 @@
             </div>
 
             <ion-col class="custom-col" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 2}"> 
-                <silverNeedleChart #chart1 (chartLoad)="initSettings()" (resetDevice)="resetDevice()" class="chart-wrapper"></silverNeedleChart>
+                <silverNeedleChart #chart1 (chartLoad)="initSettings()" (resetDevice)="resetDevice()" (stopRun)="stopClick()" class="chart-wrapper"></silverNeedleChart>
                 <ion-fab class="tutorial-mode-button" *ngIf="tutorialMode">
                     <button ion-fab mini class="help-button" (tap)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
                         <img [src]="tutorialMode ? 'assets/img/close.svg' : 'assets/img/help.svg'" />

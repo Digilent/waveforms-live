@@ -13,6 +13,7 @@ import { ChartAnnotationComponent } from '../chart-annotation/chart-annotation.c
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
 import { BodePage } from '../../pages/bode/bode';
+import { LoggerPage } from '../../pages/logger/logger';
 
 //Interfaces
 import { Chart, CursorPositions, DataContainer } from './chart.interface';
@@ -50,6 +51,7 @@ declare var cordova: any;
 export class SilverNeedleChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     @Output() resetDevice: EventEmitter<any> = new EventEmitter();
+    @Output() stopRun: EventEmitter<any> = new EventEmitter();
     @ViewChild('fftChart') fftChart: DigilentChart;
     public settingsService: SettingsService;
     public tooltipService: TooltipService;
@@ -406,11 +408,8 @@ export class SilverNeedleChart {
     }
 
     toBode() {
-        let currentFirmwareContainer = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].firmwareVersion;
-        let minFirmwareSplit = this.minBodeFirmwareVersion.split('.');
-        let weightedMinFirmwareVersion = 1000000 * parseInt(minFirmwareSplit[0]) + 1000 * parseInt(minFirmwareSplit[1]) + parseInt(minFirmwareSplit[2]);
-        let weightedCurrFirmwareVersion = 1000000 * currentFirmwareContainer.major + 1000 * currentFirmwareContainer.minor + currentFirmwareContainer.patch;
-        if (weightedCurrFirmwareVersion < weightedMinFirmwareVersion) {
+        this.stopRun.emit();
+        if (!this.isFirmwareSupported()) {
             this.toastService.createToast('upgradeFirmware', true, '. Please Upload At Least Version ' + this.minBodeFirmwareVersion + '.', 8000);
             return;
         }
@@ -420,6 +419,28 @@ export class SilverNeedleChart {
                 this.resetDevice.emit();
             })
         });
+    }
+
+    toLogger() {
+        this.stopRun.emit();
+        if (!this.isFirmwareSupported()) {
+            this.toastService.createToast('upgradeFirmware', true, '. Please Upload At Least Version ' + this.minBodeFirmwareVersion + '.', 8000);
+            return;
+        }
+        this.navCtrl.push(LoggerPage, {
+            onLoggerDismiss: (() => {
+                console.log('logger dismiss');
+                this.resetDevice.emit();
+            })
+        });
+    }
+
+    private isFirmwareSupported(): boolean {
+        let currentFirmwareContainer = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].firmwareVersion;
+        let minFirmwareSplit = this.minBodeFirmwareVersion.split('.');
+        let weightedMinFirmwareVersion = 1000000 * parseInt(minFirmwareSplit[0]) + 1000 * parseInt(minFirmwareSplit[1]) + parseInt(minFirmwareSplit[2]);
+        let weightedCurrFirmwareVersion = 1000000 * currentFirmwareContainer.major + 1000 * currentFirmwareContainer.minor + currentFirmwareContainer.patch;
+        return !(weightedCurrFirmwareVersion < weightedMinFirmwareVersion);
     }
 
     generateFftYaxisOptions() {

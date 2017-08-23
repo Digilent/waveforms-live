@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
+import { LoggerModule } from '../logger/logger.module';
+
 import { TestChartCtrlsPage } from './test-chart-ctrls';
 import { SilverNeedleChart } from '../../components/chart/chart.component';
 import { XAxisComponent } from '../../components/xaxis-controls/xaxis-controls.component';
@@ -20,6 +22,7 @@ import { ChartAnnotationComponent } from '../../components/chart-annotation/char
 @NgModule({
     imports: [
         SharedModule,
+        LoggerModule,
         IonicModule.forRoot(TestChartCtrlsPage),
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),

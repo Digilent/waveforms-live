@@ -79,7 +79,7 @@ export class WifiSetupPage {
     public modifyingSaved: boolean = false;
     public showMainAdvanced: boolean = false;
     public customNetworkConfig: boolean = false;
-    public securityTypes: string[] = ['wpa2', 'wpa', 'wep40', 'wep104'];
+    public securityTypes: string[] = ['wpa2', 'wpa', 'wep40', 'wep104', 'open'];
     public deviceObject: DeviceCardInfo;
 
     constructor(
@@ -456,7 +456,7 @@ export class WifiSetupPage {
         );
     }
 
-    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40' | 'wep104' | 'wpa' | 'wpa2',
+    wifiSetParameters(adapter: string, ssid: string, securityType: 'wep40' | 'wep104' | 'wpa' | 'wpa2' | 'open',
         autoConnect: boolean, passphrase?: string, keys?: string, keyIndex?: number): Promise<any> {
         return new Promise((resolve, reject) => {
             this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiSetParameters(adapter, ssid, securityType, autoConnect, passphrase, keys, keyIndex).subscribe(
@@ -634,8 +634,8 @@ export class WifiSetupPage {
         else {
             loading = this.displayLoading('Connecting To Network');
         }
-        if (this.selectedNetwork.securityType === 'wpa' || this.selectedNetwork.securityType === 'wpa2') {
-            this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, this.autoConnect, this.password)
+        if (this.selectedNetwork.securityType === 'wpa' || this.selectedNetwork.securityType === 'wpa2' || this.selectedNetwork.securityType === 'open') {
+            this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, this.autoConnect, this.selectedNetwork.securityType === 'open' ? '' : this.password)
                 .then(() => {
                     if (this.save) {
                         return this.saveWifiNetwork(this.selectedStorageLocation);

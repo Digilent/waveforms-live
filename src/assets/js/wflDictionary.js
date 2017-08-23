@@ -257,6 +257,9 @@ var waveformsLiveDictionary = (function() {
         chartToBode: {
             english: 'To Bode Page'
         },
+        chartToLogger: {
+            english: 'To Logger Page'
+        },
         chartResetDevice: {
             english: 'Reset Device And ReInitialize'
         },
