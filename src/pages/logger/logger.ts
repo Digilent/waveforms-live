@@ -19,6 +19,19 @@ export class LoggerPage {
     ) {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+        this.test();
+    }
+
+    test() {
+        this.activeDevice.instruments.logger.analog.setParameters([1], [-1], [1], [0], [1000000], [0], ['stop'], ["ram"], ['http://blah.com']).subscribe(
+            (data) => {
+                console.log(data);
+            },
+            (err) => {
+                console.log(err);
+            },
+            () => { }
+        );
     }
 
     done() {
