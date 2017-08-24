@@ -3,6 +3,9 @@ import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
 import { LoggerPage } from './logger';
+
+//Components
+import { LoggerComponent } from '../../components/logger/logger.component';
  
 @NgModule({
     imports: [
@@ -10,7 +13,8 @@ import { LoggerPage } from './logger';
         IonicModule.forRoot(LoggerPage)
     ],
     declarations: [
-        LoggerPage
+        LoggerPage,
+        LoggerComponent
     ],
     exports: [LoggerPage]
 })

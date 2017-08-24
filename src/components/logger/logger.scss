@@ -1,0 +1,262 @@
+.yaxis-component-container .osc-title
+{
+    color: white;
+    height: 31px;
+}
+
+.yaxis-component-container
+{
+    border-bottom: solid black 1px;
+}
+
+.offset-button
+{
+    margin: 0 !important;
+}
+
+.align-center
+{
+    text-align: center;
+}
+
+.yaxis-component-container .set-top-border
+{
+    border-top: solid black 1px;
+}
+
+.header-bar-side .header-bar-title
+{
+    padding-top: 4px;
+}
+
+.icon-only-button-side
+{
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
+    font-size: 8px;
+    height: 25px;
+    width: 26px;
+    padding: 0;
+    background-color: #535353;
+    border: solid black 1px;
+    border-radius: 0px;
+    box-shadow: none;
+    .button-inner img {
+        max-width: 16px;
+    }
+}
+
+.icon-only-button-side:hover
+{
+    border: solid white 1px;
+}
+
+.text-button-side
+{
+    margin-top: 0.1rem;
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+    margin-left: 0.1rem;
+    font-size: 10px;
+    height: 25px;
+    font-weight: 400;
+    min-width: 87px;
+    background-color: #535353;
+    border: solid black 1px;
+    border-radius: 0px;
+    box-shadow: none;
+    color: #CCCCCC;
+    .button-inner img {
+        width: 16px;
+    }
+}
+
+.text-button-side[icon-right] .button-inner img
+{
+    margin-left: 0.4em;
+}
+
+.text-button-side[icon-left] .button-inner img
+{
+    margin-right: 0.4em;
+}
+
+.button-md.activated
+{
+    background-color: inherit;
+}
+
+ion-navbar 
+{
+    .toolbar-background {
+        background-color: #535353;
+    }
+    button {
+        color: white !important;
+    }
+    ion-title .toolbar-title {
+        color: white;
+    }
+}
+
+.header-md::after{
+    background-image: none;
+}
+
+
+.text-button-side:hover
+{
+    border: solid white 1px;
+}
+
+.set-darkgrey-font
+{
+    color: #CCCCCC;
+}
+
+.header-bar-side
+{
+    background-color:#535353;
+    border-top: solid #686868 1px;
+    padding-top: 1px; 
+    padding-bottom: 1px;
+    color: #CCCCCC;
+}
+
+.controls-container
+{
+    color: white;
+    font-weight: 400;
+    background-color: #535353;
+    padding-top: 5px;
+}
+
+.seriesHidden
+{
+    background-color: #535353;
+    opacity: 0.4;
+}
+
+.header-bar-side-closed
+{
+    border-bottom: solid black 1px;
+}
+
+.text-button-main
+{
+    background-color: #535353;
+    border: solid black 1px;
+}
+
+.custom-dropdown-img
+{
+    cursor: pointer;
+    margin-left: 6px;
+    background-color: transparent;
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+    -webkit-transition: all 0.2s ease-in;
+    -moz-transition: all 0.2s ease-in;
+    -o-transition: all 0.2s ease-in;
+    transition: all 0.2s ease-in;
+}
+
+.rotateOn {
+    -webkit-transform: rotate(90deg)!important;
+    -moz-transform: rotate(90deg)!important;
+    -ms-transform: rotate(90deg)!important;
+    transform: rotate(90deg)!important;
+    -webkit-transition: all 0.2s ease-in;
+    -moz-transition: all 0.2s ease-in;
+    -o-transition: all 0.2s ease-in;
+    transition: all 0.2s ease-in;
+}
+
+.vpd-val-col
+{
+    min-width: 80px;
+    padding: 0px 4px 0px 4px;
+}
+
+.yaxis-component-container .samplefreq-val-col
+{
+    min-width: 80px;
+    padding: 0px 4px 0px 4px;
+}
+
+.vpd-button-col
+{
+    padding: 0;
+    font-size: 0px;
+    max-width: 26px;
+}
+
+.margin-right
+{
+    margin-right: 6px;
+}
+
+.yaxis-component-container .highlight-input
+{
+    background-color: #AAAAAA;
+    color: black;
+}
+
+.vpd-label-col
+{
+    padding: 0px 0px 0px 15px;
+    color: #CCCCCC;
+}
+
+.yaxis-component-wrapper
+{
+    margin-left: 8px;
+}
+
+.instrument-header
+{
+    color: white;
+    font-weight: 600;
+}
+
+.yaxis-component-container .button-info-container
+{
+    padding-bottom: 5px;
+}
+
+
+.yaxis-component-container .series-on
+{
+    color: white;
+}
+
+
+
+.yaxis-component-container .custom-image-button
+{
+    display: block;
+}
+
+.yaxis-component-container .img-button
+{
+    border: solid black 1px;
+    height: 25px;
+    width: 26px;
+    padding: 0px;
+    background-color: #535353;
+    border-radius: 0px;
+    color: #CCCCCC;
+    margin: 0px;
+    box-shadow: none;
+    font-weight: 400;
+    display: block;
+}
+
+.yaxis-component-container .img-button:hover
+{
+    border: solid white 1px;
+}

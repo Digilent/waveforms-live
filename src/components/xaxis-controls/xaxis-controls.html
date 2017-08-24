@@ -1,16 +1,4 @@
 <div class="xaxis-component-wrapper">
-    <!--<ion-row>
-        <ion-col class="header-side-col" center text-left>
-            <button ion-button clear class="dropdown-image-button" (tap)="toggleSeriesSettings()">
-                <img class="custom-dropdown-img" [ngClass]="{rotateOn: showTimeSettings}" src="assets/img/collapse-arrow-right.svg">
-            </button>
-        </ion-col>
-        <ion-col center text-center>
-            <span class="header-bar-title instrument-header">Time Base</span>
-        </ion-col>
-        <ion-col class="header-side-col" center text-right>
-        </ion-col>
-    </ion-row>-->
     <ion-row *ngIf="showTimeSettings" class="controls-container time-base-row">
         <ion-col center class="tpd-label-col">
             Time/
