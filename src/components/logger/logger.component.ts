@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
+
+//Components
+import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -8,13 +11,14 @@ import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
     selector: 'logger-component'
 })
 export class LoggerComponent {
+    @ViewChildren('dropPopOverflow') overflowChildren: QueryList<DropdownPopoverComponent>;
+    @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
+    @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
     public ignoreFocusOut: boolean = false;
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
     public showAnalogChan: boolean[] = [];
     public showDigitalChan: boolean[] = [];
-
-
     private defaultAnalogParams: AnalogLoggerParams = {
         gain: 1,
         vOffset: 0,
@@ -26,11 +30,19 @@ export class LoggerComponent {
         uri: '',
         startIndex: 0,
         count: 0,
-        state: 'idle'
+        state: 'idle',
+        linked: false,
+        linkedChan: -1
     }
-
     public analogChans: AnalogLoggerParams[] = [];
     public digitalChans: DigitalLoggerParams[] = [];
+    public overflowConditions: string[] = ['stop', 'circular'];
+    public storageLocations: string[] = ['ram'];
+    public loggingProfiles: string[] = ['New Profile'];
+    public selectedLogProfile: string = this.loggingProfiles[0];
+    private defaultProfileName: string = 'NewProfile';
+    public profileNameScratch: string = this.defaultProfileName;
+    public links: number[] = [];
 
     constructor(
         private devicemanagerService: DeviceManagerService
@@ -39,6 +51,11 @@ export class LoggerComponent {
         for (let i = 0; i < 2/* this.activeDevice.instruments.logger.analog.numChans */; i++) {
             this.analogChans.push(Object.assign({}, this.defaultAnalogParams));
             this.showAnalogChan.push(i === 0);
+            if (i !== 0) {
+                this.analogChans[i].linked = true;
+                this.analogChans[i].linkedChan = 1;
+            }
+            this.links.push(i + 1);
         }
         console.log(this.analogChans);
         let analogChanArray = [];
@@ -51,7 +68,18 @@ export class LoggerComponent {
         }
         if (analogChanArray.length < 1 && digitalChanArray.length < 1) { return; }
         
-        this.analogGetMultipleChannelStates(analogChanArray)
+        this.getStorageLocations()
+            .then((data) => {
+                console.log(data);
+                if (data && data.device && data.device[0]) {
+                    data.device[0].storageLocations.forEach((el, index, arr) => {
+                        if (el !== 'flash') {
+                            this.storageLocations.push(el);
+                        }
+                    });
+                }
+                return this.analogGetMultipleChannelStates(analogChanArray);
+            })
             .then((data) => {
                 console.log(data);
                 return this.digitalGetMultipleChannelStates(digitalChanArray);
@@ -63,6 +91,107 @@ export class LoggerComponent {
             .catch((e) => {
                 console.log(e);
             });
+    }
+
+    ngAfterViewInit() {
+        console.log(this.overflowChildren);
+        console.log(this.locationChildren);
+        this.overflowChildren.forEach((child) => {
+            console.log(child);
+        });
+        this.locationChildren.forEach((child) => {
+            console.log(child);
+        });
+    }
+
+    overflowSelect(event, instrument: 'analog' | 'digital', channel: number) {
+        console.log(event);
+        if (instrument === 'analog') {
+            this.analogChans[channel].overflow = event;
+        }
+        else {
+            this.digitalChans[channel].overflow = event;
+        }
+    }
+
+    locationSelect(event, instrument: 'analog' | 'digital', channel: number) {
+        console.log(event);
+        if (instrument === 'analog') {
+            this.analogChans[channel].storageLocation = event;
+        }
+        else {
+            this.digitalChans[channel].storageLocation = event;
+        }
+    }
+
+    profileSelect(event) {
+        console.log(event);
+        this.selectedLogProfile = event;
+    }
+
+    saveAndSetProfile() {
+        this.saveProfile(this.profileNameScratch).catch((e) => {
+            console.log(e);
+        });
+        this.loggingProfiles.push(this.profileNameScratch);
+        this.selectedLogProfile = this.profileNameScratch;
+        this.profileNameScratch = this.defaultProfileName;
+        setTimeout(() => {
+            this.profileChild._applyActiveSelection(this.selectedLogProfile);
+        }, 50);
+    }
+
+    private generateProfileJson() {
+        let saveObj = {};
+        if (this.analogChans.length > 0) {
+            saveObj['analog'] = {};
+        }
+        if (this.digitalChans.length > 0) {
+            saveObj['digital'] = {};
+        }
+        for (let i = 0; i < this.analogChans.length; i++) {
+            saveObj['analog'][i.toString()] = this.analogChans[i];
+        }
+        for (let i = 0; i < this.digitalChans.length; i++) {
+            saveObj['digital'][i.toString()] = this.analogChans[i];
+        }
+        return saveObj;
+    }
+
+    private parseProfileJson(loadedObj) {
+        for (let instrument in loadedObj) {
+            for (let channel in loadedObj[instrument]) {
+                if (instrument === 'analog') {
+                    this.analogChans[parseInt(channel)] = loadedObj[instrument][channel];
+                }
+                else if (instrument === 'digital') {
+                    this.digitalChans[parseInt(channel)] = loadedObj[instrument][channel];
+                }
+            }
+        }
+    }
+
+    private saveProfile(profileName: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let objToSave = this.generateProfileJson();
+            let str = JSON.stringify(objToSave);
+            let buf = new ArrayBuffer(str.length);
+            let bufView = new Uint8Array(buf);
+            for (let i = 0; i < str.length; i++) {
+                bufView[i] = str.charCodeAt(i);
+            }
+            this.activeDevice.file.write('flash', profileName + '.json', buf).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     private analogGetMultipleChannelStates(analogChannelNumbers: number[]): Promise<any> {
@@ -109,21 +238,37 @@ export class LoggerComponent {
         });
     }
 
-    checkForEnter(event) {
+    private getStorageLocations(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.activeDevice.storageGetLocations().subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
+    }
+
+    checkForEnter(event, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {
         if (event.key === 'Enter') {
-            this.formatInputAndUpdate(event);
+            this.formatInputAndUpdate(event, instrument, type,  channel);
             this.ignoreFocusOut = true;
         }
     }
 
-    inputLeave(event) {
+    inputLeave(event, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {
         if (!this.ignoreFocusOut) {
-            this.formatInputAndUpdate(event);
+            this.formatInputAndUpdate(event, instrument, type, channel);
         }
         this.ignoreFocusOut = false;
     }
 
-    formatInputAndUpdate(event) {
+    formatInputAndUpdate(event, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {
         let value: string = event.target.value;
         let parsedValue: number = parseFloat(value);
 
@@ -154,6 +299,23 @@ export class LoggerComponent {
             trueValue = -Math.pow(10, 9);
         }
         console.log(trueValue);
+        let chanType = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
+        switch (type) {
+            case 'delay':
+                chanType.startDelay = trueValue;
+                break;
+            case 'offset':
+                (<AnalogLoggerParams>chanType).vOffset = trueValue;
+                break;
+            case 'samples':
+                chanType.maxSampleCount = trueValue;
+                break;
+            case 'sampleFreq':
+                chanType.sampleFreq = trueValue;
+                break;
+            default:
+                break;
+        }
     }
 
     toggleLoggerSettings() {
@@ -194,7 +356,21 @@ export class LoggerComponent {
         activeChan.sampleFreq = respObj.actualSampleFreq / 1000;
         activeChan.startDelay = respObj.actualStartDelay / Math.pow(10, 12);
         activeChan.overflow = respObj.overflow;
+        let it = 0;
+        this.overflowChildren.forEach((child) => {
+            if (channelInternalIndex === it) {
+                child._applyActiveSelection(activeChan.overflow);
+            }
+            it++;
+        });
         activeChan.storageLocation = respObj.storageLocation;
+        it = 0;
+        this.locationChildren.forEach((child) => {
+            if (channelInternalIndex === it) {
+                child._applyActiveSelection(activeChan.storageLocation);
+            }
+            it++;
+        });
         activeChan.uri = respObj.uri;
         activeChan.state = respObj.state;
     }
@@ -314,7 +490,9 @@ export interface LoggerParams {
     uri: string,
     startIndex: number,
     count: number,
-    state: LoggerChannelState
+    state: LoggerChannelState,
+    linked: boolean,
+    linkedChan: number
 }
 
 export type LoggerChannelState = 'busy' | 'idle' | 'stopped' | 'running';
@@ -327,3 +505,5 @@ export interface AnalogLoggerParams extends LoggerParams {
 export interface DigitalLoggerParams extends LoggerParams {
     bitMask: number
 }
+
+export type LoggerInputType = 'delay' | 'offset' | 'samples' | 'sampleFreq';

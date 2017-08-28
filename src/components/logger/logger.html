@@ -1,5 +1,50 @@
-<div class="yaxis-component-container">
-    <div *ngFor="let series of analogChans, let i = index;" [ngClass]="{'set-top-border':i!=0}">
+<div class="logger-component-container">
+
+    <div>
+        <div class="header-bar-side">
+            <ion-row>
+                <ion-col class="header-side-col" center text-right>
+                </ion-col>
+                <ion-col center text-center>
+                    <div class="instrument-header">Logger</div>
+                </ion-col>
+                <ion-col class="header-side-col" center text-right>
+                    <button ion-button clear class="header-button disable-hover main-button">
+                        <img class="custom-image-button svg-size" src="assets/img/run.svg">
+                    </button>
+                </ion-col>
+            </ion-row>
+        </div>
+        <div class="button-info-container">
+            <ion-row class="controls-container">
+                <ion-col center class="vpd-label-col">
+                    Profile
+                </ion-col>
+                <ion-col class="vpd-input-col no-button-col" center text-center>
+                    <dropdown-popover #dropPopProfile [dataArray]="loggingProfiles" (onSelection)="profileSelect($event)"></dropdown-popover>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="selectedLogProfile === 'New Profile'" class="controls-container">
+                <ion-col center class="vpd-label-col">
+                    Name
+                </ion-col>
+                <ion-col class="vpd-val-col one-button-col" center text-center>
+                    <input class="custom-input" step="any" [(ngModel)]="profileNameScratch" />
+                </ion-col>
+                <ion-col text-left center class="vpd-button-col margin-right">
+                    <div style="display:inline-block">
+                        <button ion-button class="img-button disable-hover" (tap)="saveAndSetProfile()">
+                            <img class="custom-image-button svg-size" src="assets/img/save.svg">
+                        </button>
+                    </div>
+                </ion-col>
+            </ion-row>
+
+        </div>
+    </div>
+
+    <div *ngFor="let series of analogChans, let i = index;" class="set-top-border">
         <div class="header-bar-side">
             <ion-row>
                 <ion-col class="header-side-col" center text-left>
@@ -11,12 +56,13 @@
                     <div class="instrument-header">Analog Ch {{i + 1}}</div>
                 </ion-col>
                 <ion-col class="header-side-col" center text-right>
-                    <button ion-button clear class="header-button disable-hover"></button>
                 </ion-col>
             </ion-row>
             
         </div>
-        <div *ngIf="showAnalogChan[i]" class="button-info-container">
+        <!-- Use display none instead of ngIf to keep a reference in the dom to allow for the dropPops to be found by ViewChildren -->
+        <div class="button-info-container" [ngClass]="{'display-none': !showAnalogChan[i]}">
+
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
                     Samples/
@@ -29,7 +75,7 @@
                     </div>
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
+                    <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" (focusout)="inputLeave($event, 'analog', 'sampleFreq', i)" (keypress)="checkForEnter($event, 'analog', 'sampleFreq', i)" />
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
@@ -52,7 +98,7 @@
                     </div>
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
+                    <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" (focusout)="inputLeave($event, 'analog', 'samples', i)" (keypress)="checkForEnter($event, 'analog', 'samples', i)" />
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
@@ -75,7 +121,7 @@
                     </div>
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
+                    <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" (focusout)="inputLeave($event, 'analog', 'offset', i)" (keypress)="checkForEnter($event, 'analog', 'offset', i)" />
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
@@ -98,7 +144,7 @@
                     </div>
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [ngModel]="series.startDelay | unitFormat:'s'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
+                    <input class="custom-input" step="any" [ngModel]="series.startDelay | unitFormat:'s'" (focusout)="inputLeave($event, 'analog', 'delay', i)" (keypress)="checkForEnter($event, 'analog', 'delay', i)" />
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
@@ -113,68 +159,26 @@
                 <ion-col center class="vpd-label-col">
                     Overflow
                 </ion-col>
-                <ion-col text-right center class="vpd-button-col">
-                    <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover">
-                            <img class="custom-image-button" src="assets/img/zoom-out.svg">
-                        </button>
-                    </div>
-                </ion-col>
-                <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [ngModel]="series.overflow" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
-                </ion-col>
-                <ion-col text-left center class="vpd-button-col margin-right">
-                    <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover">
-                            <img class="custom-image-button" src="assets/img/zoom-in.svg">
-                        </button>
-                    </div>
+                <ion-col class="vpd-input-col no-button-col" center text-center>
+                    <dropdown-popover #dropPopOverflow [dataArray]="overflowConditions" (onSelection)="overflowSelect($event, 'analog', i)"></dropdown-popover>
                 </ion-col>
             </ion-row>
             
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
-                    Storage Location
+                    Location
                 </ion-col>
-                <ion-col text-right center class="vpd-button-col">
-                    <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover">
-                            <img class="custom-image-button" src="assets/img/zoom-out.svg">
-                        </button>
-                    </div>
-                </ion-col>
-                <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [ngModel]="series.storageLocation" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
-                </ion-col>
-                <ion-col text-left center class="vpd-button-col margin-right">
-                    <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover">
-                            <img class="custom-image-button" src="assets/img/zoom-in.svg">
-                        </button>
-                    </div>
+                <ion-col class="vpd-input-col no-button-col" center text-center>
+                    <dropdown-popover #dropPopLocation [dataArray]="storageLocations" (onSelection)="locationSelect($event, 'analog', i)"></dropdown-popover>
                 </ion-col>
             </ion-row>
 
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
-                    File | URL
+                    URI
                 </ion-col>
-                <ion-col text-right center class="vpd-button-col">
-                    <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover">
-                            <img class="custom-image-button" src="assets/img/zoom-out.svg">
-                        </button>
-                    </div>
-                </ion-col>
-                <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [ngModel]="series.uri" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
-                </ion-col>
-                <ion-col text-left center class="vpd-button-col margin-right">
-                    <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover">
-                            <img class="custom-image-button" src="assets/img/zoom-in.svg">
-                        </button>
-                    </div>
+                <ion-col class="vpd-input-col no-button-col" center text-center>
+                    <input class="custom-input" step="any" [(ngModel)]="series.uri" />
                 </ion-col>
             </ion-row>
 
