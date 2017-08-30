@@ -43,6 +43,7 @@ export class LoggerComponent {
     private defaultProfileName: string = 'NewProfile';
     public profileNameScratch: string = this.defaultProfileName;
     public links: number[] = [];
+    private profileObjectMap: any = {};
 
     constructor(
         private devicemanagerService: DeviceManagerService
@@ -78,6 +79,10 @@ export class LoggerComponent {
                         }
                     });
                 }
+                return this.loadProfilesFromDevice();
+            })
+            .then((data) => {
+                console.log(data);
                 return this.analogGetMultipleChannelStates(analogChanArray);
             })
             .then((data) => {
@@ -127,6 +132,14 @@ export class LoggerComponent {
     profileSelect(event) {
         console.log(event);
         this.selectedLogProfile = event;
+        if (event === this.loggingProfiles[0]) { return; }
+        if (this.profileObjectMap[event] == undefined) {
+            //TODO present error message
+            console.log('profile not found in profile map');
+            this.selectedLogProfile = this.loggingProfiles[0];
+            return;
+        }
+        this.parseAndApplyProfileJson(this.profileObjectMap[event]);
     }
 
     saveAndSetProfile() {
@@ -139,6 +152,36 @@ export class LoggerComponent {
         setTimeout(() => {
             this.profileChild._applyActiveSelection(this.selectedLogProfile);
         }, 50);
+    }
+
+    loadProfilesFromDevice(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            /* TODO: Make sure /profiles exists and then list the files in the directory to get the names */
+            let profileName = 'test.json';
+            this.activeDevice.file.read('flash', profileName, 0, -1).subscribe(
+                (data) => {
+                    console.log(data);
+                    let parsedData;
+                    try {
+                        parsedData = JSON.parse(data.file);
+                    }
+                    catch(e) {
+                        console.log('error parsing json');
+                        reject(e);
+                        return;
+                    }
+                    let splitArray = profileName.split('.');
+                    this.loggingProfiles.push(splitArray[0]);
+                    this.profileObjectMap[splitArray[0]] = parsedData;
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     private generateProfileJson() {
@@ -158,7 +201,7 @@ export class LoggerComponent {
         return saveObj;
     }
 
-    private parseProfileJson(loadedObj) {
+    private parseAndApplyProfileJson(loadedObj) {
         for (let instrument in loadedObj) {
             for (let channel in loadedObj[instrument]) {
                 if (instrument === 'analog') {
@@ -167,6 +210,23 @@ export class LoggerComponent {
                 else if (instrument === 'digital') {
                     this.digitalChans[parseInt(channel)] = loadedObj[instrument][channel];
                 }
+                //Wait for ngFor to execute on the dropPops (~20ms) before we apply the active selections (there has to be a better way)
+                setTimeout(() => {
+                    if (this.storageLocations.indexOf(loadedObj[instrument][channel].storageLocation) !== -1) {
+                        let id = 'location' + channel;
+                        this.locationChildren.forEach((child) => {
+                            if (id === child.elementRef.nativeElement.id) {
+                                child._applyActiveSelection(loadedObj[instrument][channel].storageLocation);
+                            }
+                        });
+                    }
+                    let id = 'overflow' + channel;
+                    this.overflowChildren.forEach((child) => {
+                        if (id === child.elementRef.nativeElement.id) {
+                            child._applyActiveSelection(loadedObj[instrument][channel].overflow);
+                        }
+                    });
+                }, 20);
             }
         }
     }

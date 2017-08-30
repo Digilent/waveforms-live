@@ -160,7 +160,7 @@
                     Overflow
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <dropdown-popover #dropPopOverflow [dataArray]="overflowConditions" (onSelection)="overflowSelect($event, 'analog', i)"></dropdown-popover>
+                    <dropdown-popover #dropPopOverflow [id]="'overflow' + i" [dataArray]="overflowConditions" (onSelection)="overflowSelect($event, 'analog', i)"></dropdown-popover>
                 </ion-col>
             </ion-row>
             
@@ -169,7 +169,7 @@
                     Location
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <dropdown-popover #dropPopLocation [dataArray]="storageLocations" (onSelection)="locationSelect($event, 'analog', i)"></dropdown-popover>
+                    <dropdown-popover #dropPopLocation [id]="'location' + i" [dataArray]="storageLocations" (onSelection)="locationSelect($event, 'analog', i)"></dropdown-popover>
                 </ion-col>
             </ion-row>
 
