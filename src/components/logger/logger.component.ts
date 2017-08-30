@@ -13,6 +13,7 @@ import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 export class LoggerComponent {
     @ViewChildren('dropPopOverflow') overflowChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
+    @ViewChildren('dropPopLink') linkChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
     public ignoreFocusOut: boolean = false;
     private activeDevice: DeviceService;
@@ -42,7 +43,7 @@ export class LoggerComponent {
     public selectedLogProfile: string = this.loggingProfiles[0];
     private defaultProfileName: string = 'NewProfile';
     public profileNameScratch: string = this.defaultProfileName;
-    public links: number[] = [];
+    public analogLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
 
     constructor(
@@ -52,13 +53,17 @@ export class LoggerComponent {
         for (let i = 0; i < 2/* this.activeDevice.instruments.logger.analog.numChans */; i++) {
             this.analogChans.push(Object.assign({}, this.defaultAnalogParams));
             this.showAnalogChan.push(i === 0);
-            if (i !== 0) {
-                this.analogChans[i].linked = true;
-                this.analogChans[i].linkedChan = 1;
+
+            this.analogLinkOptions[i] = ['no'];
+            for (let j = 0; j < this.analogLinkOptions.length; j++) {
+                if (i !== j) {
+                    this.analogLinkOptions[j].push('Ch ' + (i + 1).toString());
+                    this.analogLinkOptions[i].push('Ch ' + (j + 1).toString());
+                }
             }
-            this.links.push(i + 1);
         }
         console.log(this.analogChans);
+        console.log(this.analogLinkOptions);
         let analogChanArray = [];
         let digitalChanArray = [];
         for (let i = 0; i < this.analogChans.length; i++) {
@@ -98,15 +103,100 @@ export class LoggerComponent {
             });
     }
 
-    ngAfterViewInit() {
-        console.log(this.overflowChildren);
-        console.log(this.locationChildren);
-        this.overflowChildren.forEach((child) => {
-            console.log(child);
-        });
-        this.locationChildren.forEach((child) => {
-            console.log(child);
-        });
+    linkSelect(event, instrument: 'analog' | 'digital', channel: number) {
+        console.log(event);
+        if (event === 'no') {
+            if (this.analogChans[channel].linked) {
+                let linkedChan = this.analogChans[channel].linkedChan;
+                this.copyLoggingProfile(instrument, channel, this.analogChans[linkedChan]);
+                this.setChannelDropdowns(channel, {
+                    storageLocation: this.analogChans[linkedChan].storageLocation,
+                    overflow: this.analogChans[linkedChan].overflow,
+                    linkChan: -1
+                });
+            }
+            this.analogChans[channel].linked = false;
+            this.analogChans[channel].linkedChan = -1;
+            return;
+        }
+        let linkChan: number = event.split(' ')[1] - 1;
+        console.log('linked chan selection: ' + linkChan);
+        if (instrument === 'analog') {
+            if (this.analogChans[linkChan].linked) {
+                //TODO display error
+                console.log('linked to linked channel');
+                let id = 'link' + channel;
+                this.linkChildren.forEach((child) => {
+                    if (id === child.elementRef.nativeElement.id) {
+                        child._applyActiveSelection('no');
+                    }
+                });
+                return;
+            }
+            this.copyLoggingProfile('analog', channel, this.analogChans[linkChan]);
+            this.analogChans[channel].linked = true;
+            this.analogChans[channel].linkedChan = linkChan;
+            this.setChannelDropdowns(channel, {
+                storageLocation: this.analogChans[channel].storageLocation,
+                overflow: this.analogChans[channel].overflow,
+                linkChan: linkChan
+            });
+        }
+        else {
+            
+        }
+        console.log(this.analogChans);
+    }
+
+    private copyLoggingProfile(instrument: 'analog' | 'digital', channel: number, source: any) {
+        let instrumentChan = instrument === 'analog' ? this.analogChans : this.digitalChans;
+        instrumentChan[channel].count = source.count;
+        instrumentChan[channel].maxSampleCount = source.maxSampleCount;
+        instrumentChan[channel].overflow = source.overflow;
+        instrumentChan[channel].sampleFreq = source.sampleFreq;
+        instrumentChan[channel].startDelay = source.startDelay;
+        instrumentChan[channel].startIndex = source.startIndex;
+        instrumentChan[channel].storageLocation = source.storageLocation;
+
+        if (instrument === 'analog') {
+            (<AnalogLoggerParams>instrumentChan[channel]).gain = source.gain;
+            (<AnalogLoggerParams>instrumentChan[channel]).vOffset = source.vOffset;
+        }
+        else {
+            (<DigitalLoggerParams>instrumentChan[channel]).bitMask = source.bitMask;
+        }
+    }
+
+    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, linkChan?: number }) {
+        setTimeout(() => {
+            if (applyOptions.linkChan != undefined) {
+                let linkedChanString = applyOptions.linkChan > -1 ? 'Ch ' +  (applyOptions.linkChan + 1) : 'no';
+                let id = 'link' + channel;
+                this.linkChildren.forEach((child) => {
+                    if (id === child.elementRef.nativeElement.id) {
+                        child._applyActiveSelection(linkedChanString);
+                    }
+                });
+            }
+
+            if (applyOptions.storageLocation != undefined) {
+                let id = 'location' + channel;
+                this.locationChildren.forEach((child) => {
+                    if (id === child.elementRef.nativeElement.id) {
+                        child._applyActiveSelection(applyOptions.storageLocation);
+                    }
+                });
+            }
+
+            if (applyOptions.overflow != undefined) {
+                let id = 'overflow' + channel;
+                this.overflowChildren.forEach((child) => {
+                    if (id === child.elementRef.nativeElement.id) {
+                        child._applyActiveSelection(applyOptions.overflow);
+                    }
+                });
+            }
+        }, 20);
     }
 
     overflowSelect(event, instrument: 'analog' | 'digital', channel: number) {
@@ -146,6 +236,10 @@ export class LoggerComponent {
         this.saveProfile(this.profileNameScratch).catch((e) => {
             console.log(e);
         });
+        let nameIndex: number = this.loggingProfiles.indexOf(this.profileNameScratch);
+        if (nameIndex !== -1) {
+            this.loggingProfiles.splice(nameIndex, 1);
+        }
         this.loggingProfiles.push(this.profileNameScratch);
         this.selectedLogProfile = this.profileNameScratch;
         this.profileNameScratch = this.defaultProfileName;
@@ -211,28 +305,33 @@ export class LoggerComponent {
                     this.digitalChans[parseInt(channel)] = loadedObj[instrument][channel];
                 }
                 //Wait for ngFor to execute on the dropPops (~20ms) before we apply the active selections (there has to be a better way)
-                setTimeout(() => {
-                    if (this.storageLocations.indexOf(loadedObj[instrument][channel].storageLocation) !== -1) {
-                        let id = 'location' + channel;
-                        this.locationChildren.forEach((child) => {
-                            if (id === child.elementRef.nativeElement.id) {
-                                child._applyActiveSelection(loadedObj[instrument][channel].storageLocation);
-                            }
-                        });
-                    }
-                    let id = 'overflow' + channel;
-                    this.overflowChildren.forEach((child) => {
-                        if (id === child.elementRef.nativeElement.id) {
-                            child._applyActiveSelection(loadedObj[instrument][channel].overflow);
-                        }
-                    });
-                }, 20);
+
+                let dropdownChangeObj = {
+                    storageLocation: loadedObj[instrument][channel].storageLocation,
+                    overflow: loadedObj[instrument][channel].overflow
+                };
+                if (loadedObj[instrument][channel].linked) {
+                    dropdownChangeObj['linkChan'] = loadedObj[instrument][channel].linkedChan;
+                }
+                this.setChannelDropdowns(parseInt(channel), dropdownChangeObj);
             }
         }
     }
 
     private saveProfile(profileName: string): Promise<any> {
         return new Promise((resolve, reject) => {
+            for (let i = 0; i < this.analogChans.length; i++) {
+                if (this.analogChans[i].linked) {
+                    this.copyLoggingProfile('analog', i, this.analogChans[this.analogChans[i].linkedChan]);
+                }
+            }
+
+            for (let i = 0; i < this.digitalChans.length; i++) {
+                if (this.digitalChans[i].linked) {
+                    this.copyLoggingProfile('digital', i, this.digitalChans[this.digitalChans[i].linkedChan]);
+                }
+            }
+
             let objToSave = this.generateProfileJson();
             let str = JSON.stringify(objToSave);
             let buf = new ArrayBuffer(str.length);
