@@ -1,4 +1,6 @@
 import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { LoadingService } from '../../services/loading/loading.service';
+import { ToastService } from '../../services/toast/toast.service';
 
 //Components
 import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
@@ -47,9 +49,27 @@ export class LoggerComponent {
     private profileObjectMap: any = {};
 
     constructor(
-        private devicemanagerService: DeviceManagerService
+        private devicemanagerService: DeviceManagerService,
+        private loadingService: LoadingService,
+        private toastService: ToastService
+
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
+        let loading = this.loadingService.displayLoading('Loading device info...');
+        this.init();
+        this.loadDeviceInfo()
+            .then((data) => {
+                console.log(data);
+                loading.dismiss();
+            })
+            .catch((e) => {
+                console.log(e);
+                this.toastService.createToast('deviceDroppedConnection', true, undefined, 5000);
+                loading.dismiss();
+            });
+    }
+
+    private init() {
         for (let i = 0; i < 2/* this.activeDevice.instruments.logger.analog.numChans */; i++) {
             this.analogChans.push(Object.assign({}, this.defaultAnalogParams));
             this.showAnalogChan.push(i === 0);
@@ -62,45 +82,57 @@ export class LoggerComponent {
                 }
             }
         }
-        console.log(this.analogChans);
-        console.log(this.analogLinkOptions);
-        let analogChanArray = [];
-        let digitalChanArray = [];
-        for (let i = 0; i < this.analogChans.length; i++) {
-            analogChanArray.push(i + 1);
-        }
-        for (let i = 0; i < this.digitalChans.length; i++) {
-            digitalChanArray.push(i + 1);
-        }
-        if (analogChanArray.length < 1 && digitalChanArray.length < 1) { return; }
-        
-        this.getStorageLocations()
-            .then((data) => {
-                console.log(data);
-                if (data && data.device && data.device[0]) {
-                    data.device[0].storageLocations.forEach((el, index, arr) => {
-                        if (el !== 'flash') {
-                            this.storageLocations.push(el);
-                        }
-                    });
-                }
-                return this.loadProfilesFromDevice();
-            })
-            .then((data) => {
-                console.log(data);
-                return this.analogGetMultipleChannelStates(analogChanArray);
-            })
-            .then((data) => {
-                console.log(data);
-                return this.digitalGetMultipleChannelStates(digitalChanArray);
-            })
-            .then((data) => {
-                console.log(data);
-                console.log(this.analogChans);
-            })
-            .catch((e) => {
-                console.log(e);
-            });
+    }
+
+    private loadDeviceInfo(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let analogChanArray = [];
+            let digitalChanArray = [];
+            for (let i = 0; i < this.analogChans.length; i++) {
+                analogChanArray.push(i + 1);
+            }
+            for (let i = 0; i < this.digitalChans.length; i++) {
+                digitalChanArray.push(i + 1);
+            }
+            if (analogChanArray.length < 1 && digitalChanArray.length < 1) { 
+                resolve('done');
+                return; 
+            }
+
+            this.getStorageLocations()
+                .then((data) => {
+                    console.log(data);
+                    if (data && data.device && data.device[0]) {
+                        data.device[0].storageLocations.forEach((el, index, arr) => {
+                            if (el !== 'flash') {
+                                this.storageLocations.push(el);
+                            }
+                        });
+                    }
+                    return this.loadProfilesFromDevice();
+                })
+                .then((data) => {
+                    console.log(data);
+                    return this.analogGetMultipleChannelStates(analogChanArray);
+                })
+                .catch((e) => {
+                    console.log(e);
+                    return this.analogGetMultipleChannelStates(analogChanArray);
+                })
+                .then((data) => {
+                    console.log(data);
+                    return this.digitalGetMultipleChannelStates(digitalChanArray);
+                })
+                .then((data) => {
+                    console.log(data);
+                    console.log(this.analogChans);
+                    resolve(data);
+                })
+                .catch((e) => {
+                    console.log(e);
+                    reject(e);
+                });
+        });
     }
 
     linkSelect(event, instrument: 'analog' | 'digital', channel: number) {
@@ -246,6 +278,7 @@ export class LoggerComponent {
         setTimeout(() => {
             this.profileChild._applyActiveSelection(this.selectedLogProfile);
         }, 50);
+        this.toastService.createToast('loggerSaveSuccess');
     }
 
     loadProfilesFromDevice(): Promise<any> {

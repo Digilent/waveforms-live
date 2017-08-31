@@ -6,6 +6,7 @@ import { LoggerPage } from './logger';
 
 //Components
 import { LoggerComponent } from '../../components/logger/logger.component';
+import { LoggerChartComponent } from '../../components/logger-chart/logger-chart.component';
  
 @NgModule({
     imports: [
@@ -14,7 +15,8 @@ import { LoggerComponent } from '../../components/logger/logger.component';
     ],
     declarations: [
         LoggerPage,
-        LoggerComponent
+        LoggerComponent,
+        LoggerChartComponent
     ],
     exports: [LoggerPage]
 })

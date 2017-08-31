@@ -104,6 +104,9 @@ var waveformsLiveDictionary = (function() {
         bodeCalibrate: {
             english: 'Calibrate'
         },
+        loggerSaveSuccess: {
+            english: 'Save Successful'
+        },
 
         //Agent
         //Appears when a user tries to add an agent that already exists.
