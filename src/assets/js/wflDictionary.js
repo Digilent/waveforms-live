@@ -107,6 +107,9 @@ var waveformsLiveDictionary = (function() {
         loggerSaveSuccess: {
             english: 'Save Successful'
         },
+        loggerInvalidParams: {
+            english: 'At Least One Parameter Is Invalid. Please Try Again'
+        },
 
         //Agent
         //Appears when a user tries to add an agent that already exists.

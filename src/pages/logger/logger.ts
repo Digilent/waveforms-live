@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { ToastService } from '../../services/toast/toast.service';
 
 @Component({
     templateUrl: "logger.html"

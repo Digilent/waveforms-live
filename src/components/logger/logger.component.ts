@@ -510,6 +510,51 @@ export class LoggerComponent {
         }
     }
 
+    startLogger() {
+        let loading = this.loadingService.displayLoading('Starting data logging...');
+
+        let foundChansMap = {};
+        for (let i = 0; i < this.analogChans.length; i++) {
+            if (this.analogChans[i].uri == '' || this.analogChans[i].state !== 'idle' || foundChansMap[this.analogChans[i].uri] != undefined) {
+                loading.dismiss();
+                this.toastService.createToast('loggerInvalidParams', true, undefined, 8000);
+                return;
+            }
+            foundChansMap[this.analogChans[i].uri] = 1;
+        }
+
+        let analogChanArray = [];
+        let digitalChanArray = [];
+        for (let i = 0; i < this.analogChans.length; i++) {
+            analogChanArray.push(i + 1);
+        }
+        for (let i = 0; i < this.digitalChans.length; i++) {
+            digitalChanArray.push(i + 1);
+        }
+
+        this.setParameters('analog', analogChanArray)
+            .then((data) => {
+                console.log(data);
+                return this.setParameters('digital', digitalChanArray);
+            })
+            .then((data) => {
+                console.log(data);
+                return this.run('analog', analogChanArray);
+            })
+            .then((data) => {
+                console.log(data);
+                return this.run('digital', digitalChanArray);
+            })
+            .then((data) => {
+                console.log(data);
+                loading.dismiss();
+            })
+            .catch((e) => {
+                console.log(e);
+                loading.dismiss();
+            });
+    }
+
     toggleLoggerSettings() {
         this.showLoggerSettings = !this.showLoggerSettings;
     }
@@ -567,56 +612,100 @@ export class LoggerComponent {
         activeChan.state = respObj.state;
     }
 
-    setParameters(instrument: 'analog' | 'digital', chan: number) {
-        let observable;
-        if (instrument === 'analog') {
-            let activeChan = this.analogChans[chan];
-            observable = this.activeDevice.instruments.logger.analog.setParameters(
-                [chan],
-                [activeChan.maxSampleCount],
-                [activeChan.gain],
-                [activeChan.vOffset],
-                [activeChan.sampleFreq],
-                [activeChan.startDelay],
-                [activeChan.overflow],
-                [activeChan.storageLocation],
-                [activeChan.uri]
+    setParameters(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let observable;
+            let paramObj = {};
+            if (instrument === 'analog') {
+                if (this.analogChans.length < 1) {
+                    resolve();
+                    return;
+                }
+                let analogParamArray: string[] = ['maxSampleCount', 'gain', 'vOffset', 'sampleFreq', 'startDelay', 'overflow', 'storageLocation', 'uri'];
+                for (let i = 0; i < chans.length; i++) {
+                    for (let j = 0; j < analogParamArray.length; j++) {
+                        if (paramObj[analogParamArray[j]] == undefined) {
+                            paramObj[analogParamArray[j]] = [];
+                        }
+                        paramObj[analogParamArray[j]].push(this.analogChans[chans[i] - 1][analogParamArray[j]]);
+                    }
+                }
+                console.log(paramObj);
+                observable = this.activeDevice.instruments.logger.analog.setParameters(
+                    chans, 
+                    paramObj[analogParamArray[0]], 
+                    paramObj[analogParamArray[1]],
+                    paramObj[analogParamArray[2]], 
+                    paramObj[analogParamArray[3]], 
+                    paramObj[analogParamArray[4]], 
+                    paramObj[analogParamArray[5]], 
+                    paramObj[analogParamArray[6]], 
+                    paramObj[analogParamArray[7]]
+                );
+            }
+            else {
+                if (this.digitalChans.length < 1) {
+                    resolve();
+                    return;
+                }
+                let digitalParamArray: string[] = ['maxSampleCount', 'sampleFreq', 'startDelay', 'overflow', 'storageLocation', 'uri', 'bitMask'];
+                for (let i = 0; i < chans.length; i++) {
+                    for (let j = 0; j < digitalParamArray.length; j++) {
+                        if (paramObj[digitalParamArray[j]] == undefined) {
+                            paramObj[digitalParamArray[j]] = [];
+                        }
+                        paramObj[digitalParamArray[j]].push(this.digitalChans[chans[i] - 1][digitalParamArray[j]]);
+                    }
+                }
+                console.log(paramObj);
+                observable = this.activeDevice.instruments.logger.digital.setParameters(
+                    chans, 
+                    paramObj[digitalParamArray[0]],
+                    paramObj[digitalParamArray[1]], 
+                    paramObj[digitalParamArray[2]], 
+                    paramObj[digitalParamArray[3]], 
+                    paramObj[digitalParamArray[4]], 
+                    paramObj[digitalParamArray[5]],
+                    paramObj[digitalParamArray[6]]
+                );
+            }
+            observable.subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
             );
-        }
-        else {
-            let activeChan = this.digitalChans[chan];
-            observable = this.activeDevice.instruments.logger.digital.setParameters(
-                [chan],
-                [activeChan.maxSampleCount],
-                [activeChan.sampleFreq],
-                [activeChan.startDelay],
-                [activeChan.overflow],
-                [activeChan.storageLocation],
-                [activeChan.uri],
-                [activeChan.bitMask]
-            );
-        }
-        observable.subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+        });
     }
 
-    run(instrument: 'analog' | 'digital', chan: number) {
-        this.activeDevice.instruments.logger[instrument].run(instrument, [chan + 1]).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    run(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (instrument === 'analog' && this.analogChans.length < 1) {
+                resolve();
+                return;
+            }
+            if (instrument === 'digital' && this.digitalChans.length < 1) {
+                resolve();
+                return;
+            }
+
+            this.activeDevice.instruments.logger[instrument].run(instrument, [chans[0]]).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     stop(instrument: 'analog' | 'digital', chan: number) {
