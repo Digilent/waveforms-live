@@ -113,15 +113,17 @@ export class LoggerComponent {
                 })
                 .then((data) => {
                     console.log(data);
-                    return this.analogGetMultipleChannelStates(analogChanArray);
+                    return this.getCurrentState('analog', analogChanArray);
+                    //return this.analogGetMultipleChannelStates(analogChanArray);
                 })
                 .catch((e) => {
                     console.log(e);
-                    return this.analogGetMultipleChannelStates(analogChanArray);
+                    return this.getCurrentState('analog', analogChanArray);
+                    //return this.analogGetMultipleChannelStates(analogChanArray);
                 })
                 .then((data) => {
                     console.log(data);
-                    return this.digitalGetMultipleChannelStates(digitalChanArray);
+                    return this.getCurrentState('digital', digitalChanArray);
                 })
                 .then((data) => {
                     console.log(data);
@@ -386,50 +388,6 @@ export class LoggerComponent {
         });
     }
 
-    private analogGetMultipleChannelStates(analogChannelNumbers: number[]): Promise<any> {
-        return new Promise((resolve, reject) => {
-            if (analogChannelNumbers.length < 1) {
-                resolve();
-                return;
-            }
-            this.activeDevice.instruments.logger.analog.getCurrentState('analog', analogChannelNumbers).subscribe(
-                (data) => {
-                    if (data.log != undefined && data.log.analog != undefined) {
-                        this.applyCurrentStateResponse(data);
-                    }
-                    resolve(data);
-                },
-                (err) => {
-                    console.log(err);
-                    reject(err);
-                },
-                () => { }
-            );
-        });
-    }
-
-    private digitalGetMultipleChannelStates(digitalChannelNumbers: number[]): Promise<any> {
-        return new Promise((resolve, reject) => {
-            if (digitalChannelNumbers.length < 1) {
-                resolve();
-                return;
-            }
-            this.activeDevice.instruments.logger.digital.getCurrentState('analog', digitalChannelNumbers).subscribe(
-                (data) => {
-                    if (data.log != undefined && data.log.digital != undefined) {
-                        this.applyCurrentStateResponse(data);
-                    }
-                    resolve(data);
-                },
-                (err) => {
-                    console.log(err);
-                    reject(err);
-                },
-                () => { }
-            );
-        });
-    }
-
     private getStorageLocations(): Promise<any> {
         return new Promise((resolve, reject) => {
             this.activeDevice.storageGetLocations().subscribe(
@@ -515,7 +473,7 @@ export class LoggerComponent {
 
         let foundChansMap = {};
         for (let i = 0; i < this.analogChans.length; i++) {
-            if (this.analogChans[i].uri == '' || this.analogChans[i].state !== 'idle' || foundChansMap[this.analogChans[i].uri] != undefined) {
+            if (this.analogChans[i].uri == '' || (this.analogChans[i].state !== 'idle' && this.analogChans[i].state !== 'stopped') || foundChansMap[this.analogChans[i].uri] != undefined) {
                 loading.dismiss();
                 this.toastService.createToast('loggerInvalidParams', true, undefined, 8000);
                 return;
@@ -694,7 +652,7 @@ export class LoggerComponent {
                 return;
             }
 
-            this.activeDevice.instruments.logger[instrument].run(instrument, [chans[0]]).subscribe(
+            this.activeDevice.instruments.logger[instrument].run(instrument, chans).subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);
@@ -708,57 +666,92 @@ export class LoggerComponent {
         });
     }
 
-    stop(instrument: 'analog' | 'digital', chan: number) {
-        this.activeDevice.instruments.logger[instrument].stop(instrument, [chan + 1]).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    stop(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (instrument === 'analog' && this.analogChans.length < 1) {
+                resolve();
+                return;
+            }
+            if (instrument === 'digital' && this.digitalChans.length < 1) {
+                resolve();
+                return;
+            }
+            this.activeDevice.instruments.logger[instrument].stop(instrument, chans).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
-    read(instrument: 'analog' | 'digital', chan: number) {
-        let activeChan;
-        if (instrument === 'analog') {
-            activeChan = this.analogChans[chan];
-        }
-        else {
-            activeChan = this.digitalChans[chan];
-        }
-        this.activeDevice.instruments.logger[instrument].read(instrument, [chan + 1], activeChan.startIndex, activeChan.count).subscribe(
-            (data) => {
-                console.log(data);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    read(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let startIndices: number[] = [];
+            let counts: number[] = [];
+            if (instrument === 'analog' && this.analogChans.length < 1) {
+                if (this.analogChans.length < 1) {
+                    resolve();
+                    return;
+                }
+                for (let i = 0; i < this.analogChans.length; i++) {
+                    startIndices.push(this.analogChans[i].startIndex);
+                    counts.push(this.analogChans[i].count);
+                }
+            }
+            if (instrument === 'digital' && this.digitalChans.length < 1) {
+                if (this.digitalChans.length < 1) {
+                    resolve();
+                    return;
+                }
+                for (let i = 0; i < this.digitalChans.length; i++) {
+                    startIndices.push(this.digitalChans[i].startIndex);
+                    counts.push(this.digitalChans[i].count);
+                }
+            }
+            this.activeDevice.instruments.logger[instrument].read(instrument, chans, startIndices, counts).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
-    getCurrentState(instrument: 'analog' | 'digital', chan: number) {
-        let activeChan;
-        if (instrument === 'analog') {
-            activeChan = this.analogChans[chan];
-        }
-        else {
-            activeChan = this.digitalChans[chan];
-        }
-        this.activeDevice.instruments.logger[instrument].getCurrentState(instrument, [chan + 1]).subscribe(
-            (data) => {
-                console.log(data);
-                let respObj = data.log[instrument][chan + 1][0];
-                this.copyState(instrument, respObj, chan);
-                console.log(this.analogChans);
-            },
-            (err) => {
-                console.log(err);
-            },
-            () => { }
-        );
+    getCurrentState(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (instrument === 'analog' && this.analogChans.length < 1) {
+                resolve();
+                return;
+            }
+            if (instrument === 'digital' && this.digitalChans.length < 1) {
+                resolve();
+                return;
+            }
+            this.activeDevice.instruments.logger[instrument].getCurrentState(instrument, chans).subscribe(
+                (data) => {
+                    if (data.log != undefined && data.log.analog != undefined) {
+                        this.applyCurrentStateResponse(data);
+                    }
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 }
 
