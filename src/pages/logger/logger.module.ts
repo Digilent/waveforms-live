@@ -7,6 +7,9 @@ import { LoggerPage } from './logger';
 //Components
 import { LoggerComponent } from '../../components/logger/logger.component';
 import { LoggerChartComponent } from '../../components/logger-chart/logger-chart.component';
+
+//Services
+import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
  
 @NgModule({
     imports: [
@@ -18,6 +21,9 @@ import { LoggerChartComponent } from '../../components/logger-chart/logger-chart
         LoggerComponent,
         LoggerChartComponent
     ],
-    exports: [LoggerPage]
+    exports: [LoggerPage],
+    providers: [
+        LoggerPlotService
+    ]
 })
 export class LoggerModule { }

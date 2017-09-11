@@ -7,6 +7,11 @@ import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.c
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
+import { UtilityService } from '../../services/utility/utility.service';
+import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
+
+//Interfaces
+import { DataContainer } from '../chart/chart.interface';
 
 @Component({
     templateUrl: 'logger.html',
@@ -32,13 +37,15 @@ export class LoggerComponent {
         storageLocation: 'ram',
         uri: '',
         startIndex: 0,
-        count: 0,
+        count: -1,
         state: 'idle',
         linked: false,
         linkedChan: -1
     }
     public analogChans: AnalogLoggerParams[] = [];
     public digitalChans: DigitalLoggerParams[] = [];
+    private analogChanNumbers: number[] = [];
+    private digitalChanNumbers: number[] = [];
     public overflowConditions: string[] = ['stop', 'circular'];
     public storageLocations: string[] = ['ram'];
     public loggingProfiles: string[] = ['New Profile'];
@@ -47,12 +54,14 @@ export class LoggerComponent {
     public profileNameScratch: string = this.defaultProfileName;
     public analogLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
+    public running: boolean = false;
 
     constructor(
         private devicemanagerService: DeviceManagerService,
         private loadingService: LoadingService,
-        private toastService: ToastService
-
+        private toastService: ToastService,
+        private utilityService: UtilityService,
+        private loggerPlotService: LoggerPlotService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         let loading = this.loadingService.displayLoading('Loading device info...');
@@ -81,6 +90,12 @@ export class LoggerComponent {
                     this.analogLinkOptions[i].push('Ch ' + (j + 1).toString());
                 }
             }
+        }
+        for (let i = 0; i < this.analogChans.length; i++) {
+            this.analogChanNumbers.push(i + 1);
+        }
+        for (let i = 0; i < this.digitalChans.length; i++) {
+            this.digitalChanNumbers.push(i + 1);
         }
     }
 
@@ -267,8 +282,13 @@ export class LoggerComponent {
     }
 
     saveAndSetProfile() {
-        this.saveProfile(this.profileNameScratch).catch((e) => {
+        this.saveProfile(this.profileNameScratch)
+        .then((data) => {
+            this.toastService.createToast('loggerSaveSuccess');
+        })
+        .catch((e) => {
             console.log(e);
+            this.toastService.createToast('loggerSaveFail');
         });
         let nameIndex: number = this.loggingProfiles.indexOf(this.profileNameScratch);
         if (nameIndex !== -1) {
@@ -280,7 +300,6 @@ export class LoggerComponent {
         setTimeout(() => {
             this.profileChild._applyActiveSelection(this.selectedLogProfile);
         }, 50);
-        this.toastService.createToast('loggerSaveSuccess');
     }
 
     loadProfilesFromDevice(): Promise<any> {
@@ -335,9 +354,13 @@ export class LoggerComponent {
             for (let channel in loadedObj[instrument]) {
                 if (instrument === 'analog') {
                     this.analogChans[parseInt(channel)] = loadedObj[instrument][channel];
+                    this.analogChans[parseInt(channel)].count = this.defaultAnalogParams.count;
+                    this.analogChans[parseInt(channel)].startIndex = this.defaultAnalogParams.startIndex;
                 }
                 else if (instrument === 'digital') {
                     this.digitalChans[parseInt(channel)] = loadedObj[instrument][channel];
+                    this.digitalChans[parseInt(channel)].count = this.defaultAnalogParams.count;
+                    this.digitalChans[parseInt(channel)].startIndex = this.defaultAnalogParams.startIndex;
                 }
                 //Wait for ngFor to execute on the dropPops (~20ms) before we apply the active selections (there has to be a better way)
 
@@ -418,36 +441,8 @@ export class LoggerComponent {
         this.ignoreFocusOut = false;
     }
 
-    formatInputAndUpdate(event, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {
-        let value: string = event.target.value;
-        let parsedValue: number = parseFloat(value);
-
-        let trueValue: number = parsedValue;
-        if (value.indexOf('G') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 9);
-        }
-        else if (value.indexOf('M') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 6);
-        }
-        else if (value.indexOf('k') !== -1 || value.indexOf('K') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 3);
-        }
-        else if (value.indexOf('m') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -3);
-        }
-        else if (value.indexOf('u') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -6);
-        }
-        else if (value.indexOf('n') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -9);
-        }
-
-        if (trueValue > Math.pow(10, 9)) {
-            trueValue = Math.pow(10, 9);
-        }
-        else if (trueValue < -Math.pow(10, 9)) {
-            trueValue = -Math.pow(10, 9);
-        }
+    formatInputAndUpdate(event, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {        
+        let trueValue = this.utilityService.parseBaseNumberVal(event);
         console.log(trueValue);
         let chanType = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
         switch (type) {
@@ -466,6 +461,49 @@ export class LoggerComponent {
             default:
                 break;
         }
+    }
+
+    stopLogger() {
+        this.stop('analog', this.analogChanNumbers)
+            .then((data) => {
+                console.log(data);
+                return this.stop('digital', this.digitalChanNumbers);
+            })
+            .then((data) => {
+                console.log(data);
+                this.running = false;
+                return this.read('analog', this.analogChanNumbers);
+            })
+            .then((data) => {
+                console.log(data);
+                let dataContainer: DataContainer[] = [];
+                for (let instrument in data.instruments) {
+                    for (let channel in data.instruments[instrument]) {
+                        let formattedData: number[][] = [];
+                        let channelObj = data.instruments[instrument][channel];
+                        let dt = 1 / (channelObj.actualSampleFreq / 1000);
+                        let timeVal = channelObj.startIndex * dt;
+                        for (let i = 0; i < channelObj.data.length; i++) {
+                            formattedData.push([timeVal, channelObj.data[i]]);
+                            timeVal += dt;
+                        }
+                        dataContainer.push({
+                            data: formattedData,
+                            yaxis: 1,
+                            lines: {
+                                show: true
+                            },
+                            points: {
+                                show: false
+                            }
+                        });
+                    }
+                }
+                this.loggerPlotService.setData(dataContainer, true);
+            })
+            .catch((e) => {
+                console.log(e);
+            });
     }
 
     startLogger() {
@@ -505,10 +543,12 @@ export class LoggerComponent {
             })
             .then((data) => {
                 console.log(data);
+                this.running = true;
                 loading.dismiss();
             })
             .catch((e) => {
                 console.log(e);
+                //TODO: display error
                 loading.dismiss();
             });
     }
@@ -568,6 +608,9 @@ export class LoggerComponent {
         });
         activeChan.uri = respObj.uri;
         activeChan.state = respObj.state;
+        if (activeChan.state === 'running') {
+            this.running = true;
+        }
     }
 
     setParameters(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
@@ -590,9 +633,9 @@ export class LoggerComponent {
                 }
                 console.log(paramObj);
                 observable = this.activeDevice.instruments.logger.analog.setParameters(
-                    chans, 
+                    [chans[0]], 
                     paramObj[analogParamArray[0]], 
-                    paramObj[analogParamArray[1]],
+                    [1, 1],
                     paramObj[analogParamArray[2]], 
                     paramObj[analogParamArray[3]], 
                     paramObj[analogParamArray[4]], 
@@ -617,7 +660,7 @@ export class LoggerComponent {
                 }
                 console.log(paramObj);
                 observable = this.activeDevice.instruments.logger.digital.setParameters(
-                    chans, 
+                    [chans[0]], 
                     paramObj[digitalParamArray[0]],
                     paramObj[digitalParamArray[1]], 
                     paramObj[digitalParamArray[2]], 
@@ -652,7 +695,7 @@ export class LoggerComponent {
                 return;
             }
 
-            this.activeDevice.instruments.logger[instrument].run(instrument, chans).subscribe(
+            this.activeDevice.instruments.logger[instrument].run(instrument, [chans[0]]).subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);
@@ -676,7 +719,7 @@ export class LoggerComponent {
                 resolve();
                 return;
             }
-            this.activeDevice.instruments.logger[instrument].stop(instrument, chans).subscribe(
+            this.activeDevice.instruments.logger[instrument].stop(instrument, [chans[0]]).subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);
@@ -694,7 +737,7 @@ export class LoggerComponent {
         return new Promise((resolve, reject) => {
             let startIndices: number[] = [];
             let counts: number[] = [];
-            if (instrument === 'analog' && this.analogChans.length < 1) {
+            if (instrument === 'analog') {
                 if (this.analogChans.length < 1) {
                     resolve();
                     return;
@@ -704,7 +747,7 @@ export class LoggerComponent {
                     counts.push(this.analogChans[i].count);
                 }
             }
-            if (instrument === 'digital' && this.digitalChans.length < 1) {
+            if (instrument === 'digital') {
                 if (this.digitalChans.length < 1) {
                     resolve();
                     return;
@@ -714,7 +757,7 @@ export class LoggerComponent {
                     counts.push(this.digitalChans[i].count);
                 }
             }
-            this.activeDevice.instruments.logger[instrument].read(instrument, chans, startIndices, counts).subscribe(
+            this.activeDevice.instruments.logger[instrument].read(instrument, [chans[0]], startIndices, [this.analogChans[0].maxSampleCount]).subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);

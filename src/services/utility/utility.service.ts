@@ -36,7 +36,7 @@ export class UtilityService {
         else if (trueValue < -Math.pow(10, 9)) {
             trueValue = -Math.pow(10, 9);
         }
-        return trueValue
+        return trueValue;
     }
 
 }

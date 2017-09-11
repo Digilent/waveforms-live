@@ -1,23 +1,34 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
+
+//Services
+import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
+
+//Components
+import { DigilentChart } from 'digilent-chart-angular2/modules';
 
 @Component({
     selector: 'logger-chart',
     templateUrl: 'logger-chart.html'
 })
 export class LoggerChartComponent {
+    @ViewChild('loggerChart') loggerChart: DigilentChart;
     private unitFormatPipeInstance: UnitFormatPipe;
     public colorArray: string[] = ['#FFA500', '#4487BA', '#ff3b99', '#00c864'];
     public loggerChartOptions: any = this.generateBodeOptions();
 
-    constructor() {
+    constructor(
+        private loggerPlotService: LoggerPlotService
+    ) {
         this.unitFormatPipeInstance = new UnitFormatPipe();
     }
 
     plotLoaded() {
         console.log('chart loaded');
+        console.log(this.loggerChart);
+        this.loggerPlotService.init(this.loggerChart);
     }
 
     generateBodeOptions() {
@@ -53,7 +64,7 @@ export class LoggerChartComponent {
                 show: true,
                 cssClass: 'flotTip',
                 content: (label, xval, yval, flotItem) => {
-                    return (this.unitFormatPipeInstance.transform(xval, 'Hz') + ' (' + this.unitFormatPipeInstance.transform(yval, 'dB') + ')');
+                    return (this.unitFormatPipeInstance.transform(xval, 's') + ' (' + this.unitFormatPipeInstance.transform(yval, 'V') + ')');
                 },
                 onHover: (flotItem, tooltipel) => {
                     let color = flotItem.series.color;

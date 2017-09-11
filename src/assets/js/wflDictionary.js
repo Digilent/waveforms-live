@@ -107,6 +107,9 @@ var waveformsLiveDictionary = (function() {
         loggerSaveSuccess: {
             english: 'Save Successful'
         },
+        loggerSaveFail: {
+            english: 'Error Saving Logger Profile. Please Check Device Connection And Try Again'
+        },
         loggerInvalidParams: {
             english: 'At Least One Parameter Is Invalid. Please Try Again'
         },
