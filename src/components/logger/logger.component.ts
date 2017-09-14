@@ -1,6 +1,8 @@
 import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { LoadingService } from '../../services/loading/loading.service';
 import { ToastService } from '../../services/toast/toast.service';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/Rx';
 
 //Components
 import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
@@ -22,7 +24,7 @@ export class LoggerComponent {
     @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLink') linkChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
-    public ignoreFocusOut: boolean = false;
+    @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
     public showAnalogChan: boolean[] = [];
@@ -47,7 +49,9 @@ export class LoggerComponent {
     private analogChanNumbers: number[] = [];
     private digitalChanNumbers: number[] = [];
     public overflowConditions: string[] = ['stop', 'circular'];
-    public storageLocations: string[] = ['ram'];
+    public modes: string[] = ['log', 'stream', 'both'];
+    private selectedMode: string = this.modes[0];
+    public storageLocations: string[] = ['cloud'];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
     private defaultProfileName: string = 'NewProfile';
@@ -120,7 +124,7 @@ export class LoggerComponent {
                     if (data && data.device && data.device[0]) {
                         data.device[0].storageLocations.forEach((el, index, arr) => {
                             if (el !== 'flash') {
-                                this.storageLocations.push(el);
+                                this.storageLocations.unshift(el);
                             }
                         });
                     }
@@ -150,6 +154,34 @@ export class LoggerComponent {
                     reject(e);
                 });
         });
+    }
+
+    modeSelect(event) {
+        console.log(event);
+        if (this.selectedMode === 'stream' && event !== 'stream') {
+            for (let i = 0; i < this.analogChans.length; i++) {
+                this.analogChans[i].storageLocation = this.storageLocations[0];
+                this.setChannelDropdowns(i, {
+                    storageLocation: this.storageLocations[0]
+                });
+            }
+            for (let i = 0; i < this.digitalChans.length; i++) {
+                this.digitalChans[i].storageLocation = this.storageLocations[0];
+                //TODO update to support digital in setChannelDropdowns
+                /* this.setChannelDropdowns(i, {
+                    storageLocation: this.storageLocations[0]
+                }); */
+            }
+        }
+        if (event === 'stream') {
+            for (let i = 0; i < this.analogChans.length; i++) {
+                this.analogChans[i].storageLocation = 'ram';
+            }
+            for (let i = 0; i < this.digitalChans.length; i++) {
+                this.digitalChans[i].storageLocation = 'ram';
+            }
+        }
+        this.selectedMode = event;
     }
 
     linkSelect(event, instrument: 'analog' | 'digital', channel: number) {
@@ -427,22 +459,7 @@ export class LoggerComponent {
         });
     }
 
-    checkForEnter(event, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {
-        if (event.key === 'Enter') {
-            this.formatInputAndUpdate(event, instrument, type,  channel);
-            this.ignoreFocusOut = true;
-        }
-    }
-
-    inputLeave(event, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {
-        if (!this.ignoreFocusOut) {
-            this.formatInputAndUpdate(event, instrument, type, channel);
-        }
-        this.ignoreFocusOut = false;
-    }
-
-    formatInputAndUpdate(event, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {        
-        let trueValue = this.utilityService.parseBaseNumberVal(event);
+    formatInputAndUpdate(trueValue: number, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {
         console.log(trueValue);
         let chanType = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
         switch (type) {
@@ -477,6 +494,7 @@ export class LoggerComponent {
             .then((data) => {
                 console.log(data);
                 let dataContainer: DataContainer[] = [];
+                let startAxis = 1;
                 for (let instrument in data.instruments) {
                     for (let channel in data.instruments[instrument]) {
                         let formattedData: number[][] = [];
@@ -489,7 +507,7 @@ export class LoggerComponent {
                         }
                         dataContainer.push({
                             data: formattedData,
-                            yaxis: 1,
+                            yaxis: startAxis++,
                             lines: {
                                 show: true
                             },
@@ -499,6 +517,7 @@ export class LoggerComponent {
                         });
                     }
                 }
+                console.log(dataContainer);
                 this.loggerPlotService.setData(dataContainer, true);
             })
             .catch((e) => {
@@ -599,6 +618,11 @@ export class LoggerComponent {
             it++;
         });
         activeChan.storageLocation = respObj.storageLocation;
+        if (respObj.storageLocation === 'ram') {
+            console.log('setting selected mode to stream');
+            this.selectedMode = 'stream';
+            this.modeChild._applyActiveSelection('stream');
+        }
         it = 0;
         this.locationChildren.forEach((child) => {
             if (channelInternalIndex === it) {
@@ -633,7 +657,7 @@ export class LoggerComponent {
                 }
                 console.log(paramObj);
                 observable = this.activeDevice.instruments.logger.analog.setParameters(
-                    [chans[0]], 
+                    chans, 
                     paramObj[analogParamArray[0]], 
                     [1, 1],
                     paramObj[analogParamArray[2]], 
@@ -660,7 +684,7 @@ export class LoggerComponent {
                 }
                 console.log(paramObj);
                 observable = this.activeDevice.instruments.logger.digital.setParameters(
-                    [chans[0]], 
+                    chans, 
                     paramObj[digitalParamArray[0]],
                     paramObj[digitalParamArray[1]], 
                     paramObj[digitalParamArray[2]], 
@@ -695,7 +719,7 @@ export class LoggerComponent {
                 return;
             }
 
-            this.activeDevice.instruments.logger[instrument].run(instrument, [chans[0]]).subscribe(
+            this.activeDevice.instruments.logger[instrument].run(instrument, chans).subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);
@@ -719,7 +743,7 @@ export class LoggerComponent {
                 resolve();
                 return;
             }
-            this.activeDevice.instruments.logger[instrument].stop(instrument, [chans[0]]).subscribe(
+            this.activeDevice.instruments.logger[instrument].stop(instrument, chans).subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);
@@ -757,18 +781,62 @@ export class LoggerComponent {
                     counts.push(this.digitalChans[i].count);
                 }
             }
-            this.activeDevice.instruments.logger[instrument].read(instrument, [chans[0]], startIndices, [this.analogChans[0].maxSampleCount]).subscribe(
-                (data) => {
-                    console.log(data);
-                    resolve(data);
-                },
-                (err) => {
-                    console.log(err);
-                    reject(err);
-                },
-                () => { }
-            );
+            
+            let finalObj = {};
+            
+            chans.reduce((accumulator, currentVal, currentIndex) => {
+                return accumulator.flatMap((data) => {
+                    this.deepMergeObj(finalObj, data);
+                    return this.activeDevice.instruments.logger[instrument].read(instrument, [chans[currentIndex]], [startIndices[currentIndex]], [this.analogChans[currentIndex].maxSampleCount]);
+                });
+            }, Observable.create((observer) => {observer.next({}); observer.complete();}))
+                .subscribe(
+                    (data) => {
+                        this.deepMergeObj(finalObj, data);
+                        console.log(finalObj);
+                        resolve(finalObj);
+                    },
+                    (err) => {
+                        console.log(err);
+                        reject(err);
+                    },
+                    () => {}
+                );
         });
+    }
+
+    private deepMergeObj(destObj, sourceObj) {
+        if (this.isObject(destObj) && this.isObject(sourceObj)) {
+            Object.keys(sourceObj).forEach((key) => {
+                if (sourceObj[key].constructor === Array) {
+                    destObj[key] = [];
+                    sourceObj[key].forEach((el, index, arr) => {
+                        if (this.isObject(el)) {
+                            if (destObj[key][index] == undefined) {
+                                destObj[key][index] = {};
+                            }
+                            this.deepMergeObj(destObj[key][index], sourceObj[key][index]);
+                        }
+                        else {
+                            destObj[key][index] = sourceObj[key][index];
+                        }
+                    });
+                }
+                else if (this.isObject(sourceObj[key])) {
+                    if (destObj[key] == undefined) {
+                        destObj[key] = {};
+                    }
+                    this.deepMergeObj(destObj[key], sourceObj[key]);
+                }
+                else {
+                    destObj[key] = sourceObj[key];
+                }
+            });
+        }
+    }
+
+    private isObject(item) {
+        return (item && typeof item === 'object' && !Array.isArray(item));
     }
 
     getCurrentState(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {

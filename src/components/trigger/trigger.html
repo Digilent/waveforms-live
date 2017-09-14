@@ -88,7 +88,7 @@
                     <div class="label-flex">
                         <div class="label-left" [tooltip]="tutorialMode ? levelButton : tooltipService.getTooltip('triggerLevel').message" [tooltipAnimation]="true" tooltipPlacement="top" 
 							[forceShow]="tutorialStage === 'level' && tutorialMode" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 'level'}">
-                            <input class="custom-input" step="any" [ngModel]="deviceDataTransferService.triggerLevel | unitFormat:'V'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
+                            <input class="custom-input" step="any" [ngModel]="deviceDataTransferService.triggerLevel | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event)" />
                         </div>
                     </div>
 				</ion-col>

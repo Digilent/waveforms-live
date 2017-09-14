@@ -5,6 +5,7 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 
 //Services
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
+import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 
 //Components
 import { DigilentChart } from 'digilent-chart-angular2/modules';
@@ -18,11 +19,14 @@ export class LoggerChartComponent {
     private unitFormatPipeInstance: UnitFormatPipe;
     public colorArray: string[] = ['#FFA500', '#4487BA', '#ff3b99', '#00c864'];
     public loggerChartOptions: any = this.generateBodeOptions();
+    private activeDevice: DeviceService;
 
     constructor(
-        private loggerPlotService: LoggerPlotService
+        private loggerPlotService: LoggerPlotService,
+        private deviceManagerService: DeviceManagerService
     ) {
         this.unitFormatPipeInstance = new UnitFormatPipe();
+        this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
     }
 
     plotLoaded() {
@@ -75,17 +79,7 @@ export class LoggerChartComponent {
                 }
             },
             cursorMoveOnPan: true,
-            yaxis: {
-                position: 'left',
-                axisLabelColour: '#666666',
-                axisLabelPadding: 20,
-                axisLabelUseCanvas: true,
-                show: true,
-                tickColor: '#666666',
-                font: {
-                    color: '#666666'
-                }
-            },
+            yaxes: this.generateFftYaxisOptions(),
             xaxis: {
                 tickColor: '#666666',
                 font: {
@@ -99,6 +93,25 @@ export class LoggerChartComponent {
         }
         console.log(fftChartOptions);
         return fftChartOptions;
+    }
+
+    generateFftYaxisOptions() {
+        let fftYAxes: any = [];
+        for (let i = 0; i < 2/* this.activeDevice.instruments.logger.numChans */; i++) {
+            let axisOptions = {
+                position: 'left',
+                axisLabel: 'Ch ' + (i + 1),
+                axisLabelColour: '#666666',
+                axisLabelUseCanvas: true,
+                show: i === 0,
+                tickColor: '#666666',
+                font: {
+                    color: '#666666'
+                }
+            }
+            fftYAxes.push(axisOptions);
+        }
+        return fftYAxes;
     }
 
 }

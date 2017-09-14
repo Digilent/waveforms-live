@@ -12,7 +12,7 @@
         </ion-col>
         <ion-col class="xaxis-center" center text-center>
             <div style="display:inline-block;" [tooltip]="tooltipService.getTooltip('xAxisTpd').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
-                <input class="custom-input highlight-input" step="any" [ngModel]="chart.timeDivision | unitFormat:'s/'" (focusout)="inputLeave($event)" (keypress)="checkForEnter($event)" />
+                <input formatInput (valChange)="valChange($event)" class="custom-input highlight-input" step="any" [ngModel]="chart.timeDivision | unitFormat:'s/'" />
             </div>
         </ion-col>
         <ion-col center class="xaxis-right">

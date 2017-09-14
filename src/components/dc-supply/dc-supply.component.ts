@@ -30,7 +30,6 @@ export class DcSupplyComponent {
     public readVoltages: string[] = [];
     public showDcSettings: boolean = true;
     public toastService: ToastService;
-    public ignoreFocusOut: boolean = false;
 
     constructor(_deviceManagerService: DeviceManagerService, _toastService: ToastService, public tooltipService: TooltipService) {
         this.toastService = _toastService;
@@ -50,47 +49,7 @@ export class DcSupplyComponent {
         }
     }
 
-    checkForEnter(event, channel: number) {
-        this.validateSupply(channel);
-        if (event.key === 'Enter') {
-            this.formatInputAndUpdate(event, channel);
-            this.ignoreFocusOut = true;
-        }
-    }
-
-    inputLeave(event, channel: number) {
-        if (!this.ignoreFocusOut) {
-            this.formatInputAndUpdate(event, channel);
-        }
-        this.ignoreFocusOut = false;
-    }
-
-    formatInputAndUpdate(event, channel: number) {
-        let value: string = event.target.value;
-        let parsedValue: number = parseFloat(value);
-
-        console.log(value, parsedValue);
-
-        let trueValue: number = parsedValue;
-        if (value.indexOf('G') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 9);
-        }
-        else if (value.indexOf('M') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 6);
-        }
-        else if (value.indexOf('k') !== -1 || value.indexOf('K') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 3);
-        }
-        else if (value.indexOf('m') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -3);
-        }
-        else if (value.indexOf('u') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -6);
-        }
-        else if (value.indexOf('n') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -9);
-        }
-
+    formatInputAndUpdate(trueValue: number, channel: number) {
         if (this.voltages[channel] === trueValue) {
             console.log('the same');
             this.voltages[channel] = trueValue * 10 + 1;

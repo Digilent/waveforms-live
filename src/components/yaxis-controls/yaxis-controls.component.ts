@@ -29,7 +29,6 @@ export class YAxisComponent {
     public configHover: boolean = false;
     public timeoutRef: any;
     public showOscSettings: boolean = true;
-    public ignoreFocusOut: boolean = false;
     public lockedSampleState: LockInfoContainer[] = [];
 
     constructor(_viewCtrl: ViewController, _params: NavParams, _popoverCtrl: PopoverController, _settingsSrv: SettingsService, public tooltipService: TooltipService) {
@@ -91,91 +90,7 @@ export class YAxisComponent {
         this.lockedSampleState[channel].sampleFreqLocked = !this.lockedSampleState[channel].sampleFreqLocked;
     }
 
-    checkForEnter(event, channel: number, inputType: string) {
-        if (event.key === 'Enter') {
-            this.formatInputAndUpdate(event, channel, inputType);
-            this.ignoreFocusOut = true;
-        }
-    }
-
-    sampleCheckForEnter(event, channel, sampleType: 'sampleFreq' | 'numSamples') {
-        if (event.key === 'Enter') {
-            this.setSample(event, sampleType, channel);
-            this.ignoreFocusOut = true;
-        }
-    }
-
-    inputLeave(event, channel: number, inputType: string) {
-        if (!this.ignoreFocusOut) {
-            this.formatInputAndUpdate(event, channel, inputType);
-        }
-        this.ignoreFocusOut = false;
-    }
-
-    sampleInputLeave(event, channel, sampleType: 'sampleFreq' | 'numSamples') {
-        if (!this.ignoreFocusOut) {
-            this.setSample(event, sampleType, channel);
-        }
-        this.ignoreFocusOut = false;
-    }
-
-    setSample(event, sampleType: 'sampleFreq' | 'numSamples', channel) {
-        let value = event.target.value;
-        let parsedValue: number = parseFloat(value);
-        let trueValue = parsedValue;
-        if (value.indexOf('G') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 9);
-        }
-        else if (value.indexOf('M') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 6);
-        }
-        else if (value.indexOf('k') !== -1 || value.indexOf('K') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 3);
-        }
-        else if (value.indexOf('m') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -3);
-        }
-        else if (value.indexOf('u') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -6);
-        }
-        else if (value.indexOf('n') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -9);
-        }
-        if (sampleType === 'sampleFreq') {
-            trueValue = Math.max(Math.min(trueValue, this.chart.deviceDescriptor.instruments.osc.chans[channel].sampleFreqMax / 1000), this.chart.deviceDescriptor.instruments.osc.chans[channel].sampleFreqMin / 1000);
-            this.lockedSampleState[channel].manualSampleFreq = trueValue;
-        }
-        else if (sampleType === 'numSamples') {
-            trueValue = (trueValue % 2) === 0 ? trueValue : trueValue + 1;
-            trueValue = Math.max(Math.min(trueValue, this.chart.deviceDescriptor.instruments.osc.chans[channel].bufferSizeMax), 2);
-            this.lockedSampleState[channel].manualSampleSize = trueValue;
-        }
-    }
-
-    formatInputAndUpdate(event, channel: number, inputType: string) {
-        let value: string = event.target.value;
-        let parsedValue: number = parseFloat(value);
-
-        let trueValue: number = parsedValue;
-        if (value.indexOf('G') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 9);
-        }
-        else if (value.indexOf('M') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 6);
-        }
-        else if (value.indexOf('k') !== -1 || value.indexOf('K') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 3);
-        }
-        else if (value.indexOf('m') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -3);
-        }
-        else if (value.indexOf('u') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -6);
-        }
-        else if (value.indexOf('n') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -9);
-        }
-
+    formatInputAndUpdate(trueValue: number, channel: number, inputType: string) {
         if (inputType === 'offset') {
             if (trueValue > this.chart.deviceDescriptor.instruments.osc.chans[channel].inputVoltageMax / 1000) {
                 trueValue = this.chart.deviceDescriptor.instruments.osc.chans[channel].inputVoltageMax / 1000;
@@ -192,6 +107,11 @@ export class YAxisComponent {
                 return;
             }
             this.chart.voltBase[channel] = trueValue;
+            this.chart.setSeriesSettings({
+                voltsPerDiv: this.chart.voltDivision[channel],
+                voltBase: this.chart.voltBase[channel],
+                seriesNum: channel
+            });
         }
         else if (inputType === 'vpd') {
             if (trueValue < this.chart.voltsPerDivVals[0]) {
@@ -210,12 +130,21 @@ export class YAxisComponent {
             }
             this.chart.voltDivision[channel] = trueValue;
             this.chart.setNearestPresetVoltsPerDivVal(trueValue, channel);
+            this.chart.setSeriesSettings({
+                voltsPerDiv: this.chart.voltDivision[channel],
+                voltBase: this.chart.voltBase[channel],
+                seriesNum: channel
+            });
         }
-        this.chart.setSeriesSettings({
-            voltsPerDiv: this.chart.voltDivision[channel],
-            voltBase: this.chart.voltBase[channel],
-            seriesNum: channel
-        });
+        else if (inputType === 'sampleFreq') {
+            trueValue = Math.max(Math.min(trueValue, this.chart.deviceDescriptor.instruments.osc.chans[channel].sampleFreqMax / 1000), this.chart.deviceDescriptor.instruments.osc.chans[channel].sampleFreqMin / 1000);
+            this.lockedSampleState[channel].manualSampleFreq = trueValue;
+        }
+        else if (inputType === 'numSamples') {
+            trueValue = (trueValue % 2) === 0 ? trueValue : trueValue + 1;
+            trueValue = Math.max(Math.min(trueValue, this.chart.deviceDescriptor.instruments.osc.chans[channel].bufferSizeMax), 2);
+            this.lockedSampleState[channel].manualSampleSize = trueValue;
+        }
     }
 
     getSeriesColor(seriesNum: number) {

@@ -22,7 +22,7 @@
                 <ion-col class="input-col">
                     <div class="label-flex">
                         <div class="label-left" [tooltip]="tooltipService.getTooltip('dcVoltage').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                            <input class="custom-input" step="any" [ngModel]="voltages[i] | unitFormat:'V'" (focusout)="inputLeave($event, i)" (keypress)="checkForEnter($event, i)" />
+                            <input class="custom-input" step="any" [ngModel]="voltages[i] | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event, i)" />
                         </div>
                     </div>
                 </ion-col>

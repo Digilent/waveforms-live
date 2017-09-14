@@ -15,54 +15,10 @@ export class XAxisComponent {
     public timePerDiv: string;
     public base: string;
     public showTimeSettings: boolean = true;
-    public ignoreFocusOut: boolean = false;
 
     constructor(public tooltipService: TooltipService) { }
 
-    checkForEnter(event) {
-        if (event.key === 'Enter') {
-            this.formatInputAndUpdate(event);
-            this.ignoreFocusOut = true;
-        }
-    }
-
-    inputLeave(event) {
-        if (!this.ignoreFocusOut) {
-            this.formatInputAndUpdate(event);
-        }
-        this.ignoreFocusOut = false;
-    }
-
-    formatInputAndUpdate(event) {
-        let value: string = event.target.value;
-        let parsedValue: number = parseFloat(value);
-
-        let trueValue: number = parsedValue;
-        if (value.indexOf('G') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 9);
-        }
-        else if (value.indexOf('M') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 6);
-        }
-        else if (value.indexOf('k') !== -1 || value.indexOf('K') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 3);
-        }
-        else if (value.indexOf('m') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -3);
-        }
-        else if (value.indexOf('u') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -6);
-        }
-        else if (value.indexOf('n') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -9);
-        }
-
-        if (trueValue > Math.pow(10, 9)) {
-            trueValue = Math.pow(10, 9);
-        }
-        else if (trueValue < -Math.pow(10, 9)) {
-            trueValue = -Math.pow(10, 9);
-        }
+    valChange(trueValue) {
         console.log(trueValue);
         if (trueValue < this.chart.secsPerDivVals[0]) {
             trueValue = this.chart.secsPerDivVals[0];

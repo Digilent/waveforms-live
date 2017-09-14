@@ -37,7 +37,7 @@
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center [tooltip]="tooltipService.getTooltip('oscVpd').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                        <input class="custom-input highlight-input" step="any" [ngModel]="chart.voltDivision[i] | unitFormat:'V/'" (focusout)="inputLeave($event, i, 'vpd')" (keypress)="checkForEnter($event, i, 'vpd')" />
+                        <input class="custom-input highlight-input" step="any" [ngModel]="chart.voltDivision[i] | unitFormat:'V/'" formatInput (valChange)="formatInputAndUpdate($event, i, 'vpd')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
@@ -58,7 +58,7 @@
                         </button>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center [tooltip]="tooltipService.getTooltip('oscOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                        <input class="custom-input" step="any" [ngModel]="chart.voltBase[i] | unitFormat:'V'" (focusout)="inputLeave($event, i, 'offset')" (keypress)="checkForEnter($event, i, 'offset')" />
+                        <input class="custom-input" step="any" [ngModel]="chart.voltBase[i] | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event, i, 'offset')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <button ion-button (tap)="chart.incrementOffset(i)" class="icon-only-button-side disable-hover offset-button">
@@ -76,7 +76,7 @@
                     <ion-col class="samplefreq-val-col" center text-center>
                         <input [disabled]="lockedSampleState[i].sampleFreqLocked" class="custom-input" step="any" 
                             [ngModel]="(lockedSampleState[i].sampleFreqLocked ? chart.calculateDataFromWindow().sampleFreq : lockedSampleState[i].manualSampleFreq) | unitFormat:'S/s'" 
-                            (focusout)="sampleInputLeave($event, i, 'sampleFreq')" (keypress)="sampleCheckForEnter($event, i, 'sampleFreq')" />
+                            formatInput (valChange)="formatInputAndUpdate($event, i, 'sampleFreq')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right"> 
                         <button ion-button (tap)="toggleSampleFreqLock(i)" class="icon-only-button-side disable-hover offset-button">
@@ -94,7 +94,7 @@
                     <ion-col class="samplefreq-val-col" center text-center>
                         <input [disabled]="lockedSampleState[i].sampleSizeLocked" class="custom-input" step="any" 
                             [ngModel]="(lockedSampleState[i].sampleSizeLocked ? chart.calculateDataFromWindow().bufferSize : lockedSampleState[i].manualSampleSize) | unitFormat:'S'"
-                            (focusout)="sampleInputLeave($event, i, 'numSamples')" (keypress)="sampleCheckForEnter($event, i, 'numSamples')" />
+                            formatInput (valChange)="formatInputAndUpdate($event, i, 'numSamples')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <button ion-button (tap)="toggleSampleLock(i)" class="icon-only-button-side disable-hover offset-button">

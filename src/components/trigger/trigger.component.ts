@@ -34,7 +34,6 @@ export class TriggerComponent {
     public showTriggerSettings: boolean = true;
     public devMngSrv: DeviceManagerService;
     public activeDevice: DeviceService;
-    public ignoreFocusOut: boolean = false;
 
     public tutorialMode: boolean = false;
     public tutorialStage: 'idle' | 'level' | 'type' = 'idle';
@@ -125,50 +124,7 @@ export class TriggerComponent {
         this.chart.chart.triggerRedrawOverlay();
     }
 
-    checkForEnter(event) {
-        if (event.key === 'Enter') {
-            this.formatInputAndUpdate(event);
-            this.ignoreFocusOut = true;
-        }
-    }
-
-    inputLeave(event) {
-        if (!this.ignoreFocusOut) {
-            this.formatInputAndUpdate(event);
-        }
-        this.ignoreFocusOut = false;
-    }
-
-    formatInputAndUpdate(event) {
-        let value: string = event.target.value;
-        let parsedValue: number = parseFloat(value);
-
-        let trueValue: number = parsedValue;
-        if (value.indexOf('G') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 9);
-        }
-        else if (value.indexOf('M') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 6);
-        }
-        else if (value.indexOf('k') !== -1 || value.indexOf('K') !== -1) {
-            trueValue = parsedValue * Math.pow(10, 3);
-        }
-        else if (value.indexOf('m') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -3);
-        }
-        else if (value.indexOf('u') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -6);
-        }
-        else if (value.indexOf('n') !== -1) {
-            trueValue = parsedValue * Math.pow(10, -9);
-        }
-
-        if (trueValue > Math.pow(10, 9)) {
-            trueValue = Math.pow(10, 9);
-        }
-        else if (trueValue < -Math.pow(10, 9)) {
-            trueValue = -Math.pow(10, 9);
-        }
+    formatInputAndUpdate(trueValue: number) {
         console.log(trueValue);
         if (trueValue * 1000 > this.activeDevice.instruments.osc.chans[0].inputVoltageMax ||
             trueValue * 1000 - 30 < this.activeDevice.instruments.osc.chans[0].inputVoltageMin) {

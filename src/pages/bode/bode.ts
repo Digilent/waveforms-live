@@ -21,7 +21,6 @@ export class BodePage {
     public startFreq: number = 100;
     public stopFreq: number = 10000;
     public stepsPerDec: string = '10';
-    public ignoreFocusOut: boolean = false;
     public sweepType: SweepType = 'Log';
     public sweepTypeArray: SweepType[] = ['Log', 'Linear'];
     public vertScale: SweepType = 'Log';
@@ -53,20 +52,6 @@ export class BodePage {
                 this.bodeComponent.transformToLinear('y');
             }
         }
-    }
-    
-    checkForEnter(event, input: BodeInput) {
-        if (event.key === 'Enter') {
-            this.formatInputAndUpdate(event, input);
-            this.ignoreFocusOut = true;
-        }
-    }
-
-    inputLeave(event, input: BodeInput) {
-        if (!this.ignoreFocusOut) {
-            this.formatInputAndUpdate(event, input);
-        }
-        this.ignoreFocusOut = false;
     }
 
     frequencyMousewheel(event, input: BodeInput) {
@@ -167,7 +152,7 @@ export class BodePage {
         }
     }
 
-    formatInputAndUpdate(event, input:  BodeInput) {
+    formatInputAndUpdate(trueValue: number, input:  BodeInput) {
         let min = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
         let max = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
         max = Math.min(max, this.activeDevice.instruments.osc.chans[0].sampleFreqMax / 1000 / 10);
@@ -175,13 +160,13 @@ export class BodePage {
         //for FFT step size to hit signal frequency perfectly 
         switch (input) {
             case 'startFreq':     
-                this.startFreq = Math.min(Math.max(min, this.utilityService.parseBaseNumberVal(event)), max);
+                this.startFreq = Math.min(Math.max(min, trueValue), max);
                 if (this.startFreq > this.stopFreq) {
                     this.stopFreq = this.startFreq;
                 }
                 break;
             case 'stopFreq':            
-                this.stopFreq = Math.min(Math.max(min, this.utilityService.parseBaseNumberVal(event)), max);
+                this.stopFreq = Math.min(Math.max(min, trueValue), max);
                 if (this.stopFreq < this.startFreq) {
                     this.startFreq = this.stopFreq;
                 }

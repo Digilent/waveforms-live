@@ -40,6 +40,15 @@
                     </div>
                 </ion-col>
             </ion-row>
+            
+            <ion-row class="controls-container">
+                <ion-col center class="vpd-label-col">
+                    Mode
+                </ion-col>
+                <ion-col class="vpd-input-col no-button-col" center text-center>
+                    <dropdown-popover #dropPopMode [dataArray]="modes" (onSelection)="modeSelect($event)"></dropdown-popover>
+                </ion-col>
+            </ion-row>
 
         </div>
     </div>
@@ -94,7 +103,7 @@
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" (focusout)="inputLeave($event, 'analog', 'sampleFreq', i)" (keypress)="checkForEnter($event, 'analog', 'sampleFreq', i)" />
+                        <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
@@ -117,7 +126,7 @@
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" (focusout)="inputLeave($event, 'analog', 'samples', i)" (keypress)="checkForEnter($event, 'analog', 'samples', i)" />
+                        <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'samples', i)" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
@@ -140,7 +149,7 @@
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" (focusout)="inputLeave($event, 'analog', 'offset', i)" (keypress)="checkForEnter($event, 'analog', 'offset', i)" />
+                        <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'offset', i)" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
@@ -153,7 +162,7 @@
                 
                 <ion-row class="controls-container">
                     <ion-col center class="vpd-label-col">
-                        Delay
+                        Start
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
@@ -163,7 +172,7 @@
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="series.startDelay | unitFormat:'s'" (focusout)="inputLeave($event, 'analog', 'delay', i)" (keypress)="checkForEnter($event, 'analog', 'delay', i)" />
+                        <input class="custom-input" step="any" [ngModel]="series.startDelay | unitFormat:'s'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'delay', i)" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
@@ -183,7 +192,7 @@
                     </ion-col>
                 </ion-row>
                 
-                <ion-row class="controls-container">
+                <ion-row class="controls-container" [ngClass]="{'display-none': selectedMode === 'stream'}">
                     <ion-col center class="vpd-label-col">
                         Location
                     </ion-col>
@@ -194,9 +203,9 @@
 
             </div>
             
-            <ion-row class="controls-container">
+            <ion-row class="controls-container" [ngClass]="{'display-none': selectedMode === 'stream'}">
                 <ion-col center class="vpd-label-col">
-                    URI
+                    {{series.storageLocation === 'cloud' ? 'URL' : 'File Name'}}
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
                     <input class="custom-input" step="any" [(ngModel)]="series.uri" />
