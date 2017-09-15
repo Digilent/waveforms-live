@@ -493,36 +493,44 @@ export class LoggerComponent {
             })
             .then((data) => {
                 console.log(data);
-                let dataContainer: DataContainer[] = [];
-                let startAxis = 1;
-                for (let instrument in data.instruments) {
-                    for (let channel in data.instruments[instrument]) {
-                        let formattedData: number[][] = [];
-                        let channelObj = data.instruments[instrument][channel];
-                        let dt = 1 / (channelObj.actualSampleFreq / 1000);
-                        let timeVal = channelObj.startIndex * dt;
-                        for (let i = 0; i < channelObj.data.length; i++) {
-                            formattedData.push([timeVal, channelObj.data[i]]);
-                            timeVal += dt;
-                        }
-                        dataContainer.push({
-                            data: formattedData,
-                            yaxis: startAxis++,
-                            lines: {
-                                show: true
-                            },
-                            points: {
-                                show: false
-                            }
-                        });
-                    }
-                }
-                console.log(dataContainer);
-                this.loggerPlotService.setData(dataContainer, true);
+                this.parseReadResponseAndDraw(data);
             })
             .catch((e) => {
                 console.log(e);
             });
+    }
+
+    private clearChart() {
+        this.loggerPlotService.setData([], false);
+    }
+
+    private parseReadResponseAndDraw(readResponse) {
+        let dataContainer: DataContainer[] = [];
+        let startAxis = 1;
+        for (let instrument in readResponse.instruments) {
+            for (let channel in readResponse.instruments[instrument]) {
+                let formattedData: number[][] = [];
+                let channelObj = readResponse.instruments[instrument][channel];
+                let dt = 1 / (channelObj.actualSampleFreq / 1000);
+                let timeVal = channelObj.startIndex * dt;
+                for (let i = 0; i < channelObj.data.length; i++) {
+                    formattedData.push([timeVal, channelObj.data[i]]);
+                    timeVal += dt;
+                }
+                dataContainer.push({
+                    data: formattedData,
+                    yaxis: startAxis++,
+                    lines: {
+                        show: true
+                    },
+                    points: {
+                        show: false
+                    }
+                });
+            }
+        }
+        console.log(dataContainer);
+        this.loggerPlotService.setData(dataContainer, true);
     }
 
     startLogger() {
@@ -530,12 +538,14 @@ export class LoggerComponent {
 
         let foundChansMap = {};
         for (let i = 0; i < this.analogChans.length; i++) {
-            if (this.analogChans[i].uri == '' || (this.analogChans[i].state !== 'idle' && this.analogChans[i].state !== 'stopped') || foundChansMap[this.analogChans[i].uri] != undefined) {
+            if ((this.analogChans[i].storageLocation !== 'ram' && this.analogChans[i].uri == '') || (this.analogChans[i].state !== 'idle' && this.analogChans[i].state !== 'stopped') || foundChansMap[this.analogChans[i].uri] != undefined) {
                 loading.dismiss();
                 this.toastService.createToast('loggerInvalidParams', true, undefined, 8000);
                 return;
             }
-            foundChansMap[this.analogChans[i].uri] = 1;
+            if (this.analogChans[i].storageLocation !== 'ram') {
+                foundChansMap[this.analogChans[i].uri] = 1;
+            }
         }
 
         let analogChanArray = [];
@@ -564,12 +574,29 @@ export class LoggerComponent {
                 console.log(data);
                 this.running = true;
                 loading.dismiss();
+                this.readLiveData();
             })
             .catch((e) => {
                 console.log(e);
                 //TODO: display error
                 loading.dismiss();
             });
+    }
+
+    private readLiveData() {
+        this.read('analog', this.analogChanNumbers)
+        .then((data) => {
+            console.log(data);
+            this.parseReadResponseAndDraw(data);
+            if (this.running) {
+                this.readLiveData();
+            }
+        })
+        .catch((e) => {
+            console.log(e);
+            this.running = false;
+            //TODO - display error
+        });
     }
 
     toggleLoggerSettings() {
@@ -719,6 +746,17 @@ export class LoggerComponent {
                 return;
             }
 
+            chans.forEach((el, index, arr) => {
+                if (instrument === 'analog') {
+                    this.analogChans[el - 1].count = -1;
+                    this.analogChans[el - 1].startIndex = 0;
+                }
+                else {
+                    this.digitalChans[el - 1].count = -1;
+                    this.digitalChans[el - 1].startIndex = 0;
+                }
+            });
+
             this.activeDevice.instruments.logger[instrument].run(instrument, chans).subscribe(
                 (data) => {
                     console.log(data);
@@ -786,12 +824,58 @@ export class LoggerComponent {
             
             chans.reduce((accumulator, currentVal, currentIndex) => {
                 return accumulator.flatMap((data) => {
+                    if (currentIndex > 0) {
+                        console.log(data);
+                        console.log(data.instruments[instrument]);
+                        console.log(chans);
+                        console.log(chans[currentIndex - 1]);
+
+                    }
+                    if (currentIndex > 0 && data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[currentIndex - 1]].statusCode === 0) {
+                        if (instrument === 'analog') {
+                            this.analogChans[chans[currentIndex - 1] - 1].startIndex += data.instruments[instrument][chans[currentIndex - 1]].actualCount;
+                            if (this.analogChans[chans[currentIndex - 1] - 1].maxSampleCount > 0 && this.analogChans[chans[currentIndex - 1] - 1].startIndex >= this.analogChans[chans[currentIndex - 1] - 1].maxSampleCount) {
+                                console.log('max sample count achieved');
+                                this.running = false;
+                            }
+                        }
+                        else {
+                            this.digitalChans[chans[currentIndex - 1] - 1].startIndex += data.instruments[instrument][chans[currentIndex - 1]].actualCount;
+                            if (this.digitalChans[chans[currentIndex - 1] - 1].maxSampleCount > 0 && this.digitalChans[chans[currentIndex - 1] - 1].startIndex >= this.digitalChans[chans[currentIndex - 1] - 1].maxSampleCount) {
+                                console.log('max sample count achieved');
+                                this.running = false;
+                            }
+                        }
+                        /* if (data.instruments[instrument][chans[currentIndex - 1]].state !== 'running') {
+                            console.log('no longer running!');
+                            this.running = false;
+                        } */
+                    }
                     this.deepMergeObj(finalObj, data);
-                    return this.activeDevice.instruments.logger[instrument].read(instrument, [chans[currentIndex]], [startIndices[currentIndex]], [this.analogChans[currentIndex].maxSampleCount]);
+                    return this.activeDevice.instruments.logger[instrument].read(instrument, [chans[currentIndex]], [startIndices[currentIndex]], [counts[currentIndex]]);
                 });
-            }, Observable.create((observer) => {observer.next({}); observer.complete();}))
+            }, Observable.create((observer) => { observer.next({}); observer.complete(); }))
                 .subscribe(
                     (data) => {
+                        if (data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[chans.length - 1]].statusCode === 0) {
+                            if (instrument === 'analog') {
+                                this.analogChans[chans[chans.length - 1] - 1].startIndex += data.instruments[instrument][chans[chans.length - 1]].actualCount;
+                                if (this.analogChans[chans[chans.length - 1] - 1].maxSampleCount > 0 && this.analogChans[chans[chans.length - 1] - 1].startIndex >= this.analogChans[chans[chans.length - 1] - 1].maxSampleCount) {
+                                    console.log('max sample count achieved');
+                                    this.running = false;
+                                }
+                            }
+                            else {
+                                this.digitalChans[chans[chans.length - 1] - 1].startIndex += data.instruments[instrument][chans[chans.length - 1]].actualCount;
+                                if (this.digitalChans[chans[chans.length - 1] - 1].maxSampleCount > 0 && this.digitalChans[chans[chans.length - 1] - 1].startIndex >= this.digitalChans[chans[chans.length - 1] - 1].maxSampleCount) {
+                                    this.running = false;
+                                }
+                            }
+                            /* if (data.instruments[instrument][chans[chans.length - 1]].state !== 'running') {
+                                console.log('no longer running!');
+                                this.running = false;
+                            } */
+                        }
                         this.deepMergeObj(finalObj, data);
                         console.log(finalObj);
                         resolve(finalObj);

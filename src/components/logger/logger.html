@@ -205,7 +205,7 @@
             
             <ion-row class="controls-container" [ngClass]="{'display-none': selectedMode === 'stream'}">
                 <ion-col center class="vpd-label-col">
-                    {{series.storageLocation === 'cloud' ? 'URL' : 'File Name'}}
+                    {{series.storageLocation === 'cloud' ? 'Topic' : 'File Name'}}
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
                     <input class="custom-input" step="any" [(ngModel)]="series.uri" />
