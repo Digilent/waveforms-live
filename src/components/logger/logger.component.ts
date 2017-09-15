@@ -39,7 +39,7 @@ export class LoggerComponent {
         storageLocation: 'ram',
         uri: '',
         startIndex: 0,
-        count: -1,
+        count: 0,
         state: 'idle',
         linked: false,
         linkedChan: -1
@@ -780,11 +780,11 @@ export class LoggerComponent {
 
             chans.forEach((el, index, arr) => {
                 if (instrument === 'analog') {
-                    this.analogChans[el - 1].count = -1;
+                    this.analogChans[el - 1].count = 0;
                     this.analogChans[el - 1].startIndex = 0;
                 }
                 else {
-                    this.digitalChans[el - 1].count = -1;
+                    this.digitalChans[el - 1].count = 0;
                     this.digitalChans[el - 1].startIndex = 0;
                 }
             });
