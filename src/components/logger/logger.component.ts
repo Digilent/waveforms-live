@@ -59,6 +59,7 @@ export class LoggerComponent {
     public analogLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
     public running: boolean = false;
+    private dataContainers: DataContainer[] = [];
 
     constructor(
         private devicemanagerService: DeviceManagerService,
@@ -97,9 +98,29 @@ export class LoggerComponent {
         }
         for (let i = 0; i < this.analogChans.length; i++) {
             this.analogChanNumbers.push(i + 1);
+            this.dataContainers.push({
+                data: [[]],
+                yaxis: i + 1,
+                lines: {
+                    show: true
+                },
+                points: {
+                    show: false
+                }
+            });
         }
         for (let i = 0; i < this.digitalChans.length; i++) {
             this.digitalChanNumbers.push(i + 1);
+            this.dataContainers.push({
+                data: [[]],
+                yaxis: i + 1 + this.analogChans.length,
+                lines: {
+                    show: true
+                },
+                points: {
+                    show: false
+                }
+            })
         }
     }
 
@@ -501,11 +522,13 @@ export class LoggerComponent {
     }
 
     private clearChart() {
-        this.loggerPlotService.setData([], false);
+        for (let i = 0; i < this.dataContainers.length; i++) {
+            this.dataContainers[i].data = [[]];
+        }
+        this.loggerPlotService.setData(this.dataContainers, false);
     }
 
     private parseReadResponseAndDraw(readResponse) {
-        let dataContainer: DataContainer[] = [];
         let startAxis = 1;
         for (let instrument in readResponse.instruments) {
             for (let channel in readResponse.instruments[instrument]) {
@@ -517,20 +540,16 @@ export class LoggerComponent {
                     formattedData.push([timeVal, channelObj.data[i]]);
                     timeVal += dt;
                 }
-                dataContainer.push({
-                    data: formattedData,
-                    yaxis: startAxis++,
-                    lines: {
-                        show: true
-                    },
-                    points: {
-                        show: false
-                    }
-                });
+                let dataContainerIndex = 0;
+                if (instrument === 'digital') {
+                    dataContainerIndex += this.analogChans.length;
+                }
+                dataContainerIndex += parseInt(channel) - 1;
+                this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
             }
         }
-        console.log(dataContainer);
-        this.loggerPlotService.setData(dataContainer, true);
+        console.log(this.dataContainers);
+        this.loggerPlotService.setData(this.dataContainers, true);
     }
 
     startLogger() {
@@ -556,6 +575,8 @@ export class LoggerComponent {
         for (let i = 0; i < this.digitalChans.length; i++) {
             digitalChanArray.push(i + 1);
         }
+
+        this.clearChart();
 
         this.setParameters('analog', analogChanArray)
             .then((data) => {
@@ -594,6 +615,17 @@ export class LoggerComponent {
         })
         .catch((e) => {
             console.log(e);
+            this.getCurrentState('analog', this.analogChanNumbers)
+                .then((data) => {
+                    console.log(data);
+                    return this.getCurrentState('digital', this.digitalChanNumbers);
+                })
+                .then((data) => {
+                    console.log(data);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
             this.running = false;
             //TODO - display error
         });
@@ -825,31 +857,7 @@ export class LoggerComponent {
             chans.reduce((accumulator, currentVal, currentIndex) => {
                 return accumulator.flatMap((data) => {
                     if (currentIndex > 0) {
-                        console.log(data);
-                        console.log(data.instruments[instrument]);
-                        console.log(chans);
-                        console.log(chans[currentIndex - 1]);
-
-                    }
-                    if (currentIndex > 0 && data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[currentIndex - 1]].statusCode === 0) {
-                        if (instrument === 'analog') {
-                            this.analogChans[chans[currentIndex - 1] - 1].startIndex += data.instruments[instrument][chans[currentIndex - 1]].actualCount;
-                            if (this.analogChans[chans[currentIndex - 1] - 1].maxSampleCount > 0 && this.analogChans[chans[currentIndex - 1] - 1].startIndex >= this.analogChans[chans[currentIndex - 1] - 1].maxSampleCount) {
-                                console.log('max sample count achieved');
-                                this.running = false;
-                            }
-                        }
-                        else {
-                            this.digitalChans[chans[currentIndex - 1] - 1].startIndex += data.instruments[instrument][chans[currentIndex - 1]].actualCount;
-                            if (this.digitalChans[chans[currentIndex - 1] - 1].maxSampleCount > 0 && this.digitalChans[chans[currentIndex - 1] - 1].startIndex >= this.digitalChans[chans[currentIndex - 1] - 1].maxSampleCount) {
-                                console.log('max sample count achieved');
-                                this.running = false;
-                            }
-                        }
-                        /* if (data.instruments[instrument][chans[currentIndex - 1]].state !== 'running') {
-                            console.log('no longer running!');
-                            this.running = false;
-                        } */
+                        this.updateValuesFromRead(data, instrument, chans, currentIndex - 1);
                     }
                     this.deepMergeObj(finalObj, data);
                     return this.activeDevice.instruments.logger[instrument].read(instrument, [chans[currentIndex]], [startIndices[currentIndex]], [counts[currentIndex]]);
@@ -857,25 +865,7 @@ export class LoggerComponent {
             }, Observable.create((observer) => { observer.next({}); observer.complete(); }))
                 .subscribe(
                     (data) => {
-                        if (data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[chans.length - 1]].statusCode === 0) {
-                            if (instrument === 'analog') {
-                                this.analogChans[chans[chans.length - 1] - 1].startIndex += data.instruments[instrument][chans[chans.length - 1]].actualCount;
-                                if (this.analogChans[chans[chans.length - 1] - 1].maxSampleCount > 0 && this.analogChans[chans[chans.length - 1] - 1].startIndex >= this.analogChans[chans[chans.length - 1] - 1].maxSampleCount) {
-                                    console.log('max sample count achieved');
-                                    this.running = false;
-                                }
-                            }
-                            else {
-                                this.digitalChans[chans[chans.length - 1] - 1].startIndex += data.instruments[instrument][chans[chans.length - 1]].actualCount;
-                                if (this.digitalChans[chans[chans.length - 1] - 1].maxSampleCount > 0 && this.digitalChans[chans[chans.length - 1] - 1].startIndex >= this.digitalChans[chans[chans.length - 1] - 1].maxSampleCount) {
-                                    this.running = false;
-                                }
-                            }
-                            /* if (data.instruments[instrument][chans[chans.length - 1]].state !== 'running') {
-                                console.log('no longer running!');
-                                this.running = false;
-                            } */
-                        }
+                        this.updateValuesFromRead(data, instrument, chans, chans.length - 1);
                         this.deepMergeObj(finalObj, data);
                         console.log(finalObj);
                         resolve(finalObj);
@@ -887,6 +877,28 @@ export class LoggerComponent {
                     () => {}
                 );
         });
+    }
+
+    private updateValuesFromRead(data, instrument: 'analog' | 'digital', chans: number[], index: number) {
+        if (data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[index]].statusCode === 0) {
+            if (instrument === 'analog') {
+                this.analogChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount + 1;
+                if (this.analogChans[chans[index] - 1].maxSampleCount > 0 && this.analogChans[chans[index] - 1].startIndex >= this.analogChans[chans[index] - 1].maxSampleCount) {
+                    console.log('max sample count achieved');
+                    this.running = false;
+                }
+            }
+            else {
+                this.digitalChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount + 1;
+                if (this.digitalChans[chans[index] - 1].maxSampleCount > 0 && this.digitalChans[chans[index] - 1].startIndex >= this.digitalChans[chans[index] - 1].maxSampleCount) {
+                    this.running = false;
+                }
+            }
+            /* if (data.instruments[instrument][chans[index]].state !== 'running') {
+                console.log('no longer running!');
+                this.running = false;
+            } */
+        }
     }
 
     private deepMergeObj(destObj, sourceObj) {
