@@ -66,7 +66,7 @@ export class LoggerComponent {
         private loadingService: LoadingService,
         private toastService: ToastService,
         private utilityService: UtilityService,
-        private loggerPlotService: LoggerPlotService
+        public loggerPlotService: LoggerPlotService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         let loading = this.loadingService.displayLoading('Loading device info...');
@@ -175,6 +175,11 @@ export class LoggerComponent {
                     reject(e);
                 });
         });
+    }
+
+    xAxisValChange(event) {
+        console.log(event);
+        this.loggerPlotService.setValPerDivAndUpdate('x', 1, event);
     }
 
     modeSelect(event) {

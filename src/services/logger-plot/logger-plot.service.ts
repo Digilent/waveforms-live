@@ -7,12 +7,16 @@ import { DigilentChart, Chart, DataContainer } from 'digilent-chart-angular2/mod
 export class LoggerPlotService {
     private digilentChart: DigilentChart;
     private chart: Chart;
+    public tpdArray: number[];
+    public tpdIndex: number;
+    public vpdArray: number[];
+    public vpdIndices: number[];
 
-    private xAxis: AxisInfo = {
+    public xAxis: AxisInfo = {
         position: 0,
         base: 0.1
     };
-    private yAxis: AxisInfo[] = [{
+    public yAxis: AxisInfo[] = [{
         position: 0,
         base: 0.5
     }];
@@ -24,6 +28,10 @@ export class LoggerPlotService {
     init(chartRef: DigilentChart) {
         this.digilentChart = chartRef;
         this.chart = this.digilentChart.digilentChart;
+        this.tpdArray = this.chart.getSecsPerDivArray();
+        this.tpdIndex = this.chart.getActiveXIndex();
+        console.log(this.tpdArray);
+        console.log(this.tpdIndex);
     }
 
     setData(data: DataContainer[], autoscale?: boolean) {
@@ -39,9 +47,11 @@ export class LoggerPlotService {
 
         if (axis === 'x') {
             this.xAxis.position = (max + min) / 2;
+            this.xAxis.base = (max - min) / 10;
         }
         else {
             this.yAxis[axisNum - 1].position = (max + min) / 2;
+            this.yAxis[axisNum - 1].base = (max - min) / 10;
         }
 
         this.chart.setupGrid();
@@ -52,19 +62,16 @@ export class LoggerPlotService {
         if (this.isInvalidAxisInfo(axis, axisNum)) { console.log('invalid axis num'); return; }
         let getAxes = this.chart.getAxes();
         let axisIndexer = this.getAxisIndexer(axis, axisNum);
-        let axisObj: AxisInfo;
-        if (axis === 'x') {
-            axisObj = this.xAxis;
-        }
-        else {
-            axisObj = this.yAxis[axisNum - 1];
-        }
+        let axisObj: AxisInfo = axis === 'x' ? this.xAxis : this.yAxis[axisNum - 1];
         let max = valPerDiv * 5 + axisObj.position;
         let min = axisObj.position - valPerDiv * 5;
         getAxes[axisIndexer].options.min = min;
         getAxes[axisIndexer].options.max = max;
 
         axisObj.base = valPerDiv;
+
+        this.chart.setupGrid();
+        this.chart.draw();
     }
 
     private getAxisIndexer(axis: Axis, axisNum: number): string {

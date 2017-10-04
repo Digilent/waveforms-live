@@ -1,6 +1,13 @@
 <div class="logger-component-container">
 
+    
+
     <div>
+        <logger-xaxis (valueChange)="xAxisValChange($event)" [tpdArray]="loggerPlotService.tpdArray" [tpdIndex]="loggerPlotService.tpdIndex" [tpdAbsolute]="loggerPlotService.xAxis.base"></logger-xaxis>
+    </div>
+
+    <div>
+
         <div class="header-bar-side">
             <ion-row>
                 <ion-col class="header-side-col" center text-right>
@@ -15,6 +22,7 @@
                 </ion-col>
             </ion-row>
         </div>
+
         <div class="button-info-container">
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">

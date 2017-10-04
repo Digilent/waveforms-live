@@ -1,0 +1,79 @@
+/*.xaxis-component-wrapper .xaxis-flex
+{
+    max-width: 140px;
+}*/
+
+.xaxis-component-wrapper .xaxis-left
+{
+    text-align: right;
+    padding: 0;
+    max-width: 26px;
+    font-size: 0;
+}
+
+.xaxis-component-wrapper .xaxis-right
+{
+    text-align: left;
+    padding: 0;
+    max-width: 32px;
+    font-size: 0;
+}
+
+.xaxis-component-wrapper .xaxis-center
+{
+    min-width: 80px;
+    padding: 0px 4px 0px 4px;
+}
+
+.xaxis-component-wrapper
+{
+    border-bottom: solid black 1px;
+}
+
+.xaxis-component-wrapper .time-col-container
+{
+    padding-top: 0px;
+}
+
+.xaxis-component-wrapper .highlight-input
+{
+    background-color: #AAAAAA;
+    color: black;
+}
+
+.xaxis-component-wrapper .tpd-label-col
+{
+    padding-left: 15px;
+    padding-right: 0px;
+    color: #CCCCCC;
+}
+
+.xaxis-component-wrapper .custom-image-button
+{
+    display: block;
+}
+
+.xaxis-component-wrapper .time-base-row
+{
+    padding-bottom: 5px;
+}
+
+.xaxis-component-wrapper .img-button
+{
+    border: solid black 1px;
+    height: 25px;
+    width: 26px;
+    padding: 0px;
+    background-color: #535353;
+    border-radius: 0px;
+    color: #CCCCCC;
+    margin: 0px;
+    box-shadow: none;
+    font-weight: 400;
+    display: block;
+}
+
+.xaxis-component-wrapper .img-button:hover
+{
+    border: solid white 1px;
+}

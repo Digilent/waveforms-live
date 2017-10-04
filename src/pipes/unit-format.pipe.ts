@@ -6,6 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class UnitFormatPipe implements PipeTransform {
 
     transform(value: number, baseUnit: string): string {
+        if (value == undefined) { return ''; }
         if (typeof(value) === 'string') {
             value = parseFloat(value);
         }

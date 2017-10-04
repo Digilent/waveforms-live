@@ -1,0 +1,26 @@
+<div class="xaxis-component-wrapper">
+    <ion-row *ngIf="showTimeSettings" class="controls-container time-base-row">
+        <ion-col center class="tpd-label-col">
+            Time/
+        </ion-col>
+        <ion-col center class="xaxis-left">
+            <div style="display:inline-block">
+                <button ion-button (tap)="incrementTpd()" [disabled]="tpdIndex == tpdArray.length-1" class="img-button disable-hover">
+                    <img class="custom-image-button" src="assets/img/zoom-out.svg">
+                </button>
+            </div>
+        </ion-col>
+        <ion-col class="xaxis-center" center text-center>
+            <div style="display:inline-block;" [tooltip]="tooltipService.getTooltip('xAxisTpd').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
+                <input formatInput (valChange)="valChange($event)" class="custom-input highlight-input" step="any" [ngModel]="tpdArray[tpdIndex] | unitFormat:'s/'" />
+            </div>
+        </ion-col>
+        <ion-col center class="xaxis-right">
+            <div style="display:inline-block">
+                <button ion-button (tap)="decrementTpd()" [disabled]="tpdIndex == 0" class="img-button disable-hover">
+                    <img class="custom-image-button" src="assets/img/zoom-in.svg">
+                </button>
+            </div>
+        </ion-col>
+    </ion-row>
+</div>
