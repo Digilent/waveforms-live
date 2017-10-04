@@ -29,10 +29,61 @@ export class LoggerChartComponent {
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
     }
 
+    panEvent() {
+        console.log('pan');
+    }
+
     plotLoaded() {
         console.log('chart loaded');
         console.log(this.loggerChart);
+        this.loggerChart.digilentChart.setSecsPerDivArray(this.generateNiceNumArray(0.000001, 10));
+        this.loggerChart.digilentChart.setVoltsPerDivArray(this.generateNiceNumArray(0.001, 5));
+        this.loggerChart.digilentChart.setActiveXIndex(15);
+        this.loggerChart.digilentChart.setActiveYIndices([10, 10]);
+        console.log(this.loggerChart);
         this.loggerPlotService.init(this.loggerChart);
+    }
+
+    generateNiceNumArray(min: number, max: number): number[] {
+        let niceNumArray = [];
+        let currentPow = Math.ceil(Math.log10(min));
+        let current = min * Math.pow(10, -1 * currentPow);
+        let i = 0;
+        while (current * Math.pow(10, currentPow) <= max) {
+            niceNumArray[i] = this.decimalAdjust('round', current * Math.pow(10, currentPow), currentPow);
+            if (current === 1) {
+                current = 2;
+            }
+            else if (current === 2) {
+                current = 5;
+            }
+            else {
+                current = 1;
+                currentPow++;
+            }
+            i++;
+        }
+        return niceNumArray;
+    }
+
+    //Used to fix floating point errors when computing nicenumarray
+    decimalAdjust(type, value, exp) {
+        // If the exp is undefined or zero...
+        if (typeof exp === 'undefined' || +exp === 0) {
+            return Math[type](value);
+        }
+        value = +value;
+        exp = +exp;
+        // If the value is not a number or the exp is not an integer...
+        if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+            return NaN;
+        }
+        // Shift
+        value = value.toString().split('e');
+        value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+        // Shift back
+        value = value.toString().split('e');
+        return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
     }
 
     generateBodeOptions() {

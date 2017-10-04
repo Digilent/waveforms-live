@@ -554,7 +554,7 @@ export class LoggerComponent {
             }
         }
         console.log(this.dataContainers);
-        this.loggerPlotService.setData(this.dataContainers, true);
+        this.loggerPlotService.setData(this.dataContainers, false);
     }
 
     startLogger() {

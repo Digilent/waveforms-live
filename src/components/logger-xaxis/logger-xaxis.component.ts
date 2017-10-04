@@ -1,8 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
-//Components
-import { SilverNeedleChart } from '../chart/chart.component';
-
 //Services
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 
@@ -24,7 +21,7 @@ export class LoggerXAxisComponent {
         setTimeout(() => {
             console.log('checking tpd info');
             console.log('arr, ind, abs');
-            console.log(this.tpdAbsolute);
+            console.log(this.tpdArray);
             console.log(this.tpdIndex);
             console.log(this.tpdAbsolute);
         }, 5000);

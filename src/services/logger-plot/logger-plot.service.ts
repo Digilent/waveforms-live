@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 //Components
 import { DigilentChart, Chart, DataContainer } from 'digilent-chart-angular2/modules';
 
+declare var $: any;
+
 @Injectable()
 export class LoggerPlotService {
     private digilentChart: DigilentChart;
@@ -13,7 +15,7 @@ export class LoggerPlotService {
     public vpdIndices: number[];
 
     public xAxis: AxisInfo = {
-        position: 0,
+        position: 0.5,
         base: 0.1
     };
     public yAxis: AxisInfo[] = [{
@@ -21,17 +23,17 @@ export class LoggerPlotService {
         base: 0.5
     }];
 
-    constructor() {
-
-    }
+    constructor() { }
 
     init(chartRef: DigilentChart) {
         this.digilentChart = chartRef;
         this.chart = this.digilentChart.digilentChart;
         this.tpdArray = this.chart.getSecsPerDivArray();
         this.tpdIndex = this.chart.getActiveXIndex();
+        this.setValPerDivAndUpdate('x', 1, this.tpdArray[this.tpdIndex]);
         console.log(this.tpdArray);
         console.log(this.tpdIndex);
+        this.attachListeners();
     }
 
     setData(data: DataContainer[], autoscale?: boolean) {
@@ -69,6 +71,7 @@ export class LoggerPlotService {
         getAxes[axisIndexer].options.max = max;
 
         axisObj.base = valPerDiv;
+        console.log(this.xAxis.base);
 
         this.chart.setupGrid();
         this.chart.draw();
@@ -83,6 +86,68 @@ export class LoggerPlotService {
         if (axis === 'y' && this.yAxis[axisNum] == undefined) { return true; }
         return false;
     }
+
+    attachListeners() {
+        $("#loggerChart").bind("panEvent", (event, panData) => {
+            if (panData.axis === 'xaxis') {
+                this.xAxis.position = panData.mid;
+            }
+            else {
+                this.yAxis[panData.axisNum - 1].position = panData.mid;
+            }
+        });
+
+        $("#loggerChart").bind("mouseWheelRedraw", (event, wheelData) => {
+            if (wheelData.axis === 'xaxis') {
+                this.tpdIndex = wheelData.perDivArrayIndex;
+                this.xAxis.base = this.tpdArray[this.tpdIndex];
+                this.xAxis.position = wheelData.mid;
+                /* setTimeout(() => {
+                    this.shouldShowIndividualPoints();
+                    this.refreshCursors();
+                }, 20); */
+            }
+            else {
+                /* this.activeVPDIndex[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
+                this.voltDivision[wheelData.axisNum - 1] = this.voltsPerDivVals[this.activeVPDIndex[wheelData.axisNum - 1]]; */
+            }
+        });
+    }
+
+    /* $("#flotContainer").bind("panEvent", (event, panData) => {
+        if (panData.axis === 'xaxis') {
+            this.base = panData.mid;
+            this.refreshCursors();
+        }
+        else {
+            this.voltBase[panData.axisNum - 1] = panData.mid;
+        }
+    });
+    $("#flotContainer").bind("cursorupdates", (event, cursorData) => {
+        if (cursorData[0] === undefined || this.cursorType.toLowerCase() === 'disabled') { return; }
+        for (let i = 0; i < cursorData.length; i++) {
+            if (cursorData[i].cursor !== 'triggerLine') {
+                let cursorNum = parseInt(cursorData[i].cursor.slice(-1)) - 1;
+                this.cursorPositions[cursorNum].x = cursorData[i].x;
+                this.cursorPositions[cursorNum].y = cursorData[i].y;
+            }
+        }
+    });
+    $("#flotContainer").bind("mouseWheelRedraw", (event, wheelData) => {
+        if (wheelData.axis === 'xaxis') {
+            this.activeTPDIndex = wheelData.perDivArrayIndex;
+            this.timeDivision = this.secsPerDivVals[this.activeTPDIndex];
+            this.base = wheelData.mid;
+            setTimeout(() => {
+                this.shouldShowIndividualPoints();
+                this.refreshCursors();
+            }, 20);
+        }
+        else {
+            this.activeVPDIndex[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
+            this.voltDivision[wheelData.axisNum - 1] = this.voltsPerDivVals[this.activeVPDIndex[wheelData.axisNum - 1]];
+        }
+    }); */
 }
 
 export interface AxisInfo {

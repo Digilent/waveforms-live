@@ -3,7 +3,7 @@
     
 
     <div>
-        <logger-xaxis (valueChange)="xAxisValChange($event)" [tpdArray]="loggerPlotService.tpdArray" [tpdIndex]="loggerPlotService.tpdIndex" [tpdAbsolute]="loggerPlotService.xAxis.base"></logger-xaxis>
+        <logger-xaxis (tpdChange)="xAxisValChange($event)" [tpdArray]="loggerPlotService.tpdArray" [tpdIndex]="loggerPlotService.tpdIndex" [tpdAbsolute]="loggerPlotService.xAxis.base"></logger-xaxis>
     </div>
 
     <div>
