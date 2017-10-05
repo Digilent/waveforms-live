@@ -40,8 +40,9 @@ export class LoggerPlotService {
         this.digilentChart.setData(data, autoscale);
     }
 
-    setMinMaxAndUpdate(axis: Axis, axisNum: number, min: number, max: number) {
+    setMinMaxAndUpdate(axis: Axis, axisNum: number, min: number, max: number, redraw?: boolean) {
         if (this.isInvalidAxisInfo(axis, axisNum)) { console.log('invalid axis num'); return; }
+        redraw = redraw == undefined ? true : redraw;
         let getAxes = this.chart.getAxes();
         let axisIndexer = this.getAxisIndexer(axis, axisNum);
         getAxes[axisIndexer].options.min = min;
@@ -56,12 +57,15 @@ export class LoggerPlotService {
             this.yAxis[axisNum - 1].base = (max - min) / 10;
         }
 
-        this.chart.setupGrid();
-        this.chart.draw();
+        if (redraw) {
+            this.chart.setupGrid();
+            this.chart.draw();
+        }
     }
 
-    setValPerDivAndUpdate(axis: Axis, axisNum: number, valPerDiv: number) {
+    setValPerDivAndUpdate(axis: Axis, axisNum: number, valPerDiv: number, redraw?: boolean) {
         if (this.isInvalidAxisInfo(axis, axisNum)) { console.log('invalid axis num'); return; }
+        redraw = redraw == undefined ? true : redraw;
         let getAxes = this.chart.getAxes();
         let axisIndexer = this.getAxisIndexer(axis, axisNum);
         let axisObj: AxisInfo = axis === 'x' ? this.xAxis : this.yAxis[axisNum - 1];
@@ -73,8 +77,30 @@ export class LoggerPlotService {
         axisObj.base = valPerDiv;
         console.log(this.xAxis.base);
 
-        this.chart.setupGrid();
-        this.chart.draw();
+        if (redraw) {
+            this.chart.setupGrid();
+            this.chart.draw();
+        }
+    }
+
+    setPosition(axis: Axis, axisNum: number, position: number, redraw?: boolean) {
+        if (this.isInvalidAxisInfo(axis, axisNum)) { console.log('invalid axis num'); return; }
+        redraw = redraw == undefined ? true : redraw;
+        let getAxes = this.chart.getAxes();
+        let axisIndexer = this.getAxisIndexer(axis, axisNum);
+        let axisObj: AxisInfo = axis === 'x' ? this.xAxis : this.yAxis[axisNum - 1];
+        let max = axisObj.base * 5 + position;
+        let min = position - axisObj.base * 5;
+        getAxes[axisIndexer].options.min = min;
+        getAxes[axisIndexer].options.max = max;
+
+        axisObj.position = position;
+        console.log(this.xAxis.position);
+
+        if (redraw) {
+            this.chart.setupGrid();
+            this.chart.draw();
+        }
     }
 
     private getAxisIndexer(axis: Axis, axisNum: number): string {

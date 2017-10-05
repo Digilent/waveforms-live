@@ -60,6 +60,7 @@ export class LoggerComponent {
     private profileObjectMap: any = {};
     public running: boolean = false;
     private dataContainers: DataContainer[] = [];
+    private viewMoved: boolean = false;
 
     constructor(
         private devicemanagerService: DeviceManagerService,
@@ -180,6 +181,20 @@ export class LoggerComponent {
     xAxisValChange(event) {
         console.log(event);
         this.loggerPlotService.setValPerDivAndUpdate('x', 1, event);
+    }
+
+    private setView() {
+        if (this.viewMoved) { return; }
+        let rightPos = this.dataContainers[0].data[this.dataContainers[0].data.length - 1][0];
+        for (let i = 1; i < this.dataContainers.length; i++) {
+            let tempRightPos = this.dataContainers[i].data[this.dataContainers[i].data.length - 1][0];
+            rightPos = tempRightPos > rightPos ? tempRightPos : rightPos;
+        }
+        let span = this.loggerPlotService.xAxis.base * 10;
+        let leftPos = rightPos - span;
+        if (leftPos < 0) { return; }
+        let newPos = (rightPos + leftPos) / 2;
+        this.loggerPlotService.setPosition('x', 1, newPos, false);
     }
 
     modeSelect(event) {
@@ -554,6 +569,7 @@ export class LoggerComponent {
             }
         }
         console.log(this.dataContainers);
+        this.setView();
         this.loggerPlotService.setData(this.dataContainers, false);
     }
 

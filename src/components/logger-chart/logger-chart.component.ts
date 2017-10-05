@@ -29,10 +29,6 @@ export class LoggerChartComponent {
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
     }
 
-    panEvent() {
-        console.log('pan');
-    }
-
     plotLoaded() {
         console.log('chart loaded');
         console.log(this.loggerChart);
@@ -40,7 +36,6 @@ export class LoggerChartComponent {
         this.loggerChart.digilentChart.setVoltsPerDivArray(this.generateNiceNumArray(0.001, 5));
         this.loggerChart.digilentChart.setActiveXIndex(15);
         this.loggerChart.digilentChart.setActiveYIndices([10, 10]);
-        console.log(this.loggerChart);
         this.loggerPlotService.init(this.loggerChart);
     }
 
@@ -133,6 +128,8 @@ export class LoggerChartComponent {
             yaxes: this.generateFftYaxisOptions(),
             xaxis: {
                 tickColor: '#666666',
+                ticks: this.tickGenerator,
+                tickFormatter: this.xTickFormatter,
                 font: {
                     color: '#666666'
                 }
@@ -156,6 +153,8 @@ export class LoggerChartComponent {
                 axisLabelUseCanvas: true,
                 show: i === 0,
                 tickColor: '#666666',
+                ticks: this.tickGenerator,
+                tickFormatter: this.yTickFormatter,
                 font: {
                     color: '#666666'
                 }
@@ -163,6 +162,80 @@ export class LoggerChartComponent {
             fftYAxes.push(axisOptions);
         }
         return fftYAxes;
+    }
+
+    tickGenerator(axis) {
+        let min = axis.min;
+        let max = axis.max;
+        let interval = (max - min) / 10;
+        let ticks = [];
+        for (let i = 0; i < 11; i++) {
+            ticks.push(i * interval + min);
+        }
+        return ticks;
+    }
+
+    yTickFormatter(val, axis) {
+        let vPerDiv = Math.abs(axis.max - axis.min) / 10;
+        let i = 0;
+        let unit = '';
+        while (vPerDiv < 1) {
+            i++;
+            vPerDiv = vPerDiv * 1000;
+        }
+        val = (parseFloat(val) * Math.pow(1000, i)).toFixed(0);
+        if (i == 0) {
+            unit = ' V';
+        }
+        else if (i == 1) {
+            unit = ' mV';
+        }
+        else if (i == 2) {
+            unit = ' uV';
+        }
+        else if (i == 3) {
+            unit = ' nV';
+        }
+        return (val + unit);
+    }
+
+    xTickFormatter(val, axis) {
+        let timePerDiv = Math.abs(axis.max - axis.min) / 10;
+        if (parseFloat(val) == 0) {
+            return 0 + ' s';
+        }
+        let i = 0;
+        let unit = '';
+        while (timePerDiv < 1) {
+            i++;
+            timePerDiv = timePerDiv * 1000;
+        }
+        val = (parseFloat(val) * Math.pow(1000, i));
+        let numDigits = val.toFixed(0).length;
+        let fixedDigits;
+        if (val < 0) {
+            fixedDigits = numDigits < 5 ? 5 - numDigits : 0;
+        }
+        else {
+            fixedDigits = numDigits < 4 ? 4 - numDigits : 0;
+        }
+        val = val.toFixed(fixedDigits);
+        if (i == 0) {
+            unit = ' s';
+        }
+        else if (i == 1) {
+            unit = ' ms';
+        }
+        else if (i == 2) {
+            unit = ' us';
+        }
+        else if (i == 3) {
+            unit = ' ns';
+        }
+        else if (i == 4) {
+            unit = ' ps';
+        }
+        return val + unit;
     }
 
 }
