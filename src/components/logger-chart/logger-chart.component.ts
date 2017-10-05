@@ -35,7 +35,7 @@ export class LoggerChartComponent {
         this.loggerChart.digilentChart.setSecsPerDivArray(this.generateNiceNumArray(0.000001, 10));
         this.loggerChart.digilentChart.setVoltsPerDivArray(this.generateNiceNumArray(0.001, 5));
         this.loggerChart.digilentChart.setActiveXIndex(15);
-        this.loggerChart.digilentChart.setActiveYIndices([10, 10]);
+        this.loggerChart.digilentChart.setActiveYIndices([8, 8]);
         this.loggerPlotService.init(this.loggerChart);
     }
 

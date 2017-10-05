@@ -16,16 +16,7 @@ export class LoggerXAxisComponent {
     public base: string;
     public showTimeSettings: boolean = true;
 
-    constructor(public tooltipService: TooltipService) { 
-        console.log('logger xaxis constructor'); 
-        setTimeout(() => {
-            console.log('checking tpd info');
-            console.log('arr, ind, abs');
-            console.log(this.tpdArray);
-            console.log(this.tpdIndex);
-            console.log(this.tpdAbsolute);
-        }, 5000);
-    }
+    constructor(public tooltipService: TooltipService) { }
 
     valChange(trueValue) {
         console.log(trueValue);

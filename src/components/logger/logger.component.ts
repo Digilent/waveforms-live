@@ -61,6 +61,8 @@ export class LoggerComponent {
     public running: boolean = false;
     private dataContainers: DataContainer[] = [];
     private viewMoved: boolean = false;
+    private analogChansToRead: number[] = [];
+    private subscriptionRef;
 
     constructor(
         private devicemanagerService: DeviceManagerService,
@@ -84,7 +86,21 @@ export class LoggerComponent {
             });
     }
 
+    ngOnDestroy() {
+        this.subscriptionRef.unsubscribe();
+    }
+
     private init() {
+        this.subscriptionRef = this.loggerPlotService.chartPan.subscribe(
+            (data) => {
+                console.log('GOT PAN EVENT');
+                if (this.running) {
+                    this.viewMoved = true;
+                }
+            },
+            (err) => {},
+            () => { }
+        );
         for (let i = 0; i < 2/* this.activeDevice.instruments.logger.analog.numChans */; i++) {
             this.analogChans.push(Object.assign({}, this.defaultAnalogParams));
             this.showAnalogChan.push(i === 0);
@@ -100,7 +116,7 @@ export class LoggerComponent {
         for (let i = 0; i < this.analogChans.length; i++) {
             this.analogChanNumbers.push(i + 1);
             this.dataContainers.push({
-                data: [[]],
+                data: [],
                 yaxis: i + 1,
                 lines: {
                     show: true
@@ -113,7 +129,7 @@ export class LoggerComponent {
         for (let i = 0; i < this.digitalChans.length; i++) {
             this.digitalChanNumbers.push(i + 1);
             this.dataContainers.push({
-                data: [[]],
+                data: [],
                 yaxis: i + 1 + this.analogChans.length,
                 lines: {
                     show: true
@@ -185,6 +201,11 @@ export class LoggerComponent {
 
     private setView() {
         if (this.viewMoved) { return; }
+        if (this.dataContainers[0].data[0] == undefined || this.dataContainers[0].data[0][0] == undefined) {
+            //Data was cleared
+            this.loggerPlotService.setPosition('x', 1, this.loggerPlotService.xAxis.base * 5, true);
+            return;
+        }
         let rightPos = this.dataContainers[0].data[this.dataContainers[0].data.length - 1][0];
         for (let i = 1; i < this.dataContainers.length; i++) {
             let tempRightPos = this.dataContainers[i].data[this.dataContainers[i].data.length - 1][0];
@@ -530,11 +551,6 @@ export class LoggerComponent {
             .then((data) => {
                 console.log(data);
                 this.running = false;
-                return this.read('analog', this.analogChanNumbers);
-            })
-            .then((data) => {
-                console.log(data);
-                this.parseReadResponseAndDraw(data);
             })
             .catch((e) => {
                 console.log(e);
@@ -543,7 +559,7 @@ export class LoggerComponent {
 
     private clearChart() {
         for (let i = 0; i < this.dataContainers.length; i++) {
-            this.dataContainers[i].data = [[]];
+            this.dataContainers[i].data = [];
         }
         this.loggerPlotService.setData(this.dataContainers, false);
     }
@@ -568,7 +584,6 @@ export class LoggerComponent {
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
             }
         }
-        console.log(this.dataContainers);
         this.setView();
         this.loggerPlotService.setData(this.dataContainers, false);
     }
@@ -598,6 +613,7 @@ export class LoggerComponent {
         }
 
         this.clearChart();
+        this.setView();
 
         this.setParameters('analog', analogChanArray)
             .then((data) => {
@@ -616,6 +632,10 @@ export class LoggerComponent {
                 console.log(data);
                 this.running = true;
                 loading.dismiss();
+                //TODO load this value from the selected chans
+                this.analogChansToRead = this.analogChanNumbers.slice();
+                console.log("ANALOG CHANS TO READ: ");
+                console.log(this.analogChansToRead);
                 this.readLiveData();
             })
             .catch((e) => {
@@ -626,30 +646,33 @@ export class LoggerComponent {
     }
 
     private readLiveData() {
-        this.read('analog', this.analogChanNumbers)
-        .then((data) => {
-            console.log(data);
-            this.parseReadResponseAndDraw(data);
-            if (this.running) {
-                this.readLiveData();
-            }
-        })
-        .catch((e) => {
-            console.log(e);
-            this.getCurrentState('analog', this.analogChanNumbers)
-                .then((data) => {
-                    console.log(data);
-                    return this.getCurrentState('digital', this.digitalChanNumbers);
-                })
-                .then((data) => {
-                    console.log(data);
-                })
-                .catch((e) => {
-                    console.log(e);
-                });
-            this.running = false;
-            //TODO - display error
-        });
+        //Make copies of analogChansToRead so mid-read changes to analogChansToRead don't change the channel array
+        this.read('analog', this.analogChansToRead.slice())
+            .then((data) => {
+                this.parseReadResponseAndDraw(data);
+                if (this.running) {
+                    this.readLiveData();
+                }
+                else {
+                    this.viewMoved = false;
+                }
+            })
+            .catch((e) => {
+                console.log(e);
+                this.getCurrentState('analog', this.analogChanNumbers)
+                    .then((data) => {
+                        console.log(data);
+                        return this.getCurrentState('digital', this.digitalChanNumbers);
+                    })
+                    .then((data) => {
+                        console.log(data);
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+                this.running = false;
+                //TODO - display error
+            });
     }
 
     toggleLoggerSettings() {
@@ -853,13 +876,13 @@ export class LoggerComponent {
             let startIndices: number[] = [];
             let counts: number[] = [];
             if (instrument === 'analog') {
-                if (this.analogChans.length < 1) {
+                if (this.analogChansToRead.length < 1 || this.analogChans.length < 1) {
                     resolve();
                     return;
                 }
-                for (let i = 0; i < this.analogChans.length; i++) {
-                    startIndices.push(this.analogChans[i].startIndex);
-                    counts.push(this.analogChans[i].count);
+                for (let i = 0; i < this.analogChansToRead.length; i++) {
+                    startIndices.push(this.analogChans[this.analogChansToRead[i] - 1].startIndex);
+                    counts.push(this.analogChans[this.analogChansToRead[i] - 1].count);
                 }
             }
             if (instrument === 'digital') {
@@ -867,6 +890,7 @@ export class LoggerComponent {
                     resolve();
                     return;
                 }
+                //TODO to use the digitalChansToRead instead of all chans
                 for (let i = 0; i < this.digitalChans.length; i++) {
                     startIndices.push(this.digitalChans[i].startIndex);
                     counts.push(this.digitalChans[i].count);
@@ -888,7 +912,6 @@ export class LoggerComponent {
                     (data) => {
                         this.updateValuesFromRead(data, instrument, chans, chans.length - 1);
                         this.deepMergeObj(finalObj, data);
-                        console.log(finalObj);
                         resolve(finalObj);
                     },
                     (err) => {
@@ -905,8 +928,10 @@ export class LoggerComponent {
             if (instrument === 'analog') {
                 this.analogChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount + 1;
                 if (this.analogChans[chans[index] - 1].maxSampleCount > 0 && this.analogChans[chans[index] - 1].startIndex >= this.analogChans[chans[index] - 1].maxSampleCount) {
-                    console.log('max sample count achieved');
-                    this.running = false;
+                    this.analogChansToRead.splice(this.analogChansToRead.indexOf(chans[index]), 1);
+                    if (this.analogChansToRead.length < 1) {
+                        this.running = false;
+                    }
                 }
             }
             else {

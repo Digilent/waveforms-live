@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
 
 //Components
 import { DigilentChart, Chart, DataContainer } from 'digilent-chart-angular2/modules';
@@ -18,26 +19,40 @@ export class LoggerPlotService {
         position: 0.5,
         base: 0.1
     };
-    public yAxis: AxisInfo[] = [{
-        position: 0,
-        base: 0.5
-    }];
+    public yAxis: AxisInfo[] = [];
+    public chartPan: Subject<any>;
 
-    constructor() { }
+    constructor() {
+        this.chartPan = new Subject();
+    }
 
     init(chartRef: DigilentChart) {
         this.digilentChart = chartRef;
         this.chart = this.digilentChart.digilentChart;
         this.tpdArray = this.chart.getSecsPerDivArray();
         this.tpdIndex = this.chart.getActiveXIndex();
-        this.setValPerDivAndUpdate('x', 1, this.tpdArray[this.tpdIndex]);
-        console.log(this.tpdArray);
-        console.log(this.tpdIndex);
+        this.vpdArray = this.chart.getVoltsPerDivArray();
+        this.vpdIndices = this.chart.getActiveYIndices();
+        this.setValPerDivAndUpdate('x', 1, this.tpdArray[this.tpdIndex], false);
+        for (let i = 0; i < this.vpdIndices.length; i++) {
+            this.yAxis.push({
+                position: 0,
+                base: 0.5
+            });
+            this.setValPerDivAndUpdate('y', i + 1, this.vpdArray[this.vpdIndices[i]], false);
+        }
+        console.log(this.vpdArray);
+        this.redrawChart();
         this.attachListeners();
     }
 
     setData(data: DataContainer[], autoscale?: boolean) {
         this.digilentChart.setData(data, autoscale);
+    }
+
+    redrawChart() {
+        this.chart.setupGrid();
+        this.chart.draw();
     }
 
     setMinMaxAndUpdate(axis: Axis, axisNum: number, min: number, max: number, redraw?: boolean) {
@@ -58,8 +73,7 @@ export class LoggerPlotService {
         }
 
         if (redraw) {
-            this.chart.setupGrid();
-            this.chart.draw();
+            this.redrawChart();
         }
     }
 
@@ -78,8 +92,7 @@ export class LoggerPlotService {
         console.log(this.xAxis.base);
 
         if (redraw) {
-            this.chart.setupGrid();
-            this.chart.draw();
+            this.redrawChart();
         }
     }
 
@@ -95,11 +108,9 @@ export class LoggerPlotService {
         getAxes[axisIndexer].options.max = max;
 
         axisObj.position = position;
-        console.log(this.xAxis.position);
 
         if (redraw) {
-            this.chart.setupGrid();
-            this.chart.draw();
+            this.redrawChart();
         }
     }
 
@@ -109,13 +120,14 @@ export class LoggerPlotService {
 
     private isInvalidAxisInfo(axis: Axis, axisNum: number): boolean {
         if (axisNum < 1) { return true; }
-        if (axis === 'y' && this.yAxis[axisNum] == undefined) { return true; }
+        if (axis === 'y' && this.yAxis[axisNum - 1] == undefined) { return true; }
         return false;
     }
 
     attachListeners() {
         $("#loggerChart").bind("panEvent", (event, panData) => {
             if (panData.axis === 'xaxis') {
+                this.chartPan.next(panData);
                 this.xAxis.position = panData.mid;
             }
             else {
