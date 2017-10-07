@@ -23,5 +23,22 @@
 
 .logger-page-container .page-row
 {
-    height: calc(100% - 54px);
+    height: calc(100% - 64px);
+}
+
+.logger-page-container .logger-timeline-container
+{
+    height: 52px;
+    background-color: black;
+    padding: 0;
+}
+
+.logger-page-container .timeline-back-button
+{
+    min-width: 64px;
+}
+
+.logger-page-container .logger-header
+{
+    height: 64px;
 }

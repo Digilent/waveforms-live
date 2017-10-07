@@ -1,13 +1,13 @@
 <ion-content class="logger-page-container">
     <div>
-        <ion-row>
-            <ion-col class="back-button-col" center>
+        <ion-row class="logger-header">
+            <ion-col class="back-button-col timeline-back-button" center text-center>
                 <button ion-button class="custom-back-button disable-hover" (click)="done()">
                     <img class="custom-image-button" src="assets/img/arrow-back.svg">
                 </button>
             </ion-col>
-            <ion-col center class="config-title-menu-col">
-                Logger
+            <ion-col center class="config-title-menu-col logger-timeline-container">
+                <logger-timeline></logger-timeline>
             </ion-col>
         </ion-row>
     </div>

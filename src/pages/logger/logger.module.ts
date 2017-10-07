@@ -8,6 +8,7 @@ import { LoggerPage } from './logger';
 import { LoggerComponent } from '../../components/logger/logger.component';
 import { LoggerChartComponent } from '../../components/logger-chart/logger-chart.component';
 import { LoggerXAxisComponent } from '../../components/logger-xaxis/logger-xaxis.component';
+import { LoggerTimelineComponent } from '../../components/logger-timeline/logger-timeline.component';
 
 //Services
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
@@ -21,7 +22,8 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
         LoggerPage,
         LoggerComponent,
         LoggerChartComponent,
-        LoggerXAxisComponent
+        LoggerXAxisComponent,
+        LoggerTimelineComponent
     ],
     exports: [LoggerPage],
     providers: [

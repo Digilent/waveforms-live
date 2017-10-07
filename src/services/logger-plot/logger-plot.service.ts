@@ -9,6 +9,7 @@ declare var $: any;
 @Injectable()
 export class LoggerPlotService {
     private digilentChart: DigilentChart;
+    private timelineChartRef: DigilentChart;
     private chart: Chart;
     public tpdArray: number[];
     public tpdIndex: number;
@@ -46,13 +47,38 @@ export class LoggerPlotService {
         this.attachListeners();
     }
 
+    setTimelineRef(chartRef: DigilentChart) {
+        if (this.chart == undefined) {
+            setTimeout(() => {
+                this.setTimelineRef(chartRef);
+            }, 20);
+            return;
+        }
+        this.timelineChartRef = chartRef;
+        this.timelineChartRef.digilentChart.setSecsPerDivArray(this.tpdArray);
+        this.timelineChartRef.digilentChart.setActiveXIndex(this.tpdIndex);
+        (<any>this.timelineChartRef.digilentChart).setExistingChartRef(this.chart);
+        this.chart.setTimelineRef(this.timelineChartRef.digilentChart);
+        this.chart.setTimelineUpdate(true);
+    }
+
     setData(data: DataContainer[], autoscale?: boolean) {
         this.digilentChart.setData(data, autoscale);
+        if (this.timelineChartRef != undefined) {
+            this.timelineChartRef.setData(data, false);
+        }
     }
 
     redrawChart() {
         this.chart.setupGrid();
         this.chart.draw();
+        if (this.timelineChartRef != undefined) {
+            let getAxes = this.chart.getAxes();
+            this.timelineChartRef.digilentChart.updateTimelineCurtains({
+                min: getAxes.xaxis.min,
+                max: getAxes.xaxis.max
+            });
+        }
     }
 
     setMinMaxAndUpdate(axis: Axis, axisNum: number, min: number, max: number, redraw?: boolean) {
@@ -124,7 +150,21 @@ export class LoggerPlotService {
         return false;
     }
 
-    attachListeners() {
+    private attachTimelineListeners() {
+        $("#loggerTimeline").bind("timelineWheelRedraw", (event, wheelData) => {
+            this.tpdIndex = wheelData.perDivArrayIndex;
+            this.xAxis.base = this.tpdArray[this.tpdIndex];
+            this.xAxis.position = wheelData.mid;
+            /* setTimeout(() => { this.shouldShowIndividualPoints(); }, 20); */
+        });
+
+        $("#loggerTimeline").bind("timelinePanEvent", (event, data) => {
+            this.xAxis.position = data.mid;
+            this.chartPan.next(data);
+        });
+    }
+
+    private attachListeners() {
         $("#loggerChart").bind("panEvent", (event, panData) => {
             if (panData.axis === 'xaxis') {
                 this.chartPan.next(panData);
