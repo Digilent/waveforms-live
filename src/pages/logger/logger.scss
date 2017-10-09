@@ -19,6 +19,7 @@
     background-color: black;
     max-height: 100%;
     padding: 0;
+    position: relative;
 }
 
 .logger-page-container .page-row
@@ -41,4 +42,15 @@
 .logger-page-container .logger-header
 {
     height: 64px;
+}
+
+.logger-page-container .timeline-row-button-container
+{
+    min-width: 240px;
+    max-width: 240px;
+}
+
+.logger-page-container .chart-button-container
+{
+    right: 1px;
 }

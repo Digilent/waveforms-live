@@ -27,6 +27,22 @@ export class LoggerPlotService {
         this.chartPan = new Subject();
     }
 
+    //Reset the service when the logger page is destroyed so old values aren't used. This service is not destructed
+    resetService() {
+        this.digilentChart = undefined;
+        this.timelineChartRef = undefined;
+        this.chart = undefined;
+        this.tpdArray = undefined;
+        this.tpdIndex = undefined;
+        this.vpdArray = undefined;
+        this.vpdIndices = undefined;
+        this.xAxis = {
+            position: 0.5,
+            base: 0.1
+        };
+        this.yAxis = [];
+    }
+
     init(chartRef: DigilentChart) {
         this.digilentChart = chartRef;
         this.chart = this.digilentChart.digilentChart;
@@ -58,26 +74,71 @@ export class LoggerPlotService {
         this.timelineChartRef.digilentChart.setSecsPerDivArray(this.tpdArray);
         this.timelineChartRef.digilentChart.setActiveXIndex(this.tpdIndex);
         (<any>this.timelineChartRef.digilentChart).setExistingChartRef(this.chart);
+        (<any>this.timelineChartRef.digilentChart).updateExistingChart();
         this.chart.setTimelineRef(this.timelineChartRef.digilentChart);
         this.chart.setTimelineUpdate(true);
+        this.attachTimelineListeners();
     }
 
     setData(data: DataContainer[], autoscale?: boolean) {
         this.digilentChart.setData(data, autoscale);
         if (this.timelineChartRef != undefined) {
+            let tempYaxisNums: number[] = [];
+            for (let i = 0; i < data.length; i++) {
+                tempYaxisNums.push(data[i].yaxis);
+                data[i].yaxis = 1;
+            }
             this.timelineChartRef.setData(data, false);
+            for (let i = 0; i < data.length; i++) {
+                data[i].yaxis = tempYaxisNums[i];
+            }
+            this.updateTimelineCurtains();
         }
+        this.shouldShowIndividualPoints(true);
     }
 
     redrawChart() {
         this.chart.setupGrid();
+        this.shouldShowIndividualPoints(false);
         this.chart.draw();
         if (this.timelineChartRef != undefined) {
-            let getAxes = this.chart.getAxes();
-            this.timelineChartRef.digilentChart.updateTimelineCurtains({
-                min: getAxes.xaxis.min,
-                max: getAxes.xaxis.max
-            });
+            this.updateTimelineCurtains();
+        }
+    }
+
+    updateTimelineCurtains(minMax?: { min: number, max: number }) {
+        if (minMax != undefined) {
+            this.timelineChartRef.digilentChart.updateTimelineCurtains(minMax);
+            return;
+        }
+        let getAxes = this.chart.getAxes();
+        console.log('GET AXES');
+        console.log(getAxes);
+        this.timelineChartRef.digilentChart.updateTimelineCurtains({
+            min: getAxes.xaxis.min,
+            max: getAxes.xaxis.max
+        });
+    }
+
+    shouldShowIndividualPoints(redraw?: boolean) {
+        redraw = redraw == undefined ? false : redraw;
+        let series = this.chart.getData();
+        console.log(series);
+        let axesInfo = this.chart.getAxes();
+        let shouldRedraw = false;
+        for (let i = 0; i < series.length; i++) {
+            if (series[0].data.length < 1) { return; }
+            let numPointsInView = (axesInfo.xaxis.max - axesInfo.xaxis.min) / (series[i].data[1][0] - series[i].data[0][0]);
+            console.log(numPointsInView);
+            let currentVal = series[i].points.show;
+            let shouldShowPoints = numPointsInView < 50;
+            series[i].points.show = shouldShowPoints;
+            if (currentVal !== shouldShowPoints) {
+                shouldRedraw = true;
+            }
+        }
+        if (shouldRedraw && redraw) {
+            this.chart.draw();
         }
     }
 
@@ -155,7 +216,7 @@ export class LoggerPlotService {
             this.tpdIndex = wheelData.perDivArrayIndex;
             this.xAxis.base = this.tpdArray[this.tpdIndex];
             this.xAxis.position = wheelData.mid;
-            /* setTimeout(() => { this.shouldShowIndividualPoints(); }, 20); */
+            this.shouldShowIndividualPoints(true);
         });
 
         $("#loggerTimeline").bind("timelinePanEvent", (event, data) => {
@@ -180,10 +241,7 @@ export class LoggerPlotService {
                 this.tpdIndex = wheelData.perDivArrayIndex;
                 this.xAxis.base = this.tpdArray[this.tpdIndex];
                 this.xAxis.position = wheelData.mid;
-                /* setTimeout(() => {
-                    this.shouldShowIndividualPoints();
-                    this.refreshCursors();
-                }, 20); */
+                this.shouldShowIndividualPoints(true);
             }
             else {
                 /* this.activeVPDIndex[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;

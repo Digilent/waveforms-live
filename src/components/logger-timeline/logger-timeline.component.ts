@@ -40,64 +40,7 @@ export class LoggerTimelineComponent {
     }
 
     generateBodeOptions() {
-        let fftChartOptions = /* {
-            series: {
-                lines: {
-                    show: true
-                }
-            },
-            legend: {
-                show: false
-            },
-            canvas: true,
-            grid: {
-                hoverable: true,
-                clickable: true,
-                autoHighlight: false,
-                borderWidth: 0,
-                backgroundColor: 'black',
-                labelMargin: 15,
-                margin: {
-                    top: 15,
-                    left: 10,
-                    right: 28,
-                    bottom: 10
-                }
-            },
-            colors: this.colorArray,
-            axisLabels: {
-                show: true
-            },
-            tooltip: {
-                show: true,
-                cssClass: 'flotTip',
-                content: (label, xval, yval, flotItem) => {
-                    return (this.unitFormatPipeInstance.transform(xval, 's') + ' (' + this.unitFormatPipeInstance.transform(yval, 'V') + ')');
-                },
-                onHover: (flotItem, tooltipel) => {
-                    let color = flotItem.series.color;
-                    tooltipel[0].style.borderBottomColor = color;
-                    tooltipel[0].style.borderTopColor = color;
-                    tooltipel[0].style.borderLeftColor = color;
-                    tooltipel[0].style.borderRightColor = color;
-                }
-            },
-            cursorMoveOnPan: true,
-            yaxes: this.generateFftYaxisOptions(),
-            xaxis: {
-                tickColor: '#666666',
-                ticks: this.tickGenerator,
-                tickFormatter: this.xTickFormatter,
-                font: {
-                    color: '#666666'
-                }
-            },
-            zoomPan: {
-                enabled: true,
-                startingXIndex: 21
-            }
-        } */
-        {
+        let fftChartOptions = {
             series: {
                 lines: {
                     show: true
@@ -105,11 +48,7 @@ export class LoggerTimelineComponent {
             },
             timelineChart: {
                 enabled: true,
-                /* secsPerDivisionValues: this.secsPerDivVals,
-                startingXIndex: 21, */
-
-                updateExistingChart: true/* ,
-                existingChartRef: chartRef */
+                updateExistingChart: true
             },
             legend: {
                 show: false

@@ -412,3 +412,42 @@ html input[disabled] {
     }
 
 }
+
+.chart-button-container
+{
+    position: absolute;
+    top: 11px;
+    right: 0;
+    width: 25px;
+    height: 200px;
+    max-height: calc(100% - 11px);
+    z-index: 5;
+    overflow: visible;
+}
+
+.chart-button-container::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+.chart-button-container::-webkit-scrollbar-thumb {
+    background: #4487BA;
+}
+
+.chart-button-container .chart-button
+{
+    margin: 0;
+    font-size: 8px;
+    height: 25px;
+    width: 25px;
+    background-color: #535353;
+    border: solid black 1px;
+    border-radius: 0px;
+    box-shadow: none;
+    padding: 4px;
+}
+
+.chart-button-container .chart-button:hover
+{
+    border: solid white 1px;
+}
