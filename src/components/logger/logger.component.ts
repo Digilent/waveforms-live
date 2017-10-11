@@ -199,6 +199,40 @@ export class LoggerComponent {
         this.loggerPlotService.setValPerDivAndUpdate('x', 1, event);
     }
 
+    yAxisValChange(trueValue, axisNum: number) {
+        console.log(trueValue);
+        if (trueValue < this.loggerPlotService.vpdArray[0]) {
+            trueValue = this.loggerPlotService.vpdArray[0];
+        }
+        else if (trueValue > this.loggerPlotService.vpdArray[this.loggerPlotService.vpdArray.length - 1]) {
+            trueValue = this.loggerPlotService.vpdArray[this.loggerPlotService.vpdArray.length - 1];
+        }
+        if (this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[axisNum]] === trueValue) {
+            console.log('the same');
+            /* this.chart.timeDivision = trueValue * 10 + 1;
+            setTimeout(() => {
+                this.chart.timeDivision = trueValue;
+            }, 1); */
+            return;
+        }
+        this.loggerPlotService.setValPerDivAndUpdate('y', axisNum + 1, trueValue);
+        /* this.chart.timeDivision = trueValue;
+        this.chart.setNearestPresetSecPerDivVal(trueValue);
+
+        this.chart.setTimeSettings({
+            timePerDiv: this.chart.timeDivision,
+            base: this.chart.base
+        }, false); */
+    }
+
+    incrementVpd(axisNum: number) {
+        this.loggerPlotService.setValPerDivAndUpdate('y', axisNum + 1, this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[axisNum] + 1]);
+    }
+
+    decrementVpd(axisNum: number) {
+        this.loggerPlotService.setValPerDivAndUpdate('y', axisNum + 1, this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[axisNum] - 1]);
+    }
+
     setViewToEdge() {
         if (this.viewMoved) { return; }
         if (this.dataContainers[0].data[0] == undefined || this.dataContainers[0].data[0][0] == undefined) {

@@ -170,12 +170,32 @@ export class LoggerPlotService {
         let min = axisObj.position - valPerDiv * 5;
         getAxes[axisIndexer].options.min = min;
         getAxes[axisIndexer].options.max = max;
-
         axisObj.base = valPerDiv;
         console.log(this.xAxis.base);
+        this.setNearestPerDivVal(axis, axisNum);
 
         if (redraw) {
             this.redrawChart();
+        }
+    }
+
+    private setNearestPerDivVal(axis: Axis, axisNum: number) {
+        let axisObj: AxisInfo = axis === 'x' ? this.xAxis : this.yAxis[axisNum - 1];
+        let axisIndexer = this.getAxisIndexer(axis, axisNum);
+        let count = 0;
+        if (axis === 'x') {
+            while (this.tpdArray[count] < this.xAxis.base && count < this.tpdArray.length) {
+                count++;
+            }
+            this.tpdIndex = count;
+            this.chart.setActiveXIndex(this.tpdIndex);
+        }
+        else {
+            while (this.vpdArray[count] < this.yAxis[axisNum - 1].base && count < this.vpdArray.length) { 
+                count++;
+            }
+            this.vpdIndices[axisNum - 1] = count;
+            this.chart.setActiveYIndices(this.vpdIndices);
         }
     }
 
