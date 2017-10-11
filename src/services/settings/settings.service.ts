@@ -33,7 +33,9 @@ export class SettingsService {
     constructor(_storageService: StorageService, _deviceManagerService: DeviceManagerService) {
         console.log('settings service constructor');
         window.addEventListener('beforeunload', (event) => {
-            this.storageService.saveData('appLog', JSON.stringify({log:this.logArguments}));
+            this.storageService.saveData('appLog', JSON.stringify({log:this.logArguments})).catch((e) => {
+                console.warn(e);
+            });
         });
 
         this.storageService = _storageService;
@@ -68,12 +70,16 @@ export class SettingsService {
 
     setRouteToStore(route: boolean) {
         this.routeToStore = route;
-        this.storageService.saveData('routeToStore', JSON.stringify(this.routeToStore));
+        this.storageService.saveData('routeToStore', JSON.stringify(this.routeToStore)).catch((e) => {
+            console.warn(e);
+        });
     }
 
     setUseDevBuilds(useDevBuilds: boolean) {
         this.useDevBuilds = useDevBuilds;
-        this.storageService.saveData('useDevBuilds', JSON.stringify(this.useDevBuilds));
+        this.storageService.saveData('useDevBuilds', JSON.stringify(this.useDevBuilds)).catch((e) => {
+            console.warn(e);
+        });
     }
 
     getRouteToStore(): boolean {
@@ -171,7 +177,9 @@ export class SettingsService {
     setHttpTimeout(newTimeout: number) {
         this.deviceManagerService.setHttpTimeout(newTimeout);
         console.log(this.deviceManagerService.getHttpTimeout());
-        this.storageService.saveData('httpTimeout', JSON.stringify({timeout: this.deviceManagerService.getHttpTimeout()}));
+        this.storageService.saveData('httpTimeout', JSON.stringify({timeout: this.deviceManagerService.getHttpTimeout()})).catch((e) => {
+            console.warn(e);
+        });
     }
 
 

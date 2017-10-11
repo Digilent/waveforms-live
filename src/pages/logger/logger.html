@@ -10,7 +10,10 @@
                 <logger-timeline></logger-timeline>
             </ion-col>
             <ion-col center text-center class="timeline-row-button-container">
-                hey
+                <button ion-button icon-right class="text-button-side disable-hover main-button" (tap)="running ? stopLogger() : runLogger()">
+                    <span class="collapse-button">{{running ? 'Stop' : 'Run'}}</span>
+                    <img class="custom-image-button" [src]="running ? 'assets/img/stop.svg' : 'assets/img/run.svg'" />
+                </button>
             </ion-col>
         </ion-row>
     </div>
@@ -19,13 +22,13 @@
         <ion-col class="chart-container-col">
             <logger-chart></logger-chart>
             <div class="chart-button-container">
-                <button ion-button class="chart-button disable-hover">
+                <button ion-button class="chart-button disable-hover" [disabled]="!loggerComponent.viewMoved && running" (tap)="snapViewToFront()">
                     <img class="button-side-svg" src="assets/img/logger-to-front.svg" />
                 </button>
             </div>
         </ion-col>
         <ion-col class="controls-col">
-            <logger-component></logger-component>
+            <logger-component #loggerComponent (runningValChange)="runningValChange($event)"></logger-component>
         </ion-col>
     </ion-row>
 </ion-content>

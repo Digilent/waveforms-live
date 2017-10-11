@@ -328,7 +328,9 @@ export class DeviceConfigureModal {
             return;
         }
         this.deviceManagerPageRef.devices[this.deviceArrayIndex].deviceDescriptor = deviceEnumeration;
-        this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices));
+        this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices)).catch((e) => {
+            console.warn(e);
+        });
         this.deviceManagerPageRef.getFirmwareVersionsForDevices();
     }
 
@@ -449,7 +451,9 @@ export class DeviceConfigureModal {
                                 this.deviceObject.deviceDescriptor = data.device[0];
                                 this.deviceObject.connectedDeviceAddress = this.potentialDevices[selectedIndex];
                                 this.deviceObject.ipAddress = this.deviceObject.deviceBridgeAddress + ' - ' + this.deviceObject.connectedDeviceAddress;
-                                this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices));
+                                this.deviceManagerPageRef.storage.saveData('savedDevices', JSON.stringify(this.deviceManagerPageRef.devices)).catch((e) => {
+                                    console.warn(e);
+                                });
                                 this.deviceManagerService.addDeviceFromDescriptor(this.deviceObject.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                                 this.deviceConfigure = true;
                                 this.deviceManagerPageRef.getFirmwareVersionsForDevices();

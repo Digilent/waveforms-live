@@ -18,17 +18,17 @@ export class StorageService {
 
     //Save data to SqlStorage
     saveData(name: string, jsonString: string) {
-        this.storage.set(name, jsonString);
+        return this.storage.set(name, jsonString);
     }
 
     //Remove data by keyname
     removeDataByKey(key: string) {
-        this.storage.remove(key);
+        return this.storage.remove(key);
     }
 
     //Clear all data from storage
     clearAll() {
-        this.storage.clear();
+        return this.storage.clear();
     }
 
     //Emit save event to all listeners

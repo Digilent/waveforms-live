@@ -437,7 +437,9 @@ export class BodePlotComponent {
                 this.localStorageCalibrationData = {};
             }
             this.localStorageCalibrationData[this.activeDevice.macAddress] = this.calibrationData;
-            this.storageService.saveData('bodeCalibration', JSON.stringify(this.localStorageCalibrationData));
+            this.storageService.saveData('bodeCalibration', JSON.stringify(this.localStorageCalibrationData)).catch((e) => {
+                console.warn(e);
+            });
             resolve('done');
         });
     }

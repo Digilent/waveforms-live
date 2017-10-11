@@ -222,7 +222,9 @@ export class DeviceManagerPage {
     }
 
     ngOnDestroy() {
-        this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+        this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
+            console.warn(e);
+        });
     }
 
     openPopover(event, arrayIndex: number) {
@@ -240,7 +242,9 @@ export class DeviceManagerPage {
                 
                 this.agentReleaseActiveDevice(this.devices[arrayIndex]);
                 this.devices.splice(arrayIndex, 1);
-                this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
+                    console.warn(e);
+                });
             }
             else if (data.option === 'Instrument Panel') {
                 this.connectToDevice(arrayIndex);
@@ -412,7 +416,9 @@ export class DeviceManagerPage {
                 outdatedFirmware: false // TODO
             }
         );
-        this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+        this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
+            console.warn(e);
+        });
         this.showDevMenu = false;
         this.toastService.createToast('deviceAdded');
         this.tutorialStage = 3;
@@ -497,7 +503,9 @@ export class DeviceManagerPage {
                         outdatedFirmware: false //TODO
                     }
                 );
-                this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
+                    console.warn(e);
+                });
                 this.showDevMenu = false;
                 this.toastService.createToast('deviceAdded');
                 this.tutorialStage = 3;
@@ -697,7 +705,9 @@ export class DeviceManagerPage {
                             outdatedFirmware: false
                         }
                     );
-                    this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                    this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
+                        console.warn(e);
+                    });
                     this.showDevMenu = false;
                     this.toastService.createToast('deviceAdded');
                     this.tutorialStage = 3;
@@ -739,7 +749,9 @@ export class DeviceManagerPage {
                             (data) => {
                                 if (data.device && data.device[0].statusCode === 0) {
                                     this.devices[deviceIndex].deviceDescriptor = data.device[0];
-                                    this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                                    this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
+                                        console.warn(e);
+                                    });
                                     this.getFirmwareVersionsForDevices();
                                 }
                                 resolve();
@@ -913,7 +925,9 @@ export class DeviceManagerPage {
                         return this.verifyCalibrationSource(deviceIndex, success.device[0].calibrationSource);
                     })
                     .then((data) => {
-                        this.storage.saveData('savedDevices', JSON.stringify(this.devices));
+                        this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
+                            console.warn(e);
+                        });
                         this.navCtrl.setRoot(TestChartCtrlsPage, {
                             tutorialMode: this.tutorialMode
                         });

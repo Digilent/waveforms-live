@@ -16,9 +16,9 @@
                     <div class="instrument-header">Logger</div>
                 </ion-col>
                 <ion-col class="header-side-col" center text-right>
-                    <button ion-button clear class="header-button disable-hover main-button" (tap)="running ? stopLogger() : startLogger()">
+                    <!-- <button ion-button clear class="header-button disable-hover main-button" (tap)="running ? stopLogger() : startLogger()">
                         <img class="custom-image-button svg-size" [src]="running ? 'assets/img/stop.svg' : 'assets/img/run.svg'">
-                    </button>
+                    </button> -->
                 </ion-col>
             </ion-row>
         </div>
@@ -135,6 +135,29 @@
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'samples', i)" />
+                    </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <div style="display:inline-block">
+                            <button ion-button class="img-button disable-hover">
+                                <img class="custom-image-button" src="assets/img/zoom-in.svg">
+                            </button>
+                        </div>
+                    </ion-col>
+                </ion-row>
+
+                <ion-row class="controls-container">
+                    <ion-col center class="vpd-label-col">
+                        Volts/
+                    </ion-col>
+                    <ion-col text-right center class="vpd-button-col">
+                        <div style="display:inline-block">
+                            <button ion-button class="img-button disable-hover">
+                                <img class="custom-image-button" src="assets/img/zoom-out.svg">
+                            </button>
+                        </div>
+                    </ion-col>
+                    <ion-col class="vpd-val-col" center text-center>
+                        <input class="custom-input highlight-input" step="any" [ngModel]="loggerPlotService.vpdArray[loggerPlotService.vpdIndices[i]] | unitFormat:'V/'" formatInput (valChange)="formatInputAndUpdate($event, i, 'vpd')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">

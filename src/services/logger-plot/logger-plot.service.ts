@@ -67,7 +67,7 @@ export class LoggerPlotService {
         if (this.chart == undefined) {
             setTimeout(() => {
                 this.setTimelineRef(chartRef);
-            }, 20);
+            }, 1);
             return;
         }
         this.timelineChartRef = chartRef;
@@ -112,8 +112,6 @@ export class LoggerPlotService {
             return;
         }
         let getAxes = this.chart.getAxes();
-        console.log('GET AXES');
-        console.log(getAxes);
         this.timelineChartRef.digilentChart.updateTimelineCurtains({
             min: getAxes.xaxis.min,
             max: getAxes.xaxis.max
@@ -123,13 +121,11 @@ export class LoggerPlotService {
     shouldShowIndividualPoints(redraw?: boolean) {
         redraw = redraw == undefined ? false : redraw;
         let series = this.chart.getData();
-        console.log(series);
         let axesInfo = this.chart.getAxes();
         let shouldRedraw = false;
         for (let i = 0; i < series.length; i++) {
             if (series[0].data.length < 1) { return; }
             let numPointsInView = (axesInfo.xaxis.max - axesInfo.xaxis.min) / (series[i].data[1][0] - series[i].data[0][0]);
-            console.log(numPointsInView);
             let currentVal = series[i].points.show;
             let shouldShowPoints = numPointsInView < 50;
             series[i].points.show = shouldShowPoints;
@@ -216,7 +212,9 @@ export class LoggerPlotService {
             this.tpdIndex = wheelData.perDivArrayIndex;
             this.xAxis.base = this.tpdArray[this.tpdIndex];
             this.xAxis.position = wheelData.mid;
-            this.shouldShowIndividualPoints(true);
+            setTimeout(() => {
+                this.shouldShowIndividualPoints(true);
+            }, 1);
         });
 
         $("#loggerTimeline").bind("timelinePanEvent", (event, data) => {
@@ -241,49 +239,16 @@ export class LoggerPlotService {
                 this.tpdIndex = wheelData.perDivArrayIndex;
                 this.xAxis.base = this.tpdArray[this.tpdIndex];
                 this.xAxis.position = wheelData.mid;
-                this.shouldShowIndividualPoints(true);
+                setTimeout(() => {
+                    this.shouldShowIndividualPoints(true);
+                }, 1);
             }
             else {
-                /* this.activeVPDIndex[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
-                this.voltDivision[wheelData.axisNum - 1] = this.voltsPerDivVals[this.activeVPDIndex[wheelData.axisNum - 1]]; */
+                this.vpdIndices[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
+                this.vpdArray[wheelData.axisNum - 1] = this.vpdArray[this.vpdIndices[wheelData.axisNum - 1]];
             }
         });
     }
-
-    /* $("#flotContainer").bind("panEvent", (event, panData) => {
-        if (panData.axis === 'xaxis') {
-            this.base = panData.mid;
-            this.refreshCursors();
-        }
-        else {
-            this.voltBase[panData.axisNum - 1] = panData.mid;
-        }
-    });
-    $("#flotContainer").bind("cursorupdates", (event, cursorData) => {
-        if (cursorData[0] === undefined || this.cursorType.toLowerCase() === 'disabled') { return; }
-        for (let i = 0; i < cursorData.length; i++) {
-            if (cursorData[i].cursor !== 'triggerLine') {
-                let cursorNum = parseInt(cursorData[i].cursor.slice(-1)) - 1;
-                this.cursorPositions[cursorNum].x = cursorData[i].x;
-                this.cursorPositions[cursorNum].y = cursorData[i].y;
-            }
-        }
-    });
-    $("#flotContainer").bind("mouseWheelRedraw", (event, wheelData) => {
-        if (wheelData.axis === 'xaxis') {
-            this.activeTPDIndex = wheelData.perDivArrayIndex;
-            this.timeDivision = this.secsPerDivVals[this.activeTPDIndex];
-            this.base = wheelData.mid;
-            setTimeout(() => {
-                this.shouldShowIndividualPoints();
-                this.refreshCursors();
-            }, 20);
-        }
-        else {
-            this.activeVPDIndex[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
-            this.voltDivision[wheelData.axisNum - 1] = this.voltsPerDivVals[this.activeVPDIndex[wheelData.axisNum - 1]];
-        }
-    }); */
 }
 
 export interface AxisInfo {
