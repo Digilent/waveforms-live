@@ -50,8 +50,8 @@ export class LoggerComponent {
     private analogChanNumbers: number[] = [];
     private digitalChanNumbers: number[] = [];
     public overflowConditions: string[] = ['stop', 'circular'];
-    public modes: string[] = ['log', 'stream', 'both'];
-    private selectedMode: string = this.modes[0];
+    public modes: ('log' | 'stream' | 'both')[] = ['log', 'stream', 'both'];
+    private selectedMode: 'log' | 'stream' | 'both' = this.modes[0];
     public storageLocations: string[] = ['cloud'];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
@@ -672,7 +672,9 @@ export class LoggerComponent {
                 this.analogChansToRead = this.analogChanNumbers.slice();
                 console.log("ANALOG CHANS TO READ: ");
                 console.log(this.analogChansToRead);
-                this.readLiveData();
+                if (this.selectedMode !== 'log') {
+                    this.readLiveData();
+                }
             })
             .catch((e) => {
                 console.log(e);
@@ -964,7 +966,7 @@ export class LoggerComponent {
     private updateValuesFromRead(data, instrument: 'analog' | 'digital', chans: number[], index: number) {
         if (data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[index]].statusCode === 0) {
             if (instrument === 'analog') {
-                this.analogChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount + 1;
+                this.analogChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount;
                 if (this.analogChans[chans[index] - 1].maxSampleCount > 0 && this.analogChans[chans[index] - 1].startIndex >= this.analogChans[chans[index] - 1].maxSampleCount) {
                     this.analogChansToRead.splice(this.analogChansToRead.indexOf(chans[index]), 1);
                     if (this.analogChansToRead.length < 1) {
@@ -974,7 +976,7 @@ export class LoggerComponent {
                 }
             }
             else {
-                this.digitalChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount + 1;
+                this.digitalChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount;
                 if (this.digitalChans[chans[index] - 1].maxSampleCount > 0 && this.digitalChans[chans[index] - 1].startIndex >= this.digitalChans[chans[index] - 1].maxSampleCount) {
                     this.running = false;
                     this.runningValChange.emit(this.running);
