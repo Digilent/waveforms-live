@@ -126,6 +126,30 @@
                     <ion-col center class="vpd-label-col">
                         Samples
                     </ion-col>
+                    <!-- <ion-col text-right center class="vpd-button-col">
+                        <div style="display:inline-block">
+                            <button ion-button class="img-button disable-hover">
+                                <img class="custom-image-button" src="assets/img/zoom-out.svg">
+                            </button>
+                        </div>
+                    </ion-col>
+                    <ion-col class="vpd-val-col" center text-center>
+                        <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'samples', i)" />
+                    </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <div style="display:inline-block">
+                            <button ion-button class="img-button disable-hover">
+                                <img class="custom-image-button" src="assets/img/zoom-in.svg">
+                            </button>
+                        </div>
+                    </ion-col> -->
+                    <ion-col class="vpd-input-col no-button-col" center text-center>
+                        <dropdown-popover #dropPopSamples [id]="'samples' + i" [dataArray]="samples" (onSelection)="samplesSelect($event, 'analog', i)"></dropdown-popover>
+                    </ion-col>
+                </ion-row>
+
+                <ion-row class="controls-container" *ngIf="analogChans[i].maxSampleCount !== -1">
+                    <ion-col center class="vpd-label-col"></ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
                             <button ion-button class="img-button disable-hover">
@@ -214,14 +238,14 @@
                     </ion-col>
                 </ion-row>
                 
-                <ion-row class="controls-container">
+                <!-- <ion-row class="controls-container">
                     <ion-col center class="vpd-label-col">
                         Overflow
                     </ion-col>
                     <ion-col class="vpd-input-col no-button-col" center text-center>
                         <dropdown-popover #dropPopOverflow [id]="'overflow' + i" [dataArray]="overflowConditions" (onSelection)="overflowSelect($event, 'analog', i)"></dropdown-popover>
                     </ion-col>
-                </ion-row>
+                </ion-row> -->
                 
                 <ion-row class="controls-container" [ngClass]="{'display-none': selectedMode === 'stream'}">
                     <ion-col center class="vpd-label-col">

@@ -20,7 +20,8 @@ import { DataContainer } from '../chart/chart.interface';
     selector: 'logger-component'
 })
 export class LoggerComponent {
-    @ViewChildren('dropPopOverflow') overflowChildren: QueryList<DropdownPopoverComponent>;
+    //@ViewChildren('dropPopOverflow') overflowChildren: QueryList<DropdownPopoverComponent>;
+    @ViewChildren('dropPopSamples') samplesChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLink') linkChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
@@ -36,7 +37,7 @@ export class LoggerComponent {
         maxSampleCount: -1,
         sampleFreq: 1000000,
         startDelay: 0,
-        overflow: 'stop',
+        overflow: 'circular',
         storageLocation: 'ram',
         uri: '',
         startIndex: 0,
@@ -49,10 +50,12 @@ export class LoggerComponent {
     public digitalChans: DigitalLoggerParams[] = [];
     private analogChanNumbers: number[] = [];
     private digitalChanNumbers: number[] = [];
-    public overflowConditions: string[] = ['stop', 'circular'];
-    public modes: ('log' | 'stream' | 'both')[] = ['log', 'stream', 'both'];
-    private selectedMode: 'log' | 'stream' | 'both' = this.modes[0];
-    public storageLocations: string[] = ['cloud'];
+    public overflowConditions: ('circular')[] = ['circular'];
+    public modes: string[] = ['log', 'stream', 'both'];
+    public samples: ('continuous' | 'discrete')[] = ['continuous', 'discrete'];
+    public selectedSamples: 'continuous' | 'discrete' = this.samples[0];
+    public selectedMode: string = this.modes[0];
+    public storageLocations: string[] = [];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
     private defaultProfileName: string = 'NewProfile';
@@ -165,6 +168,10 @@ export class LoggerComponent {
                                 this.storageLocations.unshift(el);
                             }
                         });
+                    }
+                    if (this.storageLocations.length < 1) {
+                        this.modes = ['stream'];
+                        this.modeSelect('stream');
                     }
                     return this.loadProfilesFromDevice();
                 })
@@ -280,6 +287,18 @@ export class LoggerComponent {
         this.selectedMode = event;
     }
 
+    samplesSelect(event: 'discrete' | 'continuous', instrument: 'analog' | 'digital', channel: number) {
+        console.log(event);
+        let chanObj = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
+        if (event === 'discrete') {
+            this.analogChans[channel].maxSampleCount = 1000;
+        }
+        else {
+            chanObj.maxSampleCount = -1;
+        }
+        this.selectedSamples = event;
+    }
+
     linkSelect(event, instrument: 'analog' | 'digital', channel: number) {
         console.log(event);
         if (event === 'no') {
@@ -344,7 +363,7 @@ export class LoggerComponent {
         }
     }
 
-    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, linkChan?: number }) {
+    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, linkChan?: number, samples?: string }) {
         setTimeout(() => {
             if (applyOptions.linkChan != undefined) {
                 let linkedChanString = applyOptions.linkChan > -1 ? 'Ch ' +  (applyOptions.linkChan + 1) : 'no';
@@ -365,14 +384,23 @@ export class LoggerComponent {
                 });
             }
 
-            if (applyOptions.overflow != undefined) {
+            if (applyOptions.samples != undefined) {
+                let id = 'samples' + channel;
+                this.samplesChildren.forEach((child) => {
+                    if (id === child.elementRef.nativeElement.id) {
+                        child._applyActiveSelection(applyOptions.samples);
+                    }
+                });
+            }
+
+            /* if (applyOptions.overflow != undefined) {
                 let id = 'overflow' + channel;
                 this.overflowChildren.forEach((child) => {
                     if (id === child.elementRef.nativeElement.id) {
                         child._applyActiveSelection(applyOptions.overflow);
                     }
                 });
-            }
+            } */
         }, 20);
     }
 
@@ -566,6 +594,7 @@ export class LoggerComponent {
                 (<AnalogLoggerParams>chanType).vOffset = trueValue;
                 break;
             case 'samples':
+                trueValue = trueValue < 1 ? 1 : trueValue;
                 chanType.maxSampleCount = trueValue;
                 break;
             case 'sampleFreq':
@@ -697,6 +726,16 @@ export class LoggerComponent {
             })
             .catch((e) => {
                 console.log(e);
+                if (e.message && e.message === 'Could not keep up with device') {
+                    this.toastService.createToast('loggerCouldNotKeepUp', false, undefined, 10000);
+                    this.stop('analog', this.analogChansToRead)
+                        .then((data) => {
+                            console.log(data);
+                        })
+                        .catch((e) => {
+                            console.log(e);
+                        });
+                }
                 this.getCurrentState('analog', this.analogChanNumbers)
                     .then((data) => {
                         console.log(data);
@@ -751,14 +790,14 @@ export class LoggerComponent {
         activeChan.maxSampleCount = respObj.maxSampleCount;
         activeChan.sampleFreq = respObj.actualSampleFreq / 1000;
         activeChan.startDelay = respObj.actualStartDelay / Math.pow(10, 12);
-        activeChan.overflow = respObj.overflow;
+        activeChan.overflow = 'circular';//respObj.overflow;
         let it = 0;
-        this.overflowChildren.forEach((child) => {
+        /* this.overflowChildren.forEach((child) => {
             if (channelInternalIndex === it) {
                 child._applyActiveSelection(activeChan.overflow);
             }
             it++;
-        });
+        }); */
         activeChan.storageLocation = respObj.storageLocation;
         if (respObj.storageLocation === 'ram') {
             console.log('setting selected mode to stream');
@@ -771,6 +810,13 @@ export class LoggerComponent {
                 child._applyActiveSelection(activeChan.storageLocation);
             }
             it++;
+        });
+        it = 0;
+        this.samplesChildren.forEach((child) => {
+            if (channelInternalIndex === it) {
+                let setting = activeChan.maxSampleCount === -1 ? 'continuous' : 'discrete';
+                child._applyActiveSelection(setting);
+            }
         });
         activeChan.uri = respObj.uri;
         activeChan.state = respObj.state;
@@ -942,6 +988,13 @@ export class LoggerComponent {
             chans.reduce((accumulator, currentVal, currentIndex) => {
                 return accumulator.flatMap((data) => {
                     if (currentIndex > 0) {
+                        let chanObj = instrument === 'analog' ? this.analogChans[currentIndex - 1] : this.digitalChans[currentIndex - 1];
+                        if (chanObj.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
+                            return Observable.create((observer) => { observer.error({
+                                message: 'Could not keep up with device',
+                                data: data
+                            }); });
+                        }
                         this.updateValuesFromRead(data, instrument, chans, currentIndex - 1);
                     }
                     this.deepMergeObj(finalObj, data);
@@ -950,6 +1003,14 @@ export class LoggerComponent {
             }, Observable.create((observer) => { observer.next({}); observer.complete(); }))
                 .subscribe(
                     (data) => {
+                        let chanObj = instrument === 'analog' ? this.analogChans[chans[chans.length - 1] - 1] : this.digitalChans[chans[chans.length - 1] - 1];
+                        if (chanObj.startIndex !== data.instruments[instrument][chans[chans.length - 1]].startIndex) {
+                            reject({
+                                message: 'Could not keep up with device',
+                                data: data
+                            });
+                            return;
+                        }
                         this.updateValuesFromRead(data, instrument, chans, chans.length - 1);
                         this.deepMergeObj(finalObj, data);
                         resolve(finalObj);

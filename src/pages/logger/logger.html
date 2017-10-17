@@ -11,7 +11,8 @@
             </ion-col>
             <ion-col center text-center class="timeline-row-button-container">
                 <button ion-button icon-right class="text-button-side disable-hover main-button" (tap)="running ? stopLogger() : runLogger()">
-                    <span class="collapse-button">{{running ? 'Stop' : 'Run'}}</span>
+                    <!-- Ridiculous ternary operator to help angular change detection -->
+                    <span class="collapse-button">{{running ? 'Stop' : loggerComponent.selectedMode === 'stream' ? 'Stream' : loggerComponent.selectedMode === 'both' ? 'Run' : 'Log'}}</span>
                     <img class="custom-image-button" [src]="running ? 'assets/img/stop.svg' : 'assets/img/run.svg'" />
                 </button>
             </ion-col>
@@ -24,6 +25,9 @@
             <div class="chart-button-container">
                 <button ion-button class="chart-button disable-hover" [disabled]="!loggerComponent.viewMoved && running" (tap)="snapViewToFront()">
                     <img class="button-side-svg" src="assets/img/logger-to-front.svg" />
+                </button>
+                <button ion-button class="chart-button disable-hover" [disabled]="running">
+                    <img class="button-side-svg" src="assets/img/download.svg" />
                 </button>
             </div>
         </ion-col>

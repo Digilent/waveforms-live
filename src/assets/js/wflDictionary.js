@@ -113,6 +113,9 @@ var waveformsLiveDictionary = (function() {
         loggerInvalidParams: {
             english: 'At Least One Parameter Is Invalid. Please Try Again'
         },
+        loggerCouldNotKeepUp: {
+            english: 'Error Reading Device Data. Points Were Missed. If Logging And Streaming, Your Log Is Still Running But Data Will No Longer Be Displayed'
+        },
 
         //Agent
         //Appears when a user tries to add an agent that already exists.

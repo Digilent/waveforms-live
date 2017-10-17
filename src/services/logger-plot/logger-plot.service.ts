@@ -58,7 +58,8 @@ export class LoggerPlotService {
             });
             this.setValPerDivAndUpdate('y', i + 1, this.vpdArray[this.vpdIndices[i]], false);
         }
-        console.log(this.vpdArray);
+        let getAxes = this.chart.getAxes();
+        getAxes.xaxis.options.show = true;
         this.redrawChart();
         this.attachListeners();
     }
