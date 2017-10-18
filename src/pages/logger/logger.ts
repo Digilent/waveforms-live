@@ -1,8 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ModalController, PopoverController } from 'ionic-angular';
 
 //Components
 import { LoggerComponent } from '../../components/logger/logger.component';
+import { GenPopover } from '../../components/gen-popover/gen-popover.component';
+
+//Pages
+import { FileBrowserPage } from '../file-browser/file-browser';
 
 //Services
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
@@ -18,7 +22,9 @@ export class LoggerPage {
     constructor(
         private navCtrl: NavController,
         private navParams: NavParams,
-        private loggerPlotService: LoggerPlotService
+        private loggerPlotService: LoggerPlotService,
+        private modalCtrl: ModalController,
+        private popoverCtrl: PopoverController
     ) {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
     }
@@ -47,6 +53,29 @@ export class LoggerPage {
 
     runningValChange(event) {
         this.running = event;
+    }
+
+    openFileBrowser() {
+        let modal = this.modalCtrl.create(FileBrowserPage);
+        modal.present();
+    }
+
+    presentExportPop() {
+        let popover = this.popoverCtrl.create(GenPopover, {
+            dataArray: ['Export CSV', 'Export PNG']
+        });
+        popover.onWillDismiss((data) => {
+            if (data == null) { return; }
+            if (data.option === 'Export CSV') {
+                this.loggerComponent.exportCsv('LoggerData');
+            }
+            else if (data.option === 'Export PNG') {
+                this.loggerComponent.exportCanvasAsPng();
+            }
+        });
+        popover.present({
+            ev: event
+        });
     }
 
 }

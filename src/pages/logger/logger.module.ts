@@ -10,20 +10,25 @@ import { LoggerChartComponent } from '../../components/logger-chart/logger-chart
 import { LoggerXAxisComponent } from '../../components/logger-xaxis/logger-xaxis.component';
 import { LoggerTimelineComponent } from '../../components/logger-timeline/logger-timeline.component';
 
+//Pages
+import { FileBrowserPage } from '../file-browser/file-browser';
+
 //Services
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
  
 @NgModule({
     imports: [
         SharedModule,
-        IonicModule.forRoot(LoggerPage)
+        IonicModule.forRoot(LoggerPage),
+        IonicModule.forRoot(FileBrowserPage)
     ],
     declarations: [
         LoggerPage,
         LoggerComponent,
         LoggerChartComponent,
         LoggerXAxisComponent,
-        LoggerTimelineComponent
+        LoggerTimelineComponent,
+        FileBrowserPage
     ],
     exports: [LoggerPage],
     providers: [

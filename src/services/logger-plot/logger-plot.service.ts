@@ -10,7 +10,7 @@ declare var $: any;
 export class LoggerPlotService {
     private digilentChart: DigilentChart;
     private timelineChartRef: DigilentChart;
-    private chart: Chart;
+    public chart: Chart;
     public tpdArray: number[];
     public tpdIndex: number;
     public vpdArray: number[];

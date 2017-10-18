@@ -11,6 +11,7 @@ import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.c
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { UtilityService } from '../../services/utility/utility.service';
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
+import { ExportService } from '../../services/export/export.service';
 
 //Interfaces
 import { DataContainer } from '../chart/chart.interface';
@@ -67,13 +68,15 @@ export class LoggerComponent {
     public viewMoved: boolean = false;
     private analogChansToRead: number[] = [];
     private subscriptionRef;
+    private profileToken: string = '^^profile^^';
 
     constructor(
         private devicemanagerService: DeviceManagerService,
         private loadingService: LoadingService,
         private toastService: ToastService,
         private utilityService: UtilityService,
-        public loggerPlotService: LoggerPlotService
+        public loggerPlotService: LoggerPlotService,
+        private exportService: ExportService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         let loading = this.loadingService.displayLoading('Loading device info...');
@@ -172,7 +175,14 @@ export class LoggerComponent {
                     if (this.storageLocations.length < 1) {
                         this.modes = ['stream'];
                         this.modeSelect('stream');
+                        return new Promise((resolve, reject) => { resolve(); });
                     }
+                    else {
+                        return this.listDir(this.storageLocations[0], '/');
+                    }
+                })
+                .then((data) => {
+                    console.log(data);
                     return this.loadProfilesFromDevice();
                 })
                 .then((data) => {
@@ -462,7 +472,44 @@ export class LoggerComponent {
         return new Promise((resolve, reject) => {
             /* TODO: Make sure /profiles exists and then list the files in the directory to get the names */
             let profileName = 'test.json';
-            this.activeDevice.file.read('flash', profileName, 0, -1).subscribe(
+            this.listDir('flash', '/')
+                .then((data) => {
+                    console.log(data);
+                    let profileFileNames = [];
+                    for (let i = 0; i < data.file[0].files.length; i++) {
+                        if (data.file[0].files[i].indexOf(this.profileToken) !== -1) {
+                            profileFileNames.push(data.file[0].files[i].replace(this.profileToken, ''));
+                        }
+                    }
+                    console.log(profileFileNames);
+                    profileFileNames.reduce((accumulator, currentVal, currentIndex) => {
+                        return accumulator
+                            .then((data) => {
+                                console.log(data);
+                                return this.readProfile(currentVal);
+                            })
+                            .catch((e) => {
+                                console.log(e);
+                                return this.readProfile(currentVal);
+                            });
+                    }, Promise.resolve())
+                        .then((data) => {
+                            console.log(data);
+                            resolve(data);
+                        })
+                        .catch((e) => {
+                            reject(e);
+                        });
+                })
+                .catch((e) => {
+                    reject(e);
+                });
+        });
+    }
+
+    private readProfile(profileName: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.activeDevice.file.read('flash', this.profileToken + profileName, 0, -1).subscribe(
                 (data) => {
                     console.log(data);
                     let parsedData;
@@ -471,17 +518,25 @@ export class LoggerComponent {
                     }
                     catch(e) {
                         console.log('error parsing json');
-                        reject(e);
+                        resolve(e);
                         return;
                     }
                     let splitArray = profileName.split('.');
-                    this.loggingProfiles.push(splitArray[0]);
-                    this.profileObjectMap[splitArray[0]] = parsedData;
+                    if (splitArray.length < 2) {
+                        this.loggingProfiles.push(profileName);
+                        this.profileObjectMap[profileName] = parsedData;
+                    }
+                    else {
+                        splitArray.splice(splitArray.length - 1, 1);
+                        let noExtName = splitArray.join('');
+                        this.loggingProfiles.push(noExtName);
+                        this.profileObjectMap[noExtName] = parsedData;
+                    }
                     resolve(data);
                 },
                 (err) => {
                     console.log(err);
-                    reject(err);
+                    resolve(err);
                 },
                 () => { }
             );
@@ -509,14 +564,18 @@ export class LoggerComponent {
         for (let instrument in loadedObj) {
             for (let channel in loadedObj[instrument]) {
                 if (instrument === 'analog') {
+                    let currentState = this.analogChans[parseInt(channel)].state;
                     this.analogChans[parseInt(channel)] = loadedObj[instrument][channel];
                     this.analogChans[parseInt(channel)].count = this.defaultAnalogParams.count;
                     this.analogChans[parseInt(channel)].startIndex = this.defaultAnalogParams.startIndex;
+                    this.analogChans[parseInt(channel)].state = currentState;
                 }
                 else if (instrument === 'digital') {
+                    let currentState = this.digitalChans[parseInt(channel)].state;
                     this.digitalChans[parseInt(channel)] = loadedObj[instrument][channel];
                     this.digitalChans[parseInt(channel)].count = this.defaultAnalogParams.count;
                     this.digitalChans[parseInt(channel)].startIndex = this.defaultAnalogParams.startIndex;
+                    this.digitalChans[parseInt(channel)].state = currentState;
                 }
                 //Wait for ngFor to execute on the dropPops (~20ms) before we apply the active selections (there has to be a better way)
 
@@ -527,6 +586,7 @@ export class LoggerComponent {
                 if (loadedObj[instrument][channel].linked) {
                     dropdownChangeObj['linkChan'] = loadedObj[instrument][channel].linkedChan;
                 }
+                dropdownChangeObj['samples'] = loadedObj[instrument][channel].maxSampleCount === -1 ? 'continuous' : 'discrete';
                 this.setChannelDropdowns(parseInt(channel), dropdownChangeObj);
             }
         }
@@ -553,7 +613,7 @@ export class LoggerComponent {
             for (let i = 0; i < str.length; i++) {
                 bufView[i] = str.charCodeAt(i);
             }
-            this.activeDevice.file.write('flash', profileName + '.json', buf).subscribe(
+            this.activeDevice.file.write('flash', this.profileToken + profileName + '.json', buf).subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);
@@ -725,7 +785,6 @@ export class LoggerComponent {
                 }
             })
             .catch((e) => {
-                console.log(e);
                 if (e.message && e.message === 'Could not keep up with device') {
                     this.toastService.createToast('loggerCouldNotKeepUp', false, undefined, 10000);
                     this.stop('analog', this.analogChansToRead)
@@ -735,6 +794,11 @@ export class LoggerComponent {
                         .catch((e) => {
                             console.log(e);
                         });
+                }
+                else if (e.message && e.message === 'Data not ready') {
+                    console.log('data not ready');
+                    this.readLiveData();
+                    return;
                 }
                 this.getCurrentState('analog', this.analogChanNumbers)
                     .then((data) => {
@@ -764,6 +828,36 @@ export class LoggerComponent {
         else {
             this.showDigitalChan[chan] = !this.showDigitalChan[chan];
         }
+    }
+
+    exportCanvasAsPng() {
+        let flotOverlayRef = document.getElementById('loggerChart').childNodes[1];
+        this.exportService.exportCanvasAsPng(this.loggerPlotService.chart.getCanvas(), flotOverlayRef);
+    }
+
+    exportCsv(fileName: string) {
+        console.log(this.dataContainers);
+        let analogChanArray = [];
+        let digitalChanArray = [];
+        for (let i = 0; i < this.analogChans.length; i++) {
+            analogChanArray.push(i);
+        }
+        for (let i = analogChanArray.length; i < this.dataContainers.length; i++) {
+            digitalChanArray.push(i);
+        }
+        this.exportService.exportGenericCsv(fileName, this.dataContainers, analogChanArray.concat(digitalChanArray), [{
+            instrument: 'Analog',
+            seriesNumberOffset: 0,
+            xUnit: 's',
+            yUnit: 'V',
+            channels: analogChanArray
+        }, {
+            instrument: 'Digital',
+            seriesNumberOffset: this.analogChans.length,
+            xUnit: 's',
+            yUnit: 'V',
+            channels: digitalChanArray
+        }]);
     }
 
     private applyCurrentStateResponse(data: any) {
@@ -1016,7 +1110,23 @@ export class LoggerComponent {
                         resolve(finalObj);
                     },
                     (err) => {
-                        console.log(err);
+                        if (err.payload != undefined) {
+                            let jsonString = String.fromCharCode.apply(null, new Uint8Array(err.payload));
+                            let parsedData = JSON.parse(jsonString);
+                            //Check if data is not ready
+                            if (parsedData && parsedData.log && parsedData.log[instrument]) {
+                                for (let chan in parsedData.log[instrument]) {
+                                    if (parsedData.log[instrument][chan][0].statusCode === 2684354593) {
+                                        console.log('data not ready');
+                                        reject({
+                                            message: 'Data not ready',
+                                            data: parsedData
+                                        });
+                                        return;
+                                    }
+                                }
+                            }
+                        }
                         reject(err);
                     },
                     () => {}
@@ -1082,6 +1192,20 @@ export class LoggerComponent {
 
     private isObject(item) {
         return (item && typeof item === 'object' && !Array.isArray(item));
+    }
+
+    listDir(location: string, path: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.activeDevice.file.listDir(location, path).subscribe(
+                (data) => {
+                    resolve(data);
+                },
+                (err) => {
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     getCurrentState(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
