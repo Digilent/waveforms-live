@@ -29,7 +29,7 @@
                     Profile
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <dropdown-popover #dropPopProfile [dataArray]="loggingProfiles" (onSelection)="profileSelect($event)"></dropdown-popover>
+                    <dropdown-popover class="profile-drop-pop" #dropPopProfile [dataArray]="loggingProfiles" (onSelection)="profileSelect($event)"></dropdown-popover>
                 </ion-col>
             </ion-row>
 

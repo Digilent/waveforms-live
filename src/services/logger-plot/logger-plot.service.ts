@@ -126,6 +126,11 @@ export class LoggerPlotService {
         let shouldRedraw = false;
         for (let i = 0; i < series.length; i++) {
             if (series[0].data.length < 1) { return; }
+            if (series[0].data.length < 2) {
+                shouldRedraw = true;
+                series[i].points.show = true;
+                continue;
+            }
             let numPointsInView = (axesInfo.xaxis.max - axesInfo.xaxis.min) / (series[i].data[1][0] - series[i].data[0][0]);
             let currentVal = series[i].points.show;
             let shouldShowPoints = numPointsInView < 50;

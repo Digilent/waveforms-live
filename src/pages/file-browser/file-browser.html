@@ -1,3 +1,48 @@
 <ion-content class="file-browser-container">
-    hey
+    <div class="main-content-container">
+        <div class="header">
+            File Explorer
+        </div>
+    
+        <div class="tree-container">
+            <div *ngFor="let storageLocation of storageLocations" class="outer-container">
+                    <ion-row>
+                        <ion-col no-padding class="mid-line-container">
+                            <div class="mid-line"></div>
+                        </ion-col>
+                        <ion-col class="toggle-button-col" center>
+                            <button ion-button class="icon-only-button-side disable-hover no-outline" (tap)="toggleFolder(storageLocation)">
+                                <img [ngClass]="{rotateOn: showFolder[storageLocation].show}" src="assets/img/collapse-arrow-right.svg">
+                            </button>
+                        </ion-col>
+                        <ion-col center class="storage-location-title">
+                            {{storageLocation}}
+                        </ion-col>
+                    </ion-row>
+                    <div *ngIf="showFolder[storageLocation].show" class="file-list">
+                        <ion-row *ngFor="let file of showFolder[storageLocation].files">
+                            <ion-col no-padding class="mid-line-container" center>
+                                <div class="mid-line"></div>
+                            </ion-col>
+                            <ion-col center>
+                                <div class="file-container" (tap)="selectFile($event, file, storageLocation)">
+                                    {{file}}
+                                </div>
+                            </ion-col>
+                            <ion-col></ion-col>
+                        </ion-row>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <ion-row class="navigation-button-container">
+        <ion-col text-right>
+            <button ion-button icon-right (tap)="close()" class="text-button-side disable-hover">
+                Close
+                <img class="custom-image-button" src="assets/img/close.svg">
+            </button>
+        </ion-col>
+    </ion-row>
+    
 </ion-content>

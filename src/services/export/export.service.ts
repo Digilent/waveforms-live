@@ -88,16 +88,26 @@ export class ExportService {
         link.click();
     }
 
-    exportBinary(fileName: string, arrayBuffer: ArrayBuffer) {
+    exportBinary(fileName: string, arrayBuffer: ArrayBuffer, waitTime?: number, addExtension?: boolean) {
         //It's little endian
-        fileName = fileName + '.raw';
+        addExtension = addExtension == undefined ? true : addExtension;
+        fileName = addExtension ? fileName + '.raw' : fileName;
         let blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
         let encodedUri = URL.createObjectURL(blob);
         let link = document.createElement("a");
         link.setAttribute("href", encodedUri);
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
-        link.click();
+        if (waitTime === 0 || waitTime == undefined) {
+            link.click();
+            document.body.removeChild(link);
+        }
+        else {
+            setTimeout(() => {
+                link.click();
+                document.body.removeChild(link);
+            }, waitTime);
+        }
     }
 
     private getInstrumentLabel(labels: CsvLabel[], seriesNum: number): string {

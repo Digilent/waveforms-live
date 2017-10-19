@@ -10,11 +10,18 @@
                 <logger-timeline></logger-timeline>
             </ion-col>
             <ion-col center text-center class="timeline-row-button-container">
-                <button ion-button icon-right class="text-button-side disable-hover main-button" (tap)="running ? stopLogger() : runLogger()">
-                    <!-- Ridiculous ternary operator to help angular change detection -->
-                    <span class="collapse-button">{{running ? 'Stop' : loggerComponent.selectedMode === 'stream' ? 'Stream' : loggerComponent.selectedMode === 'both' ? 'Run' : 'Log'}}</span>
-                    <img class="custom-image-button" [src]="running ? 'assets/img/stop.svg' : 'assets/img/run.svg'" />
-                </button>
+                <div>
+                    <div>
+                        <button ion-button icon-right class="text-button-side disable-hover main-button" (tap)="loggerComponent.running ? stopLogger() : runLogger()">
+                            <!-- Ridiculous ternary operator to help angular change detection -->
+                            <span class="collapse-button">{{loggerComponent.running ? 'Stop' : loggerComponent.selectedMode === 'stream' ? 'Stream' : loggerComponent.selectedMode === 'both' ? 'Run' : 'Log'}}</span>
+                            <img class="custom-image-button" [src]="loggerComponent.running ? 'assets/img/stop.svg' : 'assets/img/run.svg'" />
+                        </button>
+                    </div>
+                    <div text-center class="overal-run-status-container">
+                        {{!loggerComponent.running ? 'Idle' : loggerComponent.selectedMode === 'stream' ? 'Streaming' : loggerComponent.selectedMode === 'both' ? 'Running' : 'Logging'}}
+                    </div>
+                </div>
             </ion-col>
         </ion-row>
     </div>
@@ -23,19 +30,19 @@
         <ion-col class="chart-container-col">
             <logger-chart></logger-chart>
             <div class="chart-button-container">
-                <button ion-button class="chart-button disable-hover" [disabled]="!loggerComponent.viewMoved && running" (tap)="snapViewToFront()">
+                <button ion-button class="chart-button disable-hover" [disabled]="!loggerComponent.viewMoved && loggerComponent.running" (tap)="snapViewToFront()">
                     <img class="button-side-svg" src="assets/img/logger-to-front.svg" />
                 </button>
-                <button ion-button class="chart-button disable-hover" [disabled]="running" (tap)="presentExportPop()">
+                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="presentExportPop()">
                     <img class="button-side-svg" src="assets/img/download.svg" />
                 </button>
-                <button ion-button class="chart-button disable-hover" [disabled]="running" (tap)="openFileBrowser()">
+                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="openFileBrowser()">
                     <img class="button-side-svg" src="assets/img/folder.svg" />
                 </button>
             </div>
         </ion-col>
         <ion-col class="controls-col">
-            <logger-component #loggerComponent (runningValChange)="runningValChange($event)"></logger-component>
+            <logger-component #loggerComponent></logger-component>
         </ion-col>
     </ion-row>
 </ion-content>

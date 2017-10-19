@@ -9,3 +9,98 @@
 {
     padding: 16px !important;
 }
+
+.file-browser-container .icon-only-button-side.no-outline
+{
+    border: solid #3A3A3A 1px;
+    background-color: #3A3A3A;
+    img {
+        max-width: 100%;
+    }
+}
+
+.file-browser-container .icon-only-button-side.no-outline:hover
+{
+    border: solid white 1px;
+}
+
+.file-browser-container .file-list
+{
+    margin-left: 36px;
+    border-left: solid #CCCCCC 1px;
+}
+
+.file-browser-container .toggle-button-col
+{
+    max-width: 36px;
+}
+
+.file-browser-container .outer-container
+{
+    border-left: solid #CCCCCC 1px;
+}
+
+.file-browser-container .mid-line-container
+{
+    max-width: 8px;
+    position: relative;
+}
+
+.file-browser-container .mid-line
+{
+    position: aboslute;
+    transform: translateY(50%);
+    border-top: solid #CCCCCC 1px;
+    height: 100%;
+}
+
+.file-browser-container .file-container
+{
+    cursor: pointer;
+    width: inherit;
+}
+
+.file-browser-container .file-container:hover
+{
+    color: white;
+}
+
+.file-browser-container .storage-location-title
+{
+    font-size: 16px;
+    color: white;
+    text-transform: capitalize;
+}
+
+.file-browser-container .header
+{
+    font-size: 18px;
+    color: white;
+    padding-bottom: 16px;
+    border-bottom: solid #CCCCCC 1px;
+    margin-bottom: 16px;
+}
+
+.file-browser-container .subheader
+{
+    margin-bottom: 16px;
+}
+
+.file-browser-container .main-content-container
+{
+    min-height: calc(100% - 29px);
+}
+
+.file-browser-container .navigation-button-container
+{
+    padding: 0;
+    ion-col {
+        padding: 0;
+    }
+}
+
+.file-browser-container .tree-container
+{
+    background-color: #3A3A3A;
+    padding: 16px;
+}

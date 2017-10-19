@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewChildren, QueryList, Output, EventEmitter } from '@angular/core';
+import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { LoadingService } from '../../services/loading/loading.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { Observable } from 'rxjs/Observable';
@@ -27,7 +27,6 @@ export class LoggerComponent {
     @ViewChildren('dropPopLink') linkChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
     @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
-    @Output('runningValChange') runningValChange: EventEmitter<any> = new EventEmitter();
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
     public showAnalogChan: boolean[] = [];
@@ -36,7 +35,7 @@ export class LoggerComponent {
         gain: 1,
         vOffset: 0,
         maxSampleCount: -1,
-        sampleFreq: 1000000,
+        sampleFreq: 1000,
         startDelay: 0,
         overflow: 'circular',
         storageLocation: 'ram',
@@ -318,7 +317,8 @@ export class LoggerComponent {
                 this.setChannelDropdowns(channel, {
                     storageLocation: this.analogChans[linkedChan].storageLocation,
                     overflow: this.analogChans[linkedChan].overflow,
-                    linkChan: -1
+                    linkChan: -1,
+                    samples: this.analogChans[linkedChan].maxSampleCount === -1 ? 'continuous' : 'discrete'
                 });
             }
             this.analogChans[channel].linked = false;
@@ -345,7 +345,8 @@ export class LoggerComponent {
             this.setChannelDropdowns(channel, {
                 storageLocation: this.analogChans[channel].storageLocation,
                 overflow: this.analogChans[channel].overflow,
-                linkChan: linkChan
+                linkChan: linkChan,
+                samples: this.analogChans[channel].maxSampleCount === -1 ? 'continuous' : 'discrete'
             });
         }
         else {
@@ -436,36 +437,45 @@ export class LoggerComponent {
 
     profileSelect(event) {
         console.log(event);
+        let currentLogProfile = this.selectedLogProfile;
         this.selectedLogProfile = event;
         if (event === this.loggingProfiles[0]) { return; }
         if (this.profileObjectMap[event] == undefined) {
             //TODO present error message
+            this.toastService.createToast('loggerProfileLoadErr', true, undefined, 5000);
             console.log('profile not found in profile map');
-            this.selectedLogProfile = this.loggingProfiles[0];
+            this.selectedLogProfile = currentLogProfile;
+            setTimeout(() => {
+                this.profileChild._applyActiveSelection(this.selectedLogProfile);
+            }, 20);
             return;
         }
-        this.parseAndApplyProfileJson(this.profileObjectMap[event]);
+        //Need to copy so further edits do not overwrite profile info
+        this.parseAndApplyProfileJson(JSON.parse(JSON.stringify(this.profileObjectMap[event])));
     }
 
     saveAndSetProfile() {
         this.saveProfile(this.profileNameScratch)
-        .then((data) => {
-            this.toastService.createToast('loggerSaveSuccess');
-        })
-        .catch((e) => {
-            console.log(e);
-            this.toastService.createToast('loggerSaveFail');
-        });
+            .then((data) => {
+                this.toastService.createToast('loggerSaveSuccess');
+            })
+            .catch((e) => {
+                console.log(e);
+                this.toastService.createToast('loggerSaveFail');
+            });
         let nameIndex: number = this.loggingProfiles.indexOf(this.profileNameScratch);
         if (nameIndex !== -1) {
             this.loggingProfiles.splice(nameIndex, 1);
         }
         this.loggingProfiles.push(this.profileNameScratch);
-        this.selectedLogProfile = this.profileNameScratch;
-        this.profileNameScratch = this.defaultProfileName;
+        let profileObj = this.generateProfileJson();
+        let profileObjCopy = JSON.parse(JSON.stringify(profileObj));
+        this.profileObjectMap[this.profileNameScratch] = profileObjCopy;
         setTimeout(() => {
+            this.selectedLogProfile = this.profileNameScratch;
             this.profileChild._applyActiveSelection(this.selectedLogProfile);
-        }, 50);
+            this.profileNameScratch = this.defaultProfileName;
+        }, 20);
     }
 
     loadProfilesFromDevice(): Promise<any> {
@@ -674,7 +684,6 @@ export class LoggerComponent {
             .then((data) => {
                 console.log(data);
                 this.running = false;
-                this.runningValChange.emit(this.running);
             })
             .catch((e) => {
                 console.log(e);
@@ -694,7 +703,7 @@ export class LoggerComponent {
             for (let channel in readResponse.instruments[instrument]) {
                 let formattedData: number[][] = [];
                 let channelObj = readResponse.instruments[instrument][channel];
-                let dt = 1 / (channelObj.actualSampleFreq / 1000);
+                let dt = 1 / (channelObj.actualSampleFreq / 1000000);
                 let timeVal = channelObj.startIndex * dt;
                 for (let i = 0; i < channelObj.data.length; i++) {
                     formattedData.push([timeVal, channelObj.data[i]]);
@@ -755,7 +764,6 @@ export class LoggerComponent {
             .then((data) => {
                 console.log(data);
                 this.running = true;
-                this.runningValChange.emit(this.running);
                 loading.dismiss();
                 //TODO load this value from the selected chans
                 this.analogChansToRead = this.analogChanNumbers.slice();
@@ -785,6 +793,8 @@ export class LoggerComponent {
                 }
             })
             .catch((e) => {
+                console.log('error reading live data');
+                console.log(e);
                 if (e.message && e.message === 'Could not keep up with device') {
                     this.toastService.createToast('loggerCouldNotKeepUp', false, undefined, 10000);
                     this.stop('analog', this.analogChansToRead)
@@ -795,7 +805,7 @@ export class LoggerComponent {
                             console.log(e);
                         });
                 }
-                else if (e.message && e.message === 'Data not ready') {
+                else if (e.message && e.message === 'Data not ready' && this.running) {
                     console.log('data not ready');
                     this.readLiveData();
                     return;
@@ -812,7 +822,6 @@ export class LoggerComponent {
                         console.log(e);
                     });
                 this.running = false;
-                this.runningValChange.emit(this.running);
                 //TODO - display error
             });
     }
@@ -882,7 +891,7 @@ export class LoggerComponent {
             activeChan.bitMask = respObj.bitMask;
         }
         activeChan.maxSampleCount = respObj.maxSampleCount;
-        activeChan.sampleFreq = respObj.actualSampleFreq / 1000;
+        activeChan.sampleFreq = respObj.actualSampleFreq / 1000000;
         activeChan.startDelay = respObj.actualStartDelay / Math.pow(10, 12);
         activeChan.overflow = 'circular';//respObj.overflow;
         let it = 0;
@@ -916,7 +925,6 @@ export class LoggerComponent {
         activeChan.state = respObj.state;
         if (activeChan.state === 'running') {
             this.running = true;
-            this.runningValChange.emit(this.running);
         }
     }
 
@@ -1142,7 +1150,6 @@ export class LoggerComponent {
                     this.analogChansToRead.splice(this.analogChansToRead.indexOf(chans[index]), 1);
                     if (this.analogChansToRead.length < 1) {
                         this.running = false;
-                        this.runningValChange.emit(this.running);
                     }
                 }
             }
@@ -1150,7 +1157,6 @@ export class LoggerComponent {
                 this.digitalChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount;
                 if (this.digitalChans[chans[index] - 1].maxSampleCount > 0 && this.digitalChans[chans[index] - 1].startIndex >= this.digitalChans[chans[index] - 1].maxSampleCount) {
                     this.running = false;
-                    this.runningValChange.emit(this.running);
                 }
             }
             /* if (data.instruments[instrument][chans[index]].state !== 'running') {

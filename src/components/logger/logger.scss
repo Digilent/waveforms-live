@@ -43,6 +43,11 @@
     text-transform: capitalize;
 }
 
+.logger-component-container dropdown-popover.profile-drop-pop select
+{
+    text-transform: none;
+}
+
 .logger-component-container dropdown-popover button
 {
     height: 25px;

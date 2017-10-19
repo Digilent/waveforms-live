@@ -17,7 +17,6 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
 export class LoggerPage {
     @ViewChild('loggerComponent') loggerComponent: LoggerComponent;
     private dismissCallback: () => void;
-    public running: boolean = false;
 
     constructor(
         private navCtrl: NavController,
@@ -49,10 +48,6 @@ export class LoggerPage {
 
     stopLogger() {
         this.loggerComponent.stopLogger();
-    }
-
-    runningValChange(event) {
-        this.running = event;
     }
 
     openFileBrowser() {

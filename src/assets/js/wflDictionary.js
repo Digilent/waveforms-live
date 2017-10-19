@@ -116,6 +116,20 @@ var waveformsLiveDictionary = (function() {
         loggerCouldNotKeepUp: {
             english: 'Error Reading Device Data. Points Were Missed. If Logging And Streaming, Your Log Is Still Running But Data Will No Longer Be Displayed'
         },
+        loggerProfileLoadErr: {
+            english: 'Error Reading Profile. Please Try Again'
+        },
+
+        //File
+        fileDeleteErr: {
+            english: 'Error Deleting File. Please Try Again'
+        },
+        fileDownloadErr: {
+            english: 'Error Downloading File. Please Try Again'
+        },
+        fileReadErr: {
+            english: 'Error Reading File From Device. Please Try Again'
+        },
 
         //Agent
         //Appears when a user tries to add an agent that already exists.
