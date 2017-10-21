@@ -5,6 +5,7 @@ import { Subject } from 'rxjs/Subject';
 import { DigilentChart, Chart, DataContainer } from 'digilent-chart-angular2/modules';
 
 declare var $: any;
+declare function largestTriangleThreeBuckets(data: number[][], threshold: number, xAccessor: number, yAccessor: number): number[][];
 
 @Injectable()
 export class LoggerPlotService {
@@ -85,13 +86,17 @@ export class LoggerPlotService {
         this.digilentChart.setData(data, autoscale);
         if (this.timelineChartRef != undefined) {
             let tempYaxisNums: number[] = [];
+            let tempAllData: number[][][] = [];
             for (let i = 0; i < data.length; i++) {
                 tempYaxisNums.push(data[i].yaxis);
                 data[i].yaxis = 1;
+                tempAllData.push(data[i].data);
+                data[i].data = largestTriangleThreeBuckets(data[i].data, 1000, 0, 1);
             }
             this.timelineChartRef.setData(data, false);
             for (let i = 0; i < data.length; i++) {
                 data[i].yaxis = tempYaxisNums[i];
+                data[i].data = tempAllData[i];
             }
             this.updateTimelineCurtains();
         }

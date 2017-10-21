@@ -1,4 +1,5 @@
 import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { AlertController } from 'ionic-angular';
 import { LoadingService } from '../../services/loading/loading.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { Observable } from 'rxjs/Observable';
@@ -69,13 +70,16 @@ export class LoggerComponent {
     private subscriptionRef;
     private profileToken: string = '^^profile^^';
 
+    private filesInStorage: any = {};
+
     constructor(
         private devicemanagerService: DeviceManagerService,
         private loadingService: LoadingService,
         private toastService: ToastService,
         private utilityService: UtilityService,
         public loggerPlotService: LoggerPlotService,
-        private exportService: ExportService
+        private exportService: ExportService,
+        private alertCtrl: AlertController
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         let loading = this.loadingService.displayLoading('Loading device info...');
@@ -84,6 +88,9 @@ export class LoggerComponent {
             .then((data) => {
                 console.log(data);
                 loading.dismiss();
+                if (this.running) {
+                    this.continueStream();
+                }
             })
             .catch((e) => {
                 console.log(e);
@@ -176,8 +183,19 @@ export class LoggerComponent {
                         this.modeSelect('stream');
                         return new Promise((resolve, reject) => { resolve(); });
                     }
-                    else {
-                        return this.listDir(this.storageLocations[0], '/');
+                    else {                        
+                        this.storageLocations.reduce((accumulator, currentVal, currentIndex) => {
+                            return accumulator
+                                .then((data) => {
+                                    return this.listDir(currentVal, '/');
+                                })
+                                .catch((e) => {
+                                    return this.listDir(currentVal, '/');
+                                });
+                        }, Promise.resolve())
+                            .catch((e) => {
+                                console.log(e);
+                            });
                     }
                 })
                 .then((data) => {
@@ -207,6 +225,63 @@ export class LoggerComponent {
                     console.log(e);
                     reject(e);
                 });
+        });
+    }
+
+    continueStream() {
+        if (this.selectedMode === 'stream' && this.running) {
+            //Device was in stream mode and should be ready to stream
+            this.analogChansToRead = [];
+            for (let i = 0; i < this.analogChans.length; i++) {
+                if (this.analogChans[i].state === 'running') {
+                    this.analogChansToRead.push(i + 1);
+                    this.analogChans[i].count = -1000;
+                    this.analogChans[i].startIndex = -1;
+                }
+            }
+            for (let digChan of this.digitalChans) {
+                if (digChan.state === 'running') {
+                    //this.digitalChansToRead.push(i + 1);
+                    //digChan.count = -1000;
+                    //digChan.startIndex = -1;
+                }
+            }
+            //TODO: need to set up the startindex and count
+
+            this.readLiveData();
+        }
+    }
+
+    fileExists(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.alertWrapper('File Exists', 'Your log file already exists. Would you like to overwrite or cancel?', 
+                [{
+                    text: 'Cancel',
+                    handler: (data) => {
+                        reject();
+                    }
+                },
+                {
+                    text: 'Overwrite',
+                    handler: (data) => {
+                        resolve();
+                    }
+                }]
+            );
+        });
+    }
+
+    private alertWrapper(title: string, subTitle: string, buttons?: { text: string, handler: (data) => void }[]): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let alert = this.alertCtrl.create({
+                title: title,
+                subTitle: subTitle,
+                buttons: buttons == undefined ? ['OK'] : <any>buttons
+            });
+            alert.onWillDismiss((data) => {
+                resolve(data);
+            });
+            alert.present();
         });
     }
 
@@ -725,6 +800,7 @@ export class LoggerComponent {
         let loading = this.loadingService.displayLoading('Starting data logging...');
 
         let foundChansMap = {};
+        let existingFileFound: boolean = false;
         for (let i = 0; i < this.analogChans.length; i++) {
             if ((this.analogChans[i].storageLocation !== 'ram' && this.analogChans[i].uri == '') || (this.analogChans[i].state !== 'idle' && this.analogChans[i].state !== 'stopped') || foundChansMap[this.analogChans[i].uri] != undefined) {
                 loading.dismiss();
@@ -734,8 +810,31 @@ export class LoggerComponent {
             if (this.analogChans[i].storageLocation !== 'ram') {
                 foundChansMap[this.analogChans[i].uri] = 1;
             }
+            if (this.selectedMode === 'stream') { continue; }
+            if (this.filesInStorage[this.analogChans[i].storageLocation].indexOf(this.analogChans[i].uri) !== -1) {
+                //File already exists on device display alert
+                existingFileFound = true;
+            }
+            else {
+                this.filesInStorage[this.analogChans[i].storageLocation].push(this.analogChans[i].uri);
+            }
         }
 
+        if (existingFileFound) {
+            loading.dismiss();
+            this.fileExists()
+                .then((data) => {
+                    let loading = this.loadingService.displayLoading('Starting data logging...');
+                    this.setParametersAndRun(loading);
+                })
+                .catch((e) => { });
+        }
+        else {
+            this.setParametersAndRun(loading);
+        }        
+    }
+
+    private setParametersAndRun(loading) {
         let analogChanArray = [];
         let digitalChanArray = [];
         for (let i = 0; i < this.analogChans.length; i++) {
@@ -795,6 +894,10 @@ export class LoggerComponent {
             .catch((e) => {
                 console.log('error reading live data');
                 console.log(e);
+                if (e === 'corrupt transfer') {
+                    this.readLiveData();
+                    return;
+                }
                 if (e.message && e.message === 'Could not keep up with device') {
                     this.toastService.createToast('loggerCouldNotKeepUp', false, undefined, 10000);
                     this.stop('analog', this.analogChansToRead)
@@ -1091,7 +1194,7 @@ export class LoggerComponent {
                 return accumulator.flatMap((data) => {
                     if (currentIndex > 0) {
                         let chanObj = instrument === 'analog' ? this.analogChans[currentIndex - 1] : this.digitalChans[currentIndex - 1];
-                        if (chanObj.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
+                        if (chanObj.startIndex >= 0 && chanObj.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
                             return Observable.create((observer) => { observer.error({
                                 message: 'Could not keep up with device',
                                 data: data
@@ -1106,7 +1209,7 @@ export class LoggerComponent {
                 .subscribe(
                     (data) => {
                         let chanObj = instrument === 'analog' ? this.analogChans[chans[chans.length - 1] - 1] : this.digitalChans[chans[chans.length - 1] - 1];
-                        if (chanObj.startIndex !== data.instruments[instrument][chans[chans.length - 1]].startIndex) {
+                        if (chanObj.startIndex >= 0 && chanObj.startIndex !== data.instruments[instrument][chans[chans.length - 1]].startIndex) {
                             reject({
                                 message: 'Could not keep up with device',
                                 data: data
@@ -1145,7 +1248,9 @@ export class LoggerComponent {
     private updateValuesFromRead(data, instrument: 'analog' | 'digital', chans: number[], index: number) {
         if (data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[index]].statusCode === 0) {
             if (instrument === 'analog') {
+                this.analogChans[chans[index] - 1].startIndex = data.instruments[instrument][chans[index]].startIndex;
                 this.analogChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount;
+                this.analogChans[chans[index] - 1].count = 0;
                 if (this.analogChans[chans[index] - 1].maxSampleCount > 0 && this.analogChans[chans[index] - 1].startIndex >= this.analogChans[chans[index] - 1].maxSampleCount) {
                     this.analogChansToRead.splice(this.analogChansToRead.indexOf(chans[index]), 1);
                     if (this.analogChansToRead.length < 1) {
@@ -1159,10 +1264,6 @@ export class LoggerComponent {
                     this.running = false;
                 }
             }
-            /* if (data.instruments[instrument][chans[index]].state !== 'running') {
-                console.log('no longer running!');
-                this.running = false;
-            } */
         }
     }
 
@@ -1204,6 +1305,8 @@ export class LoggerComponent {
         return new Promise((resolve, reject) => {
             this.activeDevice.file.listDir(location, path).subscribe(
                 (data) => {
+                    this.filesInStorage[location] = data.file[0].files;
+                    console.log(this.filesInStorage);
                     resolve(data);
                 },
                 (err) => {

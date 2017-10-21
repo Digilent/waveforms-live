@@ -44,6 +44,9 @@ export class LoggerTimelineComponent {
             series: {
                 lines: {
                     show: true
+                },
+                downsample: {
+                    threshold: 1000
                 }
             },
             timelineChart: {
