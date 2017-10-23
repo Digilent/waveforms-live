@@ -1,8 +1,4 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { ModalController, PopoverController } from 'ionic-angular';
-
-//Components
-import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -40,8 +36,6 @@ export class FgenComponent {
     public activeDevice: DeviceService;
     public supportedSignalTypes: string[];
     public attemptingPowerOff: boolean = false;
-    public modalCtrl: ModalController;
-    public popoverCtrl: PopoverController;
     public toastService: ToastService;
     public showSettings: boolean = true;
     public showChanSettings: boolean[] = [true];
@@ -51,8 +45,6 @@ export class FgenComponent {
 
     constructor(
         _deviceManagerService: DeviceManagerService,
-        _modalCtrl: ModalController,
-        _popoverCtrl: PopoverController,
         _toastService: ToastService,
         _settingsService: SettingsService,
         _tooltipService: TooltipService,
@@ -60,8 +52,6 @@ export class FgenComponent {
     ) {
         this.settingsService = _settingsService;
         this.tooltipService = _tooltipService;
-        this.modalCtrl = _modalCtrl;
-        this.popoverCtrl = _popoverCtrl;
         this.toastService = _toastService;
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
@@ -444,18 +434,6 @@ export class FgenComponent {
             () => {
 
             });
-    }
-
-    openPopover(event) {
-        let genPopover = this.popoverCtrl.create(GenPopover, {
-            dataArray: this.supportedSignalTypes
-        });
-        genPopover.present({
-            ev: event
-        });
-        genPopover.onWillDismiss(data => {
-            this.toggleWave(data.option);
-        });
     }
 
     //Determines if active wave type is a square wave

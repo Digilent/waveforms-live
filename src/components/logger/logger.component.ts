@@ -67,6 +67,7 @@ export class LoggerComponent {
     private dataContainers: DataContainer[] = [];
     public viewMoved: boolean = false;
     private analogChansToRead: number[] = [];
+    private digitalChansToRead: number[] = [];
     private subscriptionRef;
     private profileToken: string = '^^profile^^';
 
@@ -239,11 +240,11 @@ export class LoggerComponent {
                     this.analogChans[i].startIndex = -1;
                 }
             }
-            for (let digChan of this.digitalChans) {
-                if (digChan.state === 'running') {
-                    //this.digitalChansToRead.push(i + 1);
-                    //digChan.count = -1000;
-                    //digChan.startIndex = -1;
+            for (let i = 0; i < this.digitalChans.length; i++) {
+                if (this.digitalChans[i].state === 'running') {
+                    this.digitalChansToRead.push(i + 1);
+                    this.digitalChans[i].count = -1000;
+                    this.digitalChans[i].startIndex = -1;
                 }
             }
             //TODO: need to set up the startindex and count
@@ -796,16 +797,14 @@ export class LoggerComponent {
         this.loggerPlotService.setData(this.dataContainers, false);
     }
 
-    startLogger() {
-        let loading = this.loadingService.displayLoading('Starting data logging...');
-
-        let foundChansMap = {};
+    private existingFileFoundAndValidate(loading): { reason: number } {
         let existingFileFound: boolean = false;
+        let foundChansMap = {};
         for (let i = 0; i < this.analogChans.length; i++) {
             if ((this.analogChans[i].storageLocation !== 'ram' && this.analogChans[i].uri == '') || (this.analogChans[i].state !== 'idle' && this.analogChans[i].state !== 'stopped') || foundChansMap[this.analogChans[i].uri] != undefined) {
                 loading.dismiss();
                 this.toastService.createToast('loggerInvalidParams', true, undefined, 8000);
-                return;
+                return { reason: 1 };
             }
             if (this.analogChans[i].storageLocation !== 'ram') {
                 foundChansMap[this.analogChans[i].uri] = 1;
@@ -816,22 +815,38 @@ export class LoggerComponent {
                 existingFileFound = true;
             }
             else {
+                //TODO fix this so that new uris are only pushed after all channels are processed. Could create a new obj and then deep merge
                 this.filesInStorage[this.analogChans[i].storageLocation].push(this.analogChans[i].uri);
             }
         }
+        return (existingFileFound ? { reason: 2 } : { reason: 0 });
+    }
 
-        if (existingFileFound) {
-            loading.dismiss();
-            this.fileExists()
-                .then((data) => {
-                    let loading = this.loadingService.displayLoading('Starting data logging...');
+    startLogger() {
+        let loading = this.loadingService.displayLoading('Starting data logging...');
+
+        this.getCurrentState('analog', this.analogChansToRead)
+            .then((data) => {
+                return this.getCurrentState('digital', this.digitalChansToRead);
+            })
+            .then((data) => {
+                let returnData: { reason: number } = this.existingFileFoundAndValidate(loading);
+                if (returnData.reason === 2) {
+                    loading.dismiss();
+                    this.fileExists()
+                        .then((data) => {
+                            let loading = this.loadingService.displayLoading('Starting data logging...');
+                            this.setParametersAndRun(loading);
+                        })
+                        .catch((e) => { });
+                }
+                else if (returnData.reason === 0) {
                     this.setParametersAndRun(loading);
-                })
-                .catch((e) => { });
-        }
-        else {
-            this.setParametersAndRun(loading);
-        }        
+                }  
+            })
+            .catch((e) => {
+                console.log(e);
+            });              
     }
 
     private setParametersAndRun(loading) {
@@ -871,12 +886,55 @@ export class LoggerComponent {
                 if (this.selectedMode !== 'log') {
                     this.readLiveData();
                 }
+                else {
+                    this.getLiveState();
+                }
             })
             .catch((e) => {
                 console.log(e);
                 //TODO: display error
                 loading.dismiss();
             });
+    }
+
+    private getLiveState() {
+        this.getCurrentState('analog', this.analogChansToRead.slice())
+            .then((data) => {
+                this.parseGetLiveStatePacket('analog', data);
+                if (this.running) {
+                    setTimeout(() => {
+                        this.getLiveState();
+                    }, 1000);
+                }
+            })
+            .catch((e) => {
+                if (this.running) {
+                    setTimeout(() => {
+                        this.getLiveState();
+                    }, 1000);
+                }
+            });
+    }
+
+    private parseGetLiveStatePacket(instrument: 'digital' | 'analog', data) {
+        for (let channel in data.log[instrument]) {
+            if (data.log[instrument][channel][0].stopReason === 'OVERFLOW') {
+                console.log('OVERFLOW');
+                this.toastService.createToast('loggerStorageCouldNotKeepUp', true, undefined, 8000);
+                // Set running to false beforehand so that another getCurrentState does not occur
+                this.running = false;
+                this.stopLogger();
+            }
+            else if (data.log[instrument][channel][0].state === 'stopped') {
+                if (instrument === 'analog') {
+                    this.analogChansToRead.splice(this.analogChansToRead.indexOf(parseInt(channel)), 1);
+                }
+                if (this.analogChansToRead.length < 1 && this.digitalChansToRead.length < 1) {
+                    this.toastService.createToast('loggerLogDone');
+                    this.running = false;
+                }
+            }
+        }
     }
 
     private readLiveData() {
@@ -1182,9 +1240,9 @@ export class LoggerComponent {
                     return;
                 }
                 //TODO to use the digitalChansToRead instead of all chans
-                for (let i = 0; i < this.digitalChans.length; i++) {
-                    startIndices.push(this.digitalChans[i].startIndex);
-                    counts.push(this.digitalChans[i].count);
+                for (let i = 0; i < this.digitalChansToRead.length; i++) {
+                    startIndices.push(this.digitalChans[this.digitalChansToRead[i] - 1].startIndex);
+                    counts.push(this.digitalChans[this.digitalChansToRead[i] - 1].count);
                 }
             }
             
@@ -1223,7 +1281,14 @@ export class LoggerComponent {
                     (err) => {
                         if (err.payload != undefined) {
                             let jsonString = String.fromCharCode.apply(null, new Uint8Array(err.payload));
-                            let parsedData = JSON.parse(jsonString);
+                            let parsedData;
+                            try {
+                                parsedData = JSON.parse(jsonString);
+                            }
+                            catch(e) {
+                                reject(e);
+                                return;
+                            }
                             //Check if data is not ready
                             if (parsedData && parsedData.log && parsedData.log[instrument]) {
                                 for (let chan in parsedData.log[instrument]) {
@@ -1324,6 +1389,10 @@ export class LoggerComponent {
                 return;
             }
             if (instrument === 'digital' && this.digitalChans.length < 1) {
+                resolve();
+                return;
+            }
+            if (chans.length < 1) {
                 resolve();
                 return;
             }

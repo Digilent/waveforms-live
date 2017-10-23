@@ -119,6 +119,12 @@ var waveformsLiveDictionary = (function() {
         loggerProfileLoadErr: {
             english: 'Error Reading Profile. Please Try Again'
         },
+        loggerStorageCouldNotKeepUp: {
+            english: 'Error Occurred Logging Data. Points Were Missed. If Error Persists, Reduce Sample Rate'
+        },
+        loggerLogDone: {
+            english: 'Logging Completed Successfully'
+        },
 
         //File
         fileDeleteErr: {
