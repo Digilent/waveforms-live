@@ -102,6 +102,7 @@ export class LoggerComponent {
 
     ngOnDestroy() {
         this.subscriptionRef.unsubscribe();
+        this.running = false;
     }
 
     private init() {
@@ -230,27 +231,25 @@ export class LoggerComponent {
     }
 
     continueStream() {
-        if (this.selectedMode === 'stream' && this.running) {
-            //Device was in stream mode and should be ready to stream
-            this.analogChansToRead = [];
-            for (let i = 0; i < this.analogChans.length; i++) {
-                if (this.analogChans[i].state === 'running') {
-                    this.analogChansToRead.push(i + 1);
-                    this.analogChans[i].count = -1000;
-                    this.analogChans[i].startIndex = -1;
-                }
+        if (!this.running) { return; }
+        //Device was in stream mode and should be ready to stream
+        this.analogChansToRead = [];
+        for (let i = 0; i < this.analogChans.length; i++) {
+            if (this.analogChans[i].state === 'running') {
+                this.analogChansToRead.push(i + 1);
+                this.analogChans[i].count = -1000;
+                this.analogChans[i].startIndex = -1;
             }
-            for (let i = 0; i < this.digitalChans.length; i++) {
-                if (this.digitalChans[i].state === 'running') {
-                    this.digitalChansToRead.push(i + 1);
-                    this.digitalChans[i].count = -1000;
-                    this.digitalChans[i].startIndex = -1;
-                }
-            }
-            //TODO: need to set up the startindex and count
-
-            this.readLiveData();
         }
+        for (let i = 0; i < this.digitalChans.length; i++) {
+            if (this.digitalChans[i].state === 'running') {
+                this.digitalChansToRead.push(i + 1);
+                this.digitalChans[i].count = -1000;
+                this.digitalChans[i].startIndex = -1;
+            }
+        }
+
+        this.readLiveData();
     }
 
     fileExists(): Promise<any> {
