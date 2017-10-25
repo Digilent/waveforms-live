@@ -323,12 +323,80 @@ export class LoggerComponent {
         }, false); */
     }
 
+    mousewheel(event, instrument: 'analog' | 'digital', axisNum: number, input: 'offset' | 'sampleFreq' | 'samples' | 'vpd') {
+        if (input === 'offset') {
+            this.buttonChangeOffset(axisNum, event.deltaY < 0 ? 'increment' : 'decrement');
+            return;
+        }
+        if (event.deltaY < 0) {
+            input === 'vpd' ? this.incrementVpd(axisNum) : this.incrementFrequency(instrument, axisNum, input);
+        }
+        else {
+            input === 'vpd' ? this.decrementVpd(axisNum) : this.decrementFrequency(instrument, axisNum, input);
+        }
+    }
+
     incrementVpd(axisNum: number) {
         this.loggerPlotService.setValPerDivAndUpdate('y', axisNum + 1, this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[axisNum] + 1]);
     }
 
     decrementVpd(axisNum: number) {
         this.loggerPlotService.setValPerDivAndUpdate('y', axisNum + 1, this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[axisNum] - 1]);
+    }
+
+    buttonChangeOffset(axisNum: number, type: 'increment' | 'decrement') {
+        this.analogChans[axisNum].vOffset += type === 'increment' ? 0.1 : -0.1;
+    }
+
+    incrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+        let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
+        let valString = type === 'sampleFreq' ? axisObj.sampleFreq.toString() : axisObj.maxSampleCount.toString();
+        let leadingNum = parseInt(valString.charAt(0), 10);
+        let numberMag = valString.split('.')[0].length - 1;
+        leadingNum++;
+        if (leadingNum === 10) {
+            leadingNum = 1;
+            numberMag++;
+        }
+        let newFreq = leadingNum * Math.pow(10, numberMag);
+        //TODO get min and max from logger enum when added to spec
+        if (newFreq < 0.000001 / 1000) {
+            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
+        }
+        else if (newFreq > 50000000000 / 1000) {
+            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
+        }
+        if (type === 'sampleFreq') {
+            axisObj.sampleFreq = newFreq;
+        }
+        else if (type === 'samples') {
+            axisObj.maxSampleCount = newFreq;
+        }
+    }
+
+    decrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+        let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
+        let valString = type === 'sampleFreq' ? axisObj.sampleFreq.toString() : axisObj.maxSampleCount.toString();
+        let leadingNum = parseInt(valString.charAt(0), 10);
+        let numberMag = valString.split('.')[0].length - 1;
+        leadingNum--;
+        if (leadingNum === 0) {
+            leadingNum = 9;
+            numberMag--;
+        }
+        let newFreq = leadingNum * Math.pow(10, numberMag);
+        if (newFreq < 0.000001 / 1000) {
+            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
+        }
+        else if (newFreq > 50000000000 / 1000) {
+            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
+        }
+        if (type === 'sampleFreq') {
+            axisObj.sampleFreq = newFreq;
+        }
+        else if (type === 'samples') {
+            axisObj.maxSampleCount = newFreq;
+        }
     }
 
     setViewToEdge() {
@@ -1089,10 +1157,30 @@ export class LoggerComponent {
             }
         });
         activeChan.uri = respObj.uri;
+        if (activeChan.uri.indexOf('.dlog') !== -1) {
+            //Remove .dlog from end of file
+            activeChan.uri = activeChan.uri.slice(0, activeChan.uri.indexOf('.dlog'));
+        }
         activeChan.state = respObj.state;
         if (activeChan.state === 'running') {
             this.running = true;
         }
+    }
+
+    private calculateGainFromWindow(channelNum: number): number {
+        //TODO calculate from logger enumeration once it is added to spec
+        let range = this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[channelNum]] * 10;
+        let j = 0;
+        while (range * this.activeDevice.instruments.osc.chans[channelNum].gains[j] > this.activeDevice.instruments.osc.chans[channelNum].adcVpp / 1000 &&
+            j < this.activeDevice.instruments.osc.chans[channelNum].gains.length
+        ) {
+            j++;
+        }
+
+        if (j > this.activeDevice.instruments.osc.chans[channelNum].gains.length - 1) {
+            j--;
+        }
+        return this.activeDevice.instruments.osc.chans[channelNum].gains[j];
     }
 
     setParameters(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
@@ -1114,13 +1202,16 @@ export class LoggerComponent {
                         if (analogParamArray[j] === 'uri') {
                             paramObj[analogParamArray[j]][newIndex - 1] += '.dlog';
                         }
+                        else if (analogParamArray[j] === 'gain') {
+                            paramObj[analogParamArray[j]][newIndex - 1] = this.calculateGainFromWindow(chans[i] - 1);
+                        }
                     }
                 }
                 console.log(paramObj);
                 observable = this.activeDevice.instruments.logger.analog.setParameters(
                     chans, 
                     paramObj[analogParamArray[0]], 
-                    [1, 1],
+                    paramObj[analogParamArray[1]],
                     paramObj[analogParamArray[2]], 
                     paramObj[analogParamArray[3]], 
                     paramObj[analogParamArray[4]], 

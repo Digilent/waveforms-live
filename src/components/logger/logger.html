@@ -105,18 +105,19 @@
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
-                            <button ion-button class="img-button disable-hover">
-                                <img class="custom-image-button" src="assets/img/zoom-out.svg">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', i, 'sampleFreq')">
+                                <img class="custom-image-button" src="assets/img/remove.svg">
                             </button>
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" />
+                        <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" 
+                            formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" (mousewheel)="mousewheel($event, 'analog', i, 'sampleFreq')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
-                            <button ion-button class="img-button disable-hover">
-                                <img class="custom-image-button" src="assets/img/zoom-in.svg">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', i, 'sampleFreq')">
+                                <img class="custom-image-button" src="assets/img/add.svg">
                             </button>
                         </div>
                     </ion-col>
@@ -154,18 +155,19 @@
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
-                            <button ion-button class="img-button disable-hover">
-                                <img class="custom-image-button" src="assets/img/zoom-out.svg">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', i, 'samples')">
+                                <img class="custom-image-button" src="assets/img/remove.svg">
                             </button>
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'samples', i)" />
+                        <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" 
+                            formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'samples', i)" (mousewheel)="mousewheel($event, 'analog', i, 'samples')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
-                            <button ion-button class="img-button disable-hover">
-                                <img class="custom-image-button" src="assets/img/zoom-in.svg">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', i, 'samples')">
+                                <img class="custom-image-button" src="assets/img/add.svg">
                             </button>
                         </div>
                     </ion-col>
@@ -183,7 +185,8 @@
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input highlight-input" step="any" [ngModel]="loggerPlotService.vpdArray[loggerPlotService.vpdIndices[i]] | unitFormat:'V/'" formatInput (valChange)="yAxisValChange($event, i)" />
+                        <input class="custom-input highlight-input" step="any" [ngModel]="loggerPlotService.vpdArray[loggerPlotService.vpdIndices[i]] | unitFormat:'V/'" 
+                            formatInput (valChange)="yAxisValChange($event, i)" (mousewheel)="mousewheel($event, 'analog', i, 'vpd')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
@@ -200,18 +203,19 @@
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
-                            <button ion-button class="img-button disable-hover">
-                                <img class="custom-image-button" src="assets/img/zoom-out.svg">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="buttonChangeOffset(i, 'decrement')">
+                                <img class="custom-image-button" src="assets/img/remove.svg">
                             </button>
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'offset', i)" />
+                        <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" 
+                            formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'offset', i)" (mousewheel)="mousewheel($event, 'analog', i, 'offset')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
-                            <button ion-button class="img-button disable-hover">
-                                <img class="custom-image-button" src="assets/img/zoom-in.svg">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="buttonChangeOffset(i, 'increment')">
+                                <img class="custom-image-button" src="assets/img/add.svg">
                             </button>
                         </div>
                     </ion-col>
@@ -265,7 +269,7 @@
                     {{series.storageLocation === 'cloud' ? 'Topic' : 'File Name'}}
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <input class="custom-input" step="any" [(ngModel)]="series.uri" placeholder="logData1.bin" />
+                    <input class="custom-input" step="any" [(ngModel)]="series.uri" placeholder="logData1" />
                 </ion-col>
             </ion-row>
 

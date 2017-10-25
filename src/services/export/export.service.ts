@@ -56,7 +56,7 @@ export class ExportService {
         }
     }
 
-    exportGenericCsv(fileName: string, dataContainer: DataContainer[], seriesToDraw: number[], labels: CsvLabel[]) { 
+    exportGenericCsv(fileName: string, dataContainer: DataContainer[], seriesToDraw: number[], labels: CsvLabel[], waitTime: number = 0) { 
         fileName = fileName + '.csv';
         let csvContent = 'data:text/csv;charset=utf-8,';
         let maxLength = dataContainer[seriesToDraw[0]].data.length;
@@ -85,7 +85,14 @@ export class ExportService {
         link.setAttribute("href", encodedUri);
         link.setAttribute("download", fileName);
         document.body.appendChild(link);
-        link.click();
+        if (waitTime === 0) {
+            link.click();
+        }
+        else {
+            setTimeout(() => {
+                link.click();
+            }, waitTime);
+        }
     }
 
     exportBinary(fileName: string, arrayBuffer: ArrayBuffer, waitTime?: number, addExtension?: boolean) {

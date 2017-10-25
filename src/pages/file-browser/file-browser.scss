@@ -40,6 +40,12 @@
     border-left: solid #CCCCCC 1px;
 }
 
+.file-browser-container .hidden-file-input
+{
+     opacity: 0;
+     max-height: 0px;
+}
+
 .file-browser-container .mid-line-container
 {
     max-width: 8px;

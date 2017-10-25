@@ -34,6 +34,10 @@
                     </div>
                 </div>
         </div>
+
+        <div>
+            <button ion-button class="text-button-side disable-hover" (tap)="openFileInput()">Convert Local File To CSV</button>
+        </div>
     </div>
 
     <ion-row class="navigation-button-container">
@@ -44,5 +48,7 @@
             </button>
         </ion-col>
     </ion-row>
+
+    <input class="hidden-file-input" type="file" id="fileBrowserSelect" name="fileBrowserSelect" (change)="fileChange($event)" />
     
 </ion-content>
