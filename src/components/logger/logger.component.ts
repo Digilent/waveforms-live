@@ -185,19 +185,26 @@ export class LoggerComponent {
                         this.modeSelect('stream');
                         return new Promise((resolve, reject) => { resolve(); });
                     }
-                    else {                        
-                        this.storageLocations.reduce((accumulator, currentVal, currentIndex) => {
-                            return accumulator
+                    else {    
+                        return new Promise((resolve, reject) => {               
+                            this.storageLocations.reduce((accumulator, currentVal, currentIndex) => {
+                                return accumulator
+                                    .then((data) => {
+                                        return this.listDir(currentVal, '/');
+                                    })
+                                    .catch((e) => {
+                                        return this.listDir(currentVal, '/');
+                                    });
+                            }, Promise.resolve())
                                 .then((data) => {
-                                    return this.listDir(currentVal, '/');
+                                    console.log('DONE READING STORAGE LOCATIONS');
+                                    resolve();
                                 })
                                 .catch((e) => {
-                                    return this.listDir(currentVal, '/');
+                                    console.log(e);
+                                    resolve();
                                 });
-                        }, Promise.resolve())
-                            .catch((e) => {
-                                console.log(e);
-                            });
+                        });     
                     }
                 })
                 .then((data) => {
@@ -809,13 +816,13 @@ export class LoggerComponent {
                 foundChansMap[this.analogChans[i].uri] = 1;
             }
             if (this.selectedMode === 'stream') { continue; }
-            if (this.filesInStorage[this.analogChans[i].storageLocation].indexOf(this.analogChans[i].uri) !== -1) {
+            if (this.filesInStorage[this.analogChans[i].storageLocation].indexOf(this.analogChans[i].uri + '.dlog') !== -1) {
                 //File already exists on device display alert
                 existingFileFound = true;
             }
             else {
                 //TODO fix this so that new uris are only pushed after all channels are processed. Could create a new obj and then deep merge
-                this.filesInStorage[this.analogChans[i].storageLocation].push(this.analogChans[i].uri);
+                this.filesInStorage[this.analogChans[i].storageLocation].push(this.analogChans[i].uri + '.dlog');
             }
         }
         return (existingFileFound ? { reason: 2 } : { reason: 0 });
@@ -1103,7 +1110,10 @@ export class LoggerComponent {
                         if (paramObj[analogParamArray[j]] == undefined) {
                             paramObj[analogParamArray[j]] = [];
                         }
-                        paramObj[analogParamArray[j]].push(this.analogChans[chans[i] - 1][analogParamArray[j]]);
+                        let newIndex = paramObj[analogParamArray[j]].push(this.analogChans[chans[i] - 1][analogParamArray[j]]);
+                        if (analogParamArray[j] === 'uri') {
+                            paramObj[analogParamArray[j]][newIndex - 1] += '.dlog';
+                        }
                     }
                 }
                 console.log(paramObj);
