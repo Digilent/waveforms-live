@@ -912,7 +912,7 @@ export class LoggerComponent {
             }
             if (this.analogChans[i].state !== 'idle' && this.analogChans[i].state !== 'stopped') {
                 loading.dismiss();
-                this.toastService.createToast('loggerInvalidSate', true, undefined, 8000);
+                this.toastService.createToast('loggerInvalidState', true, undefined, 8000);
                 return { reason: 1 };
             }
 
@@ -942,9 +942,10 @@ export class LoggerComponent {
     startLogger() {
         let loading = this.loadingService.displayLoading('Starting data logging...');
 
-        this.getCurrentState('analog', this.analogChansToRead)
+        this.getCurrentState('analog', this.analogChanNumbers)
             .then((data) => {
-                return this.getCurrentState('digital', this.digitalChansToRead);
+                console.log(data);
+                return this.getCurrentState('digital', this.digitalChanNumbers);
             })
             .then((data) => {
                 let returnData: { reason: number } = this.existingFileFoundAndValidate(loading);

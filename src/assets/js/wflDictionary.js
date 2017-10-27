@@ -112,7 +112,7 @@ var waveformsLiveDictionary = (function() {
         loggerSaveFail: {
             english: 'Error Saving Logger Profile. Please Check Device Connection And Try Again'
         },
-        loggerInvalidSate: {
+        loggerInvalidState: {
             english: 'The Logger Is Currently Busy. Please Try Again'
         },
         loggerMatchingFileNames: {
