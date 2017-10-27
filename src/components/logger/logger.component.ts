@@ -67,8 +67,8 @@ export class LoggerComponent {
     private digitalChanNumbers: number[] = [];
     public overflowConditions: ('circular')[] = ['circular'];
     public modes: string[] = ['log', 'stream', 'both'];
-    public samples: ('continuous' | 'discrete')[] = ['continuous', 'discrete'];
-    public selectedSamples: 'continuous' | 'discrete' = this.samples[0];
+    public samples: ('continuous' | 'finite')[] = ['continuous', 'finite'];
+    public selectedSamples: 'continuous' | 'finite' = this.samples[0];
     public selectedMode: string = this.modes[0];
     public storageLocations: string[] = [];
     public loggingProfiles: string[] = ['New Profile'];
@@ -480,10 +480,10 @@ export class LoggerComponent {
         this.selectedMode = event;
     }
 
-    samplesSelect(event: 'discrete' | 'continuous', instrument: 'analog' | 'digital', channel: number) {
+    samplesSelect(event: 'finite' | 'continuous', instrument: 'analog' | 'digital', channel: number) {
         console.log(event);
         let chanObj = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
-        if (event === 'discrete') {
+        if (event === 'finite') {
             this.analogChans[channel].maxSampleCount = 1000;
         }
         else {
@@ -502,7 +502,7 @@ export class LoggerComponent {
                     storageLocation: this.analogChans[linkedChan].storageLocation,
                     overflow: this.analogChans[linkedChan].overflow,
                     linkChan: -1,
-                    samples: this.analogChans[linkedChan].maxSampleCount === -1 ? 'continuous' : 'discrete'
+                    samples: this.analogChans[linkedChan].maxSampleCount === -1 ? 'continuous' : 'finite'
                 });
             }
             this.analogChans[channel].linked = false;
@@ -530,7 +530,7 @@ export class LoggerComponent {
                 storageLocation: this.analogChans[channel].storageLocation,
                 overflow: this.analogChans[channel].overflow,
                 linkChan: linkChan,
-                samples: this.analogChans[channel].maxSampleCount === -1 ? 'continuous' : 'discrete'
+                samples: this.analogChans[channel].maxSampleCount === -1 ? 'continuous' : 'finite'
             });
         }
         else {
@@ -777,7 +777,7 @@ export class LoggerComponent {
                 if (loadedObj[instrument][channel].linked) {
                     dropdownChangeObj['linkChan'] = loadedObj[instrument][channel].linkedChan;
                 }
-                dropdownChangeObj['samples'] = loadedObj[instrument][channel].maxSampleCount === -1 ? 'continuous' : 'discrete';
+                dropdownChangeObj['samples'] = loadedObj[instrument][channel].maxSampleCount === -1 ? 'continuous' : 'finite';
                 this.setChannelDropdowns(parseInt(channel), dropdownChangeObj);
             }
         }
@@ -1218,7 +1218,7 @@ export class LoggerComponent {
         it = 0;
         this.samplesChildren.forEach((child) => {
             if (channelInternalIndex === it) {
-                let setting = activeChan.maxSampleCount === -1 ? 'continuous' : 'discrete';
+                let setting = activeChan.maxSampleCount === -1 ? 'continuous' : 'finite';
                 child._applyActiveSelection(setting);
             }
         });

@@ -179,7 +179,7 @@ export class FileBrowserPage {
     private displayBigFileWarning(fileSize: number): Promise<any> {
         return new Promise((resolve, reject) => {
             let estimatedTime = fileSize / this.assumedTransferRate;
-            this.alertWrapper('Slow File Transfer', 'Your log file is large and will take about ' + estimatedTime.toFixed(0) + ' seconds to transfer. Would you like to continue or cancel?', 
+            this.alertWrapper('Warning', 'The specified log file is expected to take ' + estimatedTime.toFixed(0) + ' seconds to transfer. Communication with the instrument will not be possible during the transfer.', 
                 [{
                     text: 'Cancel',
                     handler: (data) => {
@@ -270,10 +270,11 @@ export class FileBrowserPage {
     }
 
     selectFile(event, file: string, storageLocation: string) {
-        let dataArray = ['Delete', 'Download'];
+        let dataArray = ['Download', 'Delete'];
         let splitArray = file.split('.');
         if (splitArray[splitArray.length - 1] === 'dlog') {
-            dataArray.push('Convert To CSV');
+            dataArray.unshift('Download As CSV');
+            dataArray[1] += ' As Binary';
         }
         let popover = this.popoverCtrl.create(GenPopover, {
             dataArray: dataArray
@@ -290,10 +291,10 @@ export class FileBrowserPage {
                         console.log(e);
                     });
             }
-            else if (data.option === 'Download') {
+            else if (data.option === 'Download' || data.option === 'Download As Binary') {
                 this.downloadFile(storageLocation, file);
             }
-            else if (data.option === 'Convert To CSV') {
+            else if (data.option === 'Download As CSV') {
                 this.convertRemoteFileToCsv(storageLocation, file);
             }
         });
