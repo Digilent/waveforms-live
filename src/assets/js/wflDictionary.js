@@ -104,14 +104,22 @@ var waveformsLiveDictionary = (function() {
         bodeCalibrate: {
             english: 'Calibrate'
         },
+
+        //Logger
         loggerSaveSuccess: {
             english: 'Save Successful'
         },
         loggerSaveFail: {
             english: 'Error Saving Logger Profile. Please Check Device Connection And Try Again'
         },
-        loggerInvalidParams: {
-            english: 'At Least One Parameter Is Invalid. Please Try Again'
+        loggerInvalidSate: {
+            english: 'The Logger Is Currently Busy. Please Try Again'
+        },
+        loggerMatchingFileNames: {
+            english: 'The Current File Names Are Not Unique. All Channels Must Have Unique File Names'
+        },
+        loggerInvalidFileName: {
+            english: 'All Channels Must Be Assigned A File Name'
         },
         loggerCouldNotKeepUp: {
             english: 'Error Reading Device Data. Points Were Missed. If Logging And Streaming, Your Log Is Still Running But Data Will No Longer Be Displayed'
@@ -124,6 +132,9 @@ var waveformsLiveDictionary = (function() {
         },
         loggerLogDone: {
             english: 'Logging Completed Successfully'
+        },
+        loggerUnknownRunError: {
+            english: 'Error Starting Acquisition. Please Try Again'
         },
 
         //File

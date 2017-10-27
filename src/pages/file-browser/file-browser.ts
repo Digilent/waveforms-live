@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { ViewController, PopoverController } from 'ionic-angular';
+import { ViewController, PopoverController, AlertController } from 'ionic-angular';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { ToastService } from '../../services/toast/toast.service';
 import { ExportService } from '../../services/export/export.service';
+import { LoadingService } from '../../services/loading/loading.service';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
@@ -22,13 +23,16 @@ export class FileBrowserPage {
     public showFolder: any = {};
     public files: any = {};
     private fileSampleRate: number;
+    private assumedTransferRate: number = 100000; //100 kBytes per second
 
     constructor(
         private deviceManagerService: DeviceManagerService,
         private viewCtrl: ViewController,
         private popoverCtrl: PopoverController,
         private toastService: ToastService,
-        private exportService: ExportService
+        private exportService: ExportService,
+        private alertCtrl: AlertController,
+        private loadingService: LoadingService
     ) {
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
         this.getStorageLocations()
@@ -43,6 +47,20 @@ export class FileBrowserPage {
             .catch((e) => {
                 console.log(e);
             });
+    }
+
+    private alertWrapper(title: string, subTitle: string, buttons?: { text: string, handler: (data) => void }[]): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let alert = this.alertCtrl.create({
+                title: title,
+                subTitle: subTitle,
+                buttons: buttons == undefined ? ['OK'] : <any>buttons
+            });
+            alert.onWillDismiss((data) => {
+                resolve(data);
+            });
+            alert.present();
+        });
     }
 
     private listFiles(location: string): Promise<any> {
@@ -99,9 +117,9 @@ export class FileBrowserPage {
         });
     }
 
-    private readFile(storageLocation: string, file: string, filePosition: number = 0, length: number = -1): Promise<any> {
+    private readFile(storageLocation: string, file: string, filePosition: number = 0, length: number = -1, timeoutOverride?: number): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.activeDevice.file.read(storageLocation, file, filePosition, length).subscribe(
+            this.activeDevice.file.read(storageLocation, file, filePosition, length, timeoutOverride).subscribe(
                 (data) => {
                     resolve(data);
                 },
@@ -114,15 +132,23 @@ export class FileBrowserPage {
     }
 
     private downloadFile(storageLocation: string, file: string) {
-        this.readFile(storageLocation, file)
+        let loading;
+        this.checkFileAndConfirm(storageLocation, file)
+            .then((data) => {
+                loading = this.loadingService.displayLoading('Downloading file...');
+                return this.readFile(storageLocation, file, 0, -1, 600000);
+            })
             .then((data) => {
                 console.log(data);
                 let fileString = data.file;
                 let fileArrBuff: ArrayBuffer = this.createArrayBufferFromString(fileString);
                 this.exportService.exportBinary(file, fileArrBuff, 500, false);
+                loading.dismiss();
             })
             .catch((e) => {
                 console.log(e);
+                if (loading != undefined) loading.dismiss();
+                if (e === 'cancel') { return; }
                 this.toastService.createToast('fileReadErr', true, undefined, 5000);
             });
     }
@@ -134,6 +160,66 @@ export class FileBrowserPage {
             bufView[i] = source.charCodeAt(i);
         }
         return arrayBuffer;
+    }
+
+    private getFileSize(storageLocation: string, file: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.activeDevice.file.getFileSize(storageLocation, file).subscribe(
+                (data) => {
+                    resolve(data);
+                },
+                (err) => {
+                    reject(err);
+                },
+                () => { }
+            );
+        });
+    }
+
+    private displayBigFileWarning(fileSize: number): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let estimatedTime = fileSize / this.assumedTransferRate;
+            this.alertWrapper('Slow File Transfer', 'Your log file is large and will take about ' + estimatedTime.toFixed(0) + ' seconds to transfer. Would you like to continue or cancel?', 
+                [{
+                    text: 'Cancel',
+                    handler: (data) => {
+                        reject();
+                    }
+                },
+                {
+                    text: 'Continue',
+                    handler: (data) => {
+                        resolve();
+                    }
+                }]
+            );
+        });
+    }
+
+    private checkFileAndConfirm(storageLocation: string, file: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.getFileSize(storageLocation, file)
+                .then((data) => {
+                    //file size success
+                    console.log(data);
+                    if (data.file[0].actualFileSize >= 1000000) {
+                        return this.displayBigFileWarning(data.file[0].actualFileSize);
+                    }
+                    else {
+                        return Promise.resolve();
+                    }
+                })
+                .catch((e) => {
+                    //Get file size error
+                    reject('cancel');
+                })
+                .then((data) => {
+                    resolve();
+                })
+                .catch((e) => {
+                    reject('cancel');
+                });
+        });
     }
 
     getFiles(storageLocation: string) {
@@ -224,14 +310,14 @@ export class FileBrowserPage {
         if (this.isValidHeader(file)) {
             let trimmedArrBuff = file.slice(512);
             let binaryData = new Int16Array(trimmedArrBuff);
-            this.exportBinaryData(binaryData, fileName);
+            this.exportBinaryDataAsCsv(binaryData, fileName);
         }
         else {
             this.toastService.createToast('fileReadErr', true, undefined, 5000);
         }
     }
 
-    private exportBinaryData(binaryData: any, fileName: string) {
+    private exportBinaryDataAsCsv(binaryData: any, fileName: string) {
         let dataContainer: DataContainer = {
             data: [],
             yaxis: 1,
@@ -243,8 +329,8 @@ export class FileBrowserPage {
             }
         };
         for (let i = 0; i < binaryData.length; i++) {
-            let dt = 1 / (this.fileSampleRate / 1000000);
-            dataContainer.data.push([i * dt, binaryData[i]]);
+            let dt = 1 / (this.fileSampleRate);
+            dataContainer.data.push([i * dt, binaryData[i] / 1000]);
         }
         console.log(dataContainer);
         let splitArray = fileName.split('.');
@@ -258,38 +344,70 @@ export class FileBrowserPage {
     }
 
     private convertRemoteFileToCsv(storageLocation: string, file: string) {
+        let loading;
         this.verifyDigilentLogFile(storageLocation, file)
             .then((data) => {
                 console.log(data);
-                return this.readFile(storageLocation, file, 512, -1);
+                return this.checkFileAndConfirm(storageLocation, file);
+            })
+            .then((data) => {
+                console.log(data);
+                loading = this.loadingService.displayLoading('Downloading file and converting...');
+                return this.readFile(storageLocation, file, 512, -1, 600000);
             })
             .then((data) => {
                 console.log(data);
                 if (data.file == undefined) { throw 'Error getting file'; }
                 let arrayBuff: ArrayBuffer = this.createArrayBufferFromString(data.file);
                 let binaryData = new Int16Array(arrayBuff);
-                this.exportBinaryData(binaryData, file);
+                this.exportBinaryDataAsCsv(binaryData, file);
+                loading.dismiss();
             })
             .catch((e) => {
                 console.log(e);
+                if (loading != undefined) loading.dismiss();
+                if (e === 'cancel') { return; }
                 this.toastService.createToast('fileReadErr', true, undefined, 5000);
             });
     }
 
     private isValidHeader(fileHeader: ArrayBuffer): boolean {
+        /* 
+        struct _AHdr
+        {
+            const uint8_t   endian;             // 0 - little endian 1 - big endian
+            const uint8_t   cbSampleEntry;      // how many bytes per sample, OpenScope = 2
+            const uint16_t  cbHeader;           // how long is this header structure
+            const uint16_t  cbHeaderInFile;     // how much space is taken in the file for the header, sector aligned (512)
+            const uint16_t  format;             // General format of the header and potential data
+            const uint32_t  revision;           // specific header revision (within the general formate)
+            const uint64_t  voltageUnits;       // divide the voltage of each sample by this to get volts.
+            const uint64_t  sampleFreqUnits;    // divide uSPS by sampleFreqUnits to get samples per second
+                uint64_t  uSPS;               // sample rate in micro samples / second
+                uint64_t  iStart;             // what sample index is the first index in the file, usually 0
+            const uint64_t  delayUnits;         // divide psDelay by delayUnits to get the delay in seconds.
+                int64_t   psDelay;            // how many pico seconds a delay from the start of sampling until the first sample was taken, usually 0
+        } __attribute__((packed)) AHdr;
+        */
+
         let dataView = new DataView(fileHeader);
         let littleEndian = dataView.getUint8(0) === 0;
-        // FAT filesystem --> LITTLE ENDIAN
-        let sampleEntrySize = dataView.getUint8(1);
-        let headerUsedSize = dataView.getUint16(2, littleEndian);
+        //let sampleEntrySize = dataView.getUint8(1);
+        //let headerUsedSize = dataView.getUint16(2, littleEndian);
         let headerFullSize = dataView.getUint16(4, littleEndian);
         let headerFormat = dataView.getUint16(6, littleEndian);
         let headerVersion = dataView.getUint32(8, littleEndian);
-        // Rate cannot be calculated with two getUint32 and then bitshift because it will overflow for bigger numbers.
+
+        // Uint64 cannot be calculated with two getUint32 and then bitshift because it will overflow for bigger numbers.
         // Instead, multiply by 2^(±x) to shift left right by x respectively
-        let rate1 = dataView.getUint32(12, littleEndian);
-        let rate2 = dataView.getUint32(16, littleEndian);
-        this.fileSampleRate = littleEndian ? rate2 * Math.pow(2, 32) + rate1 : rate1 * Math.pow(2, 32) + rate2;
+        let sfUnits1 = dataView.getUint32(20, littleEndian);
+        let sfUnits2 = dataView.getUint32(24, littleEndian);
+        let actualSFUnits = littleEndian ? sfUnits2 * Math.pow(2, 32) + sfUnits1 : sfUnits1 * Math.pow(2, 32) + sfUnits2;
+
+        let rate1 = dataView.getUint32(28, littleEndian);
+        let rate2 = dataView.getUint32(32, littleEndian);
+        this.fileSampleRate = (littleEndian ? rate2 * Math.pow(2, 32) + rate1 : rate1 * Math.pow(2, 32) + rate2) / actualSFUnits;
+        console.log(this.fileSampleRate);
         return (headerVersion === 1 && headerFormat === 1 && headerFullSize === 512);
     }
 

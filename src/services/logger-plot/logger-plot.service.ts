@@ -191,8 +191,6 @@ export class LoggerPlotService {
     }
 
     private setNearestPerDivVal(axis: Axis, axisNum: number) {
-        let axisObj: AxisInfo = axis === 'x' ? this.xAxis : this.yAxis[axisNum - 1];
-        let axisIndexer = this.getAxisIndexer(axis, axisNum);
         let count = 0;
         if (axis === 'x') {
             while (this.tpdArray[count] < this.xAxis.base && count < this.tpdArray.length) {

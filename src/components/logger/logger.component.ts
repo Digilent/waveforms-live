@@ -46,7 +46,21 @@ export class LoggerComponent {
         state: 'idle',
         linked: false,
         linkedChan: -1
-    }
+    };
+    private defaultDigitalParams: DigitalLoggerParams = {
+        maxSampleCount: -1,
+        sampleFreq: 1000,
+        startDelay: 0,
+        overflow: 'circular',
+        storageLocation: 'ram',
+        uri: '',
+        startIndex: 0,
+        count: 0,
+        state: 'idle',
+        linked: false,
+        linkedChan: -1,
+        bitMask: 255 //TODO fix when digital channels exist
+    };
     public analogChans: AnalogLoggerParams[] = [];
     public digitalChans: DigitalLoggerParams[] = [];
     private analogChanNumbers: number[] = [];
@@ -62,6 +76,7 @@ export class LoggerComponent {
     private defaultProfileName: string = 'NewProfile';
     public profileNameScratch: string = this.defaultProfileName;
     public analogLinkOptions: string[][] = [];
+    public digitalLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
     public running: boolean = false;
     private dataContainers: DataContainer[] = [];
@@ -83,6 +98,7 @@ export class LoggerComponent {
         private alertCtrl: AlertController
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
+        console.log(this.activeDevice.instruments.logger);
         let loading = this.loadingService.displayLoading('Loading device info...');
         this.init();
         this.loadDeviceInfo()
@@ -115,7 +131,7 @@ export class LoggerComponent {
             (err) => {},
             () => { }
         );
-        for (let i = 0; i < 2/* this.activeDevice.instruments.logger.analog.numChans */; i++) {
+        for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
             this.analogChans.push(Object.assign({}, this.defaultAnalogParams));
             this.showAnalogChan.push(i === 0);
 
@@ -127,6 +143,20 @@ export class LoggerComponent {
                 }
             }
         }
+        for (let i = 0; i < this.activeDevice.instruments.logger.digital.numChans; i++) {
+            this.digitalChans.push(Object.assign({}, this.defaultDigitalParams));
+            this.showDigitalChan.push(i === 0);
+
+            this.digitalLinkOptions[i] = ['no'];
+            for (let j = 0; j < this.digitalLinkOptions.length; j++) {
+                if (i !== j) {
+                    this.digitalLinkOptions[j].push('Ch ' + (i + 1).toString());
+                    this.digitalLinkOptions[i].push('Ch ' + (j + 1).toString());
+                }
+            }
+        }
+
+
         for (let i = 0; i < this.analogChans.length; i++) {
             this.analogChanNumbers.push(i + 1);
             this.dataContainers.push({
@@ -359,18 +389,33 @@ export class LoggerComponent {
             numberMag++;
         }
         let newFreq = leadingNum * Math.pow(10, numberMag);
-        //TODO get min and max from logger enum when added to spec
-        if (newFreq < 0.000001 / 1000) {
-            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
-        }
-        else if (newFreq > 50000000000 / 1000) {
-            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
-        }
+        this.validateAndApply(newFreq, instrument, axisNum, type);
+    }
+
+    private validateAndApply(newVal: number, instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+        let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
         if (type === 'sampleFreq') {
-            axisObj.sampleFreq = newFreq;
+            let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
+            let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
+            let maxFreq = chanObj.sampleFreqMax * chanObj.sampleFreqUnits;
+            if (newVal < minFreq) {
+                newVal = minFreq;
+            }
+            else if (newVal > maxFreq) {
+                newVal = maxFreq;
+            }
+            axisObj.sampleFreq = newVal;
         }
         else if (type === 'samples') {
-            axisObj.maxSampleCount = newFreq;
+            let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
+            let maxSampleSize = axisObj.storageLocation === 'ram' ? chanObj.bufferSizeMax : 2000000000; //2gb fat
+            if (newVal < 1) {
+                newVal = 1;
+            }
+            else if (newVal > maxSampleSize) {
+                newVal = maxSampleSize;
+            }
+            axisObj.maxSampleCount = newVal;
         }
     }
 
@@ -385,18 +430,7 @@ export class LoggerComponent {
             numberMag--;
         }
         let newFreq = leadingNum * Math.pow(10, numberMag);
-        if (newFreq < 0.000001 / 1000) {
-            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
-        }
-        else if (newFreq > 50000000000 / 1000) {
-            newFreq = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
-        }
-        if (type === 'sampleFreq') {
-            axisObj.sampleFreq = newFreq;
-        }
-        else if (type === 'samples') {
-            axisObj.maxSampleCount = newFreq;
-        }
+        this.validateAndApply(newFreq, instrument, axisNum, type);
     }
 
     setViewToEdge() {
@@ -591,7 +625,6 @@ export class LoggerComponent {
         this.selectedLogProfile = event;
         if (event === this.loggingProfiles[0]) { return; }
         if (this.profileObjectMap[event] == undefined) {
-            //TODO present error message
             this.toastService.createToast('loggerProfileLoadErr', true, undefined, 5000);
             console.log('profile not found in profile map');
             this.selectedLogProfile = currentLogProfile;
@@ -630,8 +663,6 @@ export class LoggerComponent {
 
     loadProfilesFromDevice(): Promise<any> {
         return new Promise((resolve, reject) => {
-            /* TODO: Make sure /profiles exists and then list the files in the directory to get the names */
-            let profileName = 'test.json';
             this.listDir('flash', '/')
                 .then((data) => {
                     console.log(data);
@@ -848,7 +879,6 @@ export class LoggerComponent {
     }
 
     private parseReadResponseAndDraw(readResponse) {
-        let startAxis = 1;
         for (let instrument in readResponse.instruments) {
             for (let channel in readResponse.instruments[instrument]) {
                 let formattedData: number[][] = [];
@@ -875,11 +905,24 @@ export class LoggerComponent {
         let existingFileFound: boolean = false;
         let foundChansMap = {};
         for (let i = 0; i < this.analogChans.length; i++) {
-            if ((this.analogChans[i].storageLocation !== 'ram' && this.analogChans[i].uri == '') || (this.analogChans[i].state !== 'idle' && this.analogChans[i].state !== 'stopped') || foundChansMap[this.analogChans[i].uri] != undefined) {
+            if (this.analogChans[i].storageLocation !== 'ram' && this.analogChans[i].uri === '') {
                 loading.dismiss();
-                this.toastService.createToast('loggerInvalidParams', true, undefined, 8000);
+                this.toastService.createToast('loggerInvalidFileName', true, undefined, 8000);
                 return { reason: 1 };
             }
+            if (this.analogChans[i].state !== 'idle' && this.analogChans[i].state !== 'stopped') {
+                loading.dismiss();
+                this.toastService.createToast('loggerInvalidSate', true, undefined, 8000);
+                return { reason: 1 };
+            }
+
+            if (foundChansMap[this.analogChans[i].uri] != undefined) {
+                loading.dismiss();
+                this.toastService.createToast('loggerMatchingFileNames', true, undefined, 8000);
+                return { reason: 1 };
+            }
+
+
             if (this.analogChans[i].storageLocation !== 'ram') {
                 foundChansMap[this.analogChans[i].uri] = 1;
             }
@@ -953,7 +996,7 @@ export class LoggerComponent {
                 console.log(data);
                 this.running = true;
                 loading.dismiss();
-                //TODO load this value from the selected chans
+                //TODO load this value from the selected chans assuming individual channel selection is an added feature later
                 this.analogChansToRead = this.analogChanNumbers.slice();
                 console.log("ANALOG CHANS TO READ: ");
                 console.log(this.analogChansToRead);
@@ -966,7 +1009,7 @@ export class LoggerComponent {
             })
             .catch((e) => {
                 console.log(e);
-                //TODO: display error
+                this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
                 loading.dismiss();
             });
     }
@@ -977,7 +1020,12 @@ export class LoggerComponent {
                 this.parseGetLiveStatePacket('analog', data);
                 if (this.running) {
                     setTimeout(() => {
-                        this.getLiveState();
+                        if (this.selectedMode === 'both') {
+                            this.continueStream();
+                        }
+                        else {
+                            this.getLiveState();
+                        }
                     }, 1000);
                 }
             })
@@ -1017,7 +1065,12 @@ export class LoggerComponent {
             .then((data) => {
                 this.parseReadResponseAndDraw(data);
                 if (this.running) {
-                    this.readLiveData();
+                    if (this.selectedMode !== 'log') {
+                        this.readLiveData();
+                    }
+                    else {
+                        this.getLiveState();
+                    }
                 }
                 else {
                     this.viewMoved = false;
@@ -1057,7 +1110,7 @@ export class LoggerComponent {
                         console.log(e);
                     });
                 this.running = false;
-                //TODO - display error
+                this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
             });
     }
 
@@ -1114,6 +1167,19 @@ export class LoggerComponent {
         }
     }
 
+    bothStopStream() {
+        this.selectedMode = 'log';
+        this.modeChild._applyActiveSelection('log');
+    }
+
+    bothStartStream() {
+        this.clearChart();
+        this.viewMoved = false;
+        this.setViewToEdge();
+        this.selectedMode = 'both';
+        this.modeChild._applyActiveSelection('both');
+    }
+
     private copyState(instrument: 'analog' | 'digital', respObj, channelInternalIndex: number) {
         let activeChan;
         if (instrument === 'analog') {
@@ -1168,19 +1234,18 @@ export class LoggerComponent {
     }
 
     private calculateGainFromWindow(channelNum: number): number {
-        //TODO calculate from logger enumeration once it is added to spec
         let range = this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[channelNum]] * 10;
         let j = 0;
-        while (range * this.activeDevice.instruments.osc.chans[channelNum].gains[j] > this.activeDevice.instruments.osc.chans[channelNum].adcVpp / 1000 &&
-            j < this.activeDevice.instruments.osc.chans[channelNum].gains.length
+        while (range * this.activeDevice.instruments.logger.analog.chans[channelNum].gains[j] > this.activeDevice.instruments.logger.analog.chans[channelNum].adcVpp / 1000 &&
+            j < this.activeDevice.instruments.logger.analog.chans[channelNum].gains.length
         ) {
             j++;
         }
 
-        if (j > this.activeDevice.instruments.osc.chans[channelNum].gains.length - 1) {
+        if (j > this.activeDevice.instruments.logger.analog.chans[channelNum].gains.length - 1) {
             j--;
         }
-        return this.activeDevice.instruments.osc.chans[channelNum].gains[j];
+        return this.activeDevice.instruments.logger.analog.chans[channelNum].gains[j];
     }
 
     setParameters(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
@@ -1339,7 +1404,6 @@ export class LoggerComponent {
                     resolve();
                     return;
                 }
-                //TODO to use the digitalChansToRead instead of all chans
                 for (let i = 0; i < this.digitalChansToRead.length; i++) {
                     startIndices.push(this.digitalChans[this.digitalChansToRead[i] - 1].startIndex);
                     counts.push(this.digitalChans[this.digitalChansToRead[i] - 1].count);

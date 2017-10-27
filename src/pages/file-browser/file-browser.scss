@@ -78,6 +78,12 @@
     text-transform: capitalize;
 }
 
+.file-browser-container .storage-location-title:hover
+{
+    color: #CCCCCC;
+    cursor: pointer;
+}
+
 .file-browser-container .header
 {
     font-size: 18px;

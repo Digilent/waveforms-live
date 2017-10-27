@@ -16,6 +16,15 @@ export class ExportService {
 
     }
 
+    private stringToArrBuff(toConvert: string): ArrayBuffer {
+        let arrBuff = new ArrayBuffer(toConvert.length);
+        let view = new Uint8Array(arrBuff);
+        for (let i = 0; i < toConvert.length; i++) {
+            view[i] = toConvert.charCodeAt(i);
+        }
+        return arrBuff;
+    }
+
     exportCanvasAsPng(chartCanvas: any, overlayCanvas: any) {
         let width = chartCanvas.width;
         let height = chartCanvas.height;
@@ -58,7 +67,7 @@ export class ExportService {
 
     exportGenericCsv(fileName: string, dataContainer: DataContainer[], seriesToDraw: number[], labels: CsvLabel[], waitTime: number = 0) { 
         fileName = fileName + '.csv';
-        let csvContent = 'data:text/csv;charset=utf-8,';
+        let csvContent = '';
         let maxLength = dataContainer[seriesToDraw[0]].data.length;
         for (let i = 0; i < seriesToDraw.length; i++) {
             if (dataContainer[seriesToDraw[i]].data.length > maxLength) {
@@ -80,19 +89,9 @@ export class ExportService {
             }
             csvContent += '\n';
         }
-        let encodedUri = encodeURI(csvContent);
-        let link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        if (waitTime === 0) {
-            link.click();
-        }
-        else {
-            setTimeout(() => {
-                link.click();
-            }, waitTime);
-        }
+
+        let arrBuff = this.stringToArrBuff(csvContent);
+        this.exportBinary(fileName, arrBuff, waitTime, false);
     }
 
     exportBinary(fileName: string, arrayBuffer: ArrayBuffer, waitTime?: number, addExtension?: boolean) {

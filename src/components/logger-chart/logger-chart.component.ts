@@ -18,7 +18,7 @@ export class LoggerChartComponent {
     @ViewChild('loggerChart') loggerChart: DigilentChart;
     private unitFormatPipeInstance: UnitFormatPipe;
     public colorArray: string[] = ['#FFA500', '#4487BA', '#ff3b99', '#00c864'];
-    public loggerChartOptions: any = this.generateBodeOptions();
+    public loggerChartOptions: any;
     private activeDevice: DeviceService;
 
     constructor(
@@ -27,6 +27,7 @@ export class LoggerChartComponent {
     ) {
         this.unitFormatPipeInstance = new UnitFormatPipe();
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+        this.loggerChartOptions = this.generateBodeOptions();
     }
 
     plotLoaded() {
@@ -139,13 +140,12 @@ export class LoggerChartComponent {
                 startingXIndex: 21
             }
         }
-        console.log(fftChartOptions);
         return fftChartOptions;
     }
 
     generateFftYaxisOptions() {
         let fftYAxes: any = [];
-        for (let i = 0; i < 2/* this.activeDevice.instruments.logger.numChans */; i++) {
+        for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
             let axisOptions = {
                 position: 'left',
                 axisLabel: 'Ch ' + (i + 1),

@@ -114,6 +114,7 @@ export class SilverNeedleChart {
     private annotationRefs: { ref: ComponentRef<ChartAnnotationComponent>, id: number, view: 'chart' | 'fft' }[] = [];
 
     private minBodeFirmwareVersion: string = '1.37.0';
+    private minLogFirmwareVersion: string = '1.262.0';
 
     constructor(
         _modalCtrl: ModalController,
@@ -409,7 +410,7 @@ export class SilverNeedleChart {
 
     toBode() {
         this.stopRun.emit();
-        if (!this.isFirmwareSupported()) {
+        if (!this.isFirmwareSupported(this.minBodeFirmwareVersion)) {
             this.toastService.createToast('upgradeFirmware', true, '. Please Upload At Least Version ' + this.minBodeFirmwareVersion + '.', 8000);
             return;
         }
@@ -423,8 +424,8 @@ export class SilverNeedleChart {
 
     toLogger() {
         this.stopRun.emit();
-        if (!this.isFirmwareSupported()) {
-            this.toastService.createToast('upgradeFirmware', true, '. Please Upload At Least Version ' + this.minBodeFirmwareVersion + '.', 8000);
+        if (!this.isFirmwareSupported(this.minLogFirmwareVersion)) {
+            this.toastService.createToast('upgradeFirmware', true, '. Please Upload At Least Version ' + this.minLogFirmwareVersion + '.', 8000);
             return;
         }
         this.navCtrl.push(LoggerPage, {
@@ -435,9 +436,9 @@ export class SilverNeedleChart {
         });
     }
 
-    private isFirmwareSupported(): boolean {
+    private isFirmwareSupported(minFirmwareVersion: string): boolean {
         let currentFirmwareContainer = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].firmwareVersion;
-        let minFirmwareSplit = this.minBodeFirmwareVersion.split('.');
+        let minFirmwareSplit = minFirmwareVersion.split('.');
         let weightedMinFirmwareVersion = 1000000 * parseInt(minFirmwareSplit[0]) + 1000 * parseInt(minFirmwareSplit[1]) + parseInt(minFirmwareSplit[2]);
         let weightedCurrFirmwareVersion = 1000000 * currentFirmwareContainer.major + 1000 * currentFirmwareContainer.minor + currentFirmwareContainer.patch;
         return !(weightedCurrFirmwareVersion < weightedMinFirmwareVersion);
