@@ -13,6 +13,12 @@
     cursor: pointer;
 }
 
+.dropdown-popover-container .dropdown-select[disabled]
+{
+    opacity: 0.4;
+    cursor: default;
+}
+
 .dropdown-popover-container .popover-button
 {
     background-color: #3A3A3A;

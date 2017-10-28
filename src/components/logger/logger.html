@@ -85,7 +85,7 @@
                     Link
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <dropdown-popover #dropPopLink [id]="'link' + i" [dataArray]="analogLinkOptions[i]" (onSelection)="linkSelect($event, 'analog', i)"></dropdown-popover>
+                    <dropdown-popover #dropPopLink [id]="'link' + i" [dataArray]="analogLinkOptions[i]" (onSelection)="linkSelect($event, 'analog', i)" [disabled]="running"></dropdown-popover>
                 </ion-col>
             </ion-row>
 
@@ -105,18 +105,18 @@
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
-                            <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', i, 'sampleFreq')">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', i, 'sampleFreq')" [disabled]="running">
                                 <img class="custom-image-button" src="assets/img/remove.svg">
                             </button>
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" 
+                        <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" [disabled]="running"
                             formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" (mousewheel)="mousewheel($event, 'analog', i, 'sampleFreq')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
-                            <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', i, 'sampleFreq')">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', i, 'sampleFreq')" [disabled]="running">
                                 <img class="custom-image-button" src="assets/img/add.svg">
                             </button>
                         </div>
@@ -145,7 +145,7 @@
                         </div>
                     </ion-col> -->
                     <ion-col class="vpd-input-col no-button-col" center text-center>
-                        <dropdown-popover #dropPopSamples [id]="'samples' + i" [dataArray]="samples" (onSelection)="samplesSelect($event, 'analog', i)"></dropdown-popover>
+                        <dropdown-popover #dropPopSamples [id]="'samples' + i" [dataArray]="samples" (onSelection)="samplesSelect($event, 'analog', i)" [disabled]="running"></dropdown-popover>
                     </ion-col>
                 </ion-row>
 
@@ -155,18 +155,18 @@
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
-                            <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', i, 'samples')">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', i, 'samples')" [disabled]="running">
                                 <img class="custom-image-button" src="assets/img/remove.svg">
                             </button>
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" 
+                        <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" [disabled]="running" 
                             formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'samples', i)" (mousewheel)="mousewheel($event, 'analog', i, 'samples')" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
-                            <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', i, 'samples')">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', i, 'samples')" [disabled]="running">
                                 <img class="custom-image-button" src="assets/img/add.svg">
                             </button>
                         </div>
@@ -179,7 +179,7 @@
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
-                            <button ion-button class="img-button disable-hover" (tap)="incrementVpd(i)" [disabled]="loggerPlotService.vpdIndices[i] > loggerPlotService.vpdArray.length - 1">
+                            <button ion-button class="img-button disable-hover" (tap)="incrementVpd(i)" [disabled]="loggerPlotService.vpdIndices[i] > loggerPlotService.vpdArray.length - 2">
                                 <img class="custom-image-button" src="assets/img/zoom-out.svg">
                             </button>
                         </div>

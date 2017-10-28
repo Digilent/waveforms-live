@@ -15,7 +15,7 @@ export class SettingsService {
     public nestedChannels: boolean = false;
     public routeToStore: boolean = true;
     public drawLaOnTimeline: boolean = false;
-    public wflVersion: string = '1.2.0';
+    public wflVersion: string = '1.2.1';
     public useDevBuilds: boolean = false;
     public androidAppLink = "market://details?id=com.digilent.waveformslive";
     public iosAppLink = "https://itunes.apple.com/us/app/waveforms-live/id1244242035";

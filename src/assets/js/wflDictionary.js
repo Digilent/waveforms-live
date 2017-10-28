@@ -134,7 +134,7 @@ var waveformsLiveDictionary = (function() {
             english: 'Logging Completed Successfully'
         },
         loggerUnknownRunError: {
-            english: 'Error Starting Acquisition. Please Try Again'
+            english: 'Error Occurred Starting Or Running Acquisition. Please Try Again'
         },
 
         //File

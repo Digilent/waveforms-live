@@ -12,6 +12,7 @@ import { GenPopover } from '../gen-popover/gen-popover.component';
 export class DropdownPopoverComponent {
     @Input() dataArray: string[];
     @Input() forcePopover: boolean = false;
+    @Input() disabled: boolean = false;
     @Output() onSelection = new EventEmitter();
     public popoverCtrl: PopoverController;
     public platform: Platform;

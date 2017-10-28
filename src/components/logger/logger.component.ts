@@ -87,6 +87,7 @@ export class LoggerComponent {
     private profileToken: string = '^^profile^^';
 
     private filesInStorage: any = {};
+    private destroyed: boolean = false;
 
     constructor(
         private devicemanagerService: DeviceManagerService,
@@ -119,6 +120,7 @@ export class LoggerComponent {
     ngOnDestroy() {
         this.subscriptionRef.unsubscribe();
         this.running = false;
+        this.destroyed = true;
     }
 
     private init() {
@@ -359,18 +361,20 @@ export class LoggerComponent {
             return;
         }
         if (event.deltaY < 0) {
-            input === 'vpd' ? this.incrementVpd(axisNum) : this.incrementFrequency(instrument, axisNum, input);
+            input === 'vpd' ? this.decrementVpd(axisNum) : this.incrementFrequency(instrument, axisNum, input);
         }
         else {
-            input === 'vpd' ? this.decrementVpd(axisNum) : this.decrementFrequency(instrument, axisNum, input);
+            input === 'vpd' ? this.incrementVpd(axisNum) : this.decrementFrequency(instrument, axisNum, input);
         }
     }
 
     incrementVpd(axisNum: number) {
+        if (this.loggerPlotService.vpdIndices[axisNum] > this.loggerPlotService.vpdArray.length - 2) { return; }
         this.loggerPlotService.setValPerDivAndUpdate('y', axisNum + 1, this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[axisNum] + 1]);
     }
 
     decrementVpd(axisNum: number) {
+        if (this.loggerPlotService.vpdIndices[axisNum] < 1) { return; }
         this.loggerPlotService.setValPerDivAndUpdate('y', axisNum + 1, this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[axisNum] - 1]);
     }
 
@@ -756,22 +760,25 @@ export class LoggerComponent {
             for (let channel in loadedObj[instrument]) {
                 if (instrument === 'analog') {
                     let currentState = this.analogChans[parseInt(channel)].state;
+                    let currentLocation = this.analogChans[parseInt(channel)].storageLocation;
                     this.analogChans[parseInt(channel)] = loadedObj[instrument][channel];
                     this.analogChans[parseInt(channel)].count = this.defaultAnalogParams.count;
                     this.analogChans[parseInt(channel)].startIndex = this.defaultAnalogParams.startIndex;
                     this.analogChans[parseInt(channel)].state = currentState;
+                    this.analogChans[parseInt(channel)].storageLocation = currentLocation
                 }
                 else if (instrument === 'digital') {
                     let currentState = this.digitalChans[parseInt(channel)].state;
+                    let currentLocation = this.digitalChans[parseInt(channel)].storageLocation;
                     this.digitalChans[parseInt(channel)] = loadedObj[instrument][channel];
                     this.digitalChans[parseInt(channel)].count = this.defaultAnalogParams.count;
                     this.digitalChans[parseInt(channel)].startIndex = this.defaultAnalogParams.startIndex;
                     this.digitalChans[parseInt(channel)].state = currentState;
+                    this.analogChans[parseInt(channel)].storageLocation = currentLocation
                 }
                 //Wait for ngFor to execute on the dropPops (~20ms) before we apply the active selections (there has to be a better way)
 
                 let dropdownChangeObj = {
-                    storageLocation: loadedObj[instrument][channel].storageLocation,
                     overflow: loadedObj[instrument][channel].overflow
                 };
                 if (loadedObj[instrument][channel].linked) {
@@ -942,10 +949,10 @@ export class LoggerComponent {
     startLogger() {
         let loading = this.loadingService.displayLoading('Starting data logging...');
 
-        this.getCurrentState('analog', this.analogChanNumbers)
+        this.getCurrentState('analog', this.analogChanNumbers, true)
             .then((data) => {
                 console.log(data);
-                return this.getCurrentState('digital', this.digitalChanNumbers);
+                return this.getCurrentState('digital', this.digitalChanNumbers, true);
             })
             .then((data) => {
                 let returnData: { reason: number } = this.existingFileFoundAndValidate(loading);
@@ -1011,6 +1018,8 @@ export class LoggerComponent {
             .catch((e) => {
                 console.log(e);
                 this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
+                this.running = false;
+                this.stopLogger();
                 loading.dismiss();
             });
     }
@@ -1111,6 +1120,7 @@ export class LoggerComponent {
                         console.log(e);
                     });
                 this.running = false;
+                if (this.destroyed) { return; }
                 this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
             });
     }
@@ -1158,11 +1168,11 @@ export class LoggerComponent {
         }]);
     }
 
-    private applyCurrentStateResponse(data: any) {
+    private applyCurrentStateResponse(data: any, onlyCopyState: boolean = false) {
         for (let instrument in data.log) {
             for (let channel in data.log[instrument]) {
                 if (instrument === 'analog' || instrument === 'digital') {
-                    this.copyState(<'analog' | 'digital'>instrument, data.log[instrument][channel][0], (parseInt(channel) - 1));
+                    this.copyState(<'analog' | 'digital'>instrument, data.log[instrument][channel][0], (parseInt(channel) - 1), onlyCopyState);
                 }
             }
         }
@@ -1181,16 +1191,24 @@ export class LoggerComponent {
         this.modeChild._applyActiveSelection('both');
     }
 
-    private copyState(instrument: 'analog' | 'digital', respObj, channelInternalIndex: number) {
+    private copyState(instrument: 'analog' | 'digital', respObj, channelInternalIndex: number, onlyCopyState: boolean = false) {
         let activeChan;
         if (instrument === 'analog') {
             activeChan = this.analogChans[channelInternalIndex];
-            activeChan.gain = respObj.actualGain;
-            activeChan.vOffset = respObj.actualVOffset / 1000;
+            if (!onlyCopyState) {
+                activeChan.gain = respObj.actualGain;
+                activeChan.vOffset = respObj.actualVOffset / 1000;
+            }
         }
         else {
             activeChan = this.digitalChans[channelInternalIndex];
-            activeChan.bitMask = respObj.bitMask;
+            if (!onlyCopyState) {
+                activeChan.bitMask = respObj.bitMask;
+            }
+        }
+        activeChan.state = respObj.state;
+        if (onlyCopyState) {
+            return;
         }
         activeChan.maxSampleCount = respObj.maxSampleCount;
         activeChan.sampleFreq = respObj.actualSampleFreq / 1000000;
@@ -1203,6 +1221,10 @@ export class LoggerComponent {
             }
             it++;
         }); */
+        if (this.storageLocations.length < 1) {
+            //Keith sets default storage location to sd0 even if it doesn't exist.
+            respObj.storageLocation = 'ram';
+        }
         activeChan.storageLocation = respObj.storageLocation;
         if (respObj.storageLocation === 'ram') {
             console.log('setting selected mode to stream');
@@ -1228,7 +1250,6 @@ export class LoggerComponent {
             //Remove .dlog from end of file
             activeChan.uri = activeChan.uri.slice(0, activeChan.uri.indexOf('.dlog'));
         }
-        activeChan.state = respObj.state;
         if (activeChan.state === 'running') {
             this.running = true;
         }
@@ -1547,7 +1568,7 @@ export class LoggerComponent {
         });
     }
 
-    getCurrentState(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
+    getCurrentState(instrument: 'analog' | 'digital', chans: number[], onlyCopyState: boolean = false): Promise<any> {
         return new Promise((resolve, reject) => {
             if (instrument === 'analog' && this.analogChans.length < 1) {
                 resolve();
@@ -1564,7 +1585,7 @@ export class LoggerComponent {
             this.activeDevice.instruments.logger[instrument].getCurrentState(instrument, chans).subscribe(
                 (data) => {
                     if (data.log != undefined && data.log.analog != undefined) {
-                        this.applyCurrentStateResponse(data);
+                        this.applyCurrentStateResponse(data, onlyCopyState);
                     }
                     resolve(data);
                 },
