@@ -35,6 +35,9 @@
     <ion-row class="page-row">
         <ion-col class="chart-container-col">
             <logger-chart></logger-chart>
+            <div class="beta-container">
+                <img src="assets/img/beta.svg" />
+            </div>
             <div class="chart-button-container">
                 <button ion-button class="chart-button disable-hover" [disabled]="!loggerComponent.viewMoved && loggerComponent.running" (tap)="snapViewToFront()">
                     <img class="button-side-svg" src="assets/img/logger-to-front.svg" />
@@ -44,6 +47,9 @@
                 </button>
                 <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="openFileBrowser()">
                     <img class="button-side-svg" src="assets/img/folder.svg" />
+                </button>
+                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="openDevicePinout($event)">
+                    PIN
                 </button>
             </div>
         </ion-col>

@@ -4,6 +4,7 @@ import { NavController, NavParams, ModalController, PopoverController } from 'io
 //Components
 import { LoggerComponent } from '../../components/logger/logger.component';
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
+import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
 
 //Pages
 import { FileBrowserPage } from '../file-browser/file-browser';
@@ -71,6 +72,13 @@ export class LoggerPage {
         popover.present({
             ev: event
         });
+    }
+
+    openDevicePinout(event) {
+        let popover = this.popoverCtrl.create(PinoutPopover, undefined, {
+            cssClass: 'pinoutPopover'
+        });
+        popover.present();
     }
 
 }

@@ -23,6 +23,8 @@ export class LoggerPlotService {
     };
     public yAxis: AxisInfo[] = [];
     public chartPan: Subject<any>;
+    public cursorType: CursorType = 'disabled';
+    public cursorPositions: Array<CursorPositions> = [{ x: null, y: null }, { x: null, y: null }];
 
     constructor() {
         this.chartPan = new Subject();
@@ -277,7 +279,93 @@ export class LoggerPlotService {
                 this.vpdArray[wheelData.axisNum - 1] = this.vpdArray[this.vpdIndices[wheelData.axisNum - 1]];
             }
         });
+
+        $("#loggerChart").bind("cursorupdates", (event, cursorData) => {
+            if (cursorData[0] == undefined || this.cursorType.toLowerCase() === 'disabled') { return; }
+            for (let i = 0; i < cursorData.length; i++) {
+                if (cursorData[i].cursor !== 'triggerLine') {
+                    let cursorNum = parseInt(cursorData[i].cursor.slice(-1)) - 1;
+                    this.cursorPositions[cursorNum].x = cursorData[i].x;
+                    this.cursorPositions[cursorNum].y = cursorData[i].y;
+                }
+            }
+        });
     }
+
+    /* handleCursors() {
+        let mappedVals = this.parseCursorChans();
+        this.activeChannels[0] = mappedVals[0];
+        this.activeChannels[1] = mappedVals[1];
+        this.removeCursors();
+        if (this.cursorType.toLowerCase() === 'time') {
+            for (let i = 0; i < 2; i++) {
+                let series = this.chart.getData();
+                let color = series[this.activeChannels[i] - 1].color
+                let options = {
+                    name: 'cursor' + (i + 1),
+                    mode: 'x',
+                    lineWidth: 2,
+                    color: color,
+                    snapToPlot: (this.activeChannels[i] - 1),
+                    showIntersections: false,
+                    showLabel: false,
+                    symbol: 'none',
+                    drawAnchor: true,
+                    position: {
+                        relativeX: 0.25 + i * 0.5,
+                        relativeY: 0
+                    },
+                    dashes: 10 + 10 * i
+                }
+                this.chart.addCursor(options);
+            }
+        }
+        else if (this.cursorType.toLowerCase() === 'track') {
+            for (let i = 0; i < 2; i++) {
+                let series = this.chart.getData();
+                let color = series[this.activeChannels[i] - 1].color
+                let options = {
+                    name: 'cursor' + (i + 1),
+                    mode: 'xy',
+                    lineWidth: 2,
+                    color: color,
+                    showIntersections: false,
+                    showLabel: false,
+                    symbol: 'none',
+                    drawAnchor: true,
+                    snapToPlot: (this.activeChannels[i] - 1),
+                    position: {
+                        relativeX: 0.25 + i * 0.5,
+                        relativeY: 0.25 + i * 0.5
+                    },
+                    dashes: 10 + 10 * i
+                }
+                this.chart.addCursor(options);
+            }
+        }
+        else if (this.cursorType.toLowerCase() === 'voltage') {
+            for (let i = 0; i < 2; i++) {
+                let series = this.chart.getData();
+                let color = series[this.activeChannels[i] - 1].color
+                let options = {
+                    name: 'cursor' + (i + 1),
+                    mode: 'y',
+                    lineWidth: 2,
+                    color: color,
+                    showIntersections: false,
+                    showLabel: false,
+                    symbol: 'none',
+                    drawAnchor: true,
+                    position: {
+                        relativeX: 0.25 + i * 0.5,
+                        relativeY: 0.25 + i * 0.5
+                    },
+                    dashes: 10 + 10 * i
+                }
+                this.chart.addCursor(options);
+            }
+        }
+    } */
 }
 
 export interface AxisInfo {
@@ -286,3 +374,16 @@ export interface AxisInfo {
 }
 
 export type Axis = 'x' | 'y';
+
+export type CursorType = 'disabled' | 'track' | 'time' | 'voltage';
+
+export interface CursorPositions {
+    x: number,
+    y: number
+}
+
+export interface CursorInfo {
+    instrument: 'Osc' | 'LA' | 'Log',
+    channel: number,
+    position: CursorPositions
+}

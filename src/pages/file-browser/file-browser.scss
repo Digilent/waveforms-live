@@ -78,6 +78,15 @@
     text-transform: capitalize;
 }
 
+.file-browser-container .no-storage-found
+{
+    display: flex;
+    align-items: center;
+    button.icon-only-button-side {
+        margin-left: 16px;
+    }
+}
+
 .file-browser-container .storage-location-title:hover
 {
     color: #CCCCCC;

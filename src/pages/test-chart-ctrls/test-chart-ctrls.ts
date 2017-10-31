@@ -737,7 +737,12 @@ export class TestChartCtrlsPage {
                     this.toastService.createToast('agentNoActiveDevice');
                 }
                 else if (err.command) {
-                    this.displayErrorFromCommand(err.command);
+                    if (err.statusCode === 2684354573) {
+                        this.toastService.createToast('deviceInstrumentInUse', true, undefined, 5000);
+                    }
+                    else {
+                        this.displayErrorFromCommand(err.command);
+                    }
                 }
                 else {
                     this.toastService.createToast('deviceDroppedConnection', true);

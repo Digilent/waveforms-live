@@ -35,6 +35,9 @@ export class FileBrowserPage {
         private loadingService: LoadingService
     ) {
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+    }
+
+    init() {
         this.getStorageLocations()
             .then((data) => {
                 console.log(data);
@@ -46,6 +49,7 @@ export class FileBrowserPage {
             })
             .catch((e) => {
                 console.log(e);
+                this.toastService.createToast('deviceStorageError', true, undefined, 8000);
             });
     }
 
@@ -254,6 +258,7 @@ export class FileBrowserPage {
     fileChange(event) {
         if (event.target.files.length === 0) { return; }
         let fileName = event.target.files[0].name;
+        let fileSize = event.target.files[0].size;
         let fileReader = new FileReader();
         fileReader.onerror = ((e) => {
             console.log('error');
@@ -261,11 +266,11 @@ export class FileBrowserPage {
         });
         fileReader.onload = ((file: any) => {
             console.log(file);
-            let fileSize = file.loaded;
             let arrBuffFile = file.target.result;
             this.verifyLocalLogFile(arrBuffFile, fileSize, fileName);
 
         });
+        console.log(event.target.files[0]);
         fileReader.readAsArrayBuffer(event.target.files[0]);
     }
 
@@ -381,11 +386,13 @@ export class FileBrowserPage {
             const uint16_t  cbHeader;           // how long is this header structure
             const uint16_t  cbHeaderInFile;     // how much space is taken in the file for the header, sector aligned (512)
             const uint16_t  format;             // General format of the header and potential data
-            const uint32_t  revision;           // specific header revision (within the general formate)
+            const uint32_t  revision;           // specific header revision (within the general format)
             const uint64_t  voltageUnits;       // divide the voltage of each sample by this to get volts.
+                uint32_t  stopReason;         // reason for logging stopping; 0 = Normal, 1 = Forced, 2 = Error, 3 = Overflow, 4 = unknown
+                uint64_t  iStart;             // what sample index is the first index in the file, usually 0
+                uint64_t  actualCount;        // how many samples in the file.
             const uint64_t  sampleFreqUnits;    // divide uSPS by sampleFreqUnits to get samples per second
                 uint64_t  uSPS;               // sample rate in micro samples / second
-                uint64_t  iStart;             // what sample index is the first index in the file, usually 0
             const uint64_t  delayUnits;         // divide psDelay by delayUnits to get the delay in seconds.
                 int64_t   psDelay;            // how many pico seconds a delay from the start of sampling until the first sample was taken, usually 0
         } __attribute__((packed)) AHdr;

@@ -11,6 +11,8 @@
     min-width: 232px;
     padding: 0;
     height: 100%;
+    max-height: 100%;
+    overflow: auto;
 }
 
 .logger-page-container .chart-container-col
@@ -58,4 +60,13 @@
 .logger-page-container .overal-run-status-container
 {
     color: #CCCCCC;
+}
+
+.logger-page-container .beta-container
+{
+    position: absolute;
+    bottom: 30px;
+    width: 150px;
+    left: 84px;
+    max-width: 15%;
 }

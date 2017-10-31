@@ -5,6 +5,12 @@
         </div>
     
         <div class="tree-container">
+            <div *ngIf="storageLocations.length < 1" class="no-storage-found">
+                No storage locations found. Please try again
+                <button ion-button class="icon-only-button-side disable-hover" (tap)="init()">
+                    <img src="assets/img/refresh.svg" />
+                </button>
+            </div>
             <div *ngFor="let storageLocation of storageLocations" class="outer-container">
                 <ion-row>
                     <ion-col no-padding class="mid-line-container">

@@ -40,6 +40,9 @@ var waveformsLiveDictionary = (function() {
         deviceResetError: {
             english: 'Unable To Reset Device'
         },
+        deviceStorageError: {
+            english: 'Error Reading Storage Locations'
+        },
         deviceDroppedConnection: {
             english: 'No Response From Device'
         },
@@ -48,6 +51,9 @@ var waveformsLiveDictionary = (function() {
         },
         deviceResetCalibrationError: {
             english: 'Unable To Reset Device. Make Sure The Device Is Still Connected And Is On The Latest Firmware'
+        },
+        deviceInstrumentInUse: {
+            english: 'Error: The Instrument Or Resource Is Currently In Use'
         },
         //Appears when a user navigates to the instrument panel without an active device (shouldn't happen).
         noActiveDevice: {

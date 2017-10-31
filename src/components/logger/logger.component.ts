@@ -971,16 +971,23 @@ export class LoggerComponent {
             })
             .catch((e) => {
                 console.log(e);
+                loading.dismiss();
+                this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
             });              
     }
 
     private setParametersAndRun(loading) {
         let analogChanArray = [];
         let digitalChanArray = [];
+        //TODO when each channel invidivdually, loop and check if channel is on before pushing
         for (let i = 0; i < this.analogChans.length; i++) {
+            this.analogChans[i].count = -1000;
+            this.analogChans[i].startIndex = -1;
             analogChanArray.push(i + 1);
         }
         for (let i = 0; i < this.digitalChans.length; i++) {
+            this.digitalChans[i].count = -1000;
+            this.digitalChans[i].startIndex = -1;
             digitalChanArray.push(i + 1);
         }
 
@@ -1358,7 +1365,7 @@ export class LoggerComponent {
                 return;
             }
 
-            chans.forEach((el, index, arr) => {
+            /* chans.forEach((el, index, arr) => {
                 if (instrument === 'analog') {
                     this.analogChans[el - 1].count = 0;
                     this.analogChans[el - 1].startIndex = 0;
@@ -1367,7 +1374,7 @@ export class LoggerComponent {
                     this.digitalChans[el - 1].count = 0;
                     this.digitalChans[el - 1].startIndex = 0;
                 }
-            });
+            }); */
 
             this.activeDevice.instruments.logger[instrument].run(instrument, chans).subscribe(
                 (data) => {
@@ -1465,6 +1472,7 @@ export class LoggerComponent {
                         resolve(finalObj);
                     },
                     (err) => {
+                        console.log(err);
                         if (err.payload != undefined) {
                             let jsonString = String.fromCharCode.apply(null, new Uint8Array(err.payload));
                             let parsedData;

@@ -15,7 +15,6 @@ import { DigitalIoComponent } from '../../components/digital-io/digital-io.compo
 import { DcSupplyComponent } from '../../components/dc-supply/dc-supply.component';
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
-import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
 import { LaPopover } from '../../components/la-popover/la-popover.component';
 import { ChartAnnotationComponent } from '../../components/chart-annotation/chart-annotation.component';
  
@@ -26,12 +25,10 @@ import { ChartAnnotationComponent } from '../../components/chart-annotation/char
         IonicModule.forRoot(TestChartCtrlsPage),
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),
-        IonicModule.forRoot(PinoutPopover),
         IonicModule.forRoot(LaPopover),
         IonicModule.forRoot(ChartAnnotationComponent)
     ],
     declarations: [
-        PinoutPopover,
         LaPopover,
         TestChartCtrlsPage,
         ModalCursorPage,
