@@ -15,7 +15,8 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
 import { ExportService } from '../../services/export/export.service';
 
 //Interfaces
-import { DataContainer } from '../chart/chart.interface';
+/* import { DataContainer } from '../chart/chart.interface'; */
+import { PlotDataContainer } from '../../services/logger-plot/logger-plot.service';
 
 @Component({
     templateUrl: 'logger.html',
@@ -79,11 +80,12 @@ export class LoggerComponent {
     public digitalLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
     public running: boolean = false;
-    private dataContainers: DataContainer[] = [];
+    private dataContainers: PlotDataContainer[] = [];
     public viewMoved: boolean = false;
     private analogChansToRead: number[] = [];
     private digitalChansToRead: number[] = [];
-    private subscriptionRef;
+    private chartPanSubscriptionRef;
+    private offsetChangeSubscriptionRef;
     private profileToken: string = '^^profile^^';
 
     private filesInStorage: any = {};
@@ -118,19 +120,33 @@ export class LoggerComponent {
     }
 
     ngOnDestroy() {
-        this.subscriptionRef.unsubscribe();
+        this.chartPanSubscriptionRef.unsubscribe();
+        this.offsetChangeSubscriptionRef.unsubscribe();
         this.running = false;
         this.destroyed = true;
     }
 
     private init() {
-        this.subscriptionRef = this.loggerPlotService.chartPan.subscribe(
+        this.chartPanSubscriptionRef = this.loggerPlotService.chartPan.subscribe(
             (data) => {
                 if (this.running) {
                     this.viewMoved = true;
                 }
             },
-            (err) => {},
+            (err) => { },
+            () => { }
+        );
+        this.offsetChangeSubscriptionRef = this.loggerPlotService.offsetChange.subscribe(
+            (data) => {
+                if (data.axisNum > this.analogChans.length - 1) {
+                    //Digital
+                    return;
+                }
+                else {
+                    this.analogChans[data.axisNum].vOffset = data.offset;
+                }
+            },
+            (err) => { },
             () => { }
         );
         for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
@@ -169,7 +185,8 @@ export class LoggerComponent {
                 },
                 points: {
                     show: false
-                }
+                },
+                seriesOffset: 0
             });
         }
         for (let i = 0; i < this.digitalChans.length; i++) {
@@ -182,7 +199,8 @@ export class LoggerComponent {
                 },
                 points: {
                     show: false
-                }
+                },
+                seriesOffset: 0
             })
         }
     }
@@ -288,6 +306,9 @@ export class LoggerComponent {
             }
         }
 
+        if (this.selectedMode === 'log') {
+            this.bothStartStream();
+        }
         this.readLiveData();
     }
 
@@ -380,6 +401,7 @@ export class LoggerComponent {
 
     buttonChangeOffset(axisNum: number, type: 'increment' | 'decrement') {
         this.analogChans[axisNum].vOffset += type === 'increment' ? 0.1 : -0.1;
+        this.loggerPlotService.setPosition('y', axisNum + 1, this.analogChans[axisNum].vOffset, true);
     }
 
     incrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
@@ -841,6 +863,11 @@ export class LoggerComponent {
         });
     }
 
+    setActiveSeries(instrument: 'analog' | 'digital', axisNum: number) {
+        let convertedNum = instrument === 'analog' ? axisNum + 1 : axisNum + this.analogChans.length + 1;
+        this.loggerPlotService.setActiveSeries(convertedNum);
+    }
+
     formatInputAndUpdate(trueValue: number, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {
         console.log(trueValue);
         let chanType = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
@@ -850,6 +877,7 @@ export class LoggerComponent {
                 break;
             case 'offset':
                 (<AnalogLoggerParams>chanType).vOffset = trueValue;
+                this.loggerPlotService.setPosition('y', channel + 1, trueValue, true);
                 break;
             case 'samples':
                 trueValue = trueValue < 1 ? 1 : trueValue;
@@ -901,6 +929,7 @@ export class LoggerComponent {
                     dataContainerIndex += this.analogChans.length;
                 }
                 dataContainerIndex += parseInt(channel) - 1;
+                this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
             }
         }
@@ -1096,11 +1125,17 @@ export class LoggerComponent {
             .catch((e) => {
                 console.log('error reading live data');
                 console.log(e);
-                if (e === 'corrupt transfer') {
+                if (this.destroyed) { return; }
+                else if (e === 'corrupt transfer') {
                     this.readLiveData();
                     return;
                 }
-                if (e.message && e.message === 'Could not keep up with device') {
+                else if (e.message && e.message === 'Data not ready' && this.running) {
+                    console.log('data not ready');
+                    this.readLiveData();
+                    return;
+                }
+                else if (e.message && e.message === 'Could not keep up with device') {
                     this.toastService.createToast('loggerCouldNotKeepUp', false, undefined, 10000);
                     this.stop('analog', this.analogChansToRead)
                         .then((data) => {
@@ -1110,10 +1145,8 @@ export class LoggerComponent {
                             console.log(e);
                         });
                 }
-                else if (e.message && e.message === 'Data not ready' && this.running) {
-                    console.log('data not ready');
-                    this.readLiveData();
-                    return;
+                else {
+                    this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
                 }
                 this.getCurrentState('analog', this.analogChanNumbers)
                     .then((data) => {
@@ -1127,8 +1160,6 @@ export class LoggerComponent {
                         console.log(e);
                     });
                 this.running = false;
-                if (this.destroyed) { return; }
-                this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
             });
     }
 
@@ -1151,7 +1182,6 @@ export class LoggerComponent {
     }
 
     exportCsv(fileName: string) {
-        console.log(this.dataContainers);
         let analogChanArray = [];
         let digitalChanArray = [];
         for (let i = 0; i < this.analogChans.length; i++) {
@@ -1493,6 +1523,12 @@ export class LoggerComponent {
                                             data: parsedData
                                         });
                                         return;
+                                    }
+                                    else if (parsedData.log[instrument][chan][0].statusCode === 2684354595) {
+                                        reject({
+                                            message: 'Could not keep up with device',
+                                            data: parsedData
+                                        })
                                     }
                                 }
                             }

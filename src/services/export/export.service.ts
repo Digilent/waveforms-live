@@ -65,9 +65,12 @@ export class ExportService {
         }
     }
 
-    exportGenericCsv(fileName: string, dataContainer: DataContainer[], seriesToDraw: number[], labels: CsvLabel[], waitTime: number = 0) { 
+    exportGenericCsv(fileName: string, dataContainer: DataContainer[], seriesToDraw: number[], labels: CsvLabel[], waitTime: number = 0, stringToPrepend?: string) { 
         fileName = fileName + '.csv';
         let csvContent = '';
+        if (stringToPrepend != undefined) {
+            csvContent += stringToPrepend + '\n';
+        }
         let maxLength = dataContainer[seriesToDraw[0]].data.length;
         for (let i = 0; i < seriesToDraw.length; i++) {
             if (dataContainer[seriesToDraw[i]].data.length > maxLength) {

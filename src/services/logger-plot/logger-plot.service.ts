@@ -23,11 +23,25 @@ export class LoggerPlotService {
     };
     public yAxis: AxisInfo[] = [];
     public chartPan: Subject<any>;
+    public offsetChange: Subject<any>;
     public cursorType: CursorType = 'disabled';
     public cursorPositions: Array<CursorPositions> = [{ x: null, y: null }, { x: null, y: null }];
+    public activeSeries: number = 1;
+    public dataContainers: PlotDataContainer[] = [];
+    public overSeriesAnchor: { over: boolean, seriesNum: number } = { over: false, seriesNum: null };
+    private seriesAnchorVertPanRef: any;
+    private seriesAnchorTouchVertPanRef: any;
+    private seriesAnchorTouchStartRef: any;
+    private unbindCustomEventsRef: any;
+    private previousYPos = 0;
 
     constructor() {
         this.chartPan = new Subject();
+        this.offsetChange = new Subject();
+        this.seriesAnchorVertPanRef = this.seriesAnchorVertPan.bind(this);
+        this.unbindCustomEventsRef = this.unbindCustomEvents.bind(this);
+        this.seriesAnchorTouchStartRef = this.seriesAnchorTouchStart.bind(this);
+        this.seriesAnchorTouchVertPanRef = this.seriesAnchorTouchVertPan.bind(this);
     }
 
     //Reset the service when the logger page is destroyed so old values aren't used. This service is not destructed
@@ -65,6 +79,7 @@ export class LoggerPlotService {
         getAxes.xaxis.options.show = true;
         this.redrawChart();
         this.attachListeners();
+        this.chart.hooks.drawOverlay.push(this.updateSeriesAnchors.bind(this));
     }
 
     setTimelineRef(chartRef: DigilentChart) {
@@ -84,7 +99,8 @@ export class LoggerPlotService {
         this.attachTimelineListeners();
     }
 
-    setData(data: DataContainer[], autoscale?: boolean) {
+    setData(data: PlotDataContainer[], autoscale?: boolean) {
+        this.dataContainers = data;
         this.digilentChart.setData(data, autoscale);
         if (this.timelineChartRef != undefined) {
             let tempYaxisNums: number[] = [];
@@ -262,6 +278,7 @@ export class LoggerPlotService {
             }
             else {
                 this.yAxis[panData.axisNum - 1].position = panData.mid;
+                this.offsetChange.next({axisNum: panData.axisNum - 1, offset: panData.mid});
             }
         });
 
@@ -290,82 +307,179 @@ export class LoggerPlotService {
                 }
             }
         });
+
+        $("#loggerChart").bind("mousemove", (event) => {
+            if (this.dataContainers == undefined) { return; }
+            let offsets = this.chart.offset();
+            let plotRelXPos = event.clientX - offsets.left;
+            let plotRelYPos = event.clientY - offsets.top;
+            let getAxes = this.chart.getAxes();
+
+            for (let i = 0; i < this.dataContainers.length; i++) {
+                if (this.dataContainers[i].data.length < 1) { continue; }
+                let yIndexer = 'y' + (i === 0 ? '' : (i + 1).toString()) + 'axis';
+                let seriesAnchorPixPos = getAxes[yIndexer].p2c(this.dataContainers[i].seriesOffset);
+                if (plotRelXPos > -20 && plotRelXPos < 5 && plotRelYPos < seriesAnchorPixPos + 10 && plotRelYPos > seriesAnchorPixPos - 10) {
+                    this.overSeriesAnchor = {
+                        over: true,
+                        seriesNum: i
+                    }
+                    this.chart.getPlaceholder().css('cursor', 'ns-resize');
+                    return;
+                }
+            }
+            if (this.overSeriesAnchor.over) {
+                this.overSeriesAnchor = {
+                    over: false,
+                    seriesNum: null
+                }
+                this.chart.getPlaceholder().css('cursor', 'default');
+            }
+        });
+
+        $("#loggerChart").bind("mousedown", (event) => {
+            if (this.overSeriesAnchor.over) {
+                this.chart.unbindMoveEvents();
+                this.setActiveSeries(this.overSeriesAnchor.seriesNum + 1);
+                this.chart.triggerRedrawOverlay();
+                $("#loggerChart").bind("mousemove", this.seriesAnchorVertPanRef);
+                $("#loggerChart").bind("mouseup", this.unbindCustomEventsRef);
+                $("#loggerChart").bind("mouseout", this.unbindCustomEventsRef);
+                this.previousYPos = event.clientY;
+                return;
+            }
+        });
     }
 
-    /* handleCursors() {
-        let mappedVals = this.parseCursorChans();
-        this.activeChannels[0] = mappedVals[0];
-        this.activeChannels[1] = mappedVals[1];
-        this.removeCursors();
-        if (this.cursorType.toLowerCase() === 'time') {
-            for (let i = 0; i < 2; i++) {
-                let series = this.chart.getData();
-                let color = series[this.activeChannels[i] - 1].color
-                let options = {
-                    name: 'cursor' + (i + 1),
-                    mode: 'x',
-                    lineWidth: 2,
-                    color: color,
-                    snapToPlot: (this.activeChannels[i] - 1),
-                    showIntersections: false,
-                    showLabel: false,
-                    symbol: 'none',
-                    drawAnchor: true,
-                    position: {
-                        relativeX: 0.25 + i * 0.5,
-                        relativeY: 0
-                    },
-                    dashes: 10 + 10 * i
+    unbindCustomEvents(e) {
+        $("#loggerChart").unbind("mousemove", this.seriesAnchorVertPanRef);
+        $("#loggerChart").unbind("touchmove", this.seriesAnchorTouchVertPanRef);
+        $("#loggerChart").unbind("mouseup", this.unbindCustomEventsRef);
+        $("#loggerChart").unbind("mouseout", this.unbindCustomEventsRef);
+        this.chart.getPlaceholder().css('cursor', 'default');
+    }
+
+    seriesAnchorVertPan(e) {
+        let yIndexer = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
+        let getAxes = this.chart.getAxes();
+        let newVal = getAxes[yIndexer].c2p(e.clientY);
+        let oldValinNewWindow = getAxes[yIndexer].c2p(this.previousYPos);
+        let difference = newVal - oldValinNewWindow;
+        let base = (getAxes[yIndexer].max + getAxes[yIndexer].min) / 2;
+        let voltsPerDivision = (getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
+        let newPos = base - difference;
+        let min = newPos - voltsPerDivision * 5;
+        let max = newPos + voltsPerDivision * 5;
+        getAxes[yIndexer].options.min = min;
+        getAxes[yIndexer].options.max = max;
+        this.chart.setupGrid();
+        this.chart.draw();
+        this.yAxis[this.activeSeries - 1].position = base;
+        this.offsetChange.next({axisNum: this.activeSeries - 1, offset: base});
+        this.previousYPos = e.clientY;
+    }
+
+    seriesAnchorTouchVertPan(e) {
+        let yIndexer = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
+        let getAxes = this.chart.getAxes();
+        let newVal = getAxes[yIndexer].c2p(e.originalEvent.touches[0].clientY);
+        let oldValinNewWindow = getAxes[yIndexer].c2p(this.previousYPos);
+        let difference = newVal - oldValinNewWindow;
+        let base = (getAxes[yIndexer].max + getAxes[yIndexer].min) / 2;
+        let voltsPerDivision = (getAxes[yIndexer].max - getAxes[yIndexer].min) / 10;
+        let newPos = base - difference;
+        let min = newPos - voltsPerDivision * 5;
+        let max = newPos + voltsPerDivision * 5;
+        getAxes[yIndexer].options.min = min;
+        getAxes[yIndexer].options.max = max;
+        this.chart.setupGrid();
+        this.chart.draw();
+        this.yAxis[this.activeSeries - 1].position = base;
+        this.offsetChange.next({axisNum: this.activeSeries - 1, offset: base});
+        this.previousYPos = e.originalEvent.touches[0].clientY;
+    }
+
+    seriesAnchorTouchStart(event) {
+        if (this.dataContainers == undefined) { return; }
+        let offsets = this.chart.offset();
+        let plotRelXPos = event.originalEvent.touches[0].clientX - offsets.left;
+        let plotRelYPos = event.originalEvent.touches[0].clientY - offsets.top;
+        let getAxes = this.chart.getAxes();
+        for (let i = 0; i < this.dataContainers.length; i++) {
+            if (this.dataContainers[i].data.length < 1) { return; }
+            let yIndexer = 'y' + (i === 0 ? '' : (i + 1).toString()) + 'axis';
+            let seriesAnchorPixPos = getAxes[yIndexer].p2c(this.dataContainers[i].seriesOffset);
+            if (plotRelXPos > -20 && plotRelXPos < 5 && plotRelYPos < seriesAnchorPixPos + 10 && plotRelYPos > seriesAnchorPixPos - 10) {
+                this.overSeriesAnchor = {
+                    over: true,
+                    seriesNum: i
                 }
-                this.chart.addCursor(options);
+                this.chart.unbindMoveEvents();
+                this.setActiveSeries(this.overSeriesAnchor.seriesNum + 1);
+                this.chart.triggerRedrawOverlay();
+                $("#loggerChart").bind("touchmove", this.seriesAnchorTouchVertPanRef);
+                $("#loggerChart").bind("touchend", this.unbindCustomEventsRef);
+                $("#loggerChart").bind("touchleave", this.unbindCustomEventsRef);
+                this.previousYPos = event.originalEvent.touches[0].clientY;
+                return;
             }
         }
-        else if (this.cursorType.toLowerCase() === 'track') {
-            for (let i = 0; i < 2; i++) {
-                let series = this.chart.getData();
-                let color = series[this.activeChannels[i] - 1].color
-                let options = {
-                    name: 'cursor' + (i + 1),
-                    mode: 'xy',
-                    lineWidth: 2,
-                    color: color,
-                    showIntersections: false,
-                    showLabel: false,
-                    symbol: 'none',
-                    drawAnchor: true,
-                    snapToPlot: (this.activeChannels[i] - 1),
-                    position: {
-                        relativeX: 0.25 + i * 0.5,
-                        relativeY: 0.25 + i * 0.5
-                    },
-                    dashes: 10 + 10 * i
-                }
-                this.chart.addCursor(options);
-            }
+        this.overSeriesAnchor = {
+            over: false,
+            seriesNum: null
         }
-        else if (this.cursorType.toLowerCase() === 'voltage') {
-            for (let i = 0; i < 2; i++) {
-                let series = this.chart.getData();
-                let color = series[this.activeChannels[i] - 1].color
-                let options = {
-                    name: 'cursor' + (i + 1),
-                    mode: 'y',
-                    lineWidth: 2,
-                    color: color,
-                    showIntersections: false,
-                    showLabel: false,
-                    symbol: 'none',
-                    drawAnchor: true,
-                    position: {
-                        relativeX: 0.25 + i * 0.5,
-                        relativeY: 0.25 + i * 0.5
-                    },
-                    dashes: 10 + 10 * i
-                }
-                this.chart.addCursor(options);
+    }
+
+    setActiveSeries(seriesNum: number) {
+        this.updateYAxisLabels(seriesNum);
+        this.chart.setActiveYAxis(seriesNum);
+        this.activeSeries = seriesNum;
+    }
+
+    updateYAxisLabels(newActiveSeries: number) {
+        //Check if length is > 1 because axes should still switch before data is added. Once data is added, make sure new active series is in range
+        if ((this.dataContainers.length > 1 && newActiveSeries > this.dataContainers.length) || newActiveSeries === this.activeSeries) { return; }
+        let axes = this.chart.getAxes();
+        let yIndexer1 = 'y' + ((newActiveSeries - 1 === 0) ? '' : newActiveSeries.toString()) + 'axis';
+        let yIndexer0 = 'y' + ((this.activeSeries - 1 === 0) ? '' : this.activeSeries.toString()) + 'axis';
+        axes[yIndexer0].options.show = false;
+        axes[yIndexer1].options.show = true;
+        this.chart.setupGrid();
+        this.chart.draw();
+    }
+
+    updateSeriesAnchors(plot: any, ctx: any) {
+        if (this.dataContainers == undefined) { return; }
+        let offsets = this.chart.offset();
+        let getAxes = this.chart.getAxes();
+        let series = this.chart.getData();
+        for (let i = 0; i < this.dataContainers.length; i++) {
+            if (this.dataContainers[i].data.length < 1 || series[i] == undefined) { continue; }
+            let strokeColor = 'black';
+            let lineWidth = 1;
+            if (this.activeSeries - 1 === i) {
+                strokeColor = 'white';
+                lineWidth = 2;
             }
+            let seriesNum = i;
+            let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
+            let offsetVal = this.dataContainers[seriesNum].seriesOffset;
+            let offsetPix = getAxes[yIndexer].p2c(offsetVal);
+            ctx.save();
+            ctx.translate(offsets.left - 11, offsetPix + 10);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, 10);
+            ctx.lineTo(10, 5);
+            ctx.closePath();
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = lineWidth;
+            ctx.stroke();
+            ctx.fillStyle = series[i].color;
+            ctx.fill();
+            ctx.restore();
         }
-    } */
+    }
 }
 
 export interface AxisInfo {
@@ -386,4 +500,8 @@ export interface CursorInfo {
     instrument: 'Osc' | 'LA' | 'Log',
     channel: number,
     position: CursorPositions
+}
+
+export interface PlotDataContainer extends DataContainer {
+    seriesOffset: number
 }

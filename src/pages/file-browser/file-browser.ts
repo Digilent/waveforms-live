@@ -7,6 +7,9 @@ import { ToastService } from '../../services/toast/toast.service';
 import { ExportService } from '../../services/export/export.service';
 import { LoadingService } from '../../services/loading/loading.service';
 
+//Pipes
+import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
+
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
@@ -24,6 +27,10 @@ export class FileBrowserPage {
     public files: any = {};
     private fileSampleRate: number;
     private assumedTransferRate: number = 100000; //100 kBytes per second
+    private maxFileSize: number = 10000000; // 10MB
+    private stopReason: number = 0;
+    private stopReasonArray = ['Log Completed Normally', 'Log Forced', 'Log Error', 'Log Overflow', 'Log Unknown Error'];
+    private unitFormatPipe: UnitFormatPipe;
 
     constructor(
         private deviceManagerService: DeviceManagerService,
@@ -34,7 +41,9 @@ export class FileBrowserPage {
         private alertCtrl: AlertController,
         private loadingService: LoadingService
     ) {
+        this.unitFormatPipe = new UnitFormatPipe();
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+        this.init();
     }
 
     init() {
@@ -180,23 +189,33 @@ export class FileBrowserPage {
         });
     }
 
-    private displayBigFileWarning(fileSize: number): Promise<any> {
+    private displayBigFileWarning(fileSize: number, location: 'local' | 'remote'): Promise<any> {
         return new Promise((resolve, reject) => {
             let estimatedTime = fileSize / this.assumedTransferRate;
-            this.alertWrapper('Warning', 'The specified log file is expected to take ' + estimatedTime.toFixed(0) + ' seconds to transfer. Communication with the instrument will not be possible during the transfer.', 
-                [{
-                    text: 'Cancel',
-                    handler: (data) => {
-                        reject();
-                    }
-                },
-                {
+            let buttons = [{
+                text: 'Cancel',
+                handler: (data) => {
+                    reject();
+                }
+            }];
+            if (fileSize < this.maxFileSize) {
+                buttons.push({
                     text: 'Continue',
                     handler: (data) => {
-                        resolve();
+                        resolve(data);
                     }
-                }]
-            );
+                });
+            }
+            let errMessage = location === 'local' ?
+                'Converting files larger than 10MB is not supported. <br><br>File size: ' + this.unitFormatPipe.transform(fileSize, 'B') + '.<br><br>'
+                : 'Transferring files larger than 10MB is not supported. <br><br>File size: ' + this.unitFormatPipe.transform(fileSize, 'B') + '.<br><br>';
+            let link = location === 'local' ? 
+                'https://reference.digilentinc.com/reference/software/waveforms-live/how-to-convert-dlog' 
+                : 'https://reference.digilentinc.com/reference/software/waveforms-live/how-to-retrieve-dlog';
+            let message = fileSize < this.maxFileSize ? 
+                'The specified log file is expected to take ' + estimatedTime.toFixed(0) + ' seconds to transfer. Communication with the instrument will not be possible during the transfer.'
+                : errMessage + ' <a href="' + link + '" target="_blank">More info</a>';
+            this.alertWrapper('Warning', message, buttons);
         });
     }
 
@@ -207,7 +226,7 @@ export class FileBrowserPage {
                     //file size success
                     console.log(data);
                     if (data.file[0].actualFileSize >= 1000000) {
-                        return this.displayBigFileWarning(data.file[0].actualFileSize);
+                        return this.displayBigFileWarning(data.file[0].actualFileSize, 'remote');
                     }
                     else {
                         return Promise.resolve();
@@ -259,6 +278,10 @@ export class FileBrowserPage {
         if (event.target.files.length === 0) { return; }
         let fileName = event.target.files[0].name;
         let fileSize = event.target.files[0].size;
+        if (fileSize >= this.maxFileSize) {
+            this.displayBigFileWarning(fileSize, 'local').catch((e) => {});
+            return;
+        }
         let fileReader = new FileReader();
         fileReader.onerror = ((e) => {
             console.log('error');
@@ -319,7 +342,7 @@ export class FileBrowserPage {
             this.exportBinaryDataAsCsv(binaryData, fileName);
         }
         else {
-            this.toastService.createToast('fileReadErr', true, undefined, 5000);
+            this.toastService.createToast('logInvalidFileType', true, undefined, 5000);
         }
     }
 
@@ -346,7 +369,7 @@ export class FileBrowserPage {
             xUnit: 's',
             yUnit: 'V',
             channels: [0]
-        }], 500);
+        }], 500, this.stopReasonArray[this.stopReason]);
     }
 
     private convertRemoteFileToCsv(storageLocation: string, file: string) {
@@ -381,20 +404,20 @@ export class FileBrowserPage {
         /* 
         struct _AHdr
         {
-            const uint8_t   endian;             // 0 - little endian 1 - big endian
-            const uint8_t   cbSampleEntry;      // how many bytes per sample, OpenScope = 2
-            const uint16_t  cbHeader;           // how long is this header structure
-            const uint16_t  cbHeaderInFile;     // how much space is taken in the file for the header, sector aligned (512)
-            const uint16_t  format;             // General format of the header and potential data
-            const uint32_t  revision;           // specific header revision (within the general format)
-            const uint64_t  voltageUnits;       // divide the voltage of each sample by this to get volts.
-                uint32_t  stopReason;         // reason for logging stopping; 0 = Normal, 1 = Forced, 2 = Error, 3 = Overflow, 4 = unknown
-                uint64_t  iStart;             // what sample index is the first index in the file, usually 0
-                uint64_t  actualCount;        // how many samples in the file.
-            const uint64_t  sampleFreqUnits;    // divide uSPS by sampleFreqUnits to get samples per second
-                uint64_t  uSPS;               // sample rate in micro samples / second
-            const uint64_t  delayUnits;         // divide psDelay by delayUnits to get the delay in seconds.
-                int64_t   psDelay;            // how many pico seconds a delay from the start of sampling until the first sample was taken, usually 0
+            (0)  const uint8_t   endian;             // 0 - little endian 1 - big endian
+            (1)  const uint8_t   cbSampleEntry;      // how many bytes per sample, OpenScope = 2
+            (2)  const uint16_t  cbHeader;           // how long is this header structure
+            (4)  const uint16_t  cbHeaderInFile;     // how much space is taken in the file for the header, sector aligned (512)
+            (6)  const uint16_t  format;             // General format of the header and potential data
+            (8)  const uint32_t  revision;           // specific header revision (within the general format)
+            (12) const uint64_t  voltageUnits;       // divide the voltage of each sample by this to get volts.
+            (20)       uint32_t  stopReason;         // reason for logging stopping; 0 = Normal, 1 = Forced, 2 = Error, 3 = Overflow, 4 = unknown
+            (24)       uint64_t  iStart;             // what sample index is the first index in the file, usually 0
+            (32)       uint64_t  actualCount;        // how many samples in the file.
+            (40) const uint64_t  sampleFreqUnits;    // divide uSPS by sampleFreqUnits to get samples per second
+            (48)       uint64_t  uSPS;               // sample rate in micro samples / second
+            (56) const uint64_t  delayUnits;         // divide psDelay by delayUnits to get the delay in seconds.
+            (64)       int64_t   psDelay;            // how many pico seconds a delay from the start of sampling until the first sample was taken, usually 0
         } __attribute__((packed)) AHdr;
         */
 
@@ -405,17 +428,18 @@ export class FileBrowserPage {
         let headerFullSize = dataView.getUint16(4, littleEndian);
         let headerFormat = dataView.getUint16(6, littleEndian);
         let headerVersion = dataView.getUint32(8, littleEndian);
+        this.stopReason = dataView.getUint32(20, littleEndian);
 
         // Uint64 cannot be calculated with two getUint32 and then bitshift because it will overflow for bigger numbers.
         // Instead, multiply by 2^(±x) to shift left right by x respectively
-        let sfUnits1 = dataView.getUint32(20, littleEndian);
-        let sfUnits2 = dataView.getUint32(24, littleEndian);
+        let sfUnits1 = dataView.getUint32(40, littleEndian);
+        let sfUnits2 = dataView.getUint32(44, littleEndian);
         let actualSFUnits = littleEndian ? sfUnits2 * Math.pow(2, 32) + sfUnits1 : sfUnits1 * Math.pow(2, 32) + sfUnits2;
 
-        let rate1 = dataView.getUint32(28, littleEndian);
-        let rate2 = dataView.getUint32(32, littleEndian);
+        let rate1 = dataView.getUint32(48, littleEndian);
+        let rate2 = dataView.getUint32(52, littleEndian);
         this.fileSampleRate = (littleEndian ? rate2 * Math.pow(2, 32) + rate1 : rate1 * Math.pow(2, 32) + rate2) / actualSFUnits;
-        console.log(this.fileSampleRate);
+        console.log(littleEndian, headerFullSize, headerFormat, headerVersion, this.stopReason, actualSFUnits , this.fileSampleRate);
         return (headerVersion === 1 && headerFormat === 1 && headerFullSize === 512);
     }
 

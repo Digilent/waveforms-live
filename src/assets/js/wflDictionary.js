@@ -128,7 +128,7 @@ var waveformsLiveDictionary = (function() {
             english: 'All Channels Must Be Assigned A File Name'
         },
         loggerCouldNotKeepUp: {
-            english: 'Error Reading Device Data. Points Were Missed. If Logging And Streaming, Your Log Is Still Running But Data Will No Longer Be Displayed'
+            english: 'Error Reading Device Data. Points Were Missed. Reduce Sample Frequency And Try Again. If Logging And Streaming, The Log Is Still Running But Data Will No Longer Be Displayed'
         },
         loggerProfileLoadErr: {
             english: 'Error Reading Profile. Please Try Again'
@@ -141,6 +141,9 @@ var waveformsLiveDictionary = (function() {
         },
         loggerUnknownRunError: {
             english: 'Error Occurred Starting Or Running Acquisition. Please Try Again'
+        },
+        logInvalidFileType: {
+            english: 'Invalid File Type. The Specified File Does Not Appear To Be A Digilent Log File'
         },
 
         //File
