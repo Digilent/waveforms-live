@@ -1229,6 +1229,7 @@ export class LoggerComponent {
     }
 
     private copyState(instrument: 'analog' | 'digital', respObj, channelInternalIndex: number, onlyCopyState: boolean = false) {
+        if (respObj.statusCode == undefined || respObj.maxSampleCount == undefined || respObj.actualSampleFreq == undefined) { return; }
         let activeChan;
         if (instrument === 'analog') {
             activeChan = this.analogChans[channelInternalIndex];
