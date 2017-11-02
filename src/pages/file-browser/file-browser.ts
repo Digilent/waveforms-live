@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import { ViewController, PopoverController, AlertController } from 'ionic-angular';
 
 //Services
@@ -6,6 +6,7 @@ import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { ToastService } from '../../services/toast/toast.service';
 import { ExportService } from '../../services/export/export.service';
 import { LoadingService } from '../../services/loading/loading.service';
+import { SettingsService } from '../../services/settings/settings.service';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
@@ -31,6 +32,11 @@ export class FileBrowserPage {
     private stopReason: number = 0;
     private stopReasonArray = ['Log Completed Normally', 'Log Forced', 'Log Error', 'Log Overflow', 'Log Unknown Error'];
     private unitFormatPipe: UnitFormatPipe;
+    private showTheAlmightyJasper: boolean = false;
+    private jasperCoords: { x: number, y: number } = { x: 0, y: 0 };
+    public jasperTop: string = '80px';
+    public jasperLeft: string = '80px';
+
 
     constructor(
         private deviceManagerService: DeviceManagerService,
@@ -39,7 +45,9 @@ export class FileBrowserPage {
         private toastService: ToastService,
         private exportService: ExportService,
         private alertCtrl: AlertController,
-        private loadingService: LoadingService
+        private loadingService: LoadingService,
+        private settingsService: SettingsService,
+        private elementRef: ElementRef
     ) {
         this.unitFormatPipe = new UnitFormatPipe();
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
@@ -253,7 +261,7 @@ export class FileBrowserPage {
                 this.showFolder[storageLocation]['files'] = data.file[0].files;
                 if (storageLocation === 'flash') {
                     this.showFolder[storageLocation]['files'] = this.showFolder[storageLocation]['files'].filter((item) => {
-                        return item.indexOf('^^profile^^') !== -1;
+                        return item.indexOf(this.settingsService.profileToken) !== -1;
                     });
                 }
             })
@@ -460,5 +468,26 @@ export class FileBrowserPage {
                     reject(e);
                 });
         });
+    }
+
+    toggleShowJasper() {
+        this.showTheAlmightyJasper = !this.showTheAlmightyJasper;
+    }
+    
+    jasperClick(event) {
+        this.jasperCoords.x = event.clientX;
+        this.jasperCoords.y = event.clientY;
+        this.elementRef.nativeElement.onmousemove = this.elementRef.nativeElement.parentElement.firstElementChild.onmousemove = (e) => {
+            let diffX = this.jasperCoords.x - e.clientX;
+            let diffY = this.jasperCoords.y - e.clientY;
+            this.jasperTop = (parseInt(this.jasperTop) - diffY) + 'px';
+            this.jasperLeft = (parseInt(this.jasperLeft) - diffX) + 'px';
+            this.jasperCoords.x = e.clientX;
+            this.jasperCoords.y = e.clientY;
+        };
+        this.elementRef.nativeElement.onmouseup = this.elementRef.nativeElement.parentElement.firstElementChild.onmouseup = (event) => {
+            this.elementRef.nativeElement.onmousemove = this.elementRef.nativeElement.parentElement.firstElementChild.onmousemove = null;
+            this.elementRef.nativeElement.onmouseup = this.elementRef.nativeElement.parentElement.firstElementChild.onmouseup = null;
+        };
     }
 }

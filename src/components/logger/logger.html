@@ -29,7 +29,9 @@
                     Profile
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <dropdown-popover class="profile-drop-pop" #dropPopProfile [dataArray]="loggingProfiles" (onSelection)="profileSelect($event)" [disabled]="running"></dropdown-popover>
+                    <dropdown-popover class="profile-drop-pop" #dropPopProfile [dataArray]="loggingProfiles" (onSelection)="profileSelect($event)" [disabled]="running"
+                        [tooltip]="tooltipService.getTooltip('logProfile').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                    </dropdown-popover>
                 </ion-col>
             </ion-row>
 
@@ -42,7 +44,8 @@
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover" (tap)="saveAndSetProfile()" [disabled]="running">
+                        <button ion-button class="img-button disable-hover" (tap)="saveAndSetProfile()" [disabled]="running"
+                            [tooltip]="tooltipService.getTooltip('logSaveProfile').message" [tooltipAnimation]="true" tooltipPlacement="left">
                             <img class="custom-image-button svg-size" src="assets/img/save.svg">
                         </button>
                     </div>
@@ -54,7 +57,9 @@
                     Mode
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <dropdown-popover #dropPopMode [dataArray]="modes" (onSelection)="modeSelect($event)" [disabled]="running"></dropdown-popover>
+                    <dropdown-popover #dropPopMode [dataArray]="modes" (onSelection)="modeSelect($event)" [disabled]="running"
+                        [tooltip]="tooltipService.getTooltip('logMode').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                    </dropdown-popover>
                 </ion-col>
             </ion-row>
 
@@ -85,7 +90,9 @@
                     Link
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <dropdown-popover #dropPopLink [id]="'link' + i" [dataArray]="analogLinkOptions[i]" (onSelection)="linkSelect($event, 'analog', i)" [disabled]="running"></dropdown-popover>
+                    <dropdown-popover #dropPopLink [id]="'link' + i" [dataArray]="analogLinkOptions[i]" (onSelection)="linkSelect($event, 'analog', i)" [disabled]="running"
+                        [tooltip]="tooltipService.getTooltip('logLink').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                    </dropdown-popover>
                 </ion-col>
             </ion-row>
 
@@ -94,7 +101,8 @@
                     State
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <input class="custom-input" step="any" [(ngModel)]="series.state" disabled="true" />
+                    <input class="custom-input" step="any" [(ngModel)]="series.state" disabled="true" 
+                        [tooltip]="tooltipService.getTooltip('logState').message" [tooltipAnimation]="true" tooltipPlacement="top" />
                 </ion-col>
             </ion-row>
 
@@ -111,7 +119,8 @@
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
                     <input class="custom-input highlight-input" step="any" [ngModel]="loggerPlotService.vpdArray[loggerPlotService.vpdIndices[i]] | unitFormat:'V/'" 
-                        formatInput (valChange)="yAxisValChange($event, i)" (mousewheel)="mousewheel($event, 'analog', i, 'vpd')" />
+                        formatInput (valChange)="yAxisValChange($event, i)" (mousewheel)="mousewheel($event, 'analog', i, 'vpd')"
+                        [tooltip]="tooltipService.getTooltip('oscVpd').message" [tooltipAnimation]="true" tooltipPlacement="top" />
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
@@ -135,7 +144,8 @@
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
                     <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" 
-                        formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'offset', i)" (mousewheel)="mousewheel($event, 'analog', i, 'offset')" />
+                        formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'offset', i)" (mousewheel)="mousewheel($event, 'analog', i, 'offset')"
+                        [tooltip]="tooltipService.getTooltip('oscOffset').message" [tooltipAnimation]="true" tooltipPlacement="top" />
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
@@ -160,7 +170,8 @@
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" [disabled]="running"
-                            formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" (mousewheel)="mousewheel($event, 'analog', i, 'sampleFreq')" />
+                            formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" (mousewheel)="mousewheel($event, 'analog', i, 'sampleFreq')"
+                            [tooltip]="tooltipService.getTooltip('logSampleFreq').message" [tooltipAnimation]="true" tooltipPlacement="top" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
@@ -193,7 +204,9 @@
                         </div>
                     </ion-col> -->
                     <ion-col class="vpd-input-col no-button-col" center text-center>
-                        <dropdown-popover #dropPopSamples [id]="'samples' + i" [dataArray]="samples" (onSelection)="samplesSelect($event, 'analog', i)" [disabled]="running"></dropdown-popover>
+                        <dropdown-popover #dropPopSamples [id]="'samples' + i" [dataArray]="samples" (onSelection)="samplesSelect($event, 'analog', i)" [disabled]="running"
+                            [tooltip]="tooltipService.getTooltip('logSampleType').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        </dropdown-popover>
                     </ion-col>
                 </ion-row>
 
@@ -210,7 +223,8 @@
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" [disabled]="running" 
-                            formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'samples', i)" (mousewheel)="mousewheel($event, 'analog', i, 'samples')" />
+                            formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'samples', i)" (mousewheel)="mousewheel($event, 'analog', i, 'samples')"
+                            [tooltip]="tooltipService.getTooltip('logSamples').message" [tooltipAnimation]="true" tooltipPlacement="top" />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
@@ -257,7 +271,9 @@
                         Location
                     </ion-col>
                     <ion-col class="vpd-input-col no-button-col" center text-center>
-                        <dropdown-popover #dropPopLocation [id]="'location' + i" [dataArray]="storageLocations" (onSelection)="locationSelect($event, 'analog', i)" [disabled]="running"></dropdown-popover>
+                        <dropdown-popover #dropPopLocation [id]="'location' + i" [dataArray]="storageLocations" (onSelection)="locationSelect($event, 'analog', i)" [disabled]="running"
+                            [tooltip]="tooltipService.getTooltip('logStorageLocation').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        </dropdown-popover>
                     </ion-col>
                 </ion-row>
 
@@ -268,7 +284,8 @@
                     {{series.storageLocation === 'cloud' ? 'Topic' : 'File Name'}}
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <input class="custom-input" step="any" [(ngModel)]="series.uri" placeholder="logData1" [disabled]="running" />
+                    <input class="custom-input" step="any" [(ngModel)]="series.uri" placeholder="logData1" [disabled]="running"
+                        [tooltip]="tooltipService.getTooltip('logFileName').message" [tooltipAnimation]="true" tooltipPlacement="top" />
                 </ion-col>
             </ion-row>
 

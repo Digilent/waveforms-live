@@ -13,6 +13,8 @@ import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { UtilityService } from '../../services/utility/utility.service';
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
 import { ExportService } from '../../services/export/export.service';
+import { SettingsService } from '../../services/settings/settings.service';
+import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 //Interfaces
 /* import { DataContainer } from '../chart/chart.interface'; */
@@ -86,7 +88,6 @@ export class LoggerComponent {
     private digitalChansToRead: number[] = [];
     private chartPanSubscriptionRef;
     private offsetChangeSubscriptionRef;
-    private profileToken: string = '^^profile^^';
 
     private filesInStorage: any = {};
     private destroyed: boolean = false;
@@ -98,7 +99,9 @@ export class LoggerComponent {
         private utilityService: UtilityService,
         public loggerPlotService: LoggerPlotService,
         private exportService: ExportService,
-        private alertCtrl: AlertController
+        private alertCtrl: AlertController,
+        private settingsService: SettingsService,
+        private tooltipService: TooltipService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         console.log(this.activeDevice.instruments.logger);
@@ -151,7 +154,7 @@ export class LoggerComponent {
         );
         for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
             this.analogChans.push(Object.assign({}, this.defaultAnalogParams));
-            this.showAnalogChan.push(i === 0);
+            this.showAnalogChan.push(true);
 
             this.analogLinkOptions[i] = ['no'];
             for (let j = 0; j < this.analogLinkOptions.length; j++) {
@@ -407,6 +410,12 @@ export class LoggerComponent {
     incrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
         let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
         let valString = type === 'sampleFreq' ? axisObj.sampleFreq.toString() : axisObj.maxSampleCount.toString();
+        let valNum = parseFloat(valString);
+        let pow = 0;
+        while (valNum * Math.pow(1000, pow) < 1) {
+            pow++;
+        }
+        valString = (valNum * Math.pow(1000, pow)).toString();
         let leadingNum = parseInt(valString.charAt(0), 10);
         let numberMag = valString.split('.')[0].length - 1;
         leadingNum++;
@@ -414,7 +423,7 @@ export class LoggerComponent {
             leadingNum = 1;
             numberMag++;
         }
-        let newFreq = leadingNum * Math.pow(10, numberMag);
+        let newFreq = (leadingNum * Math.pow(10, numberMag)) / Math.pow(1000, pow);
         this.validateAndApply(newFreq, instrument, axisNum, type);
     }
 
@@ -448,6 +457,12 @@ export class LoggerComponent {
     decrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
         let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
         let valString = type === 'sampleFreq' ? axisObj.sampleFreq.toString() : axisObj.maxSampleCount.toString();
+        let valNum = parseFloat(valString);
+        let pow = 0;
+        while (valNum * Math.pow(1000, pow) < 1) {
+            pow++;
+        }
+        valString = (valNum * Math.pow(1000, pow)).toString();
         let leadingNum = parseInt(valString.charAt(0), 10);
         let numberMag = valString.split('.')[0].length - 1;
         leadingNum--;
@@ -455,7 +470,7 @@ export class LoggerComponent {
             leadingNum = 9;
             numberMag--;
         }
-        let newFreq = leadingNum * Math.pow(10, numberMag);
+        let newFreq = (leadingNum * Math.pow(10, numberMag)) / Math.pow(1000, pow);
         this.validateAndApply(newFreq, instrument, axisNum, type);
     }
 
@@ -567,19 +582,12 @@ export class LoggerComponent {
 
     private copyLoggingProfile(instrument: 'analog' | 'digital', channel: number, source: any) {
         let instrumentChan = instrument === 'analog' ? this.analogChans : this.digitalChans;
-        instrumentChan[channel].count = source.count;
         instrumentChan[channel].maxSampleCount = source.maxSampleCount;
         instrumentChan[channel].overflow = source.overflow;
         instrumentChan[channel].sampleFreq = source.sampleFreq;
         instrumentChan[channel].startDelay = source.startDelay;
-        instrumentChan[channel].startIndex = source.startIndex;
         instrumentChan[channel].storageLocation = source.storageLocation;
-
-        if (instrument === 'analog') {
-            (<AnalogLoggerParams>instrumentChan[channel]).gain = source.gain;
-            (<AnalogLoggerParams>instrumentChan[channel]).vOffset = source.vOffset;
-        }
-        else {
+        if (instrument === 'digital') {
             (<DigitalLoggerParams>instrumentChan[channel]).bitMask = source.bitMask;
         }
     }
@@ -694,8 +702,8 @@ export class LoggerComponent {
                     console.log(data);
                     let profileFileNames = [];
                     for (let i = 0; i < data.file[0].files.length; i++) {
-                        if (data.file[0].files[i].indexOf(this.profileToken) !== -1) {
-                            profileFileNames.push(data.file[0].files[i].replace(this.profileToken, ''));
+                        if (data.file[0].files[i].indexOf(this.settingsService.profileToken) !== -1) {
+                            profileFileNames.push(data.file[0].files[i].replace(this.settingsService.profileToken, ''));
                         }
                     }
                     console.log(profileFileNames);
@@ -726,7 +734,7 @@ export class LoggerComponent {
 
     private readProfile(profileName: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.activeDevice.file.read('flash', this.profileToken + profileName, 0, -1).subscribe(
+            this.activeDevice.file.read('flash', this.settingsService.profileToken + profileName, 0, -1).subscribe(
                 (data) => {
                     console.log(data);
                     let parsedData;
@@ -833,7 +841,7 @@ export class LoggerComponent {
             for (let i = 0; i < str.length; i++) {
                 bufView[i] = str.charCodeAt(i);
             }
-            this.activeDevice.file.write('flash', this.profileToken + profileName + '.json', buf).subscribe(
+            this.activeDevice.file.write('flash', this.settingsService.profileToken + profileName + '.json', buf).subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);
@@ -884,7 +892,7 @@ export class LoggerComponent {
                 chanType.maxSampleCount = trueValue;
                 break;
             case 'sampleFreq':
-                chanType.sampleFreq = trueValue;
+                this.validateAndApply(trueValue, instrument, channel, 'sampleFreq');
                 break;
             default:
                 break;
@@ -1012,11 +1020,17 @@ export class LoggerComponent {
         for (let i = 0; i < this.analogChans.length; i++) {
             this.analogChans[i].count = -1000;
             this.analogChans[i].startIndex = -1;
+            if (this.analogChans[i].linked) {
+                this.copyLoggingProfile('analog', i, this.analogChans[this.analogChans[i].linkedChan]);
+            }
             analogChanArray.push(i + 1);
         }
         for (let i = 0; i < this.digitalChans.length; i++) {
             this.digitalChans[i].count = -1000;
             this.digitalChans[i].startIndex = -1;
+            if (this.digitalChans[i].linked) {
+                this.copyLoggingProfile('digital', i, this.digitalChans[this.digitalChans[i].linkedChan]);
+            }
             digitalChanArray.push(i + 1);
         }
 

@@ -100,6 +100,9 @@
     padding-bottom: 16px;
     border-bottom: solid #CCCCCC 1px;
     margin-bottom: 16px;
+    ion-col {
+        padding: 0;
+    }
 }
 
 .file-browser-container .subheader
@@ -127,4 +130,38 @@
     height: 462px;
     max-height: 80%;
     overflow: auto;
+}
+
+.file-browser-container .jasper-button
+{
+    height: 20px;
+    width: 20px;
+    background-color: #535353;
+}
+
+.file-browser-container .jasper-pic
+{
+    max-height: 25%;
+    max-width: 25%;
+    position: absolute;
+    z-index: 1000;
+    opacity: 0;
+    //display: none;
+    visibility: hidden;
+    -webkit-transition: opacity 3s;
+    transition: opacity 3s;
+    width: 150px;
+    height: 150px;
+    cursor: move;
+    img {
+        pointer-events: none;
+        max-height: 100%;
+    }
+}
+
+.file-browser-container .jasper-show
+{
+    //display: block;
+    visibility: visible;
+    opacity: 1;
 }

@@ -19,6 +19,7 @@ export class SettingsService {
     public useDevBuilds: boolean = false;
     public androidAppLink = "market://details?id=com.digilent.waveformslive";
     public iosAppLink = "https://itunes.apple.com/us/app/waveforms-live/id1244242035";
+    readonly profileToken: string = 'profile.';
 
     public knownFirmwareUrls: { openscopeMz: { prettyName: string, listUrl: string, devListUrl: string, firmwareUrl: string, devFirmwareUrl: string } } = {
         openscopeMz: {

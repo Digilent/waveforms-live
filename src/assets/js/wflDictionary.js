@@ -386,7 +386,38 @@ var waveformsLiveDictionary = (function() {
         },
         configDeviceRetryEnumerate: {
             english: 'Retry Enumeration'
+        },
+        logProfile: {
+            english: 'Log Profile'
+        },
+        logSaveProfile: {
+            english: 'Save Profile'
+        },
+        logMode: {
+            english: 'Log Mode'
+        },
+        logLink: {
+            english: 'Link Channel To Another'
+        },
+        logState: {
+            english: 'Device State'
+        },
+        logSampleFreq: {
+            english: 'Sample Frequency'
+        },
+        logSamples: {
+            english: 'Number Of Samples'
+        },
+        logSampleType: {
+            english: 'Sampling Type'
+        },
+        logStorageLocation: {
+            english: 'Log File Storage Location'
+        },
+        logFileName: {
+            english: 'Log File Name'
         }
+
     };
 
     var statusCodes = {

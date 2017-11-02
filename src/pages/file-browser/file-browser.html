@@ -1,8 +1,16 @@
 <ion-content class="file-browser-container">
+    <div class="jasper-pic" [ngClass]="{'jasper-show': showTheAlmightyJasper}" [style.top]="jasperTop" [style.left]="jasperLeft" (mousedown)="jasperClick($event)">
+        <img src="assets/img/jasper-vogel.svg">
+    </div>
     <div class="main-content-container">
-        <div class="header">
-            File Explorer
-        </div>
+        <ion-row class="header">
+            <ion-col text-left center>
+                File Explorer
+            </ion-col>
+            <ion-col text-right center>
+                <button class="jasper-button" (tap)="toggleShowJasper()"></button>
+            </ion-col>
+        </ion-row>
     
         <div class="tree-container">
             <div *ngIf="storageLocations.length < 1" class="no-storage-found">
