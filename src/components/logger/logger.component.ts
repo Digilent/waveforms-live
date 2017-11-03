@@ -82,7 +82,7 @@ export class LoggerComponent {
     public digitalLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
     public running: boolean = false;
-    private dataContainers: PlotDataContainer[] = [];
+    public dataContainers: PlotDataContainer[] = [];
     public viewMoved: boolean = false;
     private analogChansToRead: number[] = [];
     private digitalChansToRead: number[] = [];
@@ -101,7 +101,7 @@ export class LoggerComponent {
         private exportService: ExportService,
         private alertCtrl: AlertController,
         private settingsService: SettingsService,
-        private tooltipService: TooltipService
+        public tooltipService: TooltipService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         console.log(this.activeDevice.instruments.logger);

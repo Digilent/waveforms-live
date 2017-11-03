@@ -12,6 +12,7 @@ import { ProgressBarComponent } from '../../components/progress-bar/progress-bar
 import { DigilentChartModule } from 'digilent-chart-angular2/modules'; 
 import { FormatInputDirective } from '../../directives/format-input/format-input.directive';
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
+import { MathPopoverComponent } from '../../components/math-popover/math-popover.component';
  
 @NgModule({
     imports: [
@@ -20,7 +21,8 @@ import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.co
         IonicModule.forRoot(DropDownMenu),
         IonicModule.forRoot(DropdownPopoverComponent),
         IonicModule.forRoot(ProgressBarComponent),
-        IonicModule.forRoot(PinoutPopover)
+        IonicModule.forRoot(PinoutPopover),
+        IonicModule.forRoot(MathPopoverComponent)
     ],
     declarations: [
         GenPopover,
@@ -29,6 +31,7 @@ import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.co
         UnitFormatPipe,
         ProgressBarComponent,
         FormatInputDirective,
+        MathPopoverComponent,
         PinoutPopover
     ],
     exports: [
@@ -42,6 +45,7 @@ import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.co
         ProgressBarComponent,
         DigilentChartModule,
         FormatInputDirective,
+        MathPopoverComponent,
         PinoutPopover
     ]
 })

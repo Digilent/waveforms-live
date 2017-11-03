@@ -34,10 +34,6 @@
 
     <ion-row class="page-row">
         <ion-col class="chart-container-col">
-            <logger-chart></logger-chart>
-            <div class="beta-container">
-                <img src="assets/img/beta.svg" />
-            </div>
             <div class="chart-button-container">
                 <button ion-button class="chart-button disable-hover" [disabled]="!loggerComponent.viewMoved && loggerComponent.running" (tap)="snapViewToFront()">
                     <img class="button-side-svg" src="assets/img/logger-to-front.svg" />
@@ -52,7 +48,80 @@
                     PIN
                 </button>
             </div>
+            <div class="chart-and-bottom-container">
+                <div class="logger-page-chart-container">
+                    <div class="beta-container">
+                        <img src="assets/img/beta.svg" />
+                    </div>
+                    <logger-chart></logger-chart>
+                </div>
+                <div class="logger-chart-bottom-container">
+                    <ion-row class="chart-info">
+                        <ion-col center class="info-col">
+                            <ion-row center class="cursor-container">
+                                <button ion-button icon-right class="text-button-side disable-hover" (tap)="openMathPopover($event)" [tooltip]="tooltipService.getTooltip('mathButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
+                                    <span class="collapse-button">Math</span>
+                                    <img class="button-side-svg" src="assets/img/math.svg" />
+                                </button>
+                                <button ion-button class="icon-only-button-side disable-hover" (tap)="updateMath()" [tooltip]="tooltipService.getTooltip('refreshMathButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
+                                    <img class="button-side-svg" src="assets/img/refresh.svg" />
+                                </button>
+                                <ion-col center class="cursor-info-col" id="test-test">
+                                    <span *ngIf="selectedMathInfo[0]">
+                                        <span [style.color]="loggerPlotService.chart.getData()[selectedMathInfo[0].mathChannel.seriesOffset].color">&#9632;</span>
+                                        {{selectedMathInfo[0].mathInfo}}: {{selectedMathInfo[0].value}}
+                                    </span>
+                                    <br>
+                                    <span *ngIf="selectedMathInfo[1]">
+                                        <span [style.color]="loggerPlotService.chart.getData()[selectedMathInfo[1].mathChannel.seriesOffset].color">&#9632;</span>
+                                        {{selectedMathInfo[1].mathInfo}}: {{selectedMathInfo[1].value}}
+                                    </span>
+                                </ion-col>
+                                <ion-col center class="cursor-info-col">
+                                    <span *ngIf="selectedMathInfo[2]">
+                                        <span [style.color]="loggerPlotService.chart.getData()[selectedMathInfo[2].mathChannel.seriesOffset].color">&#9632;</span>
+                                        {{selectedMathInfo[2].mathInfo}}: {{selectedMathInfo[2].value}}
+                                    </span>
+                                    <br>
+                                    <span *ngIf="selectedMathInfo[3]">
+                                        <span [style.color]="loggerPlotService.chart.getData()[selectedMathInfo[3].mathChannel.seriesOffset].color">&#9632;</span>
+                                        {{selectedMathInfo[3].mathInfo}}: {{selectedMathInfo[3].value}}
+                                    </span>
+                                </ion-col>
+                            </ion-row>
+                        </ion-col>
+                        <ion-col *ngIf="cursorsEnabled" center class="info-col">
+                            <ion-row center class="cursor-container">
+                                <button ion-button icon-right class="text-button-side disable-hover" (tap)="openCursorModal($event)" [tooltip]="tooltipService.getTooltip('cursorButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
+                                    <span class="collapse-button">Cursors</span>
+                                    <img class="button-side-svg" src="assets/img/edit.svg" />
+                                </button>
+                                <!-- <ion-col center *ngIf="cursorType.toLowerCase() === 'time'" class="cursor-info-col">
+                                    1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
+                                </ion-col>
+                                <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'time'">
+                                    &Delta;X: {{getCursorInfo('xDelta')}} <br> 1/&Delta;X: {{getCursorInfo('xFreq')}}
+                                </ion-col>
+                                <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'track'">
+                                    1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
+                                </ion-col>
+                                <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'track'">
+                                    &Delta;X: {{getCursorInfo('xDelta')}} &Delta;Y: {{getCursorInfo('yDelta')}} <br>
+                                    1/&Delta;X: {{getCursorInfo('xFreq')}}
+                                </ion-col>
+                                <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'voltage'">
+                                    1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
+                                </ion-col>
+                                <ion-col center class="cursor-info-col" *ngIf="cursorType.toLowerCase() === 'voltage'">
+                                    &Delta;Y: {{getCursorInfo('yDelta')}}
+                                </ion-col> -->
+                            </ion-row>
+                        </ion-col>
+                    </ion-row>
+                </div>
+            </div>
         </ion-col>
+        
         <ion-col class="controls-col">
             <logger-component #loggerComponent></logger-component>
         </ion-col>

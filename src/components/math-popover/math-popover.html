@@ -1,0 +1,19 @@
+<div class="math-modal-wrapper">
+    <div text-center class="channel-separator">
+        <button ion-button icon-right class="select-button disable-hover" (click)="openChannelSelect($event)">
+            {{selectedChan.instrument}} Ch {{selectedChan.channel}}
+            <img class="custom-image-button" src="assets/img/arrow-dropdown.svg" />
+        </button>
+    </div>
+    <!--<ion-row *ngFor="let chan of mathChannels, let k = index;">
+        <ion-col *ngIf="activeChannels[k]">
+            <button ion-button (click)="setActiveSeries(chan)" [ngClass]="{'selected-channel': (k+1)==selectedData.channel}" class="text-button-side disable-hover">{{chan}}</button>
+        </ion-col>
+    </ion-row>-->
+    <ion-row *ngFor="let row of buttonNames, let i = index;">
+        <ion-col *ngFor="let button of row, let j = index;" text-center>
+            <div><button ion-button (click)="exportMathInfoToChart(button)" class="text-button-side disable-hover">{{button}}</button></div>
+            <div class="center">{{getMetrics(button)}}</div>
+        </ion-col>
+    </ion-row>
+</div>
