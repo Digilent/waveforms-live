@@ -298,7 +298,7 @@ export class LoggerPlotService {
         });
 
         $("#loggerChart").bind("cursorupdates", (event, cursorData) => {
-            if (cursorData[0] == undefined || this.cursorType.toLowerCase() === 'disabled') { return; }
+            if (cursorData[0] == undefined) { return; }
             for (let i = 0; i < cursorData.length; i++) {
                 if (cursorData[i].cursor !== 'triggerLine') {
                     let cursorNum = parseInt(cursorData[i].cursor.slice(-1)) - 1;

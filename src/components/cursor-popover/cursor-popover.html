@@ -1,0 +1,16 @@
+<div class="cursor-modal-container">
+    <ion-list class="cursor-modal-list">
+        <ion-item class="cursor-modal-item">
+            <h3>Type</h3>
+            <dropdown-popover #typeDropPop [dataArray]="cursorTypeArray" (onSelection)="cursorTypeSelect($event)"></dropdown-popover>
+        </ion-item>
+        <ion-item class="cursor-modal-item">
+            <h3>Cursor 1 Channel</h3>
+            <dropdown-popover #c1DropPop [dataArray]="availableChans" (onSelection)="availableChannelSelect($event, 1)"></dropdown-popover>
+        </ion-item>
+        <ion-item class="cursor-modal-item">
+            <h3>Cursor 2 Channel</h3>
+            <dropdown-popover #c2DropPop [dataArray]="availableChans" (onSelection)="availableChannelSelect($event, 2)"></dropdown-popover>
+        </ion-item>
+    </ion-list>
+</div>

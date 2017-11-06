@@ -13,6 +13,7 @@ import { DigilentChartModule } from 'digilent-chart-angular2/modules';
 import { FormatInputDirective } from '../../directives/format-input/format-input.directive';
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
 import { MathPopoverComponent } from '../../components/math-popover/math-popover.component';
+import { CursorPopoverComponent } from '../../components/cursor-popover/cursor-popover.component';
  
 @NgModule({
     imports: [
@@ -22,7 +23,8 @@ import { MathPopoverComponent } from '../../components/math-popover/math-popover
         IonicModule.forRoot(DropdownPopoverComponent),
         IonicModule.forRoot(ProgressBarComponent),
         IonicModule.forRoot(PinoutPopover),
-        IonicModule.forRoot(MathPopoverComponent)
+        IonicModule.forRoot(MathPopoverComponent),
+        IonicModule.forRoot(CursorPopoverComponent)
     ],
     declarations: [
         GenPopover,
@@ -32,6 +34,7 @@ import { MathPopoverComponent } from '../../components/math-popover/math-popover
         ProgressBarComponent,
         FormatInputDirective,
         MathPopoverComponent,
+        CursorPopoverComponent,
         PinoutPopover
     ],
     exports: [
@@ -46,6 +49,7 @@ import { MathPopoverComponent } from '../../components/math-popover/math-popover
         DigilentChartModule,
         FormatInputDirective,
         MathPopoverComponent,
+        CursorPopoverComponent,
         PinoutPopover
     ]
 })

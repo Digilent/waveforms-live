@@ -1248,8 +1248,9 @@ export class LoggerComponent {
         if (instrument === 'analog') {
             activeChan = this.analogChans[channelInternalIndex];
             if (!onlyCopyState) {
-                activeChan.gain = respObj.actualGain;
-                activeChan.vOffset = respObj.actualVOffset / 1000;
+                //Perhaps update the window to match gain?
+                /* activeChan.gain = respObj.actualGain;
+                activeChan.vOffset = respObj.actualVOffset / 1000; */
             }
         }
         else {
