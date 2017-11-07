@@ -91,6 +91,7 @@ export class LoggerComponent {
 
     private filesInStorage: any = {};
     private destroyed: boolean = false;
+    public dataAvailable: boolean = false;
 
     constructor(
         private devicemanagerService: DeviceManagerService,
@@ -919,6 +920,7 @@ export class LoggerComponent {
             this.dataContainers[i].data = [];
         }
         this.loggerPlotService.setData(this.dataContainers, false);
+        this.dataAvailable = false;
     }
 
     private parseReadResponseAndDraw(readResponse) {
@@ -943,6 +945,7 @@ export class LoggerComponent {
         }
         this.setViewToEdge();
         this.loggerPlotService.setData(this.dataContainers, false);
+        this.dataAvailable = true;
     }
 
     private existingFileFoundAndValidate(loading): { reason: number } {

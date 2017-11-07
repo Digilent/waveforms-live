@@ -280,6 +280,7 @@ export class LoggerPlotService {
                 this.yAxis[panData.axisNum - 1].position = panData.mid;
                 this.offsetChange.next({axisNum: panData.axisNum - 1, offset: panData.mid});
             }
+            this.refreshCursors();
         });
 
         $("#loggerChart").bind("mouseWheelRedraw", (event, wheelData) => {
@@ -295,6 +296,7 @@ export class LoggerPlotService {
                 this.vpdIndices[wheelData.axisNum - 1] = wheelData.perDivArrayIndex;
                 this.vpdArray[wheelData.axisNum - 1] = this.vpdArray[this.vpdIndices[wheelData.axisNum - 1]];
             }
+            this.refreshCursors();
         });
 
         $("#loggerChart").bind("cursorupdates", (event, cursorData) => {
@@ -349,6 +351,27 @@ export class LoggerPlotService {
                 return;
             }
         });
+    }
+
+    refreshCursors() {
+        let cursors = this.chart.getCursors();
+        let cursorsToUpdate = [];
+        let newOptions = [];
+        for (let i = 0; i < cursors.length; i++) {
+            if (cursors[i].mode === 'y') { return; }
+            if (cursors[i].name !== 'triggerLine') {
+                cursorsToUpdate.push(cursors[i]);
+                let cursorNum = parseInt(cursors[i].name.slice(-1)) - 1;
+                newOptions.push({
+                    position: {
+                        x: this.cursorPositions[cursorNum].x || 0,
+                        y: this.cursorPositions[cursorNum].y || 0
+                    }
+                });
+            }
+        }
+
+        this.chart.setMultipleCursors(cursorsToUpdate, newOptions);
     }
 
     unbindCustomEvents(e) {

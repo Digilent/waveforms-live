@@ -59,7 +59,7 @@
                     <ion-row class="chart-info">
                         <ion-col center class="info-col">
                             <ion-row center class="cursor-container">
-                                <button ion-button icon-right class="text-button-side disable-hover" (tap)="openMathPopover($event)" [tooltip]="tooltipService.getTooltip('mathButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
+                                <button ion-button icon-right class="text-button-side disable-hover" [disabled]="loggerComponent.running || !loggerComponent.dataAvailable" (tap)="openMathPopover($event)" [tooltip]="tooltipService.getTooltip('mathButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
                                     <span class="collapse-button">Math</span>
                                     <img class="button-side-svg" src="assets/img/math.svg" />
                                 </button>
@@ -92,7 +92,7 @@
                         </ion-col>
                         <ion-col center class="info-col">
                             <ion-row center class="cursor-container">
-                                <button ion-button icon-right class="text-button-side disable-hover" (tap)="openCursorModal($event)" [tooltip]="tooltipService.getTooltip('cursorButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
+                                <button ion-button icon-right class="text-button-side disable-hover" [disabled]="loggerComponent.running || !loggerComponent.dataAvailable" (tap)="openCursorModal($event)" [tooltip]="tooltipService.getTooltip('cursorButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
                                     <span class="collapse-button">Cursors</span>
                                     <img class="button-side-svg" src="assets/img/edit.svg" />
                                 </button>
