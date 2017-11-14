@@ -3,7 +3,6 @@ import { Component, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 //Components
-import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 import { DropdownPopoverComponent } from '../../components/dropdown-popover/dropdown-popover.component';
 
 //Interfaces

@@ -5,7 +5,7 @@ import { NavController, NavParams, ModalController, PopoverController } from 'io
 import { LoggerComponent } from '../../components/logger/logger.component';
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
-import { MathPopoverComponent, MathPassData, MathChannel, MathOutput, MathInfoType } from '../../components/math-popover/math-popover.component';
+import { MathPopoverComponent, MathPassData, MathOutput } from '../../components/math-popover/math-popover.component';
 import { CursorPopoverComponent, CursorPassData, CursorChannel, CursorSelection } from '../../components/cursor-popover/cursor-popover.component';
 
 //Pages
