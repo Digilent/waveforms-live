@@ -85,7 +85,7 @@ export class LoggerPage {
         modal.present();
     }
 
-    presentExportPop() {
+    presentExportPop(event) {
         let popover = this.popoverCtrl.create(GenPopover, {
             dataArray: ['Export CSV', 'Export PNG']
         });

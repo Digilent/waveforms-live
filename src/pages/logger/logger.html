@@ -38,7 +38,7 @@
                 <button ion-button class="chart-button disable-hover" [disabled]="!loggerComponent.viewMoved && loggerComponent.running" (tap)="snapViewToFront()">
                     <img class="button-side-svg" src="assets/img/logger-to-front.svg" />
                 </button>
-                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="presentExportPop()">
+                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="presentExportPop($event)">
                     <img class="button-side-svg" src="assets/img/download.svg" />
                 </button>
                 <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="openFileBrowser()">
