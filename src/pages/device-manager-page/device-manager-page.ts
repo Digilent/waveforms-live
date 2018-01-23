@@ -3,7 +3,7 @@ import { PopoverController, App, NavController, ModalController, Platform, Alert
 
 //Pages
 import { InstrumentPanelPage } from '../../pages/instrument-panel/instrument-panel';
-import { DeviceConfigureModal } from '../../pages/device-configure-modal/device-configure-modal';
+import { DeviceConfigurePage } from '../../pages/device-configure/device-configure';
 import { LoadFirmwarePage } from '../../pages/load-firmware/load-firmware';
 import { UpdateFirmwarePage } from '../../pages/update-firmware/update-firmware';
 import { CalibratePage } from '../../pages/calibrate/calibrate';
@@ -309,7 +309,7 @@ export class DeviceManagerPage {
         /*let modal = this.modalCtrl.create(DeviceConfigureModal, deviceConfigureParams);
         modal.present();*/
         console.log('opening configure modal');
-        this.navCtrl.push(DeviceConfigureModal, deviceConfigureParams);
+        this.navCtrl.push(DeviceConfigurePage, deviceConfigureParams);
     }
 
     toggleAddDevMenu() {
@@ -385,7 +385,7 @@ export class DeviceManagerPage {
                 modal.onWillDismiss((data) => {
                 });
                 modal.present();*/
-                this.navCtrl.push(DeviceConfigureModal, deviceConfigureParams);
+                this.navCtrl.push(DeviceConfigurePage, deviceConfigureParams);
             },
             (err) => {
                 console.log(err);

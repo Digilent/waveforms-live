@@ -2,8 +2,9 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
+//Pages
 import { DeviceManagerPage } from './device-manager-page';
-import { DeviceConfigureModal } from '../device-configure-modal/device-configure-modal';
+import { DeviceConfigurePage } from '../device-configure/device-configure';
 
 //Modules
 import { CalibrateModule } from '../calibrate/calibrate.module';
@@ -15,7 +16,7 @@ import { UpdateFirmwareModule } from '../update-firmware/update-firmware.module'
     imports: [
         SharedModule,
         IonicModule.forRoot(DeviceManagerPage),
-        IonicModule.forRoot(DeviceConfigureModal),
+        IonicModule.forRoot(DeviceConfigurePage),
         CalibrateModule,
         WifiSetupModule,
         LoadFirmwareModule,
@@ -23,7 +24,7 @@ import { UpdateFirmwareModule } from '../update-firmware/update-firmware.module'
     ],
     declarations: [
         DeviceManagerPage,
-        DeviceConfigureModal
+        DeviceConfigurePage
     ],
     exports: [
         DeviceManagerPage

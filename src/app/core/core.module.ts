@@ -1,5 +1,6 @@
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 
+//Services
 import { StorageService } from '../../services/storage/storage.service';
 import { Storage } from '@ionic/storage';
 import { DeviceDataTransferService } from '../../services/device/device-data-transfer.service';

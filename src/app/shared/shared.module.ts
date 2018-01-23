@@ -2,18 +2,25 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from 'ionic-angular';
+
+//Modules
+import { DigilentChartModule } from 'digilent-chart-angular2/modules'; 
 import { TooltipModule } from '../../directives/tooltip/tooltip.module';
 
+//Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 import { DropdownPopoverComponent } from '../../components/dropdown-popover/dropdown-popover.component';
 import { DropDownMenu } from '../../libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu.component';
-import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar.component';
-import { DigilentChartModule } from 'digilent-chart-angular2/modules'; 
-import { FormatInputDirective } from '../../directives/format-input/format-input.directive';
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
 import { MathPopoverComponent } from '../../components/math-popover/math-popover.component';
 import { CursorPopoverComponent } from '../../components/cursor-popover/cursor-popover.component';
+
+//Directives
+import { FormatInputDirective } from '../../directives/format-input/format-input.directive';
+
+//Pipes
+import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
  
 @NgModule({
     imports: [

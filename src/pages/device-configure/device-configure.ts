@@ -18,10 +18,10 @@ import { DeviceManagerService } from 'dip-angular2/services';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 @Component({
-    templateUrl: "device-configure-modal.html"
+    templateUrl: "device-configure.html"
 })
 
-export class DeviceConfigureModal {
+export class DeviceConfigurePage {
     @ViewChild('dropdownPop') dropdownPopRef: DropdownPopoverComponent;
     public platform: Platform;
     public loadingCtrl: LoadingController;

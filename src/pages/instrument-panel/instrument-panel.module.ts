@@ -3,6 +3,8 @@ import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
 import { LoggerModule } from '../logger/logger.module';
+import { BodePageModule } from '../bode/bode.module'; 
+import { BodeModalPageModule } from '../bode-modal/bode-modal.module';
 
 import { InstrumentPanelPage } from './instrument-panel';
 import { SilverNeedleChart } from '../../components/chart/chart.component';
@@ -26,7 +28,9 @@ import { ChartAnnotationComponent } from '../../components/chart-annotation/char
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),
         IonicModule.forRoot(LaPopover),
-        IonicModule.forRoot(ChartAnnotationComponent)
+        IonicModule.forRoot(ChartAnnotationComponent),
+        BodePageModule,
+        BodeModalPageModule
     ],
     declarations: [
         LaPopover,
