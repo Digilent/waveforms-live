@@ -2,7 +2,7 @@ import { Component, trigger, state, animate, transition, style } from '@angular/
 import { PopoverController, App, NavController, ModalController, Platform, AlertController, LoadingController } from 'ionic-angular';
 
 //Pages
-import { TestChartCtrlsPage } from '../../pages/test-chart-ctrls/test-chart-ctrls';
+import { InstrumentPanelPage } from '../../pages/instrument-panel/instrument-panel';
 import { DeviceConfigureModal } from '../../pages/device-configure-modal/device-configure-modal';
 import { LoadFirmwarePage } from '../../pages/load-firmware/load-firmware';
 import { UpdateFirmwarePage } from '../../pages/update-firmware/update-firmware';
@@ -855,7 +855,7 @@ export class DeviceManagerPage {
         if (this.devices[deviceIndex].ipAddress === 'local') {
             this.deviceManagerService.addDeviceFromDescriptor('local', { device: [this.devices[deviceIndex].deviceDescriptor] });
             console.log(this.deviceManagerService);
-            this.navCtrl.setRoot(TestChartCtrlsPage, {
+            this.navCtrl.setRoot(InstrumentPanelPage, {
                 tutorialMode: this.tutorialMode
             });
             return;
@@ -928,7 +928,7 @@ export class DeviceManagerPage {
                         this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
                             console.warn(e);
                         });
-                        this.navCtrl.setRoot(TestChartCtrlsPage, {
+                        this.navCtrl.setRoot(InstrumentPanelPage, {
                             tutorialMode: this.tutorialMode
                         });
                     })

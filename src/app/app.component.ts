@@ -3,7 +3,7 @@ import { Platform, MenuController, Nav } from 'ionic-angular';
 import { StatusBar, Splashscreen } from 'ionic-native';
 
 //Pages
-import { TestChartCtrlsPage } from '../pages/test-chart-ctrls/test-chart-ctrls';
+import { InstrumentPanelPage } from '../pages/instrument-panel/instrument-panel';
 import { SettingsPage } from '../pages/settings/settings';
 import { DeviceManagerPage } from '../pages/device-manager-page/device-manager-page';
 
@@ -72,7 +72,7 @@ export class MyApp {
         // close the menu when clicking a link from the menu
         this.menu.close();
         // navigate to the new page if it is not the current page
-        if (page.component === TestChartCtrlsPage || page.component === DeviceManagerPage) {
+        if (page.component === InstrumentPanelPage || page.component === DeviceManagerPage) {
             this.nav.setRoot(page.component);
         }
         else {

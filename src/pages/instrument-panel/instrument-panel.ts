@@ -16,12 +16,12 @@ import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 
 //Interfaces
-import { PreviousLaSettings, PreviousOscSettings, PreviousTrigSettings } from './test-chart-ctrls.interface';
+import { PreviousLaSettings, PreviousOscSettings, PreviousTrigSettings } from './instrument-panel.interface';
 
 @Component({
-    templateUrl: 'test-chart-ctrls.html'
+    templateUrl: 'instrument-panel.html'
 })
-export class TestChartCtrlsPage {
+export class InstrumentPanelPage {
     @ViewChild('chart1') chart1: SilverNeedleChart;
     @ViewChild('triggerComponent') triggerComponent: TriggerComponent;
     @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;

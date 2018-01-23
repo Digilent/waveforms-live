@@ -4,7 +4,7 @@ import { IonicModule } from 'ionic-angular';
 
 import { LoggerModule } from '../logger/logger.module';
 
-import { TestChartCtrlsPage } from './test-chart-ctrls';
+import { InstrumentPanelPage } from './instrument-panel';
 import { SilverNeedleChart } from '../../components/chart/chart.component';
 import { XAxisComponent } from '../../components/xaxis-controls/xaxis-controls.component';
 import { YAxisComponent } from '../../components/yaxis-controls/yaxis-controls.component';
@@ -22,7 +22,7 @@ import { ChartAnnotationComponent } from '../../components/chart-annotation/char
     imports: [
         SharedModule,
         LoggerModule,
-        IonicModule.forRoot(TestChartCtrlsPage),
+        IonicModule.forRoot(InstrumentPanelPage),
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),
         IonicModule.forRoot(LaPopover),
@@ -30,7 +30,7 @@ import { ChartAnnotationComponent } from '../../components/chart-annotation/char
     ],
     declarations: [
         LaPopover,
-        TestChartCtrlsPage,
+        InstrumentPanelPage,
         ModalCursorPage,
         MathModalPage,
         SilverNeedleChart,
@@ -43,6 +43,6 @@ import { ChartAnnotationComponent } from '../../components/chart-annotation/char
         DcSupplyComponent,
         ChartAnnotationComponent
     ],
-    exports: [TestChartCtrlsPage]
+    exports: [InstrumentPanelPage]
 })
 export class InstrumentPanelModule { }
