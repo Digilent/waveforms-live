@@ -7,7 +7,7 @@ import { BodePageModule } from '../bode/bode.module';
 import { BodeModalPageModule } from '../bode-modal/bode-modal.module';
 
 import { InstrumentPanelPage } from './instrument-panel';
-import { SilverNeedleChart } from '../../components/chart/chart.component';
+import { InstrumentPanelChart } from '../../components/instrument-panel-chart/instrument-panel-chart.component';
 import { XAxisComponent } from '../../components/xaxis-controls/xaxis-controls.component';
 import { YAxisComponent } from '../../components/yaxis-controls/yaxis-controls.component';
 import { TimelineChartComponent } from '../../components/timeline-chart/timeline-chart.component';
@@ -37,7 +37,7 @@ import { ChartAnnotationComponent } from '../../components/chart-annotation/char
         InstrumentPanelPage,
         ModalCursorPage,
         MathModalPage,
-        SilverNeedleChart,
+        InstrumentPanelChart,
         XAxisComponent,
         YAxisComponent,
         TimelineChartComponent,

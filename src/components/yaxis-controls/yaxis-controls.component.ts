@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input } from '@angular/core';
 import { NavParams, ViewController, PopoverController } from 'ionic-angular';
 
 //Components
-import { SilverNeedleChart } from '../chart/chart.component';
+import { InstrumentPanelChart } from '../instrument-panel-chart/instrument-panel-chart.component';
 
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
@@ -16,7 +16,7 @@ import { LockInfoContainer } from './yaxis-controls.interface';
     selector: 'yaxis-controls'
 })
 export class YAxisComponent {
-    @Input() chart: SilverNeedleChart;
+    @Input() chart: InstrumentPanelChart;
     @Input() running: boolean;
     public settingsService: SettingsService;
     public numSeries: number[] = [0, 1];

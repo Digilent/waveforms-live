@@ -3,7 +3,7 @@ import { Platform } from 'ionic-angular';
 import { Transfer } from 'ionic-native';
 
 //Interfaces
-import { DataContainer } from '../../components/chart/chart.interface';
+import { DataContainer } from '../../components/instrument-panel-chart/instrument-panel-chart.interface';
 
 declare var cordova: any;
 

@@ -3,7 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
-import { SilverNeedleChart } from '../../components/chart/chart.component';
+import { InstrumentPanelChart } from '../../components/instrument-panel-chart/instrument-panel-chart.component';
 import { DropdownPopoverComponent } from '../../components/dropdown-popover/dropdown-popover.component';
 
 //Services
@@ -24,7 +24,7 @@ export class ModalCursorPage {
     public popoverCtrl: PopoverController;
     public deviceManagerService: DeviceManagerService;
     public activeDevice: DeviceService;
-    public chartComponent: SilverNeedleChart;
+    public chartComponent: InstrumentPanelChart;
     public activeChans: string[] = [];
 
     constructor(

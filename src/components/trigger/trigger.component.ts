@@ -2,7 +2,7 @@ import { Component, Input, ViewChild, Output, EventEmitter } from '@angular/core
 import { PopoverController } from 'ionic-angular';
 
 //Components
-import { SilverNeedleChart } from '../chart/chart.component';
+import { InstrumentPanelChart } from '../instrument-panel-chart/instrument-panel-chart.component';
 import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
 import { LaPopover } from '../la-popover/la-popover.component';
 
@@ -17,7 +17,7 @@ import { DeviceDataTransferService } from '../../services/device/device-data-tra
     selector: 'trigger'
 })
 export class TriggerComponent {
-    @Input() chart: SilverNeedleChart;
+    @Input() chart: InstrumentPanelChart;
     @Input() running: boolean;
     @Output('triggerTutotrialFinish') triggerTutotrialFinish = new EventEmitter();
     @ViewChild('dropPopSource') dropPopSource: DropdownPopoverComponent;

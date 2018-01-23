@@ -2,7 +2,7 @@ import { App, Platform, NavParams, LoadingController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 
 //Components
-import { SilverNeedleChart } from '../../components/chart/chart.component';
+import { InstrumentPanelChart } from '../../components/instrument-panel-chart/instrument-panel-chart.component';
 import { TriggerComponent } from '../../components/trigger/trigger.component';
 import { FgenComponent } from '../../components/function-gen/function-gen.component';
 import { DigitalIoComponent } from '../../components/digital-io/digital-io.component';
@@ -22,7 +22,7 @@ import { PreviousLaSettings, PreviousOscSettings, PreviousTrigSettings } from '.
     templateUrl: 'instrument-panel.html'
 })
 export class InstrumentPanelPage {
-    @ViewChild('chart1') chart1: SilverNeedleChart;
+    @ViewChild('chart1') chart1: InstrumentPanelChart;
     @ViewChild('triggerComponent') triggerComponent: TriggerComponent;
     @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
     @ViewChild('fgenComponent') fgenComponent: FgenComponent;

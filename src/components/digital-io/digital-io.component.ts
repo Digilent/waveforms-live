@@ -2,7 +2,7 @@ import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { AlertController, PopoverController } from 'ionic-angular';
 
 //Components
-import { SilverNeedleChart } from '../chart/chart.component';
+import { InstrumentPanelChart } from '../instrument-panel-chart/instrument-panel-chart.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -17,7 +17,7 @@ import { DeviceDataTransferService } from '../../services/device/device-data-tra
 export class DigitalIoComponent {
     @Output() headerClicked: EventEmitter<any> = new EventEmitter();
     @Input() contentHidden: boolean;
-    @Input() chart: SilverNeedleChart;
+    @Input() chart: InstrumentPanelChart;
     public alertCtrl: AlertController;
     public toastService: ToastService;
     public tooltipService: TooltipService;

@@ -20,7 +20,7 @@ import { ExportService } from '../../services/export/export.service';
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 
 //Interfaces
-import { DataContainer } from '../chart/chart.interface';
+import { DataContainer } from '../instrument-panel-chart/instrument-panel-chart.interface';
 
 declare var $: any;
 declare var mathFunctions: any;

@@ -2,14 +2,14 @@ import { NavParams, ViewController, Platform, PopoverController } from 'ionic-an
 import { Component } from '@angular/core';
 
 //Components
-import { SilverNeedleChart } from '../../components/chart/chart.component';
+import { InstrumentPanelChart } from '../../components/instrument-panel-chart/instrument-panel-chart.component';
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 
 //Interfaces
-import { Chart } from '../../components/chart/chart.interface';
+import { Chart } from '../../components/instrument-panel-chart/instrument-panel-chart.interface';
 import { SelectedData } from './math-modal.interface';
 
 //Pipes
@@ -23,7 +23,7 @@ declare var mathFunctions: any;
 
 export class MathModalPage {
     public popoverCtrl: PopoverController;
-    public chartComponent: SilverNeedleChart;
+    public chartComponent: InstrumentPanelChart;
     public platform: Platform;
     public viewCtrl: ViewController;
     public params: NavParams;

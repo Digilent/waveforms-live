@@ -16,7 +16,7 @@ import { BodePage } from '../../pages/bode/bode';
 import { LoggerPage } from '../../pages/logger/logger';
 
 //Interfaces
-import { Chart, CursorPositions, DataContainer } from './chart.interface';
+import { Chart, CursorPositions, DataContainer } from './instrument-panel-chart.interface';
 
 //Services
 import { SettingsService } from '../../services/settings/settings.service';
@@ -36,8 +36,8 @@ declare var decimateModule: any;
 declare var cordova: any;
 
 @Component({
-    selector: 'silverNeedleChart',
-    templateUrl: 'chart.html',
+    selector: 'instrument-panel-chart',
+    templateUrl: 'instrument-panel-chart.html',
     animations: [
         trigger('expand', [
             state('true', style({ height: '100%' })),
@@ -48,7 +48,7 @@ declare var cordova: any;
     ]
 })
 
-export class SilverNeedleChart {
+export class InstrumentPanelChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     @Output() resetDevice: EventEmitter<any> = new EventEmitter();
     @Output() stopRun: EventEmitter<any> = new EventEmitter();

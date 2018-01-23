@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 //Components
-import { SilverNeedleChart } from '../chart/chart.component';
+import { InstrumentPanelChart } from '../instrument-panel-chart/instrument-panel-chart.component';
 
 //Services
 import { TooltipService } from '../../services/tooltip/tooltip.service';
@@ -11,7 +11,7 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
     selector: 'xaxis-controls'
 })
 export class XAxisComponent {
-    @Input() chart: SilverNeedleChart;
+    @Input() chart: InstrumentPanelChart;
     public timePerDiv: string;
     public base: string;
     public showTimeSettings: boolean = true;
