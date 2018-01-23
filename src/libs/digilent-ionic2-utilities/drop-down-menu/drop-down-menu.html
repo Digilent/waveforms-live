@@ -1,8 +1,0 @@
-<div class="dropdown">
-  <button ion-button id="buttontest" (click)="toggleShow($event)" class="dropdown-btn disable-hover">{{itemNames[selectedIndex]}} 
-    <img class="custom-image-button dropDownIcon" src="assets/img/arrow-dropdown.svg">
-  </button>
-  <div class="dropdown-content" [ngClass]="{show: showEnabled}">
-    <a *ngFor="let item of itemNames; let i = index;" (click)="onItemSelected(i)">{{item}}</a>
-  </div>
-</div>

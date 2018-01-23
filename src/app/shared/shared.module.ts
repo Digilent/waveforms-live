@@ -10,7 +10,6 @@ import { TooltipModule } from '../../directives/tooltip/tooltip.module';
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 import { DropdownPopoverComponent } from '../../components/dropdown-popover/dropdown-popover.component';
-import { DropDownMenu } from '../../libs/digilent-ionic2-utilities/drop-down-menu/drop-down-menu.component';
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar.component';
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
 import { MathPopoverComponent } from '../../components/math-popover/math-popover.component';
@@ -26,7 +25,6 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
     imports: [
         CommonModule,
         IonicModule.forRoot(GenPopover),
-        IonicModule.forRoot(DropDownMenu),
         IonicModule.forRoot(DropdownPopoverComponent),
         IonicModule.forRoot(ProgressBarComponent),
         IonicModule.forRoot(PinoutPopover),
@@ -35,7 +33,6 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
     ],
     declarations: [
         GenPopover,
-        DropDownMenu,
         DropdownPopoverComponent,
         UnitFormatPipe,
         ProgressBarComponent,
@@ -47,7 +44,6 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
     exports: [
         GenPopover,
         UnitFormatPipe,
-        DropDownMenu,
         DropdownPopoverComponent,
         CommonModule,
         FormsModule,
