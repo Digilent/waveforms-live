@@ -184,6 +184,21 @@ var waveformsLiveDictionary = (function() {
             english: 'The Digilent Agent Has No Active Device. Please Go Back To Device Manager Page And Select A Device'
         },
 
+        // Appears when wfl attempts to send the firmware file to the agent but is unable to do so
+        firmwareTransmissionError: {
+            english: 'WaveForms Live is unable to transfer the firmware file to the agent. Verify that the agent is currently running and try again.'
+        },
+
+        // Appears when wfl tries to download firmware file but is unable to
+        firmwareDownloadError: {
+            english: 'WaveForms Live is unable to download firmware file from Digilent servers. Verify your network connection settings then try again.'
+        },
+
+        // Appears when the agent tries to program firmware to device but encounters an error.
+        firmwareProgrammingError: {
+            english: 'Digilent Agent encountered an error while uploading the firmware to the device. Please try again.'
+        },
+
         //Tutorial Tooltips
         //Appears on main add a device button on device-manager-page
         tutorialAddADevice: {

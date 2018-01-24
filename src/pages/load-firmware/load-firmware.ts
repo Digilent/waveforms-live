@@ -10,6 +10,8 @@ import { SettingsService } from '../../services/settings/settings.service';
 import { DeviceManagerService } from 'dip-angular2/services';
 import { CommandUtilityService } from '../../services/device/command-utility.service';
 
+declare var waveformsLiveDictionary: any;
+
 @Component({
     templateUrl: 'load-firmware.html',
 })
@@ -159,8 +161,17 @@ export class LoadFirmwarePage {
                 loading.dismiss();
             })
             .catch((e) => {
-                console.log('Error caught trying to upload the firmware');
                 loading.dismiss();
+
+                if (e.match(/^TX Error/) !== null) { // note(andrew): there could be more details in the error, but there is no way to tell what they may be, so match w/ regex
+                    this.firmwareStatus = waveformsLiveDictionary.getMessage('firmwareTransmissionError').message;
+                    return;
+                } else if (e === 'Error getting file') {
+                    this.firmwareStatus = waveformsLiveDictionary.getMessage('firmwareDownloadError').message;
+                    return;
+                }
+
+                console.log(`Error caught trying to upload the firmware: ${e}`);
                 this.firmwareStatus = 'Error uploading firmware. Make sure the device is in bootloader mode and try again.';
             });
     }
@@ -177,7 +188,7 @@ export class LoadFirmwarePage {
             (data) => {
                 data = this.arrayBufferToObject(data);
                 if (data.agent == undefined || data.agent[0].statusCode !== 0 || data.agent[0].status === 'error') {
-                    this.firmwareStatus = 'Error uploading firmware';
+                    this.firmwareStatus = waveformsLiveDictionary.getMessage('firmwareProgrammingError').message; // note(andrew): No other information is returned from the agent in regards to what really happened.
                     this.errorUpdatingFirmware = true;
                     return;
                 }
