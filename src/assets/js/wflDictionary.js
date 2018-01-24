@@ -186,17 +186,17 @@ var waveformsLiveDictionary = (function() {
 
         // Appears when wfl attempts to send the firmware file to the agent but is unable to do so
         firmwareTransmissionError: {
-            english: 'WaveForms Live is unable to transfer the firmware file to the agent. Verify that the agent is currently running and try again.'
+            english: 'WaveForms Live Is Unable To Transfer The Firmware File To The Agent. Verify That The Agent Is Currently Running And Try Again'
         },
 
         // Appears when wfl tries to download firmware file but is unable to
         firmwareDownloadError: {
-            english: 'WaveForms Live is unable to download firmware file from Digilent servers. Verify your network connection settings then try again.'
+            english: 'WaveForms Live Is Unable To Download Firmware File From Digilent Servers. Verify Your Network Connection Settings Then Try Again'
         },
 
         // Appears when the agent tries to program firmware to device but encounters an error.
         firmwareProgrammingError: {
-            english: 'Digilent Agent encountered an error while uploading the firmware to the device. Please try again.'
+            english: 'Digilent Agent Encountered An Error While Uploading The Firmware To The Device. Please Try Again'
         },
 
         //Tutorial Tooltips
