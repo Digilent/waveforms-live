@@ -65,6 +65,7 @@ export class LoggerPage {
     }
 
     done() {
+        this.navParams.get('onLoggerDismiss')();
         this.navCtrl.pop();
     }
 
