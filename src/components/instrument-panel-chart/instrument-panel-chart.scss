@@ -37,7 +37,7 @@
 
 .chart-component-wrapper .chart-bottom-container
 {
-    flex: 0 0 auto;
+    flex: 0 0 32px;
 }
 
 .chart-component-wrapper .chart-component-container-div
@@ -84,6 +84,7 @@
 .chart-info
 {
     background-color: #535353;
+    height: 100%;
 }
 
 .chart-info .info-col
