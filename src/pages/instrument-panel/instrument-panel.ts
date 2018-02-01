@@ -127,6 +127,8 @@ export class InstrumentPanelPage {
             this.stopClick();
         }
         this.chart1.initializeValues();
+        this.chart1.clearExtraSeries([]);
+        this.chart1.flotDrawWaveform(true, false);
         this.previousLaSettings = [];
         this.previousOscSettings = [];
         this.previousTrigSettings = {
