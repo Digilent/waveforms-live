@@ -72,7 +72,7 @@ export class SettingsService {
             this.deviceManagerService.setHttpTimeout(parsedData.timeout);
         });
         
-        if ((this.platform.is('ios') || this.platform.is('android')) && this.platform.is('mobileweb')) {
+        if (this.platform.is('ios') || this.platform.is('android') || this.platform.is('mobileweb')) {
             this.isMobile = true;
         }
     }
