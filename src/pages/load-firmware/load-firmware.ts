@@ -281,7 +281,9 @@ export class LoadFirmwarePage {
     dropdownDeviceChange(event) {
         console.log(event);
         this.selectedDevice = event;
-        if (event !== 'Other') {
+        if (event === 'OpenScope MZ') {
+            this.firmwareStatus = `Ready to upload firmware version ${this.deviceFirmwareVersionDictionary[this.selectedDevice].latest}.`;
+        } else if (event !== 'Other') {
             this.firmwareStatus = 'Ready to upload selected firmware.';
         }
         else if (event === 'Other' && !this.arrayBufferFirmware) {
@@ -296,7 +298,7 @@ export class LoadFirmwarePage {
         this.selectedFirmware = event;
 
         this.firmwareStatus = (event === 'Other') ? 'Select a hex file to upload.'
-                            : (event === 'Latest') ? `Ready to upload version ${this.deviceFirmwareVersionDictionary[this.selectedDevice].latest}`
+                            : (event === 'Latest') ? `Ready to upload firmware version ${this.deviceFirmwareVersionDictionary[this.selectedDevice].latest}.`
                             : 'Ready to upload selected firmware.';
     }
 
