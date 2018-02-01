@@ -214,15 +214,18 @@ export class FileBrowserPage {
                     }
                 });
             }
+
+            let dlogLink = 'https://github.com/Digilent/dlog-utils';
+
             let errMessage = location === 'local' ?
-                'Converting files larger than 10MB is not supported. <br><br>File size: ' + this.unitFormatPipe.transform(fileSize, 'B') + '.<br><br>'
+                'Converting files larger than 10MB requires the dlog-utils package. <br><br>File size: ' + this.unitFormatPipe.transform(fileSize, 'B') + '.<br><br>'
                 : 'Transferring files larger than 10MB is not supported. <br><br>File size: ' + this.unitFormatPipe.transform(fileSize, 'B') + '.<br><br>';
-            let link = location === 'local' ? 
-                'https://reference.digilentinc.com/reference/software/waveforms-live/how-to-convert-dlog' 
-                : 'https://reference.digilentinc.com/reference/software/waveforms-live/how-to-retrieve-dlog';
+            let link = 'https://reference.digilentinc.com/reference/software/waveforms-live/faq#faq';
             let message = fileSize < this.maxFileSize ? 
                 'The specified log file is expected to take ' + estimatedTime.toFixed(0) + ' seconds to transfer. Communication with the instrument will not be possible during the transfer.'
                 : errMessage + ' <a href="' + link + '" target="_blank">More info</a>';
+
+                if (location === 'local') message += '<br><a href="' + dlogLink + '" target="_blank">Get dlog-utils</a>';
             this.alertWrapper('Warning', message, buttons);
         });
     }
