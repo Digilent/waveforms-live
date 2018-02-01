@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import { Platform } from 'ionic-angular';
+
 //Services
 import { StorageService } from '../storage/storage.service';
 import { DeviceManagerService } from 'dip-angular2/services';
@@ -19,6 +21,8 @@ export class SettingsService {
     public useDevBuilds: boolean = false;
     public androidAppLink = "market://details?id=com.digilent.waveformslive";
     public iosAppLink = "https://itunes.apple.com/us/app/waveforms-live/id1244242035";
+    public isMobile: boolean = false;
+
     readonly profileToken: string = 'profile.';
 
     public knownFirmwareUrls: { openscopeMz: { prettyName: string, listUrl: string, devListUrl: string, firmwareUrl: string, devFirmwareUrl: string } } = {
@@ -31,7 +35,7 @@ export class SettingsService {
         }
     };
 
-    constructor(_storageService: StorageService, _deviceManagerService: DeviceManagerService) {
+    constructor(_storageService: StorageService, _deviceManagerService: DeviceManagerService, public platform: Platform) {
         console.log('settings service constructor');
         window.addEventListener('beforeunload', (event) => {
             this.storageService.saveData('appLog', JSON.stringify({log:this.logArguments})).catch((e) => {
@@ -67,6 +71,10 @@ export class SettingsService {
             let parsedData = JSON.parse(data);
             this.deviceManagerService.setHttpTimeout(parsedData.timeout);
         });
+        
+        if ((this.platform.is('ios') || this.platform.is('android')) && this.platform.is('mobileweb')) {
+            this.isMobile = true;
+        }
     }
 
     setRouteToStore(route: boolean) {
