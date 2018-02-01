@@ -12,6 +12,8 @@ import { WifiSetupModule } from '../wifi-setup/wifi-setup.module';
 import { LoadFirmwareModule } from '../load-firmware/load-firmware.module';
 import { UpdateFirmwareModule } from '../update-firmware/update-firmware.module';
 
+import { GithubForkRibbon } from '../../components/github-fork-ribbon/github-fork-ribbon';
+
 @NgModule({
     imports: [
         SharedModule,
@@ -23,6 +25,7 @@ import { UpdateFirmwareModule } from '../update-firmware/update-firmware.module'
         UpdateFirmwareModule
     ],
     declarations: [
+        GithubForkRibbon,
         DeviceManagerPage,
         DeviceConfigurePage
     ],

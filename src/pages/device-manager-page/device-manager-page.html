@@ -23,6 +23,9 @@
                     Tutorial
                 </button>
             </ion-col>
+            <ion-col *ngIf="app.isMobile">
+                <a href="https://github.com/Digilent/waveforms-live" target="_blank"><button ion-button class="kickstarter-button disable-hover"><img width="20px" height="20px" class="help-me" src="https://cdnjs.cloudflare.com/ajax/libs/octicons/4.4.0/svg/mark-github.svg">Fork Me!</button></a>
+            </ion-col>
         </ion-row>
         <!--<div>
             <button ion-button (tap)="openGettingStartedPopover($event)" class="kickstarter-button disable-hover">
@@ -36,7 +39,7 @@
             Tutorial
         </button>-->
     </div>
-
+    <github-fork-ribbon *ngIf="!app.isMobile"></github-fork-ribbon>
     <div class="beta-container">
         <img class="digilent-store-icon" src="assets/img/digilent-logo_ni-color_on_white.svg" (click)="routeToDigilent()">
     </div>

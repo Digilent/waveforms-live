@@ -119,6 +119,10 @@
     background-color: #535353;
 }
 
+.button.kickstarter-button > span > img {
+    margin: 5px 10px 5px 5px;
+}
+
 @media screen and (max-width: 415px) {
     .first-tab-container .devicetype-button-container
     {
