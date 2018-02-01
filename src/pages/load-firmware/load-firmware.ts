@@ -28,6 +28,8 @@ export class LoadFirmwarePage {
     public knownDevicePrettyNames: string[] = ['Other'];
     public selectedDevice: string;
     public deviceFirmwareVersionDictionary: any = {};
+    public firmwareNames: string[] = ['Latest', 'Other'];
+    public selectedFirmware: string;
 
     public arrayBufferFirmware: ArrayBuffer;
     public selectedFileInfo: { name: string, size: number } = { name: '', size: 0 };
@@ -237,8 +239,7 @@ export class LoadFirmwarePage {
             if (this.selectedDevice === 'Other' && !this.arrayBufferFirmware) {
                 this.firmwareStatus = 'Please select a hex file to upload or choose from the default firmware.';
                 reject();
-            }
-            else if (this.selectedDevice === 'Other' && this.arrayBufferFirmware) {
+            } else if (this.selectedDevice === 'Other' && this.arrayBufferFirmware) {
                 this.postHexFile()
                     .then(() => {
                         resolve();
@@ -246,8 +247,21 @@ export class LoadFirmwarePage {
                     .catch((e) => {
                         reject(e);
                     });
-            }
-            else {
+            } else if (this.selectedDevice !== 'Other' && this.selectedFirmware === 'Other') {
+                if (!this.arrayBufferFirmware) {
+                    this.firmwareStatus = 'Please select a hex file to upload or select Latest for the most recent firmware version.';
+                    reject();
+                } else {
+                    console.log('Loading OpenScope firmware from local');
+                    this.postHexFile()
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch((e) => {
+                            reject(e);
+                        });
+                }
+            } else {
                 this.getFirmwareFromUrl(this.deviceFirmwareVersionDictionary[this.selectedDevice].firmwareUrl + '/OpenScopeMZ-' + this.deviceFirmwareVersionDictionary[this.selectedDevice].latest + '.hex')
                     .then(() => {
                         resolve();
@@ -276,6 +290,14 @@ export class LoadFirmwarePage {
         else if (event === 'Other' && this.arrayBufferFirmware) {
             this.firmwareStatus = 'Ready to upload "' + this.selectedFileInfo.name + '". File size is ' + this.selectedFileInfo.size + ' bytes.';
         }
+    }
+
+    dropdownFirmwareChange(event) {
+        this.selectedFirmware = event;
+
+        this.firmwareStatus = (event === 'Other') ? 'Select a hex file to upload.'
+                            : (event === 'Latest') ? `Ready to upload version ${this.deviceFirmwareVersionDictionary[this.selectedDevice].latest}`
+                            : 'Ready to upload selected firmware.';
     }
 
     closeModal() {

@@ -14,9 +14,15 @@
                     </ion-item>
                     <ion-item class="configure-item">
                         <ion-label>Firmware</ion-label>
-                        <div item-right class="item-content-right">
-                            <span *ngIf="selectedDevice !== 'Other'">{{deviceFirmwareVersionDictionary[selectedDevice].latest}}</span>
+                        <div item-right class="item-content-right dropdown-popover-item-right">
+                            <dropdown-popover [dataArray]="firmwareNames" (onSelection)="dropdownFirmwareChange($event)" *ngIf="selectedDevice !== 'Other'"></dropdown-popover>
                             <button ion-button class="text-button-side disable-hover item-button" *ngIf="selectedDevice === 'Other'" (click)="openFileInput()">Browse</button>
+                        </div>
+                    </ion-item>
+                    <ion-item class="configure-item" *ngIf="selectedDevice !== 'Other' && selectedFirmware === 'Other'">
+                        <ion-label>Upload Firmware</ion-label>
+                        <div item-right class="item-content-right">
+                            <button ion-button class="text-button-side disable-hover item-button" (click)="openFileInput()">Browse</button>
                         </div>
                     </ion-item>
                     <ion-item class="configure-item">
