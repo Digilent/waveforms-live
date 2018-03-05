@@ -58,7 +58,6 @@ export class FgenComponent {
         this.supportedSignalTypes = this.activeDevice.instruments.awg.chans[0].signalTypes;
         console.log('Num Chans: ' + this.activeDevice.instruments.awg.numChans);
         for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) { // what is this doing here?
-            console.log(i);
             this.showChanSettings.push(false);
             this.frequency.push(1000);
             this.amplitude.push(3);
@@ -156,11 +155,11 @@ export class FgenComponent {
         console.log(trueValue);
         switch (input) {
             case 'frequency':
-                if (trueValue < this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000) {
-                    trueValue = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
+                if (trueValue < this.activeDevice.instruments.awg.chans[index].signalFreqMin / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[index].signalFreqMin / 1000;
                 }
-                else if (trueValue > this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000) {
-                    trueValue = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
+                else if (trueValue > this.activeDevice.instruments.awg.chans[index].signalFreqMax / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[index].signalFreqMax / 1000;
                 }
                 if (this.frequency[index] === trueValue) {
                     console.log('the same');
@@ -174,16 +173,16 @@ export class FgenComponent {
                 break;
             case 'amplitude':
                 trueValue = Math.abs(trueValue);
-                let mid = (this.activeDevice.instruments.awg.chans[0].vOutMax + this.activeDevice.instruments.awg.chans[0].vOutMin) / 2000;
+                let mid = (this.activeDevice.instruments.awg.chans[index].vOutMax + this.activeDevice.instruments.awg.chans[index].vOutMin) / 2000;
                 console.log(mid);
                 if (this.offset[index] >= mid) {
-                    if ((trueValue / 2) + this.offset[index] > this.activeDevice.instruments.awg.chans[0].vOutMax / 1000) {
-                        trueValue = 2 * Math.abs((this.activeDevice.instruments.awg.chans[0].vOutMax / 1000) - this.offset[index]);
+                    if ((trueValue / 2) + this.offset[index] > this.activeDevice.instruments.awg.chans[index].vOutMax / 1000) {
+                        trueValue = 2 * Math.abs((this.activeDevice.instruments.awg.chans[index].vOutMax / 1000) - this.offset[index]);
                     }
                 }
                 else {
-                    if (this.offset[index] - (trueValue / 2) < this.activeDevice.instruments.awg.chans[0].vOutMin / 1000) {
-                        trueValue = 2 * Math.abs((this.activeDevice.instruments.awg.chans[0].vOutMin / 1000) - this.offset[index]);
+                    if (this.offset[index] - (trueValue / 2) < this.activeDevice.instruments.awg.chans[index].vOutMin / 1000) {
+                        trueValue = 2 * Math.abs((this.activeDevice.instruments.awg.chans[index].vOutMin / 1000) - this.offset[index]);
                     }
                 }
                 if (this.amplitude[index] === trueValue) {
@@ -197,11 +196,11 @@ export class FgenComponent {
                 this.amplitude[index] = trueValue;
                 break;
             case 'offset':
-                if (trueValue < this.activeDevice.instruments.awg.chans[0].vOffsetMin / 1000) {
-                    trueValue = this.activeDevice.instruments.awg.chans[0].vOffsetMin / 1000;
+                if (trueValue < this.activeDevice.instruments.awg.chans[index].vOffsetMin / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[index].vOffsetMin / 1000;
                 }
-                else if (trueValue > this.activeDevice.instruments.awg.chans[0].vOffsetMax / 1000) {
-                    trueValue = this.activeDevice.instruments.awg.chans[0].vOffsetMax / 1000;
+                else if (trueValue > this.activeDevice.instruments.awg.chans[index].vOffsetMax / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[index].vOffsetMax / 1000;
                 }
                 if (this.offset[index] === trueValue) {
                     console.log('the same');

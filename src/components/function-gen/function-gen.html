@@ -72,7 +72,7 @@
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <div [tooltip]="tooltipService.getTooltip('awgFreq').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                            <input class="custom-input" step="any" [disabled]="powerOn[i] || waveType[i]==='dc'" [ngModel]="(waveType[i]==='dc' ? 0 : frequency[i]) | unitFormat:'Hz'" (mousewheel)="frequencyMousewheel($event, i)" formatInput (valChange)="formatInputAndUpdate($event, 'frequency')" />
+                            <input class="custom-input" step="any" [disabled]="powerOn[i] || waveType[i]==='dc'" [ngModel]="(waveType[i]==='dc' ? 0 : frequency[i]) | unitFormat:'Hz'" (mousewheel)="frequencyMousewheel($event, i)" formatInput (valChange)="formatInputAndUpdate($event, 'frequency', i)" />
                         </div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
@@ -92,7 +92,7 @@
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <div [tooltip]="tooltipService.getTooltip('awgAmp').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                            <input class="custom-input" step="any" [disabled]="powerOn[i] || waveType[i]==='dc'" [ngModel]="(waveType[i]==='dc' ? 0 : amplitude[i]) | unitFormat:'Vpp'" (mousewheel)="voltageMousewheel($event, 'amplitude', i)" formatInput (valChange)="formatInputAndUpdate($event, 'amplitude')" />
+                            <input class="custom-input" step="any" [disabled]="powerOn[i] || waveType[i]==='dc'" [ngModel]="(waveType[i]==='dc' ? 0 : amplitude[i]) | unitFormat:'Vpp'" (mousewheel)="voltageMousewheel($event, 'amplitude', i)" formatInput (valChange)="formatInputAndUpdate($event, 'amplitude', i)" />
                         </div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
@@ -112,7 +112,7 @@
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
                         <div [tooltip]="tooltipService.getTooltip('awgOffset').message" [tooltipAnimation]="true" tooltipPlacement="top">
-                            <input class="custom-input" step="any" [disabled]="powerOn[i]" [ngModel]="offset[i] | unitFormat:'V'" (mousewheel)="voltageMousewheel($event, 'offset', i)" formatInput (valChange)="formatInputAndUpdate($event, 'offset')" />
+                            <input class="custom-input" step="any" [disabled]="powerOn[i]" [ngModel]="offset[i] | unitFormat:'V'" (mousewheel)="voltageMousewheel($event, 'offset', i)" formatInput (valChange)="formatInputAndUpdate($event, 'offset', i)" />
                         </div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
