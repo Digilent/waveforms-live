@@ -10,6 +10,11 @@
     height: 100%;
 }
 
+.calibration-container .something-else {
+    white-space: normal;
+    text-align: center;
+}
+
 .calibration-container .slide-container
 {
     .slide-zoom {
@@ -21,6 +26,14 @@
         max-height: 100%;
         border: solid black 1px;
     }
+}
+
+.calibration-container .calibration-info-container {
+    min-height: calc(100% - 128px);
+}
+
+.calibration-container .calibration-content-container {
+    min-height: calc(100% - 95px);
 }
 
 .calibration-container .calibration-results
@@ -64,6 +77,8 @@
     font-size: 14px;
     color: #CCCCCC;
     padding: 0 16px 0 16px;
+
+    min-height: calc(100% - 177px);
 }
 /*
 .calibration-container .calibrate-item
@@ -99,6 +114,7 @@
     .item-inner {
         border: none;
     }
+    max-height: 74px;
 }
 
 .calibration-container .dropdown-popover-container
@@ -132,6 +148,11 @@
     color: #CCCCCC;
 }
 
+.calibration-container .done-button {
+    margin-top: 32px;
+    color: #CCCCCC;
+}
+
 .calibration-container .load-calibration-button
 {
     margin-top: 32px;
@@ -145,9 +166,9 @@
 
 .calibration-container .navigation-button-container
 {
-    position: absolute;
+    // position: absolute;
     width: 100%;
-    bottom: 0;
+    // bottom: 0;
     padding: 0 11px 11px 11px;
 }
 
@@ -178,6 +199,40 @@
     progress::-moz-progress-bar {
         background-color: #4487BA;
     }
+} 
+
+.calibration-container .collapse-card
+{
+    min-height: 0;
+    transition: 0.09s all linear;
+}
+
+.calibration-container .card-info
+{
+    background-color: #535353;
+    color: #CCCCCC;
+    font-size: 14px;
+    border: none !important;
+    margin-top: 23px;
+
+    max-height: 25px;
+
+    .item-inner {
+        border: none !important;
+        .input-wrapper {
+            min-width: 100px;
+        }
+    }
+
+    ion-label {
+        margin: 8px 8px 8px 0;
+    }
+}
+
+.calibration-container .advanced-button
+{
+    font-size: 14px;
+    color: white;
 }
 
 @media screen and (max-width: 768px) {

@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, trigger, state, animate, transition, style } from '@angular/core';
 import { NavParams, Slides, ViewController, LoadingController, AlertController } from 'ionic-angular';
 
 //Components
@@ -11,6 +11,24 @@ import { DeviceManagerService } from 'dip-angular2/services';
 
 @Component({
     templateUrl: 'calibrate.html',
+    animations: [
+        trigger('expand', [
+            state('true', style({ height: '150px', visibility: 'visible' })),
+            state('false', style({ height: '0', visibility: 'hidden' })),
+            transition('void => *', animate('0s')),
+            transition('* <=> *', animate('250ms ease-in-out'))
+        ]),
+        trigger('rotate', [
+            state('true', style({ transform: 'rotate(-180deg)' })),
+            state('false', style({ transform: 'rotate(0deg)' })),
+            transition('void => *', animate('0s')),
+            transition('* <=> *', animate('250ms ease-in-out'))
+        ]),
+        trigger('fix', [
+            state('false', style({ position: 'absolute'})),
+            state('true', style({ position: 'static'}))
+        ])
+    ]
 })
 export class CalibratePage {
     @ViewChild('calibrationSlider') slider: Slides;
@@ -34,6 +52,9 @@ export class CalibratePage {
     public selectedLocation: string = 'No Location Selected';
     public calibrationResults: string = 'Results here';
     public calibrationResultsIndicator: string = '';
+
+    public showAdvanced: boolean = false;
+    public saveAsDefault: boolean = true;
 
     constructor(
         _storageService: StorageService,
@@ -63,6 +84,10 @@ export class CalibratePage {
             return;
         }
         swiperInstance.lockSwipes();
+    }
+
+    toggleAdvanced() {
+        this.showAdvanced = !this.showAdvanced;
     }
 
     closeModal() {
@@ -126,7 +151,7 @@ export class CalibratePage {
         swiperInstance.unlockSwipes();
         this.slider.slideTo(2);
         swiperInstance.lockSwipes();
-        this.calibrationResultsIndicator = 'Calibration was successful and has been applied to the instruments but will be lost when powered down.\nPress save to have this calibration load at startup.';
+        this.calibrationResultsIndicator = "Calibration completed succesfully and has been applied to the instruments. By default, this calibration will be applied each time the device boots."; // Select <strong>Save as Default</strong> and click <strong>Done</strong> to apply the calibration everytime the device boots."; // was successful and has been applied to the instruments but will be lost when powered down.\nPress save to have this calibration load at startup.";
         this.getStorageLocations();
     }
 
@@ -135,21 +160,21 @@ export class CalibratePage {
         this.calibrationResultsIndicator = 'Saving calibration.';
         if (this.selectedLocation === 'No Location Selected') {
             this.calibrationResultsIndicator = 'Error saving calibration. Choose a valid storage location.';
-            return Promise.resolve();
+            return Promise.reject(this.calibrationResultsIndicator);
         }
         if (this.calibrationResults.indexOf('IDEAL') !== -1 || this.calibrationResults.indexOf('UNCALIBRATED') !== -1) {
             this.calibrationResultsIndicator = 'Error saving calibration. One or more channels fell back to ideal values. Rerun calibration.';
-            return Promise.resolve();
+            return Promise.reject(this.calibrationResultsIndicator);
         }
         console.log(this.selectedLocation);
-        this.saveCalibration(this.selectedLocation)
+        return this.saveCalibration(this.selectedLocation)
             .then(() => {
                 this.calibrationResultsIndicator = 'Save successful';
                 return Promise.resolve();
             })
             .catch((err) => {
                 this.calibrationResultsIndicator = 'Error saving calibration.';
-                return Promise.resolve();
+                return Promise.reject(this.calibrationResultsIndicator);
             });
     }
 
@@ -263,6 +288,19 @@ export class CalibratePage {
 
     progressBarFinished() {
         this.readCalibrationAfterCalibrating();
+    }
+
+    exitModal() {
+        /* note(andrew): saveCalibrationToDevice returns a Promise, so a conditional ternary
+           is used to substitute an immediately resolved Promise in the case the
+           use doesn't want to save */
+        ((this.saveAsDefault) ? this.saveCalibrationToDevice() : Promise.resolve())
+            .then(() => {
+                this.viewCtrl.dismiss();
+            })
+            .catch((err) => {
+                console.log('Failed to save calibration.');
+            });
     }
 
     loadCalibration(type: string) {

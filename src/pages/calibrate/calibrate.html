@@ -5,28 +5,30 @@
         <ion-slide class="slide-container">
             <div class="content-container">
                 <div class="slide-header">Device Calibration</div>
-                <ion-row>
-                    <ion-col class="icon-col" center text-center>
-                        <img class="custom-image-button intro-icon" src="assets/img/calibrate.svg" />
-                    </ion-col>
-                </ion-row>
-                <ion-row>
-                    <ion-col text-left class="instructions-col"> 
-                        <div class="slide-header">
-                            Instructions:
-                        </div>
-                        <div class="calibration-instructions">
-                            {{calibrationInstructions}}
-                        </div>
-                    </ion-col>
-                </ion-row>
-                <div>
-                    <ion-item class="configure-item">
-                        <ion-label>Status</ion-label>
-                        <div item-right class="item-content-right">
-                            {{calibrationStatus}}
-                        </div>
-                    </ion-item>
+                <div class="calibration-content-container">
+                    <ion-row>
+                        <ion-col class="icon-col" center text-center>
+                            <img class="custom-image-button intro-icon" src="assets/img/calibrate.svg" />
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col text-left class="instructions-col"> 
+                            <div class="slide-header">
+                                Instructions:
+                            </div>
+                            <div class="calibration-instructions">
+                                {{calibrationInstructions}}
+                            </div>
+                        </ion-col>
+                    </ion-row>
+                    <div>
+                        <ion-item class="configure-item">
+                            <ion-label>Status</ion-label>
+                            <div item-right class="item-content-right">
+                                {{calibrationStatus}}
+                            </div>
+                        </ion-item>
+                    </div>
                 </div>
                 <div class="navigation-button-container">
                     <ion-row>
@@ -87,50 +89,69 @@
 
         <ion-slide class="slide-container">
             <div class="content-container">
-                <div class="slide-header">Calibration Information</div>
-                <div class="calibration-instructions calibration-results">
-                    <textarea [ngModel]="calibrationResults" class="calibration-results-container"></textarea>
+                <div class="slide-header">Calibration Complete</div>
+
+                <div class="calibration-info-container">
+                    <div>
+                        <ion-item class="configure-item">
+                            <!-- <ion-label></ion-label> -->
+                            <div class="something-else">
+                                {{ calibrationResultsIndicator }}
+                            </div>
+                            <!-- <div item-right class="item-content-right">
+                            </div> -->
+                        </ion-item>
+                    </div>
+
+                    <div text-center>
+                        <button ion-button icon-right clear class="advanced-button" (tap)="toggleAdvanced()">
+                            Advanced
+                            <div [@rotate]="showAdvanced">
+                                <img class="custom-image-button" src="assets/img/arrow-dropdown-white.svg">
+                            </div>
+                        </button> 
+                    </div>
+
+                    <div class="calibration-instructions calibration-results">
+                        <textarea [ngModel]="calibrationResults" class="calibration-results-container" [@expand]="showAdvanced"></textarea>
+                    </div>
+
+                    <div>
+                        <ion-item class="card-info collapse-card" [@expand]="showAdvanced">
+                            <ion-label>Apply this calibration on boot</ion-label>
+                            <ion-checkbox item-right [(ngModel)]="saveAsDefault"></ion-checkbox>
+                        </ion-item>
+                        <ion-item class="calibration-dropdown-popover-container" [@expand]="showAdvanced">
+                            <span class="storage-label">Storage Location</span>
+                            <dropdown-popover [forcePopover]="true" [dataArray]="storageLocations" [disabled]="!saveAsDefault" (onSelection)="selectStorage($event)"></dropdown-popover>
+                            <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" [disabled]="!saveAsDefault" item-right (click)="getStorageLocations()">
+                                <img class="custom-image-button" src="assets/img/refresh.svg">
+                            </button>
+                        </ion-item>
+                    </div>
                 </div>
-                <div text-center>
-                    <ion-item class="calibration-dropdown-popover-container">
-                        <span class="storage-label">Storage Location</span>
-                        <dropdown-popover [forcePopover]="true" [dataArray]="storageLocations" (onSelection)="selectStorage($event)"></dropdown-popover>
-                        <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" item-right (click)="getStorageLocations()">
-                            <img class="custom-image-button" src="assets/img/refresh.svg">
-                        </button>
-                        <button ion-button icon-right class="storage-refresh-button text-button-side disable-hover" item-right (click)="saveCalibrationToDevice()">
-                            Save
-                            <img class="svg-in-img" src="assets/img/save.svg">
-                        </button>
-                    </ion-item>
-                    <ion-item class="configure-item">
-                        <ion-label>Status</ion-label>
-                        <div item-right class="item-content-right">
-                            {{calibrationResultsIndicator}}
-                        </div>
-                    </ion-item>
-                </div>
+
                 <div class="navigation-button-container">
-                    <ion-row>
-                        <ion-col text-left>
-                            <!--<div class="calibration-instructions status-indicator">Status: </div>
-                            <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>-->
-                        </ion-col>
-                        <ion-col text-center>
-                            <!--<button ion-button icon-right class="text-button-side disable-hover" (click)="saveCalibrationToDevice()">
-                                Save
-                                <img class="svg-in-img" src="assets/img/save.svg">
-                            </button>-->
-                        </ion-col>
-                        <ion-col text-right>
-                            <div>
-                                <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col text-left>
+                                <!--<div class="calibration-instructions status-indicator">Status: </div>
+                                <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>-->
+                            </ion-col>
+                            <ion-col text-center>
+                                <!--<button ion-button icon-right class="text-button-side disable-hover" (click)="saveCalibrationToDevice()">
+                                    Save
+                                    <img class="svg-in-img" src="assets/img/save.svg">
+                                </button>-->
+                            </ion-col>
+                            <ion-col text-right>
+                                <button ion-button icon-right class="storage-refresh-button text-button-side disable-hover" (click)="exitModal()">
                                     Done
                                     <img class="custom-image-button" src="assets/img/check.svg">
                                 </button>
-                            </div>
-                        </ion-col>
-                    </ion-row>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
                 </div>
             </div>
         </ion-slide>
