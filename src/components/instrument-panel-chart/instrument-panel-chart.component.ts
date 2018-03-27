@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, ViewChild, trigger, state, style, transition, animate, ViewContainerRef, ComponentFactoryResolver, ComponentRef } from '@angular/core';
+import { Component, Output, Input, EventEmitter, ViewChild, trigger, state, style, transition, animate, ViewContainerRef, ComponentFactoryResolver, ComponentRef } from '@angular/core';
 import { ModalController, Platform, PopoverController, NavController } from 'ionic-angular';
 
 //Components
@@ -25,6 +25,7 @@ import { ToastService } from '../../services/toast/toast.service';
 import { DeviceDataTransferService } from '../../services/device/device-data-transfer.service';
 import { ExportService } from '../../services/export/export.service';
 import { DeviceManagerService } from 'dip-angular2/services';
+import { UiHelperService, RefreshElementState, TooltipStateBundle } from '../../services/ui-helper/ui-helper.service';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
@@ -52,6 +53,7 @@ export class InstrumentPanelChart {
     @Output() chartLoad: EventEmitter<any> = new EventEmitter();
     @Output() resetDevice: EventEmitter<any> = new EventEmitter();
     @Output() stopRun: EventEmitter<any> = new EventEmitter();
+    @Input() running: boolean = false;
     @ViewChild('fftChart') fftChart: DigilentChart;
     public settingsService: SettingsService;
     public tooltipService: TooltipService;
@@ -95,6 +97,7 @@ export class InstrumentPanelChart {
         over: false,
         seriesNum: null
     }
+
     public seriesAnchorContainer: any[];
     public seriesAnchorVertPanRef: any;
     public seriesAnchorTouchVertPanRef: any;
@@ -110,6 +113,11 @@ export class InstrumentPanelChart {
 
     public TODOKILLME: number = 0;
     public overTriggerLevel: boolean = false;
+
+    public cotTip;
+    public fftTip;
+    public autoScaleTip;
+    public exportChartTip;
 
     private annotationRefs: { ref: ComponentRef<ChartAnnotationComponent>, id: number, view: 'chart' | 'fft' }[] = [];
 
@@ -128,7 +136,8 @@ export class InstrumentPanelChart {
         private navCtrl: NavController,
         private exportService: ExportService,
         private deviceManagerService: DeviceManagerService,
-        private toastService: ToastService
+        private toastService: ToastService,
+        private uiHelper: UiHelperService
     ) {
         this.modalCtrl = _modalCtrl;
         this.settingsService = _settingsService;
@@ -247,6 +256,67 @@ export class InstrumentPanelChart {
         this.activeVPDIndex[seriesNum] = count;
         this.chart.setActiveYIndices(this.activeVPDIndex);
     }
+
+    public cotDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('cotTip', () => {
+        if (this.currentBufferArray.length === 0) {
+            return {
+                message: "Center View On Trigger is disabled because there is no data in the buffer", // todo(andrew): move these into their own entry in the dictionary
+                isDisabled: true
+            };
+        } else if (this.running) {
+            return {
+                message: "Center View On Trigger is disabled because the device is currently running",
+                isDisabled: true
+            };
+        } else {
+            return {
+                message: this.tooltipService.getTooltip('chartCenterOnTrigger').message,
+                isDisabled: false
+            };
+        }
+    });
+
+    public fftDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('fftTip', () => {
+        if (this.currentBufferArray.length == 0) {
+            return {
+                message: "FFT is disabled because there is no data in the buffer",
+                isDisabled: true
+            };
+        } else {
+            return {
+                message: this.tooltipService.getTooltip('chartToggleFft').message,
+                isDisabled: false
+            };
+        }
+    });
+
+    public autoScaleDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('autoScaleTip', () => {
+        if (this.currentBufferArray.length === 0) {
+            return {
+                message: "Auto-Scale is disabled because there is no data in the buffer",
+                isDisabled: true
+            };
+        } else {
+            return {
+                message: this.tooltipService.getTooltip('chartAutoscale').message,
+                isDisabled: false
+            };
+        }
+    });
+
+    public exportChartDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('exportChartTip', () => {
+        if (this.currentBufferArray.length === 0) {
+            return {
+                message: "Export Chart is disabled because there is no data in the buffer",
+                isDisabled: true
+            };
+        } else {
+            return {
+                message: this.tooltipService.getTooltip('chartSettings').message,
+                isDisabled: false
+            };
+        }
+    });
 
     generateNiceNumArray(min: number, max: number) {
         let niceNumArray = [];
