@@ -260,12 +260,12 @@ export class InstrumentPanelChart {
     public cotDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('cotTip', () => {
         if (this.currentBufferArray.length === 0) {
             return {
-                message: "Center View On Trigger is disabled because there is no data in the buffer", // todo(andrew): move these into their own entry in the dictionary
+                message: this.tooltipService.getTooltip('chartCenterOnTriggerDisabledEmptyBuffer').message, // todo(andrew): move these into their own entry in the dictionary
                 isDisabled: true
             };
         } else if (this.running) {
             return {
-                message: "Center View On Trigger is disabled because the device is currently running",
+                message: this.tooltipService.getTooltip('chartCenterOnTriggerDisabledDeviceRunning').message,
                 isDisabled: true
             };
         } else {
@@ -279,7 +279,7 @@ export class InstrumentPanelChart {
     public fftDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('fftTip', () => {
         if (this.currentBufferArray.length == 0) {
             return {
-                message: "FFT is disabled because there is no data in the buffer",
+                message: this.tooltipService.getTooltip('chartToggleFftDisabledDeviceRunning').message,
                 isDisabled: true
             };
         } else {
@@ -293,7 +293,7 @@ export class InstrumentPanelChart {
     public autoScaleDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('autoScaleTip', () => {
         if (this.currentBufferArray.length === 0) {
             return {
-                message: "Auto-Scale is disabled because there is no data in the buffer",
+                message: this.tooltipService.getTooltip('chartAutoScaleDisabledDeviceRunning').message,
                 isDisabled: true
             };
         } else {
@@ -307,7 +307,7 @@ export class InstrumentPanelChart {
     public exportChartDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('exportChartTip', () => {
         if (this.currentBufferArray.length === 0) {
             return {
-                message: "Export Chart is disabled because there is no data in the buffer",
+                message: this.tooltipService.getTooltip('chartSettingsDisabledEmptyBuffer').message,
                 isDisabled: true
             };
         } else {
