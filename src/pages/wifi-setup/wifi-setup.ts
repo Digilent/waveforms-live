@@ -616,6 +616,40 @@ export class WifiSetupPage {
         swiperInstance.lockSwipes();
     }
 
+    /***************************************************************************
+     * Continuously polls the NIC status until the device has connected to a
+     * network, or until the timeout date is met.
+     * @param timeoutDate Date object representing a time at which this method
+     *  should timeout.
+     * @return This function returns a Promise that rejects when the timeoutDate
+     *  is met or if this#getNicStatus fails and resolves otherwise.
+    ***************************************************************************/
+    readNicUntilConnected(timeoutDate: Date): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (timeoutDate.getTime() < new Date().getTime()) return reject("Failed to connect to the network");
+
+            setTimeout(() => { // wait 500ms to give device time to process last request
+                this.getNicStatus(this.selectedNic)
+                    .then((data) => {
+                        console.log("Status code: ", data.statusCode);
+                        if (data.statusCode !== 0) reject('An error has occured while connecting. Please try again.');
+                        if (data.status === 'connected') {
+                            resolve();
+                        } else {
+                            this.readNicUntilConnected(timeoutDate)
+                                .then(resolve)
+                                .catch((e) => {
+                                    reject(e); // bubble the error up through the promise chain
+                                });
+                        }
+                    })
+                    .catch((e) => {
+                        reject(e);
+                    });
+            }, 500);
+        });
+    }
+
     addNetwork() {
         for (let i = 0; i < this.savedNetworks.length; i++) {
             if (JSON.stringify(this.selectedNetwork) === JSON.stringify(this.savedNetworks[i])) {
@@ -647,10 +681,18 @@ export class WifiSetupPage {
                 .then(() => {
                     if (this.connectNow && this.deviceObject && this.deviceObject.bridge) {
                         if (this.save) {
-                            setTimeout(() => {
-                                console.log('return promise');
-                                return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
-                            }, 500);
+                            return new Promise((resolve, reject) => {
+                                setTimeout(() => {
+                                    console.log('return promise');
+                                    this.connectToNetwork(this.selectedNic, "workingParameterSet", true)
+                                        .then(() => {
+                                            resolve();
+                                        })
+                                        .catch(() => {
+                                            reject()
+                                        });
+                                }, 500);
+                            });
                         }
                         else {
                             console.log('not saving connect immediately');
@@ -658,8 +700,12 @@ export class WifiSetupPage {
                         }
                     }
                     else {
-                        return new Promise((resolve, reject) => { resolve(); });
+                        return new Promise((resolve, reject) => { resolve(false); });
                     }
+                })
+                .then((waitToConnect = true) => {
+                    let timeoutDate = new Date(new Date().getTime() + 20000);
+                    return (waitToConnect === true) ? this.readNicUntilConnected(timeoutDate) : Promise.resolve();
                 })
                 .then(() => {
                     loading.dismiss();
@@ -671,7 +717,7 @@ export class WifiSetupPage {
                     this.backToNetworks();
                 })
                 .catch((e) => {
-                    console.log('error setting parameters');
+                    console.log('error setting parameters', e);
                     this.wifiStatus = 'Error setting wifi parameters.';
                     loading.dismiss();
                 });
