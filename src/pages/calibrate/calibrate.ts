@@ -293,7 +293,7 @@ export class CalibratePage {
     exitModal() {
         /* note(andrew): saveCalibrationToDevice returns a Promise, so a conditional ternary
            is used to substitute an immediately resolved Promise in the case the
-           use doesn't want to save */
+           user doesn't want to save */
         ((this.saveAsDefault) ? this.saveCalibrationToDevice() : Promise.resolve())
             .then(() => {
                 this.viewCtrl.dismiss();

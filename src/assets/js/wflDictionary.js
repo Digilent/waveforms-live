@@ -315,6 +315,12 @@ var waveformsLiveDictionary = (function() {
         chartShowDevicePinout: {
             english: 'Show Device Pinout'
         },
+        chartCenterOnTriggerDisabledEmptyData: {
+            english: 'Center View On Trigger is disabled because there is no data in the buffer'
+        },
+        chartCenterOnTriggerDisabledDeviceRunning: {
+            english: 'Center View On Trigger is disabled because the device is currently running'
+        },
         chartCenterOnTrigger: {
             english: 'Center View On Trigger'
         },
