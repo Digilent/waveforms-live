@@ -306,8 +306,14 @@ var waveformsLiveDictionary = (function() {
         gpioButton: {
             english: 'Select GPIO Channels'
         },
+        chartSettingsDisabledEmptyBuffer: {
+            english: "Export Chart is disabled because there is no data in the buffer"
+        },
         chartSettings: {
             english: 'Export Chart'
+        },
+        chartAutoScaleDisabledDeviceRunning: {
+            english: "Auto-Scale is disabled because there is no data in the buffer"
         },
         chartAutoscale: {
             english: 'Autoscale Chart'
@@ -315,7 +321,7 @@ var waveformsLiveDictionary = (function() {
         chartShowDevicePinout: {
             english: 'Show Device Pinout'
         },
-        chartCenterOnTriggerDisabledEmptyData: {
+        chartCenterOnTriggerDisabledEmptyBuffer: {
             english: 'Center View On Trigger is disabled because there is no data in the buffer'
         },
         chartCenterOnTriggerDisabledDeviceRunning: {
@@ -323,6 +329,9 @@ var waveformsLiveDictionary = (function() {
         },
         chartCenterOnTrigger: {
             english: 'Center View On Trigger'
+        },
+        chartToggleFftDisabledDeviceRunning: {
+            english: "FFT is disabled because there is no data in the buffer"
         },
         chartToggleFft: {
             english: 'Toggle FFT View'
