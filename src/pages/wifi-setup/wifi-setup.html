@@ -125,7 +125,7 @@
                     <ion-item class="card-info" *ngIf="selectedNetwork.securityType === 'wpa' || selectedNetwork.securityType === 'wpa2'">
                         <ion-label>Password</ion-label>
                         <div item-right class="item-content-right hostname-input-wrapper">
-                            <input type="password" class="custom-input" [(ngModel)]="password" />
+                            <input type="password" class="custom-input" (keyup.enter)="addNetwork()" [(ngModel)]="password" />
                         </div>
                     </ion-item>
                     <div *ngIf="selectedNetwork.securityType === 'wep40' || selectedNetwork.securityType === 'wep104'">
@@ -199,7 +199,7 @@
                     <ion-item class="card-info" *ngIf="selectedNetwork.securityType === 'wpa' || selectedNetwork.securityType === 'wpa2'">
                         <ion-label>Password</ion-label>
                         <div item-right class="item-content-right hostname-input-wrapper">
-                            <input type="password" class="custom-input" [(ngModel)]="password" />
+                            <input type="password" class="custom-input" (keyup.enter)="addNetwork()" [(ngModel)]="password" />
                         </div>
                     </ion-item>
                     <div *ngIf="selectedNetwork.securityType === 'wep40' || selectedNetwork.securityType === 'wep104'">
