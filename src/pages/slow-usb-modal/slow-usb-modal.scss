@@ -1,0 +1,40 @@
+.slow-usb-container {
+    background-color: #535353;
+    color: white;
+    text-align: center;
+    border: solid black 1px;
+
+    a {
+        color: white;
+    }
+}
+
+.slow-usb-container .info-container {
+    justify-content: space-around;
+}
+
+.slow-usb-container .usb-content-container {
+    min-height: calc(100% - 85px);
+}
+
+.slow-usb-container .modal-header {
+    font-size: 16px;
+    font-weight: 500;
+    padding-top: 16px;
+}
+
+.slow-usb-container .usb-content-section {
+    padding-left: 16px;
+}
+
+.slow-usb-container .slow-usb-explination {
+    font-size: 14px;
+    color: #CCCCCC;
+    padding: 0 16px 0 16px;
+
+    min-height: calc(100% - 177px);
+}
+
+.section-header {
+    padding-top: 16px;
+}

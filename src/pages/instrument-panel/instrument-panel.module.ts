@@ -5,6 +5,7 @@ import { IonicModule } from 'ionic-angular';
 import { LoggerModule } from '../logger/logger.module';
 import { BodePageModule } from '../bode/bode.module'; 
 import { BodeModalPageModule } from '../bode-modal/bode-modal.module';
+import { SlowUSBModalPageModule } from '../slow-usb-modal/slow-usb-modal.module';
 
 import { InstrumentPanelPage } from './instrument-panel';
 import { InstrumentPanelChart } from '../../components/instrument-panel-chart/instrument-panel-chart.component';
@@ -30,7 +31,8 @@ import { ChartAnnotationComponent } from '../../components/chart-annotation/char
         IonicModule.forRoot(LaPopover),
         IonicModule.forRoot(ChartAnnotationComponent),
         BodePageModule,
-        BodeModalPageModule
+        BodeModalPageModule,
+        SlowUSBModalPageModule
     ],
     declarations: [
         LaPopover,

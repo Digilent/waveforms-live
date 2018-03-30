@@ -1,0 +1,25 @@
+<ion-content padding class="slow-usb-container">
+    <div class="modal-header">Insufficient USB Bandwidth</div>
+    <div class="usb-content-container">
+        <ion-row>
+            <div text-left class="usb-content-section">
+                <div class="slow-usb-explination">
+                    WaveForms Live detected an issue during data transfer. This could be caused
+                    by a USB 2.0 Full Speed or slower port or hub. Please connect the device directly to
+                    a USB 2.0 High Speed or faster port on the computer.
+                    <br><br>
+                    Visit the <a target="_blank" href="https://reference.digilentinc.com/reference/instrumentation/openscope-mz/faq#known_issues">FAQ</a>
+                    for more information, or post on the <a target="_blank" href="https://forum.digilentinc.com/forum/30-waveforms-live-and-openscope-mz/">Forums</a> for technical support.
+                </div>
+            </div>
+        </ion-row>
+    </div>
+    <ion-row class="navigation-button-container">
+        <ion-col text-left>
+            <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()">
+                <img class="custom-image-button" src="assets/img/close.svg">
+                Close
+            </button>
+        </ion-col>
+    </ion-row>
+</ion-content>
