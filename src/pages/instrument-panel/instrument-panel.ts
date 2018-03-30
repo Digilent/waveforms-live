@@ -844,6 +844,12 @@ export class InstrumentPanelPage {
                     //this.checkReadStatusAndDraw();
                 },
                 (err) => {
+                    if (err === 'corrupt transfer') {
+                        this.displaySlowUSBModal();
+                        
+                        return reject(err);
+                    }
+                    
                     if (this.readingLa) {
                         console.log('attempting read again');
                         this.readAttemptCount++;
