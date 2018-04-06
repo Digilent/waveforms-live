@@ -25,7 +25,7 @@ import { ToastService } from '../../services/toast/toast.service';
 import { DeviceDataTransferService } from '../../services/device/device-data-transfer.service';
 import { ExportService } from '../../services/export/export.service';
 import { DeviceManagerService } from 'dip-angular2/services';
-import { UiHelperService, RefreshElementState, TooltipStateBundle } from '../../services/ui-helper/ui-helper.service';
+import { UiHelperService, RefreshElementState } from '../../services/ui-helper/ui-helper.service';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
