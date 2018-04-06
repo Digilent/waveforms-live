@@ -28,6 +28,13 @@
     }
 }
 
+.calibration-container .calibration-instructions {
+    a {
+        color: white;
+        text-decoration: none;
+    }
+}
+
 .calibration-container .calibration-info-container {
     min-height: calc(100% - 128px);
 }
@@ -62,9 +69,19 @@
     padding-top: 16px;
 }
 
+.calibration-container .instruction-header
+{
+    font-size: 16px;
+    font-weight: 500;
+}
+
 .calibration-container .intro-icon
 {
     font-size: 120px;
+}
+
+.calibration-container .icon-col {
+    padding: 0px;
 }
 
 .calibration-container .instructions-col
@@ -233,6 +250,10 @@
 {
     font-size: 14px;
     color: white;
+}
+
+.calibration-container .calibration-connection-image {
+    width: 70%;
 }
 
 @media screen and (max-width: 768px) {

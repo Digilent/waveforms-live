@@ -13,11 +13,23 @@
                     </ion-row>
                     <ion-row>
                         <ion-col text-left class="instructions-col"> 
-                            <div class="slide-header">
+                            <div class="instruction-header">
                                 Instructions:
                             </div>
                             <div class="calibration-instructions">
                                 {{calibrationInstructions}}
+                            </div>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col class="icon-col" center text-center>
+                            <img class="calibration-connection-image" src="assets/img/openscope_calibration.svg" />
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col class="instructions-col" text-left>
+                            <div class="calibration-instructions">
+                                <p>Device calibration compensates for component variance and temperature differences. Visit the <a target="_blank" href="https://reference.digilentinc.com/reference/instrumentation/openscope-mz/faq">FAQ</a> for more info.</p>
                             </div>
                         </ion-col>
                     </ion-row>

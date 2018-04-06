@@ -24,9 +24,11 @@ import { DeviceManagerService } from 'dip-angular2/services';
             transition('void => *', animate('0s')),
             transition('* <=> *', animate('250ms ease-in-out'))
         ]),
-        trigger('fix', [
-            state('false', style({ position: 'absolute'})),
-            state('true', style({ position: 'static'}))
+        trigger('expandMoreInfo', [
+            state('true', style({ visibility: 'visible' })),
+            state('false', style({ height: '0', visibility: 'hidden' })),
+            transition('void => *', animate('0s')),
+            transition('* <=> *', animate('250ms ease-in-out'))
         ])
     ]
 })
@@ -54,7 +56,15 @@ export class CalibratePage {
     public calibrationResultsIndicator: string = '';
 
     public showAdvanced: boolean = false;
+    public showMoreInfo: boolean = false;
     public saveAsDefault: boolean = true;
+
+    // public calibrationReason: string = "Calibration will adjust measurements that are taken, as differences in hardware on devices\
+    // as well as environmental factors such as temperature leave an effect on measured voltages and signals. To calibrate, the device\
+    // outputs different voltages and signals while simultaneously measuring them. It then compares the results to what was expected\
+    // in order to set an offset the device uses when making future measurements."
+
+    public calibrationReason: string = "Device calibration compensates for component variance and temperature differences. Click here for <a href=\"/\">More Info</a>"
 
     constructor(
         _storageService: StorageService,
@@ -88,6 +98,10 @@ export class CalibratePage {
 
     toggleAdvanced() {
         this.showAdvanced = !this.showAdvanced;
+    }
+
+    toggleMoreInfo() {
+        this.showMoreInfo = !this.showMoreInfo;
     }
 
     closeModal() {
@@ -429,5 +443,4 @@ export class CalibratePage {
             );
         });
     }
-
 }
