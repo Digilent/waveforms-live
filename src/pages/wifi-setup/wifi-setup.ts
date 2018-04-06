@@ -82,6 +82,8 @@ export class WifiSetupPage {
     public securityTypes: string[] = ['wpa2', 'wpa', 'wep40', 'wep104', 'open'];
     public deviceObject: DeviceCardInfo;
 
+    public networkDropMessage: string = "Scanning the available wifi networks requires the device to disconnect from the network";
+
     constructor(
         _storageService: StorageService,
         _settingsService: SettingsService,

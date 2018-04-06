@@ -10,7 +10,7 @@
                             Available Networks
                         </div>
                         <div text-center *ngIf="!scanningForNetworks" class="available-button-container">
-                            <button ion-button [disabled]="deviceObject==undefined||!deviceObject.bridge" class="icon-only-button-side available-network-button disable-hover" (click)="refreshAvailableNetworks()">
+                            <button ion-button [disabled]="deviceObject==undefined||!deviceObject.bridge" class="icon-only-button-side available-network-button disable-hover" (click)="refreshAvailableNetworks()" [tooltip]="networkDropMessage" [tooltipAnimation]="true" tooltipPlacement="bottom">
                                 <img class="custom-image-button" src="assets/img/refresh.svg">
                             </button>
                             <button ion-button class="icon-only-button-side available-network-button disable-hover" (click)="addCustomNetwork()">
