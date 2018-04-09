@@ -400,7 +400,8 @@ export class WifiSetupPage {
                         adapter: data.device[0].adapter,
                         securityType: data.device[0].securityType,
                         status: data.device[0].status,
-                        ssid: data.device[0].ssid
+                        ssid: data.device[0].ssid,
+                        statusCode: data.device[0].statusCode
                     };
                     if (data.device[0].ipAddress) {
                         nicStatusContainer['ipAddress'] = data.device[0].ipAddress;
@@ -633,7 +634,6 @@ export class WifiSetupPage {
             setTimeout(() => { // wait 500ms to give device time to process last request
                 this.getNicStatus(this.selectedNic)
                     .then((data) => {
-                        console.log("Status code: ", data.statusCode);
                         if (data.statusCode !== 0) reject('An error has occured while connecting. Please try again.');
                         if (data.status === 'connected') {
                             resolve();
@@ -719,7 +719,7 @@ export class WifiSetupPage {
                     this.backToNetworks();
                 })
                 .catch((e) => {
-                    console.log('error setting parameters', e);
+                    console.log('error setting parameters: ', e);
                     this.wifiStatus = 'Error setting wifi parameters.';
                     loading.dismiss();
                 });
