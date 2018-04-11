@@ -90,7 +90,7 @@ export class FgenComponent {
                     this.dataTransferService.awgPower = this.powerOn[index];
                 }
                 if (val.waveType != undefined && val.waveType !== 'none') {
-                    this.waveType = val.waveType;
+                    this.waveType[index] = val.waveType;
                 }
                 if (val.actualSignalFreq != undefined && val.waveType !== 'none') {
                     this.frequency[index] = val.actualSignalFreq / 1000;
