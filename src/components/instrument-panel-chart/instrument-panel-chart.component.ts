@@ -118,6 +118,7 @@ export class InstrumentPanelChart {
     public fftTip;
     public autoScaleTip;
     public exportChartTip;
+    public loggerTip;
 
     private annotationRefs: { ref: ComponentRef<ChartAnnotationComponent>, id: number, view: 'chart' | 'fft' }[] = [];
 
@@ -260,7 +261,7 @@ export class InstrumentPanelChart {
     public cotDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('cotTip', () => {
         if (this.currentBufferArray.length === 0) {
             return {
-                message: this.tooltipService.getTooltip('chartCenterOnTriggerDisabledEmptyBuffer').message, // todo(andrew): move these into their own entry in the dictionary
+                message: this.tooltipService.getTooltip('chartCenterOnTriggerDisabledEmptyBuffer').message,
                 isDisabled: true
             };
         } else if (this.running) {
@@ -315,6 +316,20 @@ export class InstrumentPanelChart {
                 message: this.tooltipService.getTooltip('chartSettings').message,
                 isDisabled: false
             };
+        }
+    });
+
+    public loggerDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('loggerTip', () => {
+        if (this.running) {
+            return {
+                message: this.tooltipService.getTooltip('chartToLoggerDisabledDeviceRunning').message,
+                isDisabled: true,
+            }
+        } else {
+            return {
+                message: this.tooltipService.getTooltip('chartToLogger').message,
+                isDisabled: false
+            }
         }
     });
 

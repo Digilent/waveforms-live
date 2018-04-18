@@ -13,8 +13,8 @@
                         <img class="buttons-side-svg" src="assets/img/bode.svg">
                     </button>
                 </div>
-                <div [tooltip]="tooltipService.getTooltip('chartToLogger').message" [tooltipAnimation]="true" tooltipPlacement="left">
-                    <button ion-button class="chart-button disable-hover" (tap)="toLogger()">
+                <div [tooltip]="loggerTip" [tooltipAnimation]="true" tooltipPlacement="left">
+                    <button ion-button class="chart-button disable-hover" (tap)="toLogger()" [disabled]="loggerDisabled().isDisabled">
                         <img class="buttons-side-svg" src="assets/img/logger.svg">
                     </button>
                 </div>

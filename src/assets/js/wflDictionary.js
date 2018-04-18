@@ -339,6 +339,9 @@ var waveformsLiveDictionary = (function() {
         chartToBode: {
             english: 'To Bode Page'
         },
+        chartToLoggerDisabledDeviceRunning: {
+            english: 'Logger is disabled because the device is currently running'
+        },
         chartToLogger: {
             english: 'To Logger Page'
         },
