@@ -427,7 +427,7 @@ var waveformsLiveDictionary = (function() {
             english: 'Save Profile'
         },
         logMode: {
-            english: 'Log Mode'
+            english: 'Logger Mode'
         },
         logLink: {
             english: 'Link Channel To Another'
