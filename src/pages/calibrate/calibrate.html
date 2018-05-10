@@ -75,6 +75,13 @@
                 </div>
                 <div class="calibration-instructions pad-above">
                     {{calibrationStatus}}
+                    <div class="calibration-connection-image-container">
+                        <ion-row *ngIf="calibrationFailed">
+                            <ion-col class="icon-col" center text-center>
+                                <img class="calibration-connection-image" src="assets/img/openscope_calibration.svg" />
+                            </ion-col>
+                        </ion-row>
+                    </div>
                 </div>
                 <div class="navigation-button-container">
                     <ion-row>
