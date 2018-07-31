@@ -56,9 +56,7 @@ export class FgenComponent {
         this.deviceManagerService = _deviceManagerService;
         this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.supportedSignalTypes = this.activeDevice.instruments.awg.chans[0].signalTypes;
-        console.log('Num Chans: ' + this.activeDevice.instruments.awg.numChans);
-        for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) { // what is this doing here?
-            console.log(i);
+        for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {
             this.showChanSettings.push(false);
             this.frequency.push(1000);
             this.amplitude.push(3);
@@ -73,7 +71,9 @@ export class FgenComponent {
 
     initializeValues() {
         console.log('initializing function generator');
+
         this.dataTransferService.awgPower = false;
+
         for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {
             this.frequency[i] = 1000;
             this.amplitude[i] = 3;
@@ -90,15 +90,19 @@ export class FgenComponent {
                     this.powerOn[index] = val.state === 'running';
                     this.dataTransferService.awgPower = this.powerOn[index];
                 }
+
                 if (val.waveType != undefined && val.waveType !== 'none') {
-                    this.waveType = val.waveType;
+                    this.waveType[index] = val.waveType;
                 }
+
                 if (val.actualSignalFreq != undefined && val.waveType !== 'none') {
                     this.frequency[index] = val.actualSignalFreq / 1000;
                 }
+
                 if (val.actualVpp != undefined && val.waveType !== 'none') {
                     this.amplitude[index] = val.actualVpp / 1000;
                 }
+
                 if (val.actualVOffset != undefined && val.waveType !== 'none') {
                     this.offset[index] = val.actualVOffset / 1000;
                 }
@@ -154,63 +158,82 @@ export class FgenComponent {
 
     formatInputAndUpdate(trueValue: number, input: string, index: number) {
         console.log(trueValue);
+
         switch (input) {
             case 'frequency':
-                if (trueValue < this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000) {
-                    trueValue = this.activeDevice.instruments.awg.chans[0].signalFreqMin / 1000;
+                if (trueValue < this.activeDevice.instruments.awg.chans[index].signalFreqMin / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[index].signalFreqMin / 1000;
                 }
-                else if (trueValue > this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000) {
-                    trueValue = this.activeDevice.instruments.awg.chans[0].signalFreqMax / 1000;
+                else if (trueValue > this.activeDevice.instruments.awg.chans[index].signalFreqMax / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[index].signalFreqMax / 1000;
                 }
+
                 if (this.frequency[index] === trueValue) {
                     console.log('the same');
+
                     this.frequency[index] = trueValue * 10 + 1;
+
                     setTimeout(() => {
                         this.frequency[index] = trueValue;
                     }, 1);
+
                     return;
                 }
+
                 this.frequency[index] = trueValue;
                 break;
             case 'amplitude':
                 trueValue = Math.abs(trueValue);
-                let mid = (this.activeDevice.instruments.awg.chans[0].vOutMax + this.activeDevice.instruments.awg.chans[0].vOutMin) / 2000;
+
+                let mid = (this.activeDevice.instruments.awg.chans[index].vOutMax + this.activeDevice.instruments.awg.chans[index].vOutMin) / 2000;
+
                 console.log(mid);
+
                 if (this.offset[index] >= mid) {
-                    if ((trueValue / 2) + this.offset[index] > this.activeDevice.instruments.awg.chans[0].vOutMax / 1000) {
-                        trueValue = 2 * Math.abs((this.activeDevice.instruments.awg.chans[0].vOutMax / 1000) - this.offset[index]);
+                    if ((trueValue / 2) + this.offset[index] > this.activeDevice.instruments.awg.chans[index].vOutMax / 1000) {
+                        trueValue = 2 * Math.abs((this.activeDevice.instruments.awg.chans[index].vOutMax / 1000) - this.offset[index]);
                     }
                 }
                 else {
-                    if (this.offset[index] - (trueValue / 2) < this.activeDevice.instruments.awg.chans[0].vOutMin / 1000) {
-                        trueValue = 2 * Math.abs((this.activeDevice.instruments.awg.chans[0].vOutMin / 1000) - this.offset[index]);
+                    if (this.offset[index] - (trueValue / 2) < this.activeDevice.instruments.awg.chans[index].vOutMin / 1000) {
+                        trueValue = 2 * Math.abs((this.activeDevice.instruments.awg.chans[index].vOutMin / 1000) - this.offset[index]);
                     }
                 }
+
                 if (this.amplitude[index] === trueValue) {
                     console.log('the same');
+
                     this.amplitude[index] = trueValue * 10 + 1;
+
                     setTimeout(() => {
                         this.amplitude[index] = trueValue;
                     }, 1);
+
                     return;
                 }
+
                 this.amplitude[index] = trueValue;
                 break;
             case 'offset':
-                if (trueValue < this.activeDevice.instruments.awg.chans[0].vOffsetMin / 1000) {
-                    trueValue = this.activeDevice.instruments.awg.chans[0].vOffsetMin / 1000;
+                if (trueValue < this.activeDevice.instruments.awg.chans[index].vOffsetMin / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[index].vOffsetMin / 1000;
                 }
-                else if (trueValue > this.activeDevice.instruments.awg.chans[0].vOffsetMax / 1000) {
-                    trueValue = this.activeDevice.instruments.awg.chans[0].vOffsetMax / 1000;
+                else if (trueValue > this.activeDevice.instruments.awg.chans[index].vOffsetMax / 1000) {
+                    trueValue = this.activeDevice.instruments.awg.chans[index].vOffsetMax / 1000;
                 }
+
                 if (this.offset[index] === trueValue) {
                     console.log('the same');
+
                     this.offset[index] = trueValue * 10 + 1;
+
                     setTimeout(() => {
                         this.offset[index] = trueValue;
                     }, 1);
+
                     return;
                 }
+
                 this.offset[index] = trueValue;
                 break;
             case 'dutyCycle':
@@ -220,14 +243,19 @@ export class FgenComponent {
                 else if (trueValue > 100) {
                     trueValue = 100;
                 }
+
                 if (this.dutyCycle === trueValue) {
                     console.log('the same');
+
                     this.dutyCycle = trueValue * 10 + 1;
+
                     setTimeout(() => {
                         this.dutyCycle = trueValue;
                     }, 1);
+
                     return;
                 }
+
                 this.dutyCycle = trueValue;
                 break;
             default:
@@ -239,7 +267,9 @@ export class FgenComponent {
         if (this.powerOn[index]) {
             return;
         }
+
         this.waveType[index] = waveType;
+
         if (this.tutorialMode) {
             this.highlightPower();
         }
@@ -255,6 +285,7 @@ export class FgenComponent {
 
     frequencyMousewheel(event, index) {
         if (this.powerOn[index]) { return; }
+
         if (event.deltaY < 0) {
             this.incrementFrequency(index);
         }
@@ -265,6 +296,7 @@ export class FgenComponent {
 
     voltageMousewheel(event, type: 'amplitude' | 'offset', index) {
         if (this.powerOn[index]) { return; }
+
         if (event.deltaY < 0) {
             type === 'amplitude' ? this.incrementAmplitude(index) : this.incrementOffset(index);
         }
@@ -297,18 +329,23 @@ export class FgenComponent {
         let valString = this.frequency[index].toString();
         let leadingNum = parseInt(valString.charAt(0), 10);
         let numberMag = valString.split('.')[0].length - 1;
+
         leadingNum++;
+
         if (leadingNum === 10) {
             leadingNum = 1;
             numberMag++;
         }
+
         let newFreq = leadingNum * Math.pow(10, numberMag);
+
         if (newFreq < this.activeDevice.instruments.awg.chans[index].signalFreqMin / 1000) {
             newFreq = this.activeDevice.instruments.awg.chans[index].signalFreqMin / 1000;
         }
         else if (newFreq > this.activeDevice.instruments.awg.chans[index].signalFreqMax / 1000) {
             newFreq = this.activeDevice.instruments.awg.chans[index].signalFreqMax / 1000;
         }
+
         this.frequency[index] = newFreq;
     }
 
@@ -316,75 +353,84 @@ export class FgenComponent {
         let valString = this.frequency[index].toString();
         let leadingNum = parseInt(valString.charAt(0), 10);
         let numberMag = valString.split('.')[0].length - 1;
+
         leadingNum--;
+
         if (leadingNum === 0) {
             leadingNum = 9;
             numberMag--;
         }
+
         let newFreq = leadingNum * Math.pow(10, numberMag);
+
         if (newFreq < this.activeDevice.instruments.awg.chans[index].signalFreqMin / 1000) {
             newFreq = this.activeDevice.instruments.awg.chans[index].signalFreqMin / 1000;
         }
+
         else if (newFreq > this.activeDevice.instruments.awg.chans[index].signalFreqMax / 1000) {
             newFreq = this.activeDevice.instruments.awg.chans[index].signalFreqMax / 1000;
         }
+
         this.frequency[index] = newFreq;
     }
 
     //Toggle power to awg
     togglePower(event, index) {
         this.awaitingResponse = true;
+
         if (this.tutorialMode) {
             this.finishTutorial();
         }
+
         let chans = [];
         let settings = [];
-        // for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {
-        //     chans[i] = i + 1;
-        //     settings[i] = {
-        //         signalType: this.waveType[i],
-        //         signalFreq: this.frequency[i],
-        //         vpp: this.waveType[i] === 'dc' ? 0 : this.amplitude[i],
-        //         vOffset: this.offset[i]
-        //     };
-        // }
+
         chans[index] = index + 1;
+
         settings[index] = {
             signalType: this.waveType[index],
             signalFreq: this.frequency[index],
             vpp: this.waveType[index] === 'dc' ? 0 : this.amplitude[index],
             vOffset: this.offset[index]
         };
+
         if (!this.powerOn[index]) {
             console.log(this.dataTransferService);
+
             if ((this.dataTransferService.laChanActive || this.dataTransferService.triggerSource === 'LA') && this.activeDevice.transport.getType() !== 'local') {
                 this.toastService.createToast('laOnNoAwg');
                 this.awaitingResponse = false;
                 return;
             }
+
             let singleCommand = {
                 awg: {
                     setRegularWaveform: [chans, settings],
                     run: [chans]
                 }
             }
+
             this.activeDevice.multiCommand(singleCommand).subscribe(
                 (data) => {
                     console.log(data);
+
                     if (data.command && data.command == 'setRegularWaveform') {
                         this.frequency[index] = data.actualSignalFreq / 1000;
                     }
+
                     this.awaitingResponse = false;
                 },
                 (err) => {
                     console.log(err);
+
                     this.awaitingResponse = false;
+
                     console.log('AWG Set Regular and Run Failed');
+
                     this.stop(chans);
                     this.toastService.createToast('awgRunError', true);
                 },
                 () => {
-                    //console.log('multi command awg complete');
                     this.powerOn[index] = !this.powerOn[index];
                     this.dataTransferService.awgPower = this.powerOn[index];
                 }
@@ -417,6 +463,7 @@ export class FgenComponent {
             },
             (err) => {
                 console.log('AWG Set Regular Failed');
+
                 this.stop(chans);
                 this.toastService.createToast('awgParamError', true);
             },
@@ -428,16 +475,20 @@ export class FgenComponent {
     //Stop awg
     stop(chans: number[]) {
         this.awaitingResponse = true;
+
         this.activeDevice.instruments.awg.stop(chans).subscribe(
             (data) => {
                 this.awaitingResponse = false;
+
                 let powerOffResult = false;
+
                 for (let chan in chans) {
                     this.powerOn[chan] = false;
                     powerOffResult = powerOffResult || (data.awg[chans[chan]][0].statusCode === 0 && this.attemptingPowerOff);
                 }
-                // this.powerOn[0] = false; // TODO(andrew): Handle multiple channels properly
+
                 this.dataTransferService.awgPower = false;
+
                 if (powerOffResult) {
                     this.attemptingPowerOff = false;
                     this.toastService.createToast('awgRunError', true);
@@ -457,6 +508,7 @@ export class FgenComponent {
         if (this.waveType[index] === 'square') {
             return true;
         }
+
         return false;
     }
 

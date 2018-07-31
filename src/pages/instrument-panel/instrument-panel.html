@@ -68,7 +68,7 @@
             </div>
 
             <ion-col class="custom-col" [ngClass]="{'move-feature-to-front': tutorialMode && tutorialStage === 2}"> 
-                <instrument-panel-chart #chart1 (chartLoad)="initSettings()" (resetDevice)="resetDevice()" (stopRun)="stopClick()" class="chart-wrapper"></instrument-panel-chart>
+                <instrument-panel-chart #chart1 [running]="running" (chartLoad)="initSettings()" (resetDevice)="resetDevice()" (stopRun)="stopClick()" class="chart-wrapper"></instrument-panel-chart>
                 <ion-fab class="tutorial-mode-button" *ngIf="tutorialMode">
                     <button ion-fab mini class="help-button" (tap)="executeHelp()" [ngClass]="{'end-tutorial': tutorialMode, 'help-button': !tutorialMode}">
                         <img [src]="tutorialMode ? 'assets/img/close.svg' : 'assets/img/help.svg'" />

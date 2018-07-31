@@ -1,5 +1,8 @@
-import { App, Platform, NavParams, LoadingController } from 'ionic-angular';
+import { App, Platform, NavParams, LoadingController, ModalController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
+
+// Pages
+import { SlowUSBModalPage } from '../../pages/slow-usb-modal/slow-usb-modal';
 
 //Components
 import { InstrumentPanelChart } from '../../components/instrument-panel-chart/instrument-panel-chart.component';
@@ -78,7 +81,8 @@ export class InstrumentPanelPage {
         _app: App,
         _params: NavParams,
         _platform: Platform,
-        public loadingCtrl: LoadingController
+        public loadingCtrl: LoadingController,
+        public modalCtrl: ModalController
     ) {
         this.toastService = _toastService;
         this.tooltipService = _tooltipService;
@@ -840,6 +844,12 @@ export class InstrumentPanelPage {
                     //this.checkReadStatusAndDraw();
                 },
                 (err) => {
+                    if (err === 'corrupt transfer') {
+                        this.displaySlowUSBModal();
+                        
+                        return reject(err);
+                    }
+                    
                     if (this.readingLa) {
                         console.log('attempting read again');
                         this.readAttemptCount++;
@@ -941,6 +951,12 @@ export class InstrumentPanelPage {
                     //this.checkReadStatusAndDraw();
                 },
                 (err) => {
+                    if (err === 'corrupt transfer') {
+                        this.displaySlowUSBModal();
+                        
+                        return reject(err);
+                    }
+                    
                     if (this.readingOsc) {
                         console.log('attempting read again');
                         this.readAttemptCount++;
@@ -1197,5 +1213,17 @@ export class InstrumentPanelPage {
         this.chart1.enableCursors();
         this.chart1.enableTimelineView();
         this.chart1.enableMath();
+    }
+
+    public displaySlowUSBModal(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            let modal = this.modalCtrl.create(SlowUSBModalPage);
+
+            modal.onWillDismiss(() => {
+                resolve();
+            });
+
+            modal.present();
+        });
     }
 }

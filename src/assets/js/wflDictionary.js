@@ -306,8 +306,14 @@ var waveformsLiveDictionary = (function() {
         gpioButton: {
             english: 'Select GPIO Channels'
         },
+        chartSettingsDisabledEmptyBuffer: {
+            english: "Export Chart is disabled because there is no data in the buffer"
+        },
         chartSettings: {
             english: 'Export Chart'
+        },
+        chartAutoScaleDisabledDeviceRunning: {
+            english: "Auto-Scale is disabled because there is no data in the buffer"
         },
         chartAutoscale: {
             english: 'Autoscale Chart'
@@ -315,14 +321,26 @@ var waveformsLiveDictionary = (function() {
         chartShowDevicePinout: {
             english: 'Show Device Pinout'
         },
+        chartCenterOnTriggerDisabledEmptyBuffer: {
+            english: 'Center View On Trigger is disabled because there is no data in the buffer'
+        },
+        chartCenterOnTriggerDisabledDeviceRunning: {
+            english: 'Center View On Trigger is disabled because the device is currently running'
+        },
         chartCenterOnTrigger: {
             english: 'Center View On Trigger'
+        },
+        chartToggleFftDisabledDeviceRunning: {
+            english: "FFT is disabled because there is no data in the buffer"
         },
         chartToggleFft: {
             english: 'Toggle FFT View'
         },
         chartToBode: {
             english: 'To Bode Page'
+        },
+        chartToLoggerDisabledDeviceRunning: {
+            english: 'Logger is disabled because the device is currently running'
         },
         chartToLogger: {
             english: 'To Logger Page'
@@ -409,7 +427,7 @@ var waveformsLiveDictionary = (function() {
             english: 'Save Profile'
         },
         logMode: {
-            english: 'Log Mode'
+            english: 'Logger Mode'
         },
         logLink: {
             english: 'Link Channel To Another'
