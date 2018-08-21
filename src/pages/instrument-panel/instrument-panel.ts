@@ -1157,8 +1157,8 @@ export class InstrumentPanelPage {
 
                     },
                     (err) => {
-                        this.running = false;
-                        console.log('error trigger single');
+                        this.runClick(); // check once more
+                        console.log('error trigger single', err);
                     },
                     () => {
                         this.triggerStatus = 'Armed';
