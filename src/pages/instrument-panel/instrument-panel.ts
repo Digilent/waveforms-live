@@ -1,9 +1,6 @@
 import { App, Platform, NavParams, LoadingController, ModalController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 
-// Pages
-import { SlowUSBModalPage } from '../../pages/slow-usb-modal/slow-usb-modal';
-
 //Components
 import { InstrumentPanelChart } from '../../components/instrument-panel-chart/instrument-panel-chart.component';
 import { TriggerComponent } from '../../components/trigger/trigger.component';
@@ -51,6 +48,7 @@ export class InstrumentPanelPage {
     public toastService: ToastService;
     public clickBindReference;
     public readAttemptCount: number = 0;
+    public errorCount: number = 0;
     public previousOscSettings: PreviousOscSettings[] = [];
     public previousTrigSettings: PreviousTrigSettings = {
         instrument: null,
@@ -845,9 +843,11 @@ export class InstrumentPanelPage {
                 },
                 (err) => {
                     if (err === 'corrupt transfer') {
-                        this.displaySlowUSBModal();
-                        
-                        return reject(err);
+                        if (this.errorCount % 5 === 0) {
+                            this.displaySlowUSBMessage();
+                        }
+
+                        this.errorCount++;
                     }
                     
                     if (this.readingLa) {
@@ -952,9 +952,11 @@ export class InstrumentPanelPage {
                 },
                 (err) => {
                     if (err === 'corrupt transfer') {
-                        this.displaySlowUSBModal();
-                        
-                        return reject(err);
+                        if ((this.errorCount % 5) === 0) {
+                            this.displaySlowUSBMessage();
+                        }
+
+                        this.errorCount++;
                     }
                     
                     if (this.readingOsc) {
@@ -1155,8 +1157,8 @@ export class InstrumentPanelPage {
 
                     },
                     (err) => {
-                        this.running = false;
-                        console.log('error trigger single');
+                        this.runClick(); // check once more
+                        console.log('error trigger single', err);
                     },
                     () => {
                         this.triggerStatus = 'Armed';
@@ -1215,15 +1217,18 @@ export class InstrumentPanelPage {
         this.chart1.enableMath();
     }
 
-    public displaySlowUSBModal(): Promise<void> {
+    public displaySlowUSBMessage(): Promise<void> {
         return new Promise((resolve, reject) => {
-            let modal = this.modalCtrl.create(SlowUSBModalPage);
-
-            modal.onWillDismiss(() => {
-                resolve();
+            // display a toast because it is less obtrusive than a modal
+            let toast = this.toastService.toastCtrl.create({
+                message: 'Data Transfer Issue: Some data chunks were lost. Visit the Digilent Forums for more info.',
+                duration: 5000,
+                showCloseButton: true
             });
 
-            modal.present();
+            toast.present();
+
+            resolve();
         });
     }
 }
