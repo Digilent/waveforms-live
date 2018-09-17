@@ -35,6 +35,8 @@ export class SettingsService {
         }
     };
 
+    private loggerBufferSize: number = 5;
+
     constructor(_storageService: StorageService, _deviceManagerService: DeviceManagerService, public platform: Platform) {
         console.log('settings service constructor');
         window.addEventListener('beforeunload', (event) => {
@@ -70,6 +72,10 @@ export class SettingsService {
             if (data == undefined) { return; }
             let parsedData = JSON.parse(data);
             this.deviceManagerService.setHttpTimeout(parsedData.timeout);
+        });
+        
+        this.storageService.getData('loggerBufferSize').then((data) => {
+            this.loggerBufferSize = data || this.loggerBufferSize;
         });
         
         if (this.platform.is('ios') || this.platform.is('android') || this.platform.is('mobileweb')) {
@@ -191,5 +197,15 @@ export class SettingsService {
         });
     }
 
+    getLoggerBufferSize(): number{
+        return this.loggerBufferSize;
+    }
 
+    setLoggerBufferSize(size: number) {
+        this.loggerBufferSize = size;
+
+        this.storageService.saveData('loggerBufferSize', JSON.stringify(this.loggerBufferSize)).catch((e) => {
+            console.warn(e);
+        });
+    }
 }
