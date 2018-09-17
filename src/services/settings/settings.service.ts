@@ -73,7 +73,7 @@ export class SettingsService {
             let parsedData = JSON.parse(data);
             this.deviceManagerService.setHttpTimeout(parsedData.timeout);
         });
-        
+
         this.storageService.getData('loggerBufferSize').then((data) => {
             this.loggerBufferSize = data || this.loggerBufferSize;
         });
