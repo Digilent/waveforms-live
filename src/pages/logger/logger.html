@@ -121,6 +121,8 @@
         
         <ion-col class="controls-col">
             <logger-component #loggerComponent></logger-component>
+
+            <fgen #fgenComponent (fgenTutorialFinish)="fgenTutorialFinished($event)"></fgen>
         </ion-col>
     </ion-row>
 </ion-content>

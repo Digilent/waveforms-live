@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
+import { FGenModule } from '../../components/function-gen/function-gen.module';
+
 //Components
 import { LoggerComponent } from '../../components/logger/logger.component';
 import { LoggerChartComponent } from '../../components/logger-chart/logger-chart.component';
@@ -18,6 +20,7 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
 @NgModule({
     imports: [
         SharedModule,
+        FGenModule,
         IonicModule.forRoot(LoggerPage),
         IonicModule.forRoot(FileBrowserPage)
     ],

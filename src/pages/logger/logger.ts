@@ -417,4 +417,7 @@ export class LoggerPage {
         }
     }
 
+    private fgenTutorialFinished(event) {
+
+    }
 }
