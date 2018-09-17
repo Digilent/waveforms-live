@@ -1129,6 +1129,11 @@ export class LoggerComponent {
                 this.parseReadResponseAndDraw(data);
                 if (this.running) {
                     if (this.selectedMode !== 'log') {
+                        if (this.activeDevice.rootUri === 'local') {
+                            setTimeout(() => {
+                                this.readLiveData();
+                            }, 1000); // grab wait from one of the channels?? Or rather, if we are simulating then wait otherwise just continue as norm    
+                        } else {
                         this.readLiveData();
                     }
                     else {
