@@ -17,6 +17,7 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 //Services
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { LoggerChartComponent } from '../../components/logger-chart/logger-chart.component';
 
 declare var mathFunctions: any;
 
@@ -25,6 +26,7 @@ declare var mathFunctions: any;
 })
 export class LoggerPage {
     @ViewChild('loggerComponent') loggerComponent: LoggerComponent;
+    @ViewChild('chart') loggerChart: LoggerChartComponent;
     private dismissCallback: () => void;
     private unitFormatPipeInstance: UnitFormatPipe;
     private selectedMathInfo: MathOutput[] = [];
@@ -40,6 +42,12 @@ export class LoggerPage {
     ) {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
         this.unitFormatPipeInstance = new UnitFormatPipe();
+    }
+
+    updateScale({chan, unit}) {
+        console.log({chan, unit});
+        
+        this.loggerChart.setChannelUnit(chan, unit);
     }
 
     ngOnInit() {

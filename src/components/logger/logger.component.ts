@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, ViewChild, ViewChildren, QueryList, Output, EventEmitter } from '@angular/core';
 import { AlertController } from 'ionic-angular';
 import { LoadingService } from '../../services/loading/loading.service';
 import { ToastService } from '../../services/toast/toast.service';
@@ -33,6 +33,8 @@ export class LoggerComponent {
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
     @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
     @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
+
+    @Output('updateScale') update: EventEmitter<any> = new EventEmitter();
 
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
@@ -126,7 +128,11 @@ export class LoggerComponent {
                 loading.dismiss();
             });
 
-        this.bufferSize = this.settingsService.getLoggerBufferSize() || this.bufferSize;
+    private unitTransformer: any[] = [];
+    public updateScale(event, chan) {
+        this.update.emit(Object.assign({}, event, {chan}));
+
+        this.unitTransformer[chan] = event.expression;
     }
 
     ngOnDestroy() {
@@ -939,7 +945,11 @@ export class LoggerComponent {
                 let dt = 1 / (channelObj.actualSampleFreq / 1000000);
                 let timeVal = channelObj.startIndex * dt;
                 for (let i = 0; i < channelObj.data.length; i++) {
-                    formattedData.push([timeVal, channelObj.data[i]]);
+                    let data = (this.unitTransformer[channel]) ? this.unitTransformer[channel](channelObj.data[i]) :
+                        channelObj.data[i]; 
+
+                    formattedData.push([timeVal, data]);
+                    
                     timeVal += dt;
                 }
                 let dataContainerIndex = 0;

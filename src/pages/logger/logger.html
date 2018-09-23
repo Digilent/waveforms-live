@@ -50,7 +50,7 @@
             </div>
             <div class="chart-and-bottom-container">
                 <div class="logger-page-chart-container">
-                    <logger-chart></logger-chart>
+                    <logger-chart #chart></logger-chart>
                 </div>
                 <div class="logger-chart-bottom-container">
                     <ion-row class="chart-info">
@@ -120,7 +120,7 @@
         </ion-col>
         
         <ion-col class="controls-col">
-            <logger-component #loggerComponent></logger-component>
+            <logger-component #loggerComponent (updateScale)="updateScale($event)"></logger-component>
 
             <fgen #fgenComponent (fgenTutorialFinish)="fgenTutorialFinished($event)"></fgen>
         </ion-col>

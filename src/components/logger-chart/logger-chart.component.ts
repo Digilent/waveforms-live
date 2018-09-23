@@ -21,22 +21,50 @@ export class LoggerChartComponent {
     public loggerChartOptions: any;
     private activeDevice: DeviceService;
 
+    public unitSymbols: string[];
+
     constructor(
         private loggerPlotService: LoggerPlotService,
         private deviceManagerService: DeviceManagerService
     ) {
         this.unitFormatPipeInstance = new UnitFormatPipe();
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+        
+        // set the unit to v for volts initially
+        let length = this.activeDevice.instruments.logger.analog.numChans;
+        this.unitSymbols = Array.from({length}, () => 'V');
+        
         this.loggerChartOptions = this.generateBodeOptions();
+    }
+
+    setChannelUnit(chan, unit) {
+        chan--;
+        this.unitSymbols[chan] = unit || 'V';
+
+        this.loggerChartOptions = this.generateBodeOptions();
+        
+        this.loggerChart.flotOptions = this.loggerChartOptions;
+
+        console.log(this.loggerChartOptions, this.loggerChart.flotOptions);
+        console.log(this.unitSymbols, chan);
+
+        this.loggerChart.digilentChart == undefined;
+        this.loggerChart.createChart();
+        this.loggerChart.chartLoad.emit();
     }
 
     plotLoaded() {
         console.log('chart loaded');
         console.log(this.loggerChart);
+
         this.loggerChart.digilentChart.setSecsPerDivArray(this.generateNiceNumArray(0.000001, 10));
         this.loggerChart.digilentChart.setVoltsPerDivArray(this.generateNiceNumArray(0.001, 5));
         this.loggerChart.digilentChart.setActiveXIndex(15);
-        this.loggerChart.digilentChart.setActiveYIndices([8, 8]);
+
+        let analongChans = this.deviceManagerService.getActiveDevice().instruments.logger.analog.numChans;
+        let indices = Array.from({length: analongChans}, () => 8);
+
+        this.loggerChart.digilentChart.setActiveYIndices(indices);
         this.loggerPlotService.init(this.loggerChart);
     }
 
@@ -154,7 +182,7 @@ export class LoggerChartComponent {
                 show: i === 0,
                 tickColor: '#666666',
                 ticks: this.tickGenerator,
-                tickFormatter: this.yTickFormatter,
+                tickFormatter: this.yTickFormatter(this.unitSymbols[i]),
                 font: {
                     color: '#666666'
                 }
@@ -175,7 +203,14 @@ export class LoggerChartComponent {
         return ticks;
     }
 
-    yTickFormatter(val, axis) {
+    /**
+     * Accepts a symbol and returns a closure that constructs and formats the
+     * value-unit string for the chart to use
+     * 
+     * @param symbol Symbol used to label y axis units
+     */
+    yTickFormatter(symbol) {
+        return function(val, axis) {
         let vPerDiv = Math.abs(axis.max - axis.min) / 10;
         let i = 0;
         let unit = '';
@@ -185,18 +220,19 @@ export class LoggerChartComponent {
         }
         val = (parseFloat(val) * Math.pow(1000, i)).toFixed(0);
         if (i == 0) {
-            unit = ' V';
+                unit = ` ${symbol}`;
         }
         else if (i == 1) {
-            unit = ' mV';
+                unit = ` m${symbol}`;
         }
         else if (i == 2) {
-            unit = ' uV';
+                unit = ` u${symbol}`;
         }
         else if (i == 3) {
-            unit = ' nV';
+                unit = ` n${symbol}`;
         }
         return (val + unit);
+    }
     }
 
     xTickFormatter(val, axis) {
