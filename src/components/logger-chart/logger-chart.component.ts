@@ -211,28 +211,28 @@ export class LoggerChartComponent {
      */
     yTickFormatter(symbol) {
         return function(val, axis) {
-        let vPerDiv = Math.abs(axis.max - axis.min) / 10;
-        let i = 0;
-        let unit = '';
-        while (vPerDiv < 1) {
-            i++;
-            vPerDiv = vPerDiv * 1000;
-        }
-        val = (parseFloat(val) * Math.pow(1000, i)).toFixed(0);
-        if (i == 0) {
+            let vPerDiv = Math.abs(axis.max - axis.min) / 10;
+            let i = 0;
+            let unit = '';
+            while (vPerDiv < 1) {
+                i++;
+                vPerDiv = vPerDiv * 1000;
+            }
+            val = (parseFloat(val) * Math.pow(1000, i)).toFixed(0);
+            if (i == 0) {
                 unit = ` ${symbol}`;
-        }
-        else if (i == 1) {
+            }
+            else if (i == 1) {
                 unit = ` m${symbol}`;
-        }
-        else if (i == 2) {
+            }
+            else if (i == 2) {
                 unit = ` u${symbol}`;
-        }
-        else if (i == 3) {
+            }
+            else if (i == 3) {
                 unit = ` n${symbol}`;
+            }
+            return (val + unit);
         }
-        return (val + unit);
-    }
     }
 
     xTickFormatter(val, axis) {
