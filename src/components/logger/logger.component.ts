@@ -97,7 +97,6 @@ export class LoggerComponent {
     private filesInStorage: any = {};
     private destroyed: boolean = false;
     public dataAvailable: boolean = false;
-    private bufferSize: number;
 
     constructor(
         private devicemanagerService: DeviceManagerService,
@@ -127,6 +126,7 @@ export class LoggerComponent {
                 this.toastService.createToast('deviceDroppedConnection', true, undefined, 5000);
                 loading.dismiss();
             });
+    }
 
     private unitTransformer: any[] = [];
     public updateScale(event, chan) {
@@ -944,6 +944,7 @@ export class LoggerComponent {
                 let channelObj = readResponse.instruments[instrument][channel];
                 let dt = 1 / (channelObj.actualSampleFreq / 1000000);
                 let timeVal = channelObj.startIndex * dt;
+
                 for (let i = 0; i < channelObj.data.length; i++) {
                     let data = (this.unitTransformer[channel]) ? this.unitTransformer[channel](channelObj.data[i]) :
                         channelObj.data[i]; 
@@ -952,17 +953,19 @@ export class LoggerComponent {
                     
                     timeVal += dt;
                 }
+
                 let dataContainerIndex = 0;
                 if (instrument === 'digital') {
                     dataContainerIndex += this.analogChans.length;
                 }
+
                 let chanIndex: number;
                 dataContainerIndex += (chanIndex = parseInt(channel) - 1);
                 this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
                 
                 let overflow = 0;
-                let containerSize = this.analogChans[chanIndex].sampleFreq * (this.xAxis.bufferSize || this.bufferSize);
+                let containerSize = this.analogChans[chanIndex].sampleFreq * this.xAxis.loggerBufferSize;
                 if ((overflow = this.dataContainers[dataContainerIndex].data.length - containerSize) >= 0) {
                     this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.slice(overflow); // older data is closer to the front of the array, so remove it by the overflow amount
                 }
@@ -1154,13 +1157,13 @@ export class LoggerComponent {
                 this.parseReadResponseAndDraw(data);
                 if (this.running) {
                     if (this.selectedMode !== 'log') {
-                        if (this.activeDevice.rootUri === 'local') {
+                        if (this.activeDevice.transport.getType() === 'local') {
                             setTimeout(() => {
                                 this.readLiveData();
                             }, 1000); // grab wait from one of the channels?? Or rather, if we are simulating then wait otherwise just continue as norm    
                         } else {
-                        this.readLiveData();
-                    }
+                            this.readLiveData();
+                        }
                     }
                     else {
                         this.getLiveState();

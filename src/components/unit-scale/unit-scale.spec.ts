@@ -1,4 +1,4 @@
-import { UnitScaleComponent } from './unit-scale.component';
+// import { UnitScaleComponent } from './unit-scale.component';
 
 // describe('UnitScaleComponent' () => {
 //     let uut: UnitScaleComponent;
