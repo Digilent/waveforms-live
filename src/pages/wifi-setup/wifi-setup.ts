@@ -192,6 +192,10 @@ export class WifiSetupPage {
         this.getSavedWifiNetworks(event).catch((e) => { });
     }
 
+    private getFutureDate(secondsFromNow) {
+        return new Date(Date.now() + secondsFromNow * 1000);
+    }
+
     loadAndConnect(savedDeviceIndex: number) {
         if (this.deviceObject && !this.deviceObject.bridge) {
             let decision = confirm('Connecting to a network over wifi will send you back to the Device Manager Page. Are you sure?');
@@ -199,10 +203,23 @@ export class WifiSetupPage {
                 return;
             }
         }
+
         let loading = this.displayLoading('Connecting To Saved Network...');
+
         this.loadWifiNetwork(this.savedNetworks[savedDeviceIndex].storageLocation, this.savedNetworks[savedDeviceIndex].ssid)
+            .then((data) => {
+                console.log(data);
+                return new Promise((resolve) => {
+                    setTimeout(resolve, data.device[0].wait + 3000); // note(andrew): Some time is needed after issuing the wifiLoadParameters command for the device to finish
+                });
+            })
             .then(() => {
                 return this.connectToNetwork(this.selectedNic, 'workingParameterSet', true);
+            })
+            .then(() => {
+                console.log("Waiting to connect");
+                let timeoutDate = this.getFutureDate(20);
+                return this.readNicUntilConnected(timeoutDate)
             })
             .then(() => {
                 loading.dismiss();
@@ -629,7 +646,7 @@ export class WifiSetupPage {
     ***************************************************************************/
     readNicUntilConnected(timeoutDate: Date): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            if (timeoutDate.getTime() < new Date().getTime()) return reject("Failed to connect to the network");
+            if (timeoutDate.getTime() < Date.now()) return reject("Failed to connect to the network");
 
             setTimeout(() => { // wait 500ms to give device time to process last request
                 this.getNicStatus(this.selectedNic)
@@ -706,7 +723,7 @@ export class WifiSetupPage {
                     }
                 })
                 .then((waitToConnect = true) => {
-                    let timeoutDate = new Date(new Date().getTime() + 20000);
+                    let timeoutDate = this.getFutureDate(20); // new Date(new Date().getTime() + 20000);
                     return (waitToConnect === true) ? this.readNicUntilConnected(timeoutDate) : Promise.resolve();
                 })
                 .then(() => {

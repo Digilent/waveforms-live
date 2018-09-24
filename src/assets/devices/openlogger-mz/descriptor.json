@@ -1,0 +1,221 @@
+{
+    "command": "enumerate",
+    "statusCode": 0,
+    "wait": 0,
+    "deviceMake": "Digilent",
+    "deviceModel": "OpenLogger MZ",
+    "firmwareVersion": {
+        "major": 0,
+        "minor": 997,
+        "patch": 0
+    },
+    "requiredCalibrationVer": 1,
+    "requiredWiFiParameterVer": 1,
+    "awg": {
+        "numChans": 1,
+        "1": {
+            "signalTypes": [
+                "sine",
+                "square",
+                "sawtooth",
+                "triangle",
+                "dc"
+            ],
+            "signalFreqUnits": 0.001,
+            "signalFreqMin": 50,
+            "signalFreqMax": 1000000000,
+            "dataType": "I16",
+            "bufferSizeMax": 32766,
+            "sampleFreqUnits": 0.001,
+            "sampleFreqMin": 1000000,
+            "sampleFreqMax": 10000000000,
+            "voltageUnits": 0.001,
+            "dacVpp": 3000,
+            "vOffsetMin": -1500,
+            "vOffsetMax": 1500,
+            "vOutMin": -3000,
+            "vOutMax": 3000,
+            "currentUnits": 0.001,
+            "currentMin": 0,
+            "currentMax": 20
+        }
+    },
+    "dc": {
+        "numChans": 2,
+        "1": {
+            "voltageUnits": 0.001,
+            "voltageMin": -4000,
+            "voltageMax": 4000,
+            "voltageIncrement": 40,
+            "currentUnits": 0.001,
+            "currentMin": 0,
+            "currentMax": 50,
+            "currentIncrement": 0
+        },
+        "2": {
+            "voltageUnits": 0.001,
+            "voltageMin": -4000,
+            "voltageMax": 4000,
+            "voltageIncrement": 40,
+            "currentUnits": 0.001,
+            "currentMin": 0,
+            "currentMax": 50,
+            "currentIncrement": 0
+        }
+    },
+    "gpio": {
+        "numChans": 8,
+        "currentUnits": 0.001,
+        "sourceCurrentMax": 7000,
+        "sinkCurrentMax": 12000
+    },
+    "la": {
+        "numChans": 0
+    },"osc": {
+        "numChans": 0
+    },
+    "log": {
+        "analog": {
+            "fileFormat": 1,
+            "fileRevision": 1,
+            "numChans": 1,
+            "1": {
+                "resolution": 12,
+                "effectiveBits": 12,
+                "bufferSizeMax": 32702,
+                "fileSamplesMax": 2147483136,
+                "sampleDataType": "I16",
+                "sampleFreqUnits": 0.000001,
+                "sampleFreqMin": 1,
+                "sampleFreqMax": 50000000000,
+                "delayUnits": 0.000000000001,
+                "delayMax": 9223372036854775807,
+                "delayMin": 0,
+                "voltageUnits": 0.001,
+                "adcVpp": 3000,
+                "inputVoltageMax": 10000,
+                "inputVoltageMin": -10000,
+                "gains": [1, 0.25, 0.125, 0.175]
+            },
+            "2": {
+                "resolution": 12,
+                "effectiveBits": 12,
+                "bufferSizeMax": 32702,
+                "fileSamplesMax": 2147483136,
+                "sampleDataType": "I16",
+                "sampleFreqUnits": 0.000001,
+                "sampleFreqMin": 1,
+                "sampleFreqMax": 50000000000,
+                "delayUnits": 0.000000000001,
+                "delayMax": 9223372036854775807,
+                "delayMin": 0,
+                "voltageUnits": 0.001,
+                "adcVpp": 3000,
+                "inputVoltageMax": 10000,
+                "inputVoltageMin": -10000
+            },
+            "3": {
+                "resolution": 12,
+                "effectiveBits": 12,
+                "bufferSizeMax": 32702,
+                "fileSamplesMax": 2147483136,
+                "sampleDataType": "I16",
+                "sampleFreqUnits": 0.000001,
+                "sampleFreqMin": 1,
+                "sampleFreqMax": 50000000000,
+                "delayUnits": 0.000000000001,
+                "delayMax": 9223372036854775807,
+                "delayMin": 0,
+                "voltageUnits": 0.001,
+                "adcVpp": 3000,
+                "inputVoltageMax": 10000,
+                "inputVoltageMin": -10000
+            },
+            "4": {
+                "resolution": 12,
+                "effectiveBits": 12,
+                "bufferSizeMax": 32702,
+                "fileSamplesMax": 2147483136,
+                "sampleDataType": "I16",
+                "sampleFreqUnits": 0.000001,
+                "sampleFreqMin": 1,
+                "sampleFreqMax": 50000000000,
+                "delayUnits": 0.000000000001,
+                "delayMax": 9223372036854775807,
+                "delayMin": 0,
+                "voltageUnits": 0.001,
+                "adcVpp": 3000,
+                "inputVoltageMax": 10000,
+                "inputVoltageMin": -10000
+            },
+            "5": {
+                "resolution": 12,
+                "effectiveBits": 12,
+                "bufferSizeMax": 32702,
+                "fileSamplesMax": 2147483136,
+                "sampleDataType": "I16",
+                "sampleFreqUnits": 0.000001,
+                "sampleFreqMin": 1,
+                "sampleFreqMax": 50000000000,
+                "delayUnits": 0.000000000001,
+                "delayMax": 9223372036854775807,
+                "delayMin": 0,
+                "voltageUnits": 0.001,
+                "adcVpp": 3000,
+                "inputVoltageMax": 10000,
+                "inputVoltageMin": -10000
+            },
+            "6": {
+                "resolution": 12,
+                "effectiveBits": 12,
+                "bufferSizeMax": 32702,
+                "fileSamplesMax": 2147483136,
+                "sampleDataType": "I16",
+                "sampleFreqUnits": 0.000001,
+                "sampleFreqMin": 1,
+                "sampleFreqMax": 50000000000,
+                "delayUnits": 0.000000000001,
+                "delayMax": 9223372036854775807,
+                "delayMin": 0,
+                "voltageUnits": 0.001,
+                "adcVpp": 3000,
+                "inputVoltageMax": 10000,
+                "inputVoltageMin": -10000
+            },
+            "7": {
+                "resolution": 12,
+                "effectiveBits": 12,
+                "bufferSizeMax": 32702,
+                "fileSamplesMax": 2147483136,
+                "sampleDataType": "I16",
+                "sampleFreqUnits": 0.000001,
+                "sampleFreqMin": 1,
+                "sampleFreqMax": 50000000000,
+                "delayUnits": 0.000000000001,
+                "delayMax": 9223372036854775807,
+                "delayMin": 0,
+                "voltageUnits": 0.001,
+                "adcVpp": 3000,
+                "inputVoltageMax": 10000,
+                "inputVoltageMin": -10000
+            },
+            "8": {
+                "resolution": 12,
+                "effectiveBits": 12,
+                "bufferSizeMax": 32702,
+                "fileSamplesMax": 2147483136,
+                "sampleDataType": "I16",
+                "sampleFreqUnits": 0.000001,
+                "sampleFreqMin": 1,
+                "sampleFreqMax": 50000000000,
+                "delayUnits": 0.000000000001,
+                "delayMax": 9223372036854775807,
+                "delayMin": 0,
+                "voltageUnits": 0.001,
+                "adcVpp": 3000,
+                "inputVoltageMax": 10000,
+                "inputVoltageMin": -10000
+            }
+        }
+    }
+}

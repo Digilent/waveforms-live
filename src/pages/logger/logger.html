@@ -2,9 +2,15 @@
     <div>
         <ion-row class="logger-header">
             <ion-col class="back-button-col timeline-back-button" center text-center>
-                <button ion-button class="custom-back-button disable-hover" (click)="done()">
+                <button *ngIf="isRoot === false" ion-button class="custom-back-button disable-hover" (click)="done()">
                     <img class="custom-image-button" src="assets/img/arrow-back.svg">
                 </button>
+
+                <div *ngIf="isRoot === true" class="menu-button-container">
+                    <button clear ion-button menuToggle class="custom-menu-button disable-hover">
+                        <img class="custom-image-button" src="assets/img/menu.svg">
+                    </button>
+                </div>
             </ion-col>
             <ion-col center class="config-title-menu-col logger-timeline-container">
                 <logger-timeline></logger-timeline>
@@ -50,7 +56,7 @@
             </div>
             <div class="chart-and-bottom-container">
                 <div class="logger-page-chart-container">
-                    <logger-chart></logger-chart>
+                    <logger-chart #chart></logger-chart>
                 </div>
                 <div class="logger-chart-bottom-container">
                     <ion-row class="chart-info">
@@ -120,7 +126,9 @@
         </ion-col>
         
         <ion-col class="controls-col">
-            <logger-component #loggerComponent></logger-component>
+            <logger-component #loggerComponent (updateScale)="updateScale($event)"></logger-component>
+
+            <fgen #fgenComponent (fgenTutorialFinish)="fgenTutorialFinished($event)"></fgen>
         </ion-col>
     </ion-row>
 </ion-content>

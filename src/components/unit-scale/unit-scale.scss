@@ -1,0 +1,18 @@
+.container {
+    color: white;
+}
+
+input {
+    // margin: 5px;
+    // width: 100px;
+    display: inline-block;
+}
+
+label {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+input.unit {
+    width: 50px;
+}

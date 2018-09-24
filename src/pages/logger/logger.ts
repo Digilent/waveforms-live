@@ -17,6 +17,7 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 //Services
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { LoggerChartComponent } from '../../components/logger-chart/logger-chart.component';
 
 declare var mathFunctions: any;
 
@@ -25,10 +26,12 @@ declare var mathFunctions: any;
 })
 export class LoggerPage {
     @ViewChild('loggerComponent') loggerComponent: LoggerComponent;
+    @ViewChild('chart') loggerChart: LoggerChartComponent;
     private dismissCallback: () => void;
     private unitFormatPipeInstance: UnitFormatPipe;
     private selectedMathInfo: MathOutput[] = [];
     private cursorInfo: CursorSelection;
+    private isRoot: boolean = false;
 
     constructor(
         private navCtrl: NavController,
@@ -39,7 +42,14 @@ export class LoggerPage {
         public tooltipService: TooltipService
     ) {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
+        this.isRoot = this.navParams.get('isRoot') || this.isRoot;
         this.unitFormatPipeInstance = new UnitFormatPipe();
+    }
+
+    updateScale({chan, unit}) {
+        console.log({chan, unit});
+        
+        this.loggerChart.setChannelUnit(chan, unit);
     }
 
     ngOnInit() {
@@ -417,4 +427,7 @@ export class LoggerPage {
         }
     }
 
+    private fgenTutorialFinished(event) {
+
+    }
 }

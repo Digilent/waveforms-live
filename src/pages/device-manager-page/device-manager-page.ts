@@ -7,6 +7,7 @@ import { DeviceConfigurePage } from '../../pages/device-configure/device-configu
 import { LoadFirmwarePage } from '../../pages/load-firmware/load-firmware';
 import { UpdateFirmwarePage } from '../../pages/update-firmware/update-firmware';
 import { CalibratePage } from '../../pages/calibrate/calibrate';
+import { LoggerPage } from '../logger/logger';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
@@ -64,7 +65,7 @@ export class DeviceManagerPage {
 
     public devices: DeviceCardInfo[] = [];
 
-    public simulatedDevices: string[] = ['OpenScope MZ'];
+    public simulatedDevices: string[] = ['OpenScope MZ', 'OpenLogger MZ'];
     public deviceConnectionType: string = 'network';
     public showDeviceTypeCard: boolean = true;
 
@@ -682,7 +683,6 @@ export class DeviceManagerPage {
     }
 
     openSimDevice() {
-        if (this.selectedSimulatedDevice === 'OpenScope MZ') {
             if (this.checkIfMatchingLocal(this.selectedSimulatedDevice, this.tutorialMode)) {
                 if (!this.tutorialMode) {
                     this.toastService.createToast('deviceExists', true);
@@ -719,8 +719,6 @@ export class DeviceManagerPage {
                 },
                 () => { }
             );
-
-        }
     }
 
     openUpdateFirmware(deviceIndex: number): Promise<any> {
@@ -734,16 +732,19 @@ export class DeviceManagerPage {
             this.agentSetActiveDeviceAndEnterJson(this.devices[deviceIndex])
                 .then((possibleError) => {
                     loading.dismiss();
+
                     if (possibleError && possibleError.error && possibleError.error === 'jsonMode') {
                         this.toastService.createToast('agentEnterJsonError', true);
                         return;
                     }
+
                     let modal = this.modalCtrl.create(UpdateFirmwarePage, {
                         agentAddress: this.devices[deviceIndex].deviceBridgeAddress,
                         deviceObject: this.devices[deviceIndex]
                     }, {
                             enableBackdropDismiss: false
                         });
+
                     modal.onWillDismiss((data) => {
                         this.deviceManagerService.connect(this.devices[deviceIndex].deviceBridgeAddress).subscribe(
                             (data) => {
@@ -852,19 +853,32 @@ export class DeviceManagerPage {
     }
 
     connectToDevice(deviceIndex: number) {
+        let isLogger = false;
+        let pageToDisplay = (isLogger = this.devices[deviceIndex].deviceDescriptor.deviceModel === 'OpenLogger MZ') ? LoggerPage : InstrumentPanelPage;
+        // What happens if I previosuly had an OpenScope, but this is now an OpenLogger?
+        
         if (this.devices[deviceIndex].ipAddress === 'local') {
             this.deviceManagerService.addDeviceFromDescriptor('local', { device: [this.devices[deviceIndex].deviceDescriptor] });
+
             console.log(this.deviceManagerService);
-            this.navCtrl.setRoot(InstrumentPanelPage, {
+
+            let navParams = {
                 tutorialMode: this.tutorialMode
-            });
+            };
+
+            if (isLogger) navParams = Object.assign(navParams, {onLoggerDismiss: () => {}, isRoot: true});
+
+            this.navCtrl.setRoot(pageToDisplay, navParams);
             return;
         }
+
         let loading = this.displayLoading();
         let ipAddress = this.devices[deviceIndex].ipAddress;
         if (this.devices[deviceIndex].bridge) {
             ipAddress = this.devices[deviceIndex].deviceBridgeAddress;
+
             this.deviceManagerService.transport.setHttpTransport(ipAddress);
+
             let command = {
                 "agent": [
                     {
@@ -873,75 +887,104 @@ export class DeviceManagerPage {
                     }
                 ]
             };
+
             console.log(command);
+
             this.deviceManagerService.transport.writeRead('/config', JSON.stringify(command), 'json').subscribe(
                 (arrayBuffer) => {
                     let data;
                     let statusCode;
+
                     try {
                         data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
+                        
                         statusCode = data.agent[0].statusCode;
                     }
                     catch (e) {
                         console.log('Error Parsing Set Active Device Response');
                         console.log(e);
                     }
+
                     console.log(data);
+
                     if (!data.agent[0] || data.agent[0].statusCode > 0) {
                         this.toastService.createToast('agentConnectError', true);
+
                         loading.dismiss();
+
                         return;
                     }
+
                     this.enterJsonMode()
                         .then(() => {
-                            this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading, deviceIndex);
+                            this.sendEnumeration(ipAddress, loading, deviceIndex)
+                            .then(() => {
+                                this.navCtrl.setRoot(pageToDisplay, {
+                                    tutorialMode: this.tutorialMode
+                                });
+                            });
                         })
                         .catch((e) => {
                             this.toastService.createToast('agentConnectError', true);
+
                             loading.dismiss();
                         });
                 },
                 (err) => {
                     console.log(err);
+
                     this.toastService.createToast('timeout', true);
+
                     loading.dismiss();
                 },
                 () => { }
             );
             return;
         }
-        this.sendEnumerationCommandAndLoadInstrumentPanel(ipAddress, loading, deviceIndex);
+        
+        this.sendEnumeration(ipAddress, loading, deviceIndex)
+        .then(() => {
+            this.navCtrl.setRoot(pageToDisplay, {
+                tutorialMode: this.tutorialMode
+            });
+        });
     }
 
-    sendEnumerationCommandAndLoadInstrumentPanel(ipAddress: string, loadingInstance, deviceIndex) {
-        this.deviceManagerService.connect(ipAddress).subscribe(
-            (success) => {
-                console.log(success);
-                loadingInstance.dismiss();
-                this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);
-                this.devices[deviceIndex].deviceDescriptor = success.device[0];
-                this.verifyFirmware(deviceIndex)
-                    .then((data) => {
-                        return this.verifyCalibrationSource(deviceIndex, success.device[0].calibrationSource);
-                    })
-                    .then((data) => {
-                        this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
-                            console.warn(e);
+    sendEnumeration(ipAddress, loadingInstance, deviceIndex) {
+        return new Promise((resolve) => {
+            this.deviceManagerService.connect(ipAddress).subscribe(
+                (success) => {
+                    console.log(success);
+
+                    loadingInstance.dismiss();
+
+                    this.deviceManagerService.addDeviceFromDescriptor(ipAddress, success);
+                    this.devices[deviceIndex].deviceDescriptor = success.device[0];
+
+                    this.verifyFirmware(deviceIndex)
+                        .then((data) => {
+                            return this.verifyCalibrationSource(deviceIndex, success.device[0].calibrationSource);
+                        })
+                        .then((data) => {
+                            this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
+                                console.warn(e);
+                            });
+
+                            resolve();
+                        })
+                        .catch((e) => {
+                            console.log(e);
                         });
-                        this.navCtrl.setRoot(InstrumentPanelPage, {
-                            tutorialMode: this.tutorialMode
-                        });
-                    })
-                    .catch((e) => {
-                        console.log(e);
-                    });
-            },
-            (err) => {
-                console.log(err);
-                this.toastService.createToast('timeout', true);
-                loadingInstance.dismiss();
-            },
-            () => { }
-        );
+                },
+                (err) => {
+                    console.log(err);
+
+                    this.toastService.createToast('timeout', true);
+                    
+                    loadingInstance.dismiss();
+                },
+                () => { }
+            );
+        });
     }
 }
