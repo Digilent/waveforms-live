@@ -2,9 +2,15 @@
     <div>
         <ion-row class="logger-header">
             <ion-col class="back-button-col timeline-back-button" center text-center>
-                <button ion-button class="custom-back-button disable-hover" (click)="done()">
+                <button *ngIf="isRoot === false" ion-button class="custom-back-button disable-hover" (click)="done()">
                     <img class="custom-image-button" src="assets/img/arrow-back.svg">
                 </button>
+
+                <div *ngIf="isRoot === true" class="menu-button-container">
+                    <button clear ion-button menuToggle class="custom-menu-button disable-hover">
+                        <img class="custom-image-button" src="assets/img/menu.svg">
+                    </button>
+                </div>
             </ion-col>
             <ion-col center class="config-title-menu-col logger-timeline-container">
                 <logger-timeline></logger-timeline>

@@ -31,6 +31,7 @@ export class LoggerPage {
     private unitFormatPipeInstance: UnitFormatPipe;
     private selectedMathInfo: MathOutput[] = [];
     private cursorInfo: CursorSelection;
+    private isRoot: boolean = false;
 
     constructor(
         private navCtrl: NavController,
@@ -41,6 +42,7 @@ export class LoggerPage {
         public tooltipService: TooltipService
     ) {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
+        this.isRoot = this.navParams.get('isRoot') || this.isRoot;
         this.unitFormatPipeInstance = new UnitFormatPipe();
     }
 
