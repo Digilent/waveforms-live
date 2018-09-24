@@ -449,8 +449,10 @@ var waveformsLiveDictionary = (function() {
         },
         logFileName: {
             english: 'Log File Name'
+        },
+        scaleInvalidExpression: {
+            english: "Invalid Expression"
         }
-
     };
 
     var statusCodes = {
