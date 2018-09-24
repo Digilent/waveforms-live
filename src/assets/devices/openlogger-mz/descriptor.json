@@ -69,11 +69,16 @@
         "sourceCurrentMax": 7000,
         "sinkCurrentMax": 12000
     },
+    "la": {
+        "numChans": 0
+    },"osc": {
+        "numChans": 0
+    },
     "log": {
         "analog": {
             "fileFormat": 1,
             "fileRevision": 1,
-            "numChans": 8,
+            "numChans": 1,
             "1": {
                 "resolution": 12,
                 "effectiveBits": 12,
@@ -89,7 +94,8 @@
                 "voltageUnits": 0.001,
                 "adcVpp": 3000,
                 "inputVoltageMax": 10000,
-                "inputVoltageMin": -10000
+                "inputVoltageMin": -10000,
+                "gains": [1, 0.25, 0.125, 0.175]
             },
             "2": {
                 "resolution": 12,
