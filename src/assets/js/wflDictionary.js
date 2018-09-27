@@ -145,6 +145,21 @@ var waveformsLiveDictionary = (function() {
         logInvalidFileType: {
             english: 'Invalid File Type. The Specified File Does Not Appear To Be A Digilent Log File'
         },
+        cloudLoggerInvalidKey: {
+            english: 'Invalid ThingSpeak API Key.'
+        },
+        cloudLoggerInvalidChannelId: {
+            english: 'Invalid ThingSpeak Channel ID.'
+        },
+        cloudLoggerInvalidSamples: {
+            english: 'Invalid Sample Frequency.'
+        },
+        cloudLoggerMaxSampleFreq: {
+            english: 'Sample Frequency Is Limited To 60 S/s For Cloud Logging. Please Reduce Sample Frequency.'
+        },
+        cloudLoggerInvalidChannels: {
+            english: 'Please Select At Least One Channel To Log.'
+        },
 
         //File
         fileDeleteErr: {
@@ -437,6 +452,9 @@ var waveformsLiveDictionary = (function() {
         },
         logSampleFreq: {
             english: 'Sample Frequency'
+        },
+        logSampleFreqDisabled: {
+            english: 'Sample Frequency is disabled because cloud logging is enabled'
         },
         logSamples: {
             english: 'Number Of Samples'

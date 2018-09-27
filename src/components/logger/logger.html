@@ -163,19 +163,19 @@
                     </ion-col>
                     <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
-                            <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', i, 'sampleFreq')" [disabled]="running">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', i, 'sampleFreq')" [disabled]="running || cloudLoggingService.enabled">
                                 <img class="custom-image-button" src="assets/img/remove.svg">
                             </button>
                         </div>
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" [disabled]="running"
-                            formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" (mousewheel)="mousewheel($event, 'analog', i, 'sampleFreq')"
-                            [tooltip]="tooltipService.getTooltip('logSampleFreq').message" [tooltipAnimation]="true" tooltipPlacement="top" />
+                        <div [tooltip]="sampleFreqTip" [tooltipAnimation]="true" tooltipPlacement="bottom">
+                            <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" [disabled]="running || sampleFreqDisabled().isDisabled" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" (mousewheel)="mousewheel($event, 'analog', i, 'sampleFreq')"  />
+                        </div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
-                            <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', i, 'sampleFreq')" [disabled]="running">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', i, 'sampleFreq')" [disabled]="running || cloudLoggingService.enabled">
                                 <img class="custom-image-button" src="assets/img/add.svg">
                             </button>
                         </div>

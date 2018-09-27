@@ -86,6 +86,11 @@
     height: 100%;
 }
 
+.cloud-logging-enabled
+{
+    background-color: #4487BA !important;
+}
+
 @media screen and (max-width: 1200px) {
     .logger-page-container .logger-chart-bottom-container .collapse-button {
         display: none;

@@ -1,0 +1,62 @@
+<div class="cloud-logging-container">
+    <ion-row>
+        <ion-col center text-center class="header">
+            <span>Cloud Logging</span>
+        </ion-col>
+    </ion-row>
+    <ion-row margin-top>
+        <ion-col class="input-label">ThingSpeak API Key</ion-col>
+        <ion-col class="input-col">
+            <div class="label-flex">
+                <div class="label-left">
+                    <input class="custom-input" [(ngModel)]="params.apiKey" />
+                </div>
+            </div>
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col class="input-label">Channel ID</ion-col>
+        <ion-col class="input-col">
+            <div class="label-flex">
+                <div class="label-left">
+                    <input class="custom-input" [(ngModel)]="params.channelId" />
+                </div>
+            </div>
+        </ion-col>
+    </ion-row>
+    <ion-row margin-top>
+        <ion-col class="input-label">Samples/</ion-col>
+        <ion-col class="input-col">
+            <div class="label-flex">
+                <div class="label-left">
+                    <input class="custom-input" [ngModel]="params.sampleFreq | unitFormat:'S/s'" formatInput (valChange)="formatInputAndUpdate($event, 'analog')" />
+                </div>
+            </div>
+        </ion-col>
+    </ion-row>
+    <ion-row margin-top>
+        <ion-col class="input-label">Analog Channels</ion-col>
+    </ion-row>
+    <ion-row wrap class="button-container" text-center>
+        <ion-col width-25 *ngFor="let chan of params.analogChans, let i = index">
+            <button class="channel-button" [ngClass]="{'button-on': params.analogChans[i]}" (click)="toggleAnalogChannel(i)">
+                {{i+1}}
+            </button>
+        </ion-col>
+    </ion-row>
+    <ion-row margin-top>
+        <ion-col text-left>
+            <button ion-button icon-left class="text-button-side disable-hover" (click)="close()" *ngIf="!cloudLoggingService.enabled">
+                <img class="custom-image-button" src="assets/img/close.svg"> Cancel
+            </button>
+            <button ion-button class="text-button-side disable-hover" (click)="disableLogging()" *ngIf="cloudLoggingService.enabled">
+                Disable
+            </button>
+        </ion-col>
+        <ion-col text-right>
+            <button ion-button class="text-button-side disable-hover" (click)="enableLogging()">
+                {{cloudLoggingService.enabled ? 'Save' : 'Enable'}}
+            </button>
+        </ion-col>
+    </ion-row>
+</div>

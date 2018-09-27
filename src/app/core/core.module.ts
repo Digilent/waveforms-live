@@ -12,6 +12,7 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
 import { UtilityService } from '../../services/utility/utility.service';
 import { ExportService } from '../../services/export/export.service';
 import { UiHelperService } from '../../services/ui-helper/ui-helper.service';
+import { CloudLoggingService } from '../../services/cloud-logging/cloud-logging.service';
 
 @NgModule({
     imports: [],
@@ -26,7 +27,8 @@ import { UiHelperService } from '../../services/ui-helper/ui-helper.service';
         LoadingService,
         ExportService,
         DeviceDataTransferService,
-        UiHelperService
+        UiHelperService,
+        CloudLoggingService
     ]
 })
 export class CoreModule {

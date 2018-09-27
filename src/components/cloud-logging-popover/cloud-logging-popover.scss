@@ -1,0 +1,56 @@
+cloud-logging-popover {
+    .cloud-logging-container {
+        background-color: #535353;
+        padding: 5px;
+    }
+    .button-container {
+        padding: 0px 20px 10px 20px;
+    }
+    .channel-button {
+        border: solid #3A3A3A 1px;
+        height: 25px;
+        width: 25px;
+        padding: 0px;
+        background-color: #4487BA;
+        opacity: 0.25;
+        border-radius: 0px;
+        color: white;
+        margin: auto;
+        box-shadow: none;
+        font-weight: 400;
+        display: block;
+        text-align: center;
+    }
+    .button-on {
+        opacity: 1;
+    }
+    .channel-button:hover {
+        border: solid white 1px;
+    }
+    .header {
+        color: white;
+        font-weight: 600;
+        padding: 10px 0px;
+    }
+    .input-col {
+        padding-left: 0px;
+        padding-top: 0px;
+        padding-right: 6px;
+    }
+    .input-label {
+        color: #CCCCCC;
+        min-width: 80px;
+        padding-right: 0px;
+        padding-left: 15px;
+        padding-top: 0px;
+    }
+    .label-flex {
+        display: flex;
+        flex-direction: row;
+        min-width: 114px;
+    }
+    .label-left {
+        flex: 1 0 84px;
+        align-self: center;
+    }
+}

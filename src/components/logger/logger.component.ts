@@ -1,5 +1,5 @@
 import { Component, ViewChild, ViewChildren, QueryList, Output, EventEmitter } from '@angular/core';
-import { AlertController } from 'ionic-angular';
+import { AlertController, Events } from 'ionic-angular';
 import { LoadingService } from '../../services/loading/loading.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { Observable } from 'rxjs/Observable';
@@ -15,11 +15,13 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
 import { ExportService } from '../../services/export/export.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { CloudLoggingService } from '../../services/cloud-logging/cloud-logging.service';
 
 //Interfaces
 /* import { DataContainer } from '../chart/chart.interface'; */
 import { PlotDataContainer } from '../../services/logger-plot/logger-plot.service';
 import { LoggerXAxisComponent } from '../logger-xaxis/logger-xaxis.component';
+import { UiHelperService, RefreshElementState } from '../../services/ui-helper/ui-helper.service';
 
 @Component({
     templateUrl: 'logger.html',
@@ -98,6 +100,8 @@ export class LoggerComponent {
     private destroyed: boolean = false;
     public dataAvailable: boolean = false;
 
+    public sampleFreqTip;
+
     constructor(
         private devicemanagerService: DeviceManagerService,
         private loadingService: LoadingService,
@@ -107,7 +111,10 @@ export class LoggerComponent {
         private exportService: ExportService,
         private alertCtrl: AlertController,
         private settingsService: SettingsService,
-        public tooltipService: TooltipService
+        public tooltipService: TooltipService,
+        public cloudLoggingService: CloudLoggingService,
+        public events: Events,
+        private uiHelper: UiHelperService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         console.log(this.activeDevice.instruments.logger);
@@ -126,6 +133,12 @@ export class LoggerComponent {
                 this.toastService.createToast('deviceDroppedConnection', true, undefined, 5000);
                 loading.dismiss();
             });
+
+        this.events.subscribe('cloudLogging:enabled', (params) => {
+            this.analogChans.forEach((chan) => {
+                chan.sampleFreq = params[0]['sampleFreq'];
+            });
+        });
     }
 
     private unitTransformer: any[] = [];
@@ -138,6 +151,8 @@ export class LoggerComponent {
     ngOnDestroy() {
         this.chartPanSubscriptionRef.unsubscribe();
         this.offsetChangeSubscriptionRef.unsubscribe();
+        this.cloudLoggingService.resetService();
+        this.events.unsubscribe('cloudLogging:enabled');
         this.running = false;
         this.destroyed = true;
     }
@@ -231,9 +246,9 @@ export class LoggerComponent {
             for (let i = 0; i < this.digitalChans.length; i++) {
                 digitalChanArray.push(i + 1);
             }
-            if (analogChanArray.length < 1 && digitalChanArray.length < 1) { 
+            if (analogChanArray.length < 1 && digitalChanArray.length < 1) {
                 resolve('done');
-                return; 
+                return;
             }
 
             this.getStorageLocations()
@@ -253,8 +268,8 @@ export class LoggerComponent {
                         this.modeSelect('stream');
                         return new Promise((resolve, reject) => { resolve(); });
                     }
-                    else {    
-                        return new Promise((resolve, reject) => {               
+                    else {
+                        return new Promise((resolve, reject) => {
                             this.storageLocations.reduce((accumulator, currentVal, currentIndex) => {
                                 return accumulator
                                     .then((data) => {
@@ -272,7 +287,7 @@ export class LoggerComponent {
                                     console.log(e);
                                     resolve();
                                 });
-                        });     
+                        });
                     }
                 })
                 .then((data) => {
@@ -332,7 +347,7 @@ export class LoggerComponent {
 
     fileExists(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.alertWrapper('File Exists', 'Your log file already exists. Would you like to overwrite or cancel?', 
+            this.alertWrapper('File Exists', 'Your log file already exists. Would you like to overwrite or cancel?',
                 [{
                     text: 'Cancel',
                     handler: (data) => {
@@ -421,6 +436,20 @@ export class LoggerComponent {
         this.analogChans[axisNum].vOffset += type === 'increment' ? 0.1 : -0.1;
         this.loggerPlotService.setPosition('y', axisNum + 1, this.analogChans[axisNum].vOffset, true);
     }
+
+    public sampleFreqDisabled: RefreshElementState = this.uiHelper.generateDisableCheck('sampleFreqTip', () => {
+        if (this.cloudLoggingService.enabled) {
+            return {
+                message: this.tooltipService.getTooltip('logSampleFreqDisabled').message,
+                isDisabled: true
+            }
+        } else {
+            return {
+                message: this.tooltipService.getTooltip('logSampleFreq').message,
+                isDisabled: false
+            }
+        }
+    });
 
     incrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
         let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
@@ -590,7 +619,7 @@ export class LoggerComponent {
             });
         }
         else {
-            
+
         }
         console.log(this.analogChans);
     }
@@ -947,10 +976,10 @@ export class LoggerComponent {
 
                 for (let i = 0; i < channelObj.data.length; i++) {
                     let data = (this.unitTransformer[channel]) ? this.unitTransformer[channel](channelObj.data[i]) :
-                        channelObj.data[i]; 
+                        channelObj.data[i];
 
                     formattedData.push([timeVal, data]);
-                    
+
                     timeVal += dt;
                 }
 
@@ -963,7 +992,7 @@ export class LoggerComponent {
                 dataContainerIndex += (chanIndex = parseInt(channel) - 1);
                 this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
-                
+
                 let overflow = 0;
                 let containerSize = this.analogChans[chanIndex].sampleFreq * this.xAxis.loggerBufferSize;
                 if ((overflow = this.dataContainers[dataContainerIndex].data.length - containerSize) >= 0) {
@@ -1035,13 +1064,13 @@ export class LoggerComponent {
                 }
                 else if (returnData.reason === 0) {
                     this.setParametersAndRun(loading);
-                }  
+                }
             })
             .catch((e) => {
                 console.log(e);
                 loading.dismiss();
                 this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
-            });              
+            });
     }
 
     private setParametersAndRun(loading) {
@@ -1386,14 +1415,14 @@ export class LoggerComponent {
                 }
                 console.log(paramObj);
                 observable = this.activeDevice.instruments.logger.analog.setParameters(
-                    chans, 
-                    paramObj[analogParamArray[0]], 
+                    chans,
+                    paramObj[analogParamArray[0]],
                     paramObj[analogParamArray[1]],
-                    paramObj[analogParamArray[2]], 
-                    paramObj[analogParamArray[3]], 
-                    paramObj[analogParamArray[4]], 
-                    paramObj[analogParamArray[5]], 
-                    paramObj[analogParamArray[6]], 
+                    paramObj[analogParamArray[2]],
+                    paramObj[analogParamArray[3]],
+                    paramObj[analogParamArray[4]],
+                    paramObj[analogParamArray[5]],
+                    paramObj[analogParamArray[6]],
                     paramObj[analogParamArray[7]]
                 );
             }
@@ -1413,12 +1442,12 @@ export class LoggerComponent {
                 }
                 console.log(paramObj);
                 observable = this.activeDevice.instruments.logger.digital.setParameters(
-                    chans, 
+                    chans,
                     paramObj[digitalParamArray[0]],
-                    paramObj[digitalParamArray[1]], 
-                    paramObj[digitalParamArray[2]], 
-                    paramObj[digitalParamArray[3]], 
-                    paramObj[digitalParamArray[4]], 
+                    paramObj[digitalParamArray[1]],
+                    paramObj[digitalParamArray[2]],
+                    paramObj[digitalParamArray[3]],
+                    paramObj[digitalParamArray[4]],
                     paramObj[digitalParamArray[5]],
                     paramObj[digitalParamArray[6]]
                 );
@@ -1521,18 +1550,18 @@ export class LoggerComponent {
                     counts.push(this.digitalChans[this.digitalChansToRead[i] - 1].count);
                 }
             }
-            
+
             let finalObj = {};
-            
+
             chans.reduce((accumulator, currentVal, currentIndex) => {
                 return accumulator.flatMap((data) => {
                     if (currentIndex > 0) {
                         let chanObj = instrument === 'analog' ? this.analogChans[currentIndex - 1] : this.digitalChans[currentIndex - 1];
                         if (chanObj.startIndex >= 0 && chanObj.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
                             return Observable.create((observer) => { observer.error({
-                                message: 'Could not keep up with device',
-                                data: data
-                            }); });
+                                    message: 'Could not keep up with device',
+                                    data: data
+                                }); });
                         }
                         this.updateValuesFromRead(data, instrument, chans, currentIndex - 1);
                     }
