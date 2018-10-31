@@ -16,6 +16,10 @@
     text-align: center;
 }
 
+.calibration-container .results-indicator-wrapper ion-label {
+    margin-bottom: 0px;
+}
+
 .calibration-container .slide-container {
     .slide-zoom {
         background-color: #535353;
@@ -44,6 +48,9 @@
 
 .calibration-container .calibration-content-container {
     min-height: calc(100% - 140px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .calibration-container .calibration-results {

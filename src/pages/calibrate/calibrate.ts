@@ -220,11 +220,12 @@ export class CalibratePage {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationGetInstructions().subscribe(
             (data) => {
                 console.log(data);
-                if (data.device[0].instructions == undefined) { return; }
-                this.calibrationInstructions = data.device[0].instructions;
+                let instructions = data.device[0].instructions;
+                if (instructions == undefined) { return; }
+                this.calibrationInstructions = typeof(instructions) === 'string' ? [data.device[0].instructions] : data.device[0].instructions;
             },
             (err) => {
-                console.log(err);      
+                console.log(err);                
             },
             () => { }
         );
@@ -412,9 +413,8 @@ export class CalibratePage {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationRead().subscribe(
             (data) => {
                 console.log(data);
-                // Make sure calibration did not fail
-                let stepStatus = data.device[0].calibrationData.daq[this.currentStep].status;
-                if (stepStatus === 'FailedCalibration') {
+                // Make sure calibration did not fail          
+                if (this.isLogger && data.device[0].calibrationData.daq[this.currentStep].status === 'FailedCalibration') {
                     this.calibrationFailed = true;
                     this.calibrationStatus = 'Calibration failed. Check your calibration setup and try again.';
                     return;
