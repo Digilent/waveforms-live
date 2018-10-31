@@ -1,22 +1,22 @@
-.calibration-container
-{
+.calibration-container {
     background-color: transparent;
     color: white;
 }
 
-.calibration-container .content-container
-{
+.calibration-container .content-container {
     position: relative;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.calibration-container .something-else {
+.calibration-container .results-indicator {
     white-space: normal;
     text-align: center;
 }
 
-.calibration-container .slide-container
-{
+.calibration-container .slide-container {
     .slide-zoom {
         background-color: #535353;
         width: 800px;
@@ -33,6 +33,9 @@
         color: white;
         text-decoration: none;
     }
+    p {
+        margin: 0px;
+    }
 }
 
 .calibration-container .calibration-info-container {
@@ -40,18 +43,15 @@
 }
 
 .calibration-container .calibration-content-container {
-    min-height: calc(100% - 95px);
+    min-height: calc(100% - 140px);
 }
 
-.calibration-container .calibration-results
-{
+.calibration-container .calibration-results {
     //min-height: 400px;
-    margin-top: 16px;
     text-align: center;
 }
 
-.calibration-container .calibration-results-container
-{
+.calibration-container .calibration-results-container {
     max-height: 200px;
     max-width: 100%;
     height: 200px;
@@ -60,23 +60,21 @@
     color: #CCCCCC;
     background-color: #3A3A3A;
     border: none;
+    resize: vertical;
 }
 
-.calibration-container .slide-header
-{
+.calibration-container .slide-header {
     font-size: 16px;
     font-weight: 500;
     padding-top: 16px;
 }
 
-.calibration-container .instruction-header
-{
+.calibration-container .instruction-header {
     font-size: 16px;
     font-weight: 500;
 }
 
-.calibration-container .intro-icon
-{
+.calibration-container .intro-icon {
     font-size: 120px;
 }
 
@@ -84,19 +82,16 @@
     padding: 0px;
 }
 
-.calibration-container .instructions-col
-{
+.calibration-container .instructions-col {
     padding-left: 16px;
 }
 
-.calibration-container .calibration-instructions
-{
+.calibration-container .calibration-instructions {
     font-size: 14px;
     color: #CCCCCC;
     padding: 0 16px 0 16px;
-
-    min-height: calc(100% - 177px);
 }
+
 /*
 .calibration-container .calibrate-item
 {
@@ -104,13 +99,11 @@
     color: white;
 }*/
 
-.calibration-container .list-container
-{
+.calibration-container .list-container {
     padding-top: 16px;
 }
 
-.calibration-container .save-button
-{
+.calibration-container .save-button {
     margin-top: 0.1rem;
     margin-right: 0.1rem;
     margin-bottom: 0.1rem;
@@ -124,43 +117,37 @@
     color: #CCCCCC;
 }
 
-.calibration-container .calibration-dropdown-popover-container
-{
+.calibration-container .calibration-dropdown-popover-container {
     font-size: 16px;
     background-color: #535353;
     .item-inner {
         border: none;
     }
-    max-height: 74px;
+    max-height: 65px;
 }
 
-.calibration-container .dropdown-popover-container
-{
+.calibration-container .dropdown-popover-container {
     margin-top: 2px;
     font-size: 0;
 }
 
-.calibration-container .status-indicator-col
-{
+.calibration-container .status-indicator-col {
     padding-left: 16px;
 }
 
-.calibration-container .dropdown-popover-container .popover-button
-{
+.calibration-container .dropdown-popover-container .popover-button {
     height: 25px;
-    margin-top:3px;
+    margin-top: 3px;
 }
 
-.calibration-container .storage-label
-{
+.calibration-container .storage-label {
     color: #CCCCCC;
     font-size: 1.2rem;
     margin-top: 8px;
-    margin-bottom:1px;
+    margin-bottom: 1px;
 }
 
-.calibration-container .storage-refresh-button
-{
+.calibration-container .storage-refresh-button {
     margin-top: 32px;
     color: #CCCCCC;
 }
@@ -170,37 +157,31 @@
     color: #CCCCCC;
 }
 
-.calibration-container .load-calibration-button
-{
+.calibration-container .load-calibration-button {
     margin-top: 32px;
     font-size: 10px;
 }
 
-.calibration-container .status-indicator
-{
+.calibration-container .status-indicator {
     color: white;
 }
 
-.calibration-container .navigation-button-container
-{
+.calibration-container .navigation-button-container {
     // position: absolute;
     width: 100%;
     // bottom: 0;
     padding: 0 11px 11px 11px;
 }
 
-.calibration-container .button-container-col
-{
+.calibration-container .button-container-col {
     max-width: 120px;
 }
 
-.calibration-container .pad-above
-{
+.calibration-container .pad-above {
     padding-top: 16px;
 }
 
-.calibration-container .progress-bar
-{
+.calibration-container .progress-bar {
     width: 90%;
     height: 30px;
     background-color: #3A3A3A;
@@ -208,46 +189,40 @@
 
 .calibration-container {
     progress::-webkit-progress-bar {
-        background-color:#3A3A3A;
+        background-color: #3A3A3A;
     }
     progress::-webkit-progress-value {
-        background-color:#4487BA;
+        background-color: #4487BA;
     }
     progress::-moz-progress-bar {
         background-color: #4487BA;
     }
-} 
+}
 
-.calibration-container .collapse-card
-{
+.calibration-container .collapse-card {
     min-height: 0;
     transition: 0.09s all linear;
 }
 
-.calibration-container .card-info
-{
+.calibration-container .card-info {
     background-color: #535353;
     color: #CCCCCC;
     font-size: 14px;
     border: none !important;
-    margin-top: 23px;
-
+    margin-top: 10px;
     max-height: 25px;
-
     .item-inner {
         border: none !important;
         .input-wrapper {
             min-width: 100px;
         }
     }
-
     ion-label {
         margin: 8px 8px 8px 0;
     }
 }
 
-.calibration-container .advanced-button
-{
+.calibration-container .advanced-button {
     font-size: 14px;
     color: white;
 }
@@ -257,14 +232,13 @@
 }
 
 .calibration-container .calibration-connection-image-container {
-    margin-top: 10px;
+    margin-top: 16px;
 }
 
 @media screen and (max-width: 768px) {
     .calibration-container {
         background-color: rgba(0, 0, 0, 0.4);
     }
-
     .calibration-container .slide-container .slide-zoom {
         background-color: #535353;
         width: 100%;
@@ -273,11 +247,14 @@
         overflow: auto;
         max-height: 100%;
     }
-
 }
 
 @media screen and (max-height: 599px) {
     .calibration-container {
         background-color: rgba(0, 0, 0, 0.4);
     }
+}
+
+[hidden] {
+    display: none !important;
 }

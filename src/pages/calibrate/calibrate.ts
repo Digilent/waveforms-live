@@ -1,4 +1,4 @@
-import { Component, ViewChild, trigger, state, animate, transition, style } from '@angular/core';
+import { Component, ViewChild, ViewChildren, QueryList, trigger, state, animate, transition, style } from '@angular/core';
 import { NavParams, Slides, ViewController, LoadingController, AlertController } from 'ionic-angular';
 
 //Components
@@ -34,14 +34,20 @@ import { DeviceManagerService } from 'dip-angular2/services';
 })
 export class CalibratePage {
     @ViewChild('calibrationSlider') slider: Slides;
-    @ViewChild('digilentProgressBar') digilentProgressBar: ProgressBarComponent;
+    @ViewChildren('digilentProgressBar') digilentProgressBar:QueryList<ProgressBarComponent>;
     public storageService: StorageService;
     public settingsService: SettingsService;
     public params: NavParams;
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
-    public calibrationInstructions: string = 'There was an error loading the calibration instructions for your device.\n' +
-    'Check your reference manual for correct setup before starting the calibration process.';
+    public isLogger: boolean = false;
+
+    public calibrationInstructions: string[];
+    public noInstructions: string = 'There was an error loading the calibration instructions for your device. Check your reference manual for correct setup before starting the calibration process.';
+    public currentStep: number;
+    public showInstructions: boolean = true;
+    public runningCalibration: boolean = false;
+
     public calibrationStatus: string = 'Ready To Calibrate';
     public calibrationFailed: boolean = false;
     public calibrationSuccessful: boolean = false;
@@ -80,6 +86,7 @@ export class CalibratePage {
         this.settingsService = _settingsService;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
+        this.isLogger = this.deviceManagerService.getActiveDevice().deviceModel === 'OpenLogger MZ';
         console.log('calibrate constructor');
         this.getCalibrationInstructions();
     }
@@ -161,10 +168,7 @@ export class CalibratePage {
     }
 
     toCalibrationSuccessPage() {
-        let swiperInstance: any = this.slider.getSlider();
-        swiperInstance.unlockSwipes();
-        this.slider.slideTo(2);
-        swiperInstance.lockSwipes();
+        this.toNextSlide();
         this.calibrationResultsIndicator = "Calibration completed succesfully and has been applied to the instruments. By default, this calibration will be applied each time the device boots."; // Select <strong>Save as Default</strong> and click <strong>Done</strong> to apply the calibration everytime the device boots."; // was successful and has been applied to the instruments but will be lost when powered down.\nPress save to have this calibration load at startup.";
         this.getStorageLocations();
     }
@@ -220,24 +224,49 @@ export class CalibratePage {
                 this.calibrationInstructions = data.device[0].instructions;
             },
             (err) => {
-                console.log(err);
+                console.log(err);      
             },
             () => { }
         );
     }
 
-    runCalibration() {
+    connectionImage(step: number) {
+        return this.isLogger ? 'assets/img/openlogger_calibration_' + (step + 1) + '.svg' : 'assets/img/openscope_calibration.svg';
+    }
+
+    toNextSlide() {
+        this.calibrationStatus = 'Ready To Calibrate';
+        this.showInstructions = true;
+        this.runningCalibration = false;
+
+        let swiperInstance: any = this.slider.getSlider();
+        swiperInstance.unlockSwipes();
+        this.slider.slideTo(swiperInstance.activeIndex + 1, 0);
+        swiperInstance.lockSwipes();
+    }
+
+    runCalibration(step: number) {
+        this.currentStep = step;
         this.calibrationFailed = false;
         this.calibrationSuccessful = false;
-        let loading = this.displayLoading();
-        this.resetInstruments().then(() => {
+
+        // only reset instruments if first step
+        if (this.currentStep === 1) {
+            let loading = this.displayLoading();
+            this.resetInstruments().then(() => {
+                this.startCalibration();
+                loading.dismiss();
+                this.showInstructions = false;
+                this.runningCalibration = true;
+            }).catch((e) => {
+                this.calibrationStatus = 'Error resetting the device. Make sure it is still connected and is on the latest firmware.';
+                loading.dismiss();
+            });
+        } else {
             this.startCalibration();
-            loading.dismiss();
-            this.toSlide(1);
-        }).catch((e) => {
-            this.calibrationStatus = 'Error resetting the device. Make sure it is still connected and is on the latest firmware.';
-            loading.dismiss();
-        });
+            this.showInstructions = false;
+            this.runningCalibration = true;
+        }
     }
 
     displayLoading(message?: string) {
@@ -275,6 +304,8 @@ export class CalibratePage {
     startCalibration() {
         this.calibrationFailed = false;
         this.calibrationSuccessful = false;
+
+        // TODO: update calibrationStart command
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationStart().subscribe(
             (data) => {
                 console.log(data);
@@ -297,7 +328,7 @@ export class CalibratePage {
     }
 
     runProgressBar(waitTime: number) {
-        this.digilentProgressBar.start(waitTime);
+        this.digilentProgressBar.toArray()[this.currentStep - 1].start(waitTime);
     }
 
     progressBarFinished() {
@@ -367,7 +398,8 @@ export class CalibratePage {
     toLoadExistingPage() {
         let swiperInstance: any = this.slider.getSlider();
         swiperInstance.unlockSwipes();
-        this.slider.slideTo(3, 0);
+        // this.slider.slideTo(3, 0);
+        this.slider.slideTo(this.calibrationInstructions.length + 1, 0);
         swiperInstance.lockSwipes();
         this.calibrationResultsIndicator = 'Select a storage location and click load.';
         this.calibrationResults = '';
@@ -380,10 +412,17 @@ export class CalibratePage {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationRead().subscribe(
             (data) => {
                 console.log(data);
+                // Make sure calibration did not fail
+                let stepStatus = data.device[0].calibrationData.daq[this.currentStep].status;
+                if (stepStatus === 'FailedCalibration') {
+                    this.calibrationFailed = true;
+                    this.calibrationStatus = 'Calibration failed. Check your calibration setup and try again.';
+                    return;
+                }
+
                 this.calibrationStatus = 'Calibration Successful!';
                 this.parseCalibrationInformation(data);
                 this.calibrationSuccessful = true;
-                this.toCalibrationSuccessPage();
             },
             (err) => {
                 console.log(err);
@@ -409,7 +448,7 @@ export class CalibratePage {
                 else if (err.device && err.device[0].statusCode === 2684354578) {
                     //Bad setup
                     this.calibrationFailed = true;
-                    this.calibrationStatus = 'Calibration failed. ' + this.calibrationInstructions + ' Click retry to restart calibration.';
+                    this.calibrationStatus = 'Calibration failed. ' + (this.calibrationInstructions ? this.calibrationInstructions : 'Check your reference manual for correct setup.') + ' Click retry to restart calibration.';
                     return;
                 }
             },
