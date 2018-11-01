@@ -34,13 +34,23 @@ import { DeviceManagerService } from 'dip-angular2/services';
 })
 export class CalibratePage {
     @ViewChild('calibrationSlider') slider: Slides;
-    @ViewChildren('digilentProgressBar') digilentProgressBar:QueryList<ProgressBarComponent>;
+    @ViewChildren('digilentProgressBar') digilentProgressBar: QueryList<ProgressBarComponent>;
     public storageService: StorageService;
     public settingsService: SettingsService;
     public params: NavParams;
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
     public isLogger: boolean = false;
+    public loggerInstruments = [
+        { "dc": [1, 2], "awg": 1, "daq": 1 },
+        { "daq": 2 },
+        { "daq": 3 },
+        { "daq": 4 },
+        { "daq": 5 },
+        { "daq": 6 },
+        { "daq": 7 },
+        { "daq": 8 }
+    ];
 
     public calibrationInstructions: string[];
     public noInstructions: string = 'There was an error loading the calibration instructions for your device. Check your reference manual for correct setup before starting the calibration process.';
@@ -222,17 +232,18 @@ export class CalibratePage {
                 console.log(data);
                 let instructions = data.device[0].instructions;
                 if (instructions == undefined) { return; }
-                this.calibrationInstructions = typeof(instructions) === 'string' ? [data.device[0].instructions] : data.device[0].instructions;
+                this.calibrationInstructions = typeof (instructions) === 'string' ? [data.device[0].instructions] : data.device[0].instructions;
             },
             (err) => {
-                console.log(err);                
+                console.log(err);
+                this.calibrationInstructions = this.isLogger ? Array.apply(null, Array(8)) : [null];
             },
             () => { }
         );
     }
 
     connectionImage(step: number) {
-        return this.isLogger ? 'assets/img/openlogger_calibration_' + (step + 1) + '.svg' : 'assets/img/openscope_calibration.svg';
+        return this.isLogger ? 'assets/img/openlogger_calibration_' + step + '.svg' : 'assets/img/openscope_calibration.svg';
     }
 
     toNextSlide() {
@@ -252,7 +263,7 @@ export class CalibratePage {
         this.calibrationSuccessful = false;
 
         // only reset instruments if first step
-        if (this.currentStep === 1) {
+        if (this.currentStep === 0) {
             let loading = this.displayLoading();
             this.resetInstruments().then(() => {
                 this.startCalibration();
@@ -305,9 +316,9 @@ export class CalibratePage {
     startCalibration() {
         this.calibrationFailed = false;
         this.calibrationSuccessful = false;
+        let instruments = this.isLogger ? this.loggerInstruments[this.currentStep] : {};
 
-        // TODO: update calibrationStart command
-        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationStart().subscribe(
+        this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationStart(instruments).subscribe(
             (data) => {
                 console.log(data);
                 let waitTime = data.device[0].wait < 0 ? this.timeBetweenReadAttempts : data.device[0].wait;
@@ -329,7 +340,7 @@ export class CalibratePage {
     }
 
     runProgressBar(waitTime: number) {
-        this.digilentProgressBar.toArray()[this.currentStep - 1].start(waitTime);
+        this.digilentProgressBar.toArray()[this.currentStep].start(waitTime);
     }
 
     progressBarFinished() {
@@ -414,7 +425,7 @@ export class CalibratePage {
             (data) => {
                 console.log(data);
                 // Make sure calibration did not fail          
-                if (this.isLogger && data.device[0].calibrationData.daq[this.currentStep].status === 'FailedCalibration') {
+                if (this.isLogger && data.device[0].calibrationData.daq[this.currentStep + 1].status === 'FailedCalibration') {
                     this.calibrationFailed = true;
                     this.calibrationStatus = 'Calibration failed. Check your calibration setup and try again.';
                     return;

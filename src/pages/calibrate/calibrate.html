@@ -29,14 +29,14 @@
                                 Instructions
                             </div>
                             <div class="calibration-instructions">
-                                Step {{i + 1}} of {{calibrationInstructions.length}}: {{calibrationInstructions[i] || noInstructions}}.
+                                Step {{i + 1}} of {{calibrationInstructions.length}}: {{calibrationInstructions[i] || noInstructions}}
                             </div>
                         </ion-col>
                     </ion-row>
                     <div class="calibration-connection-image-container">
                         <ion-row>
                             <ion-col class="icon-col" center text-center>
-                                <img [src]="connectionImage(i)" class="calibration-connection-image" />
+                                <img [src]="connectionImage(i+1)" class="calibration-connection-image" *ngIf="calibrationInstructions[i]" />
                             </ion-col>
                         </ion-row>
                     </div>
@@ -63,7 +63,7 @@
                                 </button>
                             </ion-col>
                             <ion-col text-right>
-                                <button ion-button icon-right class="text-button-side disable-hover" (click)="runCalibration(i+1)">
+                                <button ion-button icon-right class="text-button-side disable-hover" (click)="runCalibration(i)">
                                     {{i === 0 ? 'Begin' : 'Next'}}
                                     <img class="custom-image-button" src="assets/img/arrow-forward.svg">
                                 </button>
@@ -77,6 +77,9 @@
             <div class="content-container" [hidden]="!runningCalibration">
                 <div>
                     <div class="slide-header">Calibrating</div>
+                    <div class="calibration-instructions pad-above">
+                        Step {{i + 1}} of {{calibrationInstructions.length}}
+                    </div>
                     <div text-center class="pad-above">
                         <digilent-progress-bar #digilentProgressBar (progressBarDone)="progressBarFinished()"></digilent-progress-bar>
                     </div>
@@ -85,7 +88,7 @@
                         <div class="calibration-connection-image-container">
                             <ion-row *ngIf="calibrationFailed">
                                 <ion-col class="icon-col pad-above" center text-center>
-                                    <img [src]="connectionImage(i)" class="calibration-connection-image" />
+                                    <img [src]="connectionImage(i+1)" class="calibration-connection-image" *ngIf="calibrationInstructions[i]" />
                                 </ion-col>
                             </ion-row>
                         </div>
@@ -206,6 +209,9 @@
                 </div>
 
                 <div class="calibration-instructions calibration-results">
+                    <div class="pad-below">
+                        Current Calibration:
+                    </div>
                     <textarea [ngModel]="calibrationResults" class="calibration-results-container"></textarea>
                 </div>
 
