@@ -2,7 +2,6 @@ import { Component, Output, Input } from "@angular/core";
 import { EventEmitter } from "@angular/common/src/facade/async";
 
 import * as math from 'mathjs';
-import { ToastController } from "ionic-angular";
 import { ToastService } from "../../services/toast/toast.service";
 
 /**
@@ -19,8 +18,8 @@ import { ToastService } from "../../services/toast/toast.service";
     templateUrl: 'unit-scale.html'
 })
 export class UnitScaleComponent {
-    public expressionString: string = "";
-    public unitDescriptor: string = "";
+    public expressionString: string = "1 * v";
+    public unitDescriptor: string = "V";
 
     @Input("running") running: boolean = true;
     @Output("update") expressionUpdated: EventEmitter<any> = new EventEmitter();
