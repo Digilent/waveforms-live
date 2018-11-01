@@ -191,14 +191,14 @@ export class DeviceConfigurePage {
         return new Promise((resolve, reject) => {
             this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationRead().subscribe(
                 (data) => {
-                    let calibrationObjectString = JSON.stringify(data.device[0].calibrationData).toLowerCase();
-                    if (calibrationObjectString.indexOf('user') !== -1 || calibrationObjectString.indexOf('sd') !== -1) {
+                    let calibrationObjectString = JSON.stringify(data.device[0].calibrationData);
+                    if (calibrationObjectString.indexOf('USER') !== -1 || calibrationObjectString.indexOf('SD') !== -1 || calibrationObjectString.indexOf('sd') !== -1) {
                         this.currentCalibration = 'SD';
                     }
-                    else if (calibrationObjectString.indexOf('factory') !== -1 || calibrationObjectString.indexOf('flash') !== -1) {
+                    else if (calibrationObjectString.indexOf('FACTORY') !== -1 || calibrationObjectString.indexOf('FLASH') !== -1 || calibrationObjectString.indexOf('flash') !== -1) {
                         this.currentCalibration = 'Flash';
                     }
-                    else if (calibrationObjectString.indexOf('uncalibrated') !== -1 || calibrationObjectString.indexOf('ideal') !== -1) {
+                    else if (calibrationObjectString.indexOf('UnCalibrated') !== -1 || calibrationObjectString.indexOf('UNCALIBRATED') !== -1 || calibrationObjectString.indexOf('IDEAL') !== -1) {
                         this.currentCalibration = 'Uncalibrated';
                         if (routeToCalibrationWizard) {
                             this.deviceManagerPageRef.verifyCalibrationSource(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex, 'UNCALIBRATED')
