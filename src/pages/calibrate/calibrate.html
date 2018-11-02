@@ -171,14 +171,11 @@
                 <div class="navigation-button-container">
                     <ion-row>
                         <ion-col text-left>
-                            <!--<div class="calibration-instructions status-indicator">Status: </div>
-                                <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>-->
+                            <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()" *ngIf="calibrationFailed">
+                                <img class="custom-image-button" src="assets/img/close.svg"> Close
+                            </button>
                         </ion-col>
                         <ion-col text-center>
-                            <!--<button ion-button icon-right class="text-button-side disable-hover" (click)="saveCalibrationToDevice()">
-                                    Save
-                                    <img class="svg-in-img" src="assets/img/save.svg">
-                                </button>-->
                         </ion-col>
                         <ion-col text-right>
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="exitModal()">
@@ -226,8 +223,6 @@
                     <div class="navigation-button-container">
                         <ion-row>
                             <ion-col text-left>
-                                <!--<div class="calibration-instructions status-indicator">Status: </div>
-                            <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>-->
                                 <button ion-button icon-left class="text-button-side disable-hover" (click)="toSlide(0, true)">
                                     <img class="custom-image-button" src="assets/img/arrow-back.svg"> Back
                                 </button>

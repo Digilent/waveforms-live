@@ -42,14 +42,14 @@ export class CalibratePage {
     public deviceManagerService: DeviceManagerService;
     public isLogger: boolean = false;
     public loggerInstruments = [
-        { "dc": [1, 2], "awg": 1, "daq": 1 },
-        { "daq": 2 },
-        { "daq": 3 },
-        { "daq": 4 },
-        { "daq": 5 },
-        { "daq": 6 },
-        { "daq": 7 },
-        { "daq": 8 }
+        { "dc": [1, 2], "awg": 1, "daq": [1] },
+        { "daq": [2] },
+        { "daq": [3] },
+        { "daq": [4] },
+        { "daq": [5] },
+        { "daq": [6] },
+        { "daq": [7] },
+        { "daq": [8] }
     ];
 
     public calibrationInstructions: string[];
@@ -190,7 +190,8 @@ export class CalibratePage {
             this.calibrationResultsIndicator = 'Error saving calibration. Choose a valid storage location.';
             return Promise.reject(this.calibrationResultsIndicator);
         }
-        if (this.calibrationResults.indexOf('IDEAL') !== -1 || this.calibrationResults.indexOf('UNCALIBRATED') !== -1) {
+        if (this.calibrationResults.indexOf('IDEAL') !== -1 || this.calibrationResults.indexOf('UNCALIBRATED') !== -1 || this.calibrationResults.indexOf('UnCalibrated') !== -1 || this.calibrationResults.indexOf('FailedCalibration') !== -1) {
+            this.calibrationFailed = true;
             this.calibrationResultsIndicator = 'Error saving calibration. One or more channels fell back to ideal values. Rerun calibration.';
             return Promise.reject(this.calibrationResultsIndicator);
         }
@@ -229,10 +230,11 @@ export class CalibratePage {
         console.log(this.deviceManagerService);
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationGetInstructions().subscribe(
             (data) => {
-                console.log(data);
-                let instructions = data.device[0].instructions;
-                if (instructions == undefined) { return; }
-                this.calibrationInstructions = typeof (instructions) === 'string' ? [data.device[0].instructions] : data.device[0].instructions;
+                if (data.device[0].instructions == undefined && data.device[0].step == undefined) { 
+                    this.calibrationInstructions = this.isLogger ? Array.apply(null, Array(8)) : [null];
+                    return;
+                }
+                this.calibrationInstructions = this.isLogger ? data.device[0].step : [data.device[0].instructions];
             },
             (err) => {
                 console.log(err);
@@ -439,6 +441,7 @@ export class CalibratePage {
                 console.log(err);
                 if (err.device == undefined && this.calibrationReadAttempts < this.maxCalibrationReadAttempts) {
                     this.calibrationReadAttempts++;
+                    this.calibrationStatus = 'Attempting to read calibration.';
                     setTimeout(() => {
                         this.readCalibrationAfterCalibrating();
                     }, this.timeBetweenReadAttempts);
@@ -447,6 +450,7 @@ export class CalibratePage {
                 if (err.device && err.device[0].statusCode === 8) {
                     if (this.calibrationReadAttempts < this.maxCalibrationReadAttempts) {
                         this.calibrationReadAttempts++;
+                        this.calibrationStatus = 'Attempting to read calibration.';
                         setTimeout(() => {
                             this.readCalibrationAfterCalibrating();
                         }, this.timeBetweenReadAttempts);
@@ -461,6 +465,10 @@ export class CalibratePage {
                     this.calibrationFailed = true;
                     this.calibrationStatus = 'Calibration failed. ' + (this.calibrationInstructions ? this.calibrationInstructions : 'Check your reference manual for correct setup.') + ' Click retry to restart calibration.';
                     return;
+                }
+                else if (this.calibrationReadAttempts >= this.maxCalibrationReadAttempts) {
+                    this.calibrationFailed = true;
+                    this.calibrationStatus = 'Timeout attempting to read calibration. Check your calibration setup and try again.';
                 }
             },
             () => { }
