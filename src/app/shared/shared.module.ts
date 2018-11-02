@@ -20,6 +20,7 @@ import { FormatInputDirective } from '../../directives/format-input/format-input
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
+import { FormatAverageDirective } from '../../components/logger-xaxis/format-averaging.directive';
  
 @NgModule({
     imports: [
@@ -37,6 +38,7 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
         UnitFormatPipe,
         ProgressBarComponent,
         FormatInputDirective,
+        FormatAverageDirective,
         MathPopoverComponent,
         CursorPopoverComponent,
         PinoutPopover
@@ -51,6 +53,7 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
         ProgressBarComponent,
         DigilentChartModule,
         FormatInputDirective,
+        FormatAverageDirective,
         MathPopoverComponent,
         CursorPopoverComponent,
         PinoutPopover

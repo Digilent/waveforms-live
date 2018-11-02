@@ -199,6 +199,12 @@ var waveformsLiveDictionary = (function() {
             english: 'Digilent Agent Encountered An Error While Uploading The Firmware To The Device. Please Try Again'
         },
 
+        firmwareCautionMessage: {
+            english: 'Caution: Flashing firmware intended for a different device can\
+            cause damage to the hardware. Extra caution when\
+            selecting firmware.'
+        },
+
         //Tutorial Tooltips
         //Appears on main add a device button on device-manager-page
         tutorialAddADevice: {
@@ -449,8 +455,10 @@ var waveformsLiveDictionary = (function() {
         },
         logFileName: {
             english: 'Log File Name'
+        },
+        scaleInvalidExpression: {
+            english: "Invalid Expression"
         }
-
     };
 
     var statusCodes = {

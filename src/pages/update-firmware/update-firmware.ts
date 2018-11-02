@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavParams, Slides, ViewController, LoadingController } from 'ionic-angular';
+import { NavParams, Slides, ViewController, LoadingController, ToastController } from 'ionic-angular';
 
 //Components
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar.component';
@@ -12,6 +12,8 @@ import { CommandUtilityService } from '../../services/device/command-utility.ser
 
 //Interfaaces
 import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
+
+declare var waveformsLiveDictionary: any;
 
 @Component({
     templateUrl: 'update-firmware.html',
@@ -26,6 +28,7 @@ export class UpdateFirmwarePage {
     public params: NavParams;
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
+    public toastCtrl: ToastController;
     public updateComplete: boolean = false;
 
     public deviceFirmwareVersion: string = '';
@@ -48,6 +51,8 @@ export class UpdateFirmwarePage {
     public maxUploadStatusAttempts: number = 50;
     public errorUpdatingFirmware: boolean = false;
 
+    public errorDevice: boolean = false;
+
     public listUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/release/firmware/without-bootloader';
     public firmwareRepositoryUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/release/firmware/without-bootloader'
 
@@ -58,7 +63,8 @@ export class UpdateFirmwarePage {
         _viewCtrl: ViewController,
         _cmdUtilSrv: CommandUtilityService,
         _loadingCtrl: LoadingController,
-        _deviceManagerService: DeviceManagerService
+        _deviceManagerService: DeviceManagerService,
+        _toastCtrl: ToastController
     ) {
         this.deviceManagerService = _deviceManagerService;
         this.commandUtilityService = _cmdUtilSrv;
@@ -67,17 +73,81 @@ export class UpdateFirmwarePage {
         this.settingsService = _settingsService;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
+        this.toastCtrl = _toastCtrl;
+
         this.agentAddress = this.params.get('agentAddress');
         this.deviceObject = this.params.get('deviceObject');
+
         console.log('update firmware constructor');
         console.log(this.settingsService.useDevBuilds);
+
         if (this.settingsService.useDevBuilds) {
             this.listUrl = 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/development/firmware/without-bootloader';
             this.firmwareRepositoryUrl = 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/development/firmware/without-bootloader';
         }
+
         this.deviceManagerService.transport.setHttpTransport(this.deviceObject.deviceBridgeAddress);
-        this.getDeviceFirmware();
-        this.getFirmwareList();
+
+        this.checkDevice().then((descriptor) => {
+                let device = descriptor.deviceModel;
+                device = this.transformModelToPropKey(device);
+                
+                let {listUrl, firmwareUrl} = this.settingsService.knownFirmwareUrls[device];
+                
+                this.listUrl = listUrl;
+                this.firmwareRepositoryUrl = firmwareUrl;
+
+                this.deviceObject.deviceDescriptor = descriptor;
+
+                this.getDeviceFirmware();
+                this.getFirmwareList();
+            })
+            .catch((err) => {
+                console.log(err);
+                
+                this.toastCtrl.create({
+                    message: 'Error connecting to the device',
+                    showCloseButton: true,
+                    duration: 3000
+                }).present();
+
+                this.viewCtrl.dismiss();
+            });
+    }
+
+    private transformModelToPropKey(deviceModel: string): string {
+        let model: string[] = deviceModel.toLowerCase().split(" ");
+        
+        model[1] = model[1].charAt(0).toUpperCase() + model[1].slice(1);
+        
+        return model.join("");
+    }
+
+    public retrievedModel: string;
+
+    /**
+     * 
+     * @param expectedModel 
+     */
+    private checkDevice(): Promise<any>{
+        return new Promise((resolve, reject) => {
+            let command = {
+                device: [
+                    {command: "enumerate"}
+                ]
+            }
+            this.deviceManagerService.transport.writeRead("/", JSON.stringify(command), 'json').subscribe((res) => {
+                let response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(res.slice(0))));
+
+                let deviceDescriptor = response.device[0];
+
+                resolve(deviceDescriptor);
+            }, (err) => { reject(err); });
+        })
+    }
+
+    public cautionMessage() {
+        return waveformsLiveDictionary.getMessage('firmwareCautionMessage').message;
     }
 
     getDeviceFirmware() {

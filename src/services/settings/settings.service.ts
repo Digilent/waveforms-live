@@ -6,6 +6,14 @@ import { Platform } from 'ionic-angular';
 import { StorageService } from '../storage/storage.service';
 import { DeviceManagerService } from 'dip-angular2/services';
 
+interface firmwareUrls {
+    prettyName: string
+    listUrl: string
+    devListUrl: string
+    firmwareUrl: string
+    devFirmwareUrl: string
+}
+
 @Injectable()
 export class SettingsService {
 
@@ -25,13 +33,20 @@ export class SettingsService {
 
     readonly profileToken: string = 'profile.';
 
-    public knownFirmwareUrls: { openscopeMz: { prettyName: string, listUrl: string, devListUrl: string, firmwareUrl: string, devFirmwareUrl: string } } = {
+    public knownFirmwareUrls: { openscopeMz: firmwareUrls, openloggerMz: firmwareUrls } = {
         openscopeMz: {
             prettyName: 'OpenScope MZ',
             listUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/release/firmware/without-bootloader',
             devListUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/development/firmware/without-bootloader',
             firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/release/firmware/without-bootloader',
             devFirmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/development/firmware/without-bootloader'
+        },
+        openloggerMz: {
+            prettyName: 'OpenLogger MZ',
+            listUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenLogger+MZ/release/firmware/without-bootloader',
+            devListUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenLogger+MZ/development/firmware/without-bootloader',
+            firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenLogger+MZ/release/firmware/without-bootloader',
+            devFirmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenLogger+MZ/development/firmware/without-bootloader'
         }
     };
 

@@ -855,18 +855,17 @@ export class DeviceManagerPage {
     connectToDevice(deviceIndex: number) {
         let isLogger = false;
         let pageToDisplay = (isLogger = this.devices[deviceIndex].deviceDescriptor.deviceModel === 'OpenLogger MZ') ? LoggerPage : InstrumentPanelPage;
-        // What happens if I previosuly had an OpenScope, but this is now an OpenLogger?
+
+        let navParams = {
+            tutorialMode: this.tutorialMode
+        };
+
+        if (isLogger) navParams = Object.assign(navParams, {onLoggerDismiss: () => {}, isRoot: true});
         
         if (this.devices[deviceIndex].ipAddress === 'local') {
             this.deviceManagerService.addDeviceFromDescriptor('local', { device: [this.devices[deviceIndex].deviceDescriptor] });
 
             console.log(this.deviceManagerService);
-
-            let navParams = {
-                tutorialMode: this.tutorialMode
-            };
-
-            if (isLogger) navParams = Object.assign(navParams, {onLoggerDismiss: () => {}, isRoot: true});
 
             this.navCtrl.setRoot(pageToDisplay, navParams);
             return;
@@ -919,9 +918,7 @@ export class DeviceManagerPage {
                         .then(() => {
                             this.sendEnumeration(ipAddress, loading, deviceIndex)
                             .then(() => {
-                                this.navCtrl.setRoot(pageToDisplay, {
-                                    tutorialMode: this.tutorialMode
-                                });
+                                this.navCtrl.setRoot(pageToDisplay, navParams);
                             });
                         })
                         .catch((e) => {

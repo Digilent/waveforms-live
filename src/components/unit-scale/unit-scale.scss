@@ -2,17 +2,26 @@
     color: white;
 }
 
-input {
-    // margin: 5px;
-    // width: 100px;
+.vpd-button button {
+    font-size: 4px;
+}
+
+.scale-label {
+    margin-right: 30px;
+}
+
+input, label {
     display: inline-block;
 }
 
 label {
-    display: inline-block;
     vertical-align: middle;
 }
 
-input.unit {
-    width: 50px;
+.container input {
+    width: 45px;
+}
+
+.input {
+    margin-top: 2.5px;
 }
