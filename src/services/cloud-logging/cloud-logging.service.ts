@@ -23,7 +23,6 @@ export class CloudLoggingService {
         public storageService: StorageService,
         public events: Events
     ) {
-        this.activeDevice = this.deviceManagerService.getActiveDevice();
         this.params = this.defaultParams;
         this.storageService.getData('cloudLogging').then((data) => {
             if (data) {
@@ -50,7 +49,8 @@ export class CloudLoggingService {
         // TODO: send command to device to disable cloud logging
     }
 
-    public getSavedParams(): CloudLoggingParams {
+    public getSavedParams(activeDevice: DeviceService): CloudLoggingParams {
+        this.activeDevice = activeDevice;
         if (this.params.analogChans.length == 0) {
             this.params.analogChans = this.getActiveDeviceChannels();
         }

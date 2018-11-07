@@ -26,7 +26,10 @@ export class CloudLoggingPopover {
     public toastService: ToastService
   ) {
     this.activeDevice = this.deviceManagerService.getActiveDevice();
-    this.params = this.cloudLoggingService.getSavedParams();
+  }
+
+  ngOnInit() {
+    this.params = this.cloudLoggingService.getSavedParams(this.activeDevice);
   }
 
   close() {
