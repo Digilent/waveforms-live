@@ -10,6 +10,7 @@ import { LoggerChartComponent } from '../../components/logger-chart/logger-chart
 import { LoggerXAxisComponent } from '../../components/logger-xaxis/logger-xaxis.component';
 import { LoggerTimelineComponent } from '../../components/logger-timeline/logger-timeline.component';
 import { UnitScaleComponent } from '../../components/unit-scale/unit-scale.component';
+import { ProfilePopover } from '../../components/profile-popover/profile-popover.component';
 
 //Pages
 import { FileBrowserPage } from '../file-browser/file-browser';
@@ -23,7 +24,8 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
         SharedModule,
         FGenModule,
         IonicModule.forRoot(LoggerPage),
-        IonicModule.forRoot(FileBrowserPage)
+        IonicModule.forRoot(FileBrowserPage),
+        IonicModule.forRoot(ProfilePopover)
     ],
     declarations: [
         LoggerPage,
@@ -32,7 +34,8 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
         LoggerXAxisComponent,
         LoggerTimelineComponent,
         UnitScaleComponent,
-        FileBrowserPage
+        FileBrowserPage,
+        ProfilePopover
     ],
     exports: [LoggerPage],
     providers: [

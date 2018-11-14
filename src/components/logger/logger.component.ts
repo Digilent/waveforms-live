@@ -1,5 +1,5 @@
 import { Component, ViewChild, ViewChildren, QueryList, Output, EventEmitter } from '@angular/core';
-import { AlertController } from 'ionic-angular';
+import { AlertController, PopoverController, Events } from 'ionic-angular';
 import { LoadingService } from '../../services/loading/loading.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { Observable } from 'rxjs/Observable';
@@ -7,6 +7,7 @@ import 'rxjs/Rx';
 
 //Components
 import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
+import { ProfilePopover } from '../../components/profile-popover/profile-popover.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -81,8 +82,6 @@ export class LoggerComponent {
     public storageLocations: string[] = [];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
-    private defaultProfileName: string = 'NewProfile';
-    public profileNameScratch: string = this.defaultProfileName;
     public analogLinkOptions: string[][] = [];
     public digitalLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
@@ -107,7 +106,9 @@ export class LoggerComponent {
         private exportService: ExportService,
         private alertCtrl: AlertController,
         private settingsService: SettingsService,
-        public tooltipService: TooltipService
+        public tooltipService: TooltipService,
+        private popoverCtrl: PopoverController,
+        public events: Events
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         console.log(this.activeDevice.instruments.logger);
@@ -126,11 +127,18 @@ export class LoggerComponent {
                 this.toastService.createToast('deviceDroppedConnection', true, undefined, 5000);
                 loading.dismiss();
             });
+
+        this.events.subscribe('profile:save', (params) => {
+            this.saveAndSetProfile(params[0]['profileName']);
+        });
+        this.events.subscribe('profile:delete', (params) => {
+            this.deleteProfile(params[0]['profileName']);
+        });
     }
 
     private unitTransformer: any[] = [];
     public updateScale(event, chan) {
-        this.update.emit(Object.assign({}, event, {chan}));
+        this.update.emit(Object.assign({}, event, { chan }));
 
         this.unitTransformer[chan] = event.expression;
     }
@@ -138,6 +146,8 @@ export class LoggerComponent {
     ngOnDestroy() {
         this.chartPanSubscriptionRef.unsubscribe();
         this.offsetChangeSubscriptionRef.unsubscribe();
+        this.events.unsubscribe('profile:save');
+        this.events.unsubscribe('profile:delete');
         this.running = false;
         this.destroyed = true;
     }
@@ -610,7 +620,7 @@ export class LoggerComponent {
     private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, linkChan?: number, samples?: string }) {
         setTimeout(() => {
             if (applyOptions.linkChan != undefined) {
-                let linkedChanString = applyOptions.linkChan > -1 ? 'Ch ' +  (applyOptions.linkChan + 1) : 'no';
+                let linkedChanString = applyOptions.linkChan > -1 ? 'Ch ' + (applyOptions.linkChan + 1) : 'no';
                 let id = 'link' + channel;
                 this.linkChildren.forEach((child) => {
                     if (id === child.elementRef.nativeElement.id) {
@@ -668,11 +678,21 @@ export class LoggerComponent {
         }
     }
 
+    openProfileSettings(name) {
+        let popover = this.popoverCtrl.create(ProfilePopover, { profileName: name }, {
+            cssClass: 'profilePopover'
+        });
+        popover.present();
+    }
+
     profileSelect(event) {
         console.log(event);
         let currentLogProfile = this.selectedLogProfile;
         this.selectedLogProfile = event;
-        if (event === this.loggingProfiles[0]) { return; }
+        if (event === this.loggingProfiles[0]) {
+            this.openProfileSettings('');
+            return;
+        }
         if (this.profileObjectMap[event] == undefined) {
             this.toastService.createToast('loggerProfileLoadErr', true, undefined, 5000);
             console.log('profile not found in profile map');
@@ -686,8 +706,28 @@ export class LoggerComponent {
         this.parseAndApplyProfileJson(JSON.parse(JSON.stringify(this.profileObjectMap[event])));
     }
 
-    saveAndSetProfile() {
-        this.saveProfile(this.profileNameScratch)
+    deleteProfile(profileName) {
+        this.activeDevice.file.delete('flash', this.settingsService.profileToken + profileName + '.json').subscribe(
+            (data) => {
+                console.log(data);
+                // remove from list of profiles
+                let nameIndex: number = this.loggingProfiles.indexOf(profileName);
+                if (nameIndex !== -1) {
+                    this.loggingProfiles.splice(nameIndex, 1);
+                }
+                this.selectedLogProfile = this.loggingProfiles[0];
+            },
+            (err) => {
+                console.log(err);
+                this.toastService.createToast('fileDeleteErr', true, undefined, 5000);
+            },
+            () => { }
+        );
+    }
+
+    saveAndSetProfile(profileName) {
+        console.log(profileName);
+        this.saveProfile(profileName)
             .then((data) => {
                 this.toastService.createToast('loggerSaveSuccess');
             })
@@ -695,18 +735,17 @@ export class LoggerComponent {
                 console.log(e);
                 this.toastService.createToast('loggerSaveFail');
             });
-        let nameIndex: number = this.loggingProfiles.indexOf(this.profileNameScratch);
+        let nameIndex: number = this.loggingProfiles.indexOf(profileName);
         if (nameIndex !== -1) {
             this.loggingProfiles.splice(nameIndex, 1);
         }
-        this.loggingProfiles.push(this.profileNameScratch);
+        this.loggingProfiles.push(profileName);
         let profileObj = this.generateProfileJson();
         let profileObjCopy = JSON.parse(JSON.stringify(profileObj));
-        this.profileObjectMap[this.profileNameScratch] = profileObjCopy;
+        this.profileObjectMap[profileName] = profileObjCopy;
         setTimeout(() => {
-            this.selectedLogProfile = this.profileNameScratch;
+            this.selectedLogProfile = profileName;
             this.profileChild._applyActiveSelection(this.selectedLogProfile);
-            this.profileNameScratch = this.defaultProfileName;
         }, 20);
     }
 
@@ -756,7 +795,7 @@ export class LoggerComponent {
                     try {
                         parsedData = JSON.parse(data.file);
                     }
-                    catch(e) {
+                    catch (e) {
                         console.log('error parsing json');
                         resolve(e);
                         return;
@@ -1529,10 +1568,12 @@ export class LoggerComponent {
                     if (currentIndex > 0) {
                         let chanObj = instrument === 'analog' ? this.analogChans[currentIndex - 1] : this.digitalChans[currentIndex - 1];
                         if (chanObj.startIndex >= 0 && chanObj.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
-                            return Observable.create((observer) => { observer.error({
+                            return Observable.create((observer) => {
+                                observer.error({
                                 message: 'Could not keep up with device',
                                 data: data
-                            }); });
+                                });
+                            });
                         }
                         this.updateValuesFromRead(data, instrument, chans, currentIndex - 1);
                     }
@@ -1562,7 +1603,7 @@ export class LoggerComponent {
                             try {
                                 parsedData = JSON.parse(jsonString);
                             }
-                            catch(e) {
+                            catch (e) {
                                 reject(e);
                                 return;
                             }
@@ -1588,7 +1629,7 @@ export class LoggerComponent {
                         }
                         reject(err);
                     },
-                    () => {}
+                    () => { }
                 );
         });
     }

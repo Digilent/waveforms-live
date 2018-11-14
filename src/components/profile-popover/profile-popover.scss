@@ -1,0 +1,29 @@
+profile-popover {
+    .custom-input {
+        min-width: 100px;
+    }
+
+    .header {
+        color: white;
+        font-weight: 600;
+        padding: 10px 0px;
+    }
+
+    .input-label {
+        color: #CCCCCC;
+        padding-left: 10px;
+        align-self: center;
+        flex-grow: 0;
+    }
+
+    .profile-container {
+        background-color: #535353;
+        padding: 5px;
+    }
+}
+
+.profilePopover .popover-content {
+    top: 200px !important;
+    right: 250px !important;
+    left: auto !important;
+}

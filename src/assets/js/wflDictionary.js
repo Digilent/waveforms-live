@@ -145,6 +145,9 @@ var waveformsLiveDictionary = (function() {
         logInvalidFileType: {
             english: 'Invalid File Type. The Specified File Does Not Appear To Be A Digilent Log File'
         },
+        loggerProfileNameRequired: {
+            english: 'Profile Name is Required.'
+        },
 
         //File
         fileDeleteErr: {
@@ -429,8 +432,11 @@ var waveformsLiveDictionary = (function() {
         logProfile: {
             english: 'Log Profile'
         },
+        logProfileSettings: {
+            english: 'Log Profile Settings'
+        },
         logSaveProfile: {
-            english: 'Save Profile'
+            english: 'Save Log Profile'
         },
         logMode: {
             english: 'Logger Mode'

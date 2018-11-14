@@ -20,8 +20,8 @@ import { FormatInputDirective } from '../../directives/format-input/format-input
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
-import { FormatAverageDirective } from '../../components/logger-xaxis/format-averaging.directive';
- 
+import { FormatAverageDirective } from '../../directives/format-averaging/format-averaging.directive';
+
 @NgModule({
     imports: [
         CommonModule,
