@@ -32,7 +32,7 @@ export class LoggerComponent {
     @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLink') linkChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
-    @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
+    @ViewChild('dropPopLogTo') logToChild: DropdownPopoverComponent;
     @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
 
     @Output('updateScale') update: EventEmitter<any> = new EventEmitter();
@@ -75,10 +75,10 @@ export class LoggerComponent {
     private analogChanNumbers: number[] = [];
     private digitalChanNumbers: number[] = [];
     public overflowConditions: ('circular')[] = ['circular'];
-    public modes: string[] = ['log', 'stream', 'both'];
+    public logToLocations: string[] = ['SD', 'chart', 'both'];
     public samples: ('continuous' | 'finite')[] = ['continuous', 'finite'];
     public selectedSamples: 'continuous' | 'finite' = this.samples[0];
-    public selectedMode: string = this.modes[0];
+    public selectedLogLocation: string = this.logToLocations[0];
     public storageLocations: string[] = [];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
@@ -259,8 +259,8 @@ export class LoggerComponent {
                     }
 
                     if (this.storageLocations.length < 1) {
-                        this.modes = ['stream'];
-                        this.modeSelect('stream');
+                        this.logToLocations = ['chart'];
+                        this.logToSelect('chart');
                         return new Promise((resolve, reject) => { resolve(); });
                     }
                     else {    
@@ -334,7 +334,7 @@ export class LoggerComponent {
             }
         }
 
-        if (this.selectedMode === 'log') {
+        if (this.selectedLogLocation === 'SD') {
             this.bothStartStream();
         }
         this.readLiveData();
@@ -518,9 +518,9 @@ export class LoggerComponent {
         this.loggerPlotService.setPosition('x', 1, newPos, false);
     }
 
-    modeSelect(event) {
+    logToSelect(event) {
         console.log(event);
-        if (this.selectedMode === 'stream' && event !== 'stream') {
+        if (this.selectedLogLocation === 'chart' && event !== 'chart') {
             for (let i = 0; i < this.analogChans.length; i++) {
                 this.analogChans[i].storageLocation = this.storageLocations[0];
                 this.setChannelDropdowns(i, {
@@ -543,7 +543,7 @@ export class LoggerComponent {
                 this.digitalChans[i].storageLocation = 'ram';
             }
         }
-        this.selectedMode = event;
+        this.selectedLogLocation = event;
     }
 
     samplesSelect(event: 'finite' | 'continuous', instrument: 'analog' | 'digital', channel: number) {
@@ -1040,7 +1040,7 @@ export class LoggerComponent {
             if (this.analogChans[i].storageLocation !== 'ram') {
                 foundChansMap[this.analogChans[i].uri] = 1;
             }
-            if (this.selectedMode === 'stream') { continue; }
+            if (this.selectedLogLocation === 'chart') { continue; }
             if (this.filesInStorage[this.analogChans[i].storageLocation].indexOf(this.analogChans[i].uri + '.dlog') !== -1) {
                 //File already exists on device display alert
                 existingFileFound = true;
@@ -1128,7 +1128,7 @@ export class LoggerComponent {
                 this.analogChansToRead = this.analogChanNumbers.slice();
                 console.log("ANALOG CHANS TO READ: ");
                 console.log(this.analogChansToRead);
-                if (this.selectedMode !== 'log') {
+                if (this.selectedLogLocation !== 'SD') {
                     this.readLiveData();
                 }
                 else {
@@ -1150,7 +1150,7 @@ export class LoggerComponent {
                 this.parseGetLiveStatePacket('analog', data);
                 if (this.running) {
                     setTimeout(() => {
-                        if (this.selectedMode === 'both') {
+                        if (this.selectedLogLocation === 'both') {
                             this.continueStream();
                         }
                         else {
@@ -1195,7 +1195,7 @@ export class LoggerComponent {
             .then((data) => {
                 this.parseReadResponseAndDraw(data);
                 if (this.running) {
-                    if (this.selectedMode !== 'log') {
+                    if (this.selectedLogLocation !== 'SD') {
                         if (this.activeDevice.transport.getType() === 'local') {
                             setTimeout(() => {
                                 this.readLiveData();
@@ -1306,16 +1306,16 @@ export class LoggerComponent {
     }
 
     bothStopStream() {
-        this.selectedMode = 'log';
-        this.modeChild._applyActiveSelection('log');
+        this.selectedLogLocation = 'SD';
+        this.logToChild._applyActiveSelection('SD');
     }
 
     bothStartStream() {
         this.clearChart();
         this.viewMoved = false;
         this.setViewToEdge();
-        this.selectedMode = 'both';
-        this.modeChild._applyActiveSelection('both');
+        this.selectedLogLocation = 'both';
+        this.logToChild._applyActiveSelection('both');
     }
 
     private copyState(instrument: 'analog' | 'digital', respObj, channelInternalIndex: number, onlyCopyState: boolean = false) {
@@ -1356,9 +1356,9 @@ export class LoggerComponent {
         }
         activeChan.storageLocation = respObj.storageLocation;
         if (respObj.storageLocation === 'ram') {
-            console.log('setting selected mode to stream');
-            this.selectedMode = 'stream';
-            this.modeChild._applyActiveSelection('stream');
+            console.log('setting selected log to location to chart');
+            this.selectedLogLocation = 'chart';
+            this.logToChild._applyActiveSelection('chart');
         }
         it = 0;
         this.locationChildren.forEach((child) => {

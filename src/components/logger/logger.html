@@ -54,10 +54,10 @@
 
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
-                    Mode
+                    Log To
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <dropdown-popover #dropPopMode [dataArray]="modes" (onSelection)="modeSelect($event)" [disabled]="running" [tooltip]="tooltipService.getTooltip('logMode').message"
+                    <dropdown-popover #dropPopLogTo [dataArray]="logToLocations" (onSelection)="logToSelect($event)" [disabled]="running" [tooltip]="tooltipService.getTooltip('logLocation').message"
                         [tooltipAnimation]="true" tooltipPlacement="top">
                     </dropdown-popover>
                 </ion-col>
@@ -271,7 +271,7 @@
                     </ion-col>
                 </ion-row> -->
 
-                <ion-row class="controls-container" [ngClass]="{'display-none': selectedMode === 'stream'}">
+                <ion-row class="controls-container" [ngClass]="{'display-none': selectedLogLocation === 'chart'}">
                     <ion-col center class="vpd-label-col">
                         Location
                     </ion-col>
@@ -286,7 +286,7 @@
                 <unit-scale (update)="updateScale($event, i+1)" [running]="running"></unit-scale>
             </div>
 
-            <ion-row class="controls-container" [ngClass]="{'display-none': selectedMode === 'stream'}">
+            <ion-row class="controls-container" [ngClass]="{'display-none': selectedLogLocation === 'chart'}">
                 <ion-col center class="vpd-label-col">
                     {{series.storageLocation === 'cloud' ? 'Topic' : 'File Name'}}
                 </ion-col>

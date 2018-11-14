@@ -438,8 +438,8 @@ var waveformsLiveDictionary = (function() {
         logSaveProfile: {
             english: 'Save Log Profile'
         },
-        logMode: {
-            english: 'Logger Mode'
+        logLocation: {
+            english: 'Location To Log To'
         },
         logLink: {
             english: 'Link Channel To Another'
