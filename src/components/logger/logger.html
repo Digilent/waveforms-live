@@ -187,7 +187,7 @@
 
                 <ion-row class="controls-container">
                     <ion-col center class="vpd-label-col">
-                        Sampling
+                        Mode
                     </ion-col>
                     <!-- <ion-col text-right center class="vpd-button-col">
                         <div style="display:inline-block">
@@ -207,8 +207,8 @@
                         </div>
                     </ion-col> -->
                     <ion-col class="vpd-input-col no-button-col" center text-center>
-                        <dropdown-popover #dropPopSamples [id]="'samples' + i" [dataArray]="samples" (onSelection)="samplesSelect($event, 'analog', i)"
-                            [disabled]="running" [tooltip]="tooltipService.getTooltip('logSampleType').message" [tooltipAnimation]="true"
+                        <dropdown-popover #dropPopMode [id]="'mode' + i" [dataArray]="modes" (onSelection)="modeSelect($event, 'analog', i)"
+                            [disabled]="running" [tooltip]="tooltipService.getTooltip('logSampleMode').message" [tooltipAnimation]="true"
                             tooltipPlacement="top">
                         </dropdown-popover>
                     </ion-col>

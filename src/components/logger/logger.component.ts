@@ -28,7 +28,7 @@ import { LoggerXAxisComponent } from '../logger-xaxis/logger-xaxis.component';
 })
 export class LoggerComponent {
     //@ViewChildren('dropPopOverflow') overflowChildren: QueryList<DropdownPopoverComponent>;
-    @ViewChildren('dropPopSamples') samplesChildren: QueryList<DropdownPopoverComponent>;
+    @ViewChildren('dropPopMode') modeChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLink') linkChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
@@ -76,8 +76,8 @@ export class LoggerComponent {
     private digitalChanNumbers: number[] = [];
     public overflowConditions: ('circular')[] = ['circular'];
     public logToLocations: string[] = ['SD', 'chart', 'both'];
-    public samples: ('continuous' | 'finite')[] = ['continuous', 'finite'];
-    public selectedSamples: 'continuous' | 'finite' = this.samples[0];
+    public modes: ('continuous' | 'finite')[] = ['continuous', 'finite'];
+    public selectedMode: 'continuous' | 'finite' = this.modes[0];
     public selectedLogLocation: string = this.logToLocations[0];
     public storageLocations: string[] = [];
     public loggingProfiles: string[] = ['New Profile'];
@@ -546,7 +546,7 @@ export class LoggerComponent {
         this.selectedLogLocation = event;
     }
 
-    samplesSelect(event: 'finite' | 'continuous', instrument: 'analog' | 'digital', channel: number) {
+    modeSelect(event: 'finite' | 'continuous', instrument: 'analog' | 'digital', channel: number) {
         console.log(event);
         let chanObj = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
         if (event === 'finite') {
@@ -555,7 +555,7 @@ export class LoggerComponent {
         else {
             chanObj.maxSampleCount = -1;
         }
-        this.selectedSamples = event;
+        this.selectedMode = event;
     }
 
     linkSelect(event, instrument: 'analog' | 'digital', channel: number) {
@@ -568,7 +568,7 @@ export class LoggerComponent {
                     storageLocation: this.analogChans[linkedChan].storageLocation,
                     overflow: this.analogChans[linkedChan].overflow,
                     linkChan: -1,
-                    samples: this.analogChans[linkedChan].maxSampleCount === -1 ? 'continuous' : 'finite'
+                    mode: this.analogChans[linkedChan].maxSampleCount === -1 ? 'continuous' : 'finite'
                 });
             }
             this.analogChans[channel].linked = false;
@@ -596,7 +596,7 @@ export class LoggerComponent {
                 storageLocation: this.analogChans[channel].storageLocation,
                 overflow: this.analogChans[channel].overflow,
                 linkChan: linkChan,
-                samples: this.analogChans[channel].maxSampleCount === -1 ? 'continuous' : 'finite'
+                mode: this.analogChans[channel].maxSampleCount === -1 ? 'continuous' : 'finite'
             });
         }
         else {
@@ -617,7 +617,7 @@ export class LoggerComponent {
         }
     }
 
-    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, linkChan?: number, samples?: string }) {
+    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, linkChan?: number, mode?: string }) {
         setTimeout(() => {
             if (applyOptions.linkChan != undefined) {
                 let linkedChanString = applyOptions.linkChan > -1 ? 'Ch ' + (applyOptions.linkChan + 1) : 'no';
@@ -638,11 +638,11 @@ export class LoggerComponent {
                 });
             }
 
-            if (applyOptions.samples != undefined) {
-                let id = 'samples' + channel;
-                this.samplesChildren.forEach((child) => {
+            if (applyOptions.mode != undefined) {
+                let id = 'mode' + channel;
+                this.modeChildren.forEach((child) => {
                     if (id === child.elementRef.nativeElement.id) {
-                        child._applyActiveSelection(applyOptions.samples);
+                        child._applyActiveSelection(applyOptions.mode);
                     }
                 });
             }
@@ -868,7 +868,7 @@ export class LoggerComponent {
                 if (loadedObj[instrument][channel].linked) {
                     dropdownChangeObj['linkChan'] = loadedObj[instrument][channel].linkedChan;
                 }
-                dropdownChangeObj['samples'] = loadedObj[instrument][channel].maxSampleCount === -1 ? 'continuous' : 'finite';
+                dropdownChangeObj['mode'] = loadedObj[instrument][channel].maxSampleCount === -1 ? 'continuous' : 'finite';
                 this.setChannelDropdowns(parseInt(channel), dropdownChangeObj);
             }
         }
@@ -1368,7 +1368,7 @@ export class LoggerComponent {
             it++;
         });
         it = 0;
-        this.samplesChildren.forEach((child) => {
+        this.modeChildren.forEach((child) => {
             if (channelInternalIndex === it) {
                 let setting = activeChan.maxSampleCount === -1 ? 'continuous' : 'finite';
                 child._applyActiveSelection(setting);

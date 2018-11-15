@@ -453,8 +453,8 @@ var waveformsLiveDictionary = (function() {
         logSamples: {
             english: 'Number Of Samples'
         },
-        logSampleType: {
-            english: 'Sampling Type'
+        logSampleMode: {
+            english: 'Sampling Mode'
         },
         logStorageLocation: {
             english: 'Log File Storage Location'
