@@ -82,6 +82,7 @@ export class LoggerComponent {
     public storageLocations: string[] = [];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
+    private dirtyProfile: boolean = false;
     public analogLinkOptions: string[][] = [];
     public digitalLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
@@ -141,6 +142,24 @@ export class LoggerComponent {
         this.update.emit(Object.assign({}, event, { chan }));
 
         this.unitTransformer[chan] = event.expression;
+    }
+
+    ngDoCheck() {
+        // Check if there are unsaved changes to profile
+        this.dirtyProfile = false;
+        if (this.selectedLogProfile && this.selectedLogProfile != this.loggingProfiles[0]) {
+            let params: string[] = ['gain', 'linked', 'linkedChan', 'maxSampleCount', 'overflow', 'sampleFreq', 'startDelay', 'uri', 'vOffset'];
+            let profileValues = (<any>Object).values(this.profileObjectMap[this.selectedLogProfile].analog);
+
+            for (let i = 0; i < this.analogChans.length; i++) {
+                params.forEach((param) => {
+                    if (this.analogChans[i][param] != profileValues[i][param]) {
+                        this.dirtyProfile = true;
+                        return;
+                    }
+                });
+            }
+        }
     }
 
     ngOnDestroy() {
@@ -535,7 +554,7 @@ export class LoggerComponent {
                 }); */
             }
         }
-        if (event === 'stream') {
+        if (event === 'chart') {
             for (let i = 0; i < this.analogChans.length; i++) {
                 this.analogChans[i].storageLocation = 'ram';
             }
@@ -1080,7 +1099,7 @@ export class LoggerComponent {
                 console.log(e);
                 loading.dismiss();
                 this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
-            });              
+            });       
     }
 
     private setParametersAndRun(loading) {

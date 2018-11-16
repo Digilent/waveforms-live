@@ -27,7 +27,7 @@
         <div class="button-info-container">
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
-                    Profile
+                    Profile <img *ngIf="dirtyProfile" class="svg-size" src="assets/img/dirty-dot.svg">
                 </ion-col>
                 <ion-col class="vpd-val-col one-button-col" center text-center>
                     <dropdown-popover class="profile-drop-pop" #dropPopProfile [dataArray]="loggingProfiles" (onSelection)="profileSelect($event)"
@@ -173,7 +173,7 @@
                     <ion-col class="vpd-val-col" center text-center>
                         <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" [disabled]="running" formatInput
                             (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" (mousewheel)="mousewheel($event, 'analog', i, 'sampleFreq')"
-                            [tooltip]="tooltipService.getTooltip('logSampleFreq').message" [tooltipAnimation]="true" tooltipPlacement="top"
+                            [tooltip]="tooltipService.getTooltip('logSampleFreq').message" [tooltipAnimation]="true" tooltipPlacement="top"  
                         />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
