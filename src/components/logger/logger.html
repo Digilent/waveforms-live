@@ -1,33 +1,44 @@
 <div class="logger-component-container">
 
-
-
     <div>
-        <logger-xaxis #xaxis (tpdChange)="xAxisValChange($event)" [tpdArray]="loggerPlotService.tpdArray" [tpdIndex]="loggerPlotService.tpdIndex"
-            [tpdAbsolute]="loggerPlotService.xAxis.base"></logger-xaxis>
+        <div class="button-info-container">
+            <logger-xaxis #xaxis (tpdChange)="xAxisValChange($event)" [tpdArray]="loggerPlotService.tpdArray" [tpdIndex]="loggerPlotService.tpdIndex"
+                [tpdAbsolute]="loggerPlotService.xAxis.base"></logger-xaxis>
+
+            <ion-row class="controls-container">
+                <ion-col center class="vpd-label-col">
+                    Log To
+                </ion-col>
+                <ion-col class="vpd-input-col no-button-col" center text-center>
+                    <dropdown-popover #dropPopLogTo [dataArray]="logToLocations" (onSelection)="logToSelect($event)" [disabled]="running" [tooltip]="tooltipService.getTooltip('logLocation').message"
+                        [tooltipAnimation]="true" tooltipPlacement="top">
+                    </dropdown-popover>
+                </ion-col>
+            </ion-row>
+        </div>
     </div>
 
-    <div>
-
+    <div class="set-top-border">
         <div class="header-bar-side">
             <ion-row>
-                <ion-col class="header-side-col" center text-right>
+                <ion-col class="header-side-col" center text-left>
+                    <button ion-button clear class="dropdown-image-button" (tap)="toggleAdvSettings()">
+                        <img class="custom-dropdown-img" [ngClass]="{rotateOn: showAdvSettings}" src="assets/img/collapse-arrow-right.svg">
+                    </button>
                 </ion-col>
                 <ion-col center text-center>
-                    <div class="instrument-header">Logger</div>
+                    <div class="instrument-header">Advanced</div>
                 </ion-col>
                 <ion-col class="header-side-col" center text-right>
-                    <!-- <button ion-button clear class="header-button disable-hover main-button" (tap)="running ? stopLogger() : startLogger()">
-                        <img class="custom-image-button svg-size" [src]="running ? 'assets/img/stop.svg' : 'assets/img/run.svg'">
-                    </button> -->
                 </ion-col>
             </ion-row>
         </div>
 
-        <div class="button-info-container">
+        <div class="button-info-container" [ngClass]="{'display-none': !showAdvSettings}">
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
-                    Profile <img *ngIf="dirtyProfile" class="svg-size" src="assets/img/dirty-dot.svg">
+                    Profile
+                    <img *ngIf="dirtyProfile" class="svg-size" src="assets/img/dirty-dot.svg">
                 </ion-col>
                 <ion-col class="vpd-val-col one-button-col" center text-center>
                     <dropdown-popover class="profile-drop-pop" #dropPopProfile [dataArray]="loggingProfiles" (onSelection)="profileSelect($event)"
@@ -54,15 +65,17 @@
 
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
-                    Log To
+                    Log On Boot
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <dropdown-popover #dropPopLogTo [dataArray]="logToLocations" (onSelection)="logToSelect($event)" [disabled]="running" [tooltip]="tooltipService.getTooltip('logLocation').message"
-                        [tooltipAnimation]="true" tooltipPlacement="top">
+                    <dropdown-popover [disabled]="running">
                     </dropdown-popover>
                 </ion-col>
             </ion-row>
 
+            <!-- Mode -->
+
+            <!-- Average -->
         </div>
     </div>
 
@@ -173,7 +186,7 @@
                     <ion-col class="vpd-val-col" center text-center>
                         <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" [disabled]="running" formatInput
                             (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" (mousewheel)="mousewheel($event, 'analog', i, 'sampleFreq')"
-                            [tooltip]="tooltipService.getTooltip('logSampleFreq').message" [tooltipAnimation]="true" tooltipPlacement="top"  
+                            [tooltip]="tooltipService.getTooltip('logSampleFreq').message" [tooltipAnimation]="true" tooltipPlacement="top"
                         />
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
@@ -207,9 +220,8 @@
                         </div>
                     </ion-col> -->
                     <ion-col class="vpd-input-col no-button-col" center text-center>
-                        <dropdown-popover #dropPopMode [id]="'mode' + i" [dataArray]="modes" (onSelection)="modeSelect($event, 'analog', i)"
-                            [disabled]="running" [tooltip]="tooltipService.getTooltip('logSampleMode').message" [tooltipAnimation]="true"
-                            tooltipPlacement="top">
+                        <dropdown-popover #dropPopMode [id]="'mode' + i" [dataArray]="modes" (onSelection)="modeSelect($event, 'analog', i)" [disabled]="running"
+                            [tooltip]="tooltipService.getTooltip('logSampleMode').message" [tooltipAnimation]="true" tooltipPlacement="top">
                         </dropdown-popover>
                     </ion-col>
                 </ion-row>

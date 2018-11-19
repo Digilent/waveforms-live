@@ -39,6 +39,7 @@ export class LoggerComponent {
 
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
+    public showAdvSettings: boolean = false;
     public showAnalogChan: boolean[] = [];
     public showDigitalChan: boolean[] = [];
     private defaultAnalogParams: AnalogLoggerParams = {
@@ -1274,6 +1275,10 @@ export class LoggerComponent {
 
     toggleLoggerSettings() {
         this.showLoggerSettings = !this.showLoggerSettings;
+    }
+
+    toggleAdvSettings() {
+        this.showAdvSettings = !this.showAdvSettings;
     }
 
     toggleSeriesSettings(instrument: 'analog' | 'digital', chan: number) {
