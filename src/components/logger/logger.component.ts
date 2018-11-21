@@ -21,6 +21,8 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
 /* import { DataContainer } from '../chart/chart.interface'; */
 import { PlotDataContainer } from '../../services/logger-plot/logger-plot.service';
 import { LoggerXAxisComponent } from '../logger-xaxis/logger-xaxis.component';
+import { ChannelSelectPopover } from '../channel-select-popover/channel-select-popover.component';
+import { LogScalePopover } from '../log-scale-popover/log-scale-popover.component';
 
 @Component({
     templateUrl: 'logger.html',
@@ -40,6 +42,7 @@ export class LoggerComponent {
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
     public showAdvSettings: boolean = false;
+    public selectedChannels: boolean[] = [];
     public showAnalogChan: boolean[] = [];
     public showDigitalChan: boolean[] = [];
     private defaultAnalogParams: AnalogLoggerParams = {
@@ -76,7 +79,7 @@ export class LoggerComponent {
     private analogChanNumbers: number[] = [];
     private digitalChanNumbers: number[] = [];
     public overflowConditions: ('circular')[] = ['circular'];
-    public logToLocations: string[] = ['SD', 'chart', 'both'];
+    public logToLocations: string[] = ['chart', 'SD', 'both'];
     public modes: ('continuous' | 'finite')[] = ['continuous', 'finite'];
     public selectedMode: 'continuous' | 'finite' = this.modes[0];
     public selectedLogLocation: string = this.logToLocations[0];
@@ -136,6 +139,9 @@ export class LoggerComponent {
         this.events.subscribe('profile:delete', (params) => {
             this.deleteProfile(params[0]['profileName']);
         });
+        this.events.subscribe('channels:selected', (params) => {
+            this.selectedChannels = params[0]['analogChans'];
+        });
     }
 
     private unitTransformer: any[] = [];
@@ -168,6 +174,7 @@ export class LoggerComponent {
         this.offsetChangeSubscriptionRef.unsubscribe();
         this.events.unsubscribe('profile:save');
         this.events.unsubscribe('profile:delete');
+        this.events.unsubscribe('channels:selected');
         this.running = false;
         this.destroyed = true;
     }
@@ -249,6 +256,9 @@ export class LoggerComponent {
                 seriesOffset: 0
             })
         }
+
+        this.selectedChannels = Array.apply(null, Array(this.analogChans.length)).map(() => false);
+        this.selectedChannels[0] = true;
     }
 
     private loadDeviceInfo(): Promise<any> {
@@ -332,6 +342,24 @@ export class LoggerComponent {
                     console.log(e);
                     reject(e);
                 });
+        });
+    }
+
+    selectChannels(event) {
+        let popover = this.popoverCtrl.create(ChannelSelectPopover, { selectedChannels: this.selectedChannels }, {
+            cssClass: 'logChannelsPopover'
+        });
+        popover.present({
+            ev: event
+        });
+    }
+
+    openScaleSettings(event?) {
+        let popover = this.popoverCtrl.create(LogScalePopover, {}, {
+            cssClass: 'logScalePopover'
+        });
+        popover.present({
+            ev: event
         });
     }
 
@@ -698,11 +726,22 @@ export class LoggerComponent {
         }
     }
 
-    openProfileSettings(name) {
+    openProfileSettings(name, event?) {
         let popover = this.popoverCtrl.create(ProfilePopover, { profileName: name }, {
             cssClass: 'profilePopover'
         });
-        popover.present();
+        popover.present({
+            ev: event
+        });
+    }
+
+    private profileSaveClick(name, event) {
+        // if new profile open popover, otherwise just save
+        if (name === 'New Profile') {
+            this.openProfileSettings('', event);
+        } else {
+            this.saveAndSetProfile(name);
+        }
     }
 
     profileSelect(event) {

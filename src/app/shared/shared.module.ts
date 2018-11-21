@@ -14,6 +14,8 @@ import { ProgressBarComponent } from '../../components/progress-bar/progress-bar
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
 import { MathPopoverComponent } from '../../components/math-popover/math-popover.component';
 import { CursorPopoverComponent } from '../../components/cursor-popover/cursor-popover.component';
+import { ChannelSelectPopover } from '../../components/channel-select-popover/channel-select-popover.component';
+import { LogScalePopover } from '../../components/log-scale-popover/log-scale-popover.component';
 
 //Directives
 import { FormatInputDirective } from '../../directives/format-input/format-input.directive';
@@ -30,7 +32,9 @@ import { FormatAverageDirective } from '../../directives/format-averaging/format
         IonicModule.forRoot(ProgressBarComponent),
         IonicModule.forRoot(PinoutPopover),
         IonicModule.forRoot(MathPopoverComponent),
-        IonicModule.forRoot(CursorPopoverComponent)
+        IonicModule.forRoot(CursorPopoverComponent),
+        IonicModule.forRoot(ChannelSelectPopover),
+        IonicModule.forRoot(LogScalePopover)
     ],
     declarations: [
         GenPopover,
@@ -41,7 +45,9 @@ import { FormatAverageDirective } from '../../directives/format-averaging/format
         FormatAverageDirective,
         MathPopoverComponent,
         CursorPopoverComponent,
-        PinoutPopover
+        PinoutPopover,
+        ChannelSelectPopover,
+        LogScalePopover
     ],
     exports: [
         GenPopover,
@@ -56,7 +62,9 @@ import { FormatAverageDirective } from '../../directives/format-averaging/format
         FormatAverageDirective,
         MathPopoverComponent,
         CursorPopoverComponent,
-        PinoutPopover
+        PinoutPopover,
+        ChannelSelectPopover,
+        LogScalePopover
     ]
 })
 export class SharedModule { }

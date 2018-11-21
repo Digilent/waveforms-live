@@ -9,6 +9,36 @@
     border-bottom: solid black 1px;
 }
 
+.logger-component-container .pad-top {
+    padding-top: 5px;
+}
+
+.logger-component-container .pad-bottom {
+    padding-bottom: 5px;
+}
+
+.xaxis-left
+{
+    text-align: right;
+    padding: 0;
+    max-width: 26px;
+    font-size: 0;
+}
+
+.xaxis-right
+{
+    text-align: left;
+    padding: 0;
+    max-width: 32px;
+    font-size: 0;
+}
+
+.xaxis-center
+{
+    min-width: 80px;
+    padding: 0px 4px 0px 4px;
+}
+
 .logger-component-container .set-top-border
 {
     border-top: solid black 1px;
