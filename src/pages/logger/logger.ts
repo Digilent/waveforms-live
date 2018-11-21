@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, NavParams, ModalController, PopoverController } from 'ionic-angular';
+import { NavController, NavParams, ModalController, PopoverController, Events } from 'ionic-angular';
 
 //Components
 import { LoggerComponent } from '../../components/logger/logger.component';
@@ -39,16 +39,20 @@ export class LoggerPage {
         private loggerPlotService: LoggerPlotService,
         private modalCtrl: ModalController,
         private popoverCtrl: PopoverController,
-        public tooltipService: TooltipService
+        public tooltipService: TooltipService,
+        private events: Events
     ) {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
         this.isRoot = this.navParams.get('isRoot') || this.isRoot;
         this.unitFormatPipeInstance = new UnitFormatPipe();
+
+        this.events.subscribe('scale:update', (params) => {
+            this.updateScale(params[0]['channel'], params[0]['unit']);
+        });
     }
 
-    updateScale({chan, unit}) {
-        console.log({chan, unit});
-        
+    updateScale(chan: number, unit: string) {
+        console.log({ chan, unit });
         this.loggerChart.setChannelUnit(chan, unit);
     }
 
@@ -81,6 +85,7 @@ export class LoggerPage {
 
     ngOnDestroy() {
         this.loggerPlotService.resetService();
+        this.events.unsubscribe('scale:update');
     }
 
     runLogger() {

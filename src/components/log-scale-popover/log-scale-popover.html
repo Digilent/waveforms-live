@@ -15,19 +15,19 @@
   <ion-row>
     <ion-col class="input-label">Name</ion-col>
     <ion-col text-right>
-      <input class="custom-input" />
+      <input class="custom-input" [(ngModel)]="name" />
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col class="input-label">Equation</ion-col>
     <ion-col text-right>
-      <input class="custom-input" />
+      <input class="custom-input" [(ngModel)]="expressionString" placeholder="1 * v" />
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col class="input-label">Units</ion-col>
     <ion-col text-right>
-      <input class="custom-input" />
+      <input class="custom-input" [(ngModel)]="unitDescriptor" placeholder="V" />
     </ion-col>
   </ion-row>
 

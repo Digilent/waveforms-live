@@ -464,6 +464,9 @@ var waveformsLiveDictionary = (function() {
         },
         scaleInvalidExpression: {
             english: "Invalid Expression"
+        },
+        scaleInvalidName: {
+            english: "Invalid Expression Name"
         }
     };
 
