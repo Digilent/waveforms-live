@@ -145,6 +145,21 @@ var waveformsLiveDictionary = (function() {
         logInvalidFileType: {
             english: 'Invalid File Type. The Specified File Does Not Appear To Be A Digilent Log File'
         },
+        loggerProfileNameRequired: {
+            english: 'Profile Name is Required.'
+        },
+        scaleInvalidExpression: {
+            english: "Invalid Expression"
+        },
+        scaleInvalidUnits: {
+            english: "Invalid Units"
+        },
+        scaleInvalidName: {
+            english: "Invalid Expression Name"
+        },
+        loggerScaleLoadErr: {
+            english: 'Error Reading Scaling Equation. Please Try Again'
+        },
 
         //File
         fileDeleteErr: {
@@ -429,11 +444,14 @@ var waveformsLiveDictionary = (function() {
         logProfile: {
             english: 'Log Profile'
         },
-        logSaveProfile: {
-            english: 'Save Profile'
+        logProfileSettings: {
+            english: 'Log Profile Settings'
         },
-        logMode: {
-            english: 'Logger Mode'
+        logSaveProfile: {
+            english: 'Save Log Profile'
+        },
+        logLocation: {
+            english: 'Location To Log To'
         },
         logLink: {
             english: 'Link Channel To Another'
@@ -447,8 +465,8 @@ var waveformsLiveDictionary = (function() {
         logSamples: {
             english: 'Number Of Samples'
         },
-        logSampleType: {
-            english: 'Sampling Type'
+        logSampleMode: {
+            english: 'Sampling Mode'
         },
         logStorageLocation: {
             english: 'Log File Storage Location'
@@ -456,9 +474,16 @@ var waveformsLiveDictionary = (function() {
         logFileName: {
             english: 'Log File Name'
         },
-        scaleInvalidExpression: {
-            english: "Invalid Expression"
+        logSetScaling: {
+            english: 'Set Log Scaling'
+        },
+        logNewScale: {
+            english: 'New Scale'
+        },
+        logScaleSettings: {
+            english: 'Scale Settings'
         }
+
     };
 
     var statusCodes = {

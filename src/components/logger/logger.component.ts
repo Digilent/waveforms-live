@@ -1,5 +1,5 @@
-import { Component, ViewChild, ViewChildren, QueryList, Output, EventEmitter } from '@angular/core';
-import { AlertController } from 'ionic-angular';
+import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { AlertController, PopoverController, Events } from 'ionic-angular';
 import { LoadingService } from '../../services/loading/loading.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { Observable } from 'rxjs/Observable';
@@ -7,6 +7,7 @@ import 'rxjs/Rx';
 
 //Components
 import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
+import { ProfilePopover } from '../../components/profile-popover/profile-popover.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -15,11 +16,15 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
 import { ExportService } from '../../services/export/export.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { ScalingService } from '../../services/scaling/scaling.service';
 
 //Interfaces
 /* import { DataContainer } from '../chart/chart.interface'; */
 import { PlotDataContainer } from '../../services/logger-plot/logger-plot.service';
+import { ScaleParams } from '../../services/scaling/scaling.service';
 import { LoggerXAxisComponent } from '../logger-xaxis/logger-xaxis.component';
+import { ChannelSelectPopover } from '../channel-select-popover/channel-select-popover.component';
+import { LogScalePopover } from '../log-scale-popover/log-scale-popover.component';
 
 @Component({
     templateUrl: 'logger.html',
@@ -27,17 +32,18 @@ import { LoggerXAxisComponent } from '../logger-xaxis/logger-xaxis.component';
 })
 export class LoggerComponent {
     //@ViewChildren('dropPopOverflow') overflowChildren: QueryList<DropdownPopoverComponent>;
-    @ViewChildren('dropPopSamples') samplesChildren: QueryList<DropdownPopoverComponent>;
+    @ViewChildren('dropPopMode') modeChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLink') linkChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
-    @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
+    @ViewChild('dropPopLogTo') logToChild: DropdownPopoverComponent;
     @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
-
-    @Output('updateScale') update: EventEmitter<any> = new EventEmitter();
+    @ViewChildren('dropPopScaling') scalingChildren: QueryList<DropdownPopoverComponent>;
 
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
+    public showAdvSettings: boolean = false;
+    public selectedChannels: boolean[] = [];
     public showAnalogChan: boolean[] = [];
     public showDigitalChan: boolean[] = [];
     private defaultAnalogParams: AnalogLoggerParams = {
@@ -74,15 +80,14 @@ export class LoggerComponent {
     private analogChanNumbers: number[] = [];
     private digitalChanNumbers: number[] = [];
     public overflowConditions: ('circular')[] = ['circular'];
-    public modes: string[] = ['log', 'stream', 'both'];
-    public samples: ('continuous' | 'finite')[] = ['continuous', 'finite'];
-    public selectedSamples: 'continuous' | 'finite' = this.samples[0];
-    public selectedMode: string = this.modes[0];
+    public logToLocations: string[] = ['chart', 'SD', 'both'];
+    public modes: ('continuous' | 'finite')[] = ['continuous', 'finite'];
+    public selectedMode: 'continuous' | 'finite' = this.modes[0];
+    public selectedLogLocation: string = this.logToLocations[0];
     public storageLocations: string[] = [];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
-    private defaultProfileName: string = 'NewProfile';
-    public profileNameScratch: string = this.defaultProfileName;
+    private dirtyProfile: boolean = false;
     public analogLinkOptions: string[][] = [];
     public digitalLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
@@ -93,6 +98,9 @@ export class LoggerComponent {
     private digitalChansToRead: number[] = [];
     private chartPanSubscriptionRef;
     private offsetChangeSubscriptionRef;
+    private scalingOptions: string[] = ['None'];
+    private selectedScales: string[];
+    private unitTransformer: any[] = [];
 
     private filesInStorage: any = {};
     private destroyed: boolean = false;
@@ -107,7 +115,10 @@ export class LoggerComponent {
         private exportService: ExportService,
         private alertCtrl: AlertController,
         private settingsService: SettingsService,
-        public tooltipService: TooltipService
+        public tooltipService: TooltipService,
+        private popoverCtrl: PopoverController,
+        public events: Events,
+        private scalingService: ScalingService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         console.log(this.activeDevice.instruments.logger);
@@ -126,18 +137,89 @@ export class LoggerComponent {
                 this.toastService.createToast('deviceDroppedConnection', true, undefined, 5000);
                 loading.dismiss();
             });
+
+        this.events.subscribe('profile:save', (params) => {
+            this.saveAndSetProfile(params[0]['profileName']);
+        });
+        this.events.subscribe('profile:delete', (params) => {
+            this.deleteProfile(params[0]['profileName']);
+        });
+        this.events.subscribe('channels:selected', (params) => {
+            this.selectedChannels = params[0]['analogChans'];
+        });
+        this.events.subscribe('scale:update', (event) => {
+            let params = event[0]['params'];
+            let channel = event[0]['channel'];
+            this.updateScale(channel, params['expression'], params['name'], params['unitDescriptor']);
+        });
+        this.events.subscribe('scale:delete', (params) => {
+            this.deleteScale(params[0]['channel'], params[0]['name']);
+        });
     }
 
-    private unitTransformer: any[] = [];
-    public updateScale(event, chan) {
-        this.update.emit(Object.assign({}, event, {chan}));
+    public updateScale(chan: number, expression: string, scaleName: string, units: string) {
+        this.selectedScales[chan] = scaleName;
+        this.selectedScales.forEach((chanScale, index) => {
+            if (chanScale == scaleName) {
+                this.unitTransformer[index] = expression;
+                this.events.publish('units:update', { channel: index, units: units });
+            }
+        });
 
-        this.unitTransformer[chan] = event.expression;
+        // add name to list if new
+        if (this.scalingOptions.indexOf(scaleName) === -1) {
+            this.scalingOptions.push(scaleName);
+        }
+        // set dropdown selection
+        setTimeout(() => {
+            this.scalingChildren.toArray()[chan]._applyActiveSelection(scaleName);
+        }, 20);
+    }
+
+    public deleteScale(chan: number, scaleName: string) {
+        this.unitTransformer[chan] = undefined;
+
+        // remove name from list
+        let nameIndex: number = this.scalingOptions.indexOf(scaleName);
+        if (nameIndex !== -1) {
+            this.scalingOptions.splice(nameIndex, 1);
+        }
+
+        // update any channels that were set to the delete option
+        this.selectedScales.forEach((chanScale, index) => {
+            if (chanScale == scaleName) {
+                this.selectedScales[index] = this.scalingOptions[0];
+                this.events.publish('units:update', { channel: index });
+            }
+        });
+    }
+
+    ngDoCheck() {
+        // Check if there are unsaved changes to profile
+        this.dirtyProfile = false;
+        if (this.selectedLogProfile && this.selectedLogProfile != this.loggingProfiles[0]) {
+            let params: string[] = ['gain', 'linked', 'linkedChan', 'maxSampleCount', 'overflow', 'sampleFreq', 'startDelay', 'uri', 'vOffset'];
+            let profileValues = (<any>Object).values(this.profileObjectMap[this.selectedLogProfile].analog);
+
+            for (let i = 0; i < this.analogChans.length; i++) {
+                params.forEach((param) => {
+                    if (this.analogChans[i][param] != profileValues[i][param]) {
+                        this.dirtyProfile = true;
+                        return;
+                    }
+                });
+            }
+        }
     }
 
     ngOnDestroy() {
         this.chartPanSubscriptionRef.unsubscribe();
         this.offsetChangeSubscriptionRef.unsubscribe();
+        this.events.unsubscribe('profile:save');
+        this.events.unsubscribe('profile:delete');
+        this.events.unsubscribe('channels:selected');
+        this.events.unsubscribe('scale:update');
+        this.events.unsubscribe('scale:delete');
         this.running = false;
         this.destroyed = true;
     }
@@ -219,6 +301,22 @@ export class LoggerComponent {
                 seriesOffset: 0
             })
         }
+
+        this.selectedChannels = Array.apply(null, Array(this.analogChans.length)).map(() => false);
+        this.selectedChannels[0] = true;
+
+        // load saved scaling functions
+        this.scalingService.getAllScalingOptions()
+            .then((result: ScaleParams[]) => {
+                result.forEach((option) => {
+                    this.scalingOptions.push(option.name);
+                });
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+
+        this.selectedScales = Array.apply(null, Array(this.analogChans.length)).map(() => this.scalingOptions[0]);
     }
 
     private loadDeviceInfo(): Promise<any> {
@@ -231,9 +329,9 @@ export class LoggerComponent {
             for (let i = 0; i < this.digitalChans.length; i++) {
                 digitalChanArray.push(i + 1);
             }
-            if (analogChanArray.length < 1 && digitalChanArray.length < 1) { 
+            if (analogChanArray.length < 1 && digitalChanArray.length < 1) {
                 resolve('done');
-                return; 
+                return;
             }
 
             this.getStorageLocations()
@@ -249,12 +347,12 @@ export class LoggerComponent {
                     }
 
                     if (this.storageLocations.length < 1) {
-                        this.modes = ['stream'];
-                        this.modeSelect('stream');
+                        this.logToLocations = ['chart'];
+                        this.logToSelect('chart');
                         return new Promise((resolve, reject) => { resolve(); });
                     }
-                    else {    
-                        return new Promise((resolve, reject) => {               
+                    else {
+                        return new Promise((resolve, reject) => {
                             this.storageLocations.reduce((accumulator, currentVal, currentIndex) => {
                                 return accumulator
                                     .then((data) => {
@@ -272,7 +370,7 @@ export class LoggerComponent {
                                     console.log(e);
                                     resolve();
                                 });
-                        });     
+                        });
                     }
                 })
                 .then((data) => {
@@ -305,6 +403,54 @@ export class LoggerComponent {
         });
     }
 
+    selectChannels(event) {
+        let popover = this.popoverCtrl.create(ChannelSelectPopover, { selectedChannels: this.selectedChannels }, {
+            cssClass: 'logChannelsPopover'
+        });
+        popover.present({
+            ev: event
+        });
+    }
+
+    private scaleSelect(event: string, channel: number) {
+        let currentScale = this.selectedScales[channel];
+        this.selectedScales[channel] = event;
+        if (event === 'None') {
+            // remove scaling on this channel and reset units
+            this.unitTransformer[channel] = undefined;
+            this.events.publish('units:update', { channel: channel });
+        } else {
+            // apply expression to this channel and update units
+            this.scalingService.getScalingOption(event)
+                .then((result) => {
+                    // apply scaling to this channel
+                    this.unitTransformer[channel] = result.expression;
+                    this.events.publish('units:update', { channel: channel, units: result.unitDescriptor });
+                })
+                .catch(() => {
+                    this.toastService.createToast('loggerScaleLoadErr', true, undefined, 5000);
+                    this.selectedScales[channel] = currentScale;
+                    setTimeout(() => {
+                        this.scalingChildren.toArray()[channel]._applyActiveSelection(currentScale);
+                    }, 20);
+                    return;
+                });
+        }
+    }
+
+    openScaleSettings(event: any, chan: number, newScale: boolean) {
+        let scaleData = { channel: chan };
+        if (!newScale) {
+            scaleData['scaleName'] = this.selectedScales[chan];
+        }
+        let popover = this.popoverCtrl.create(LogScalePopover, scaleData, {
+            cssClass: 'logScalePopover'
+        });
+        popover.present({
+            ev: event
+        });
+    }
+
     continueStream() {
         if (!this.running) { return; }
         //Device was in stream mode and should be ready to stream
@@ -324,7 +470,7 @@ export class LoggerComponent {
             }
         }
 
-        if (this.selectedMode === 'log') {
+        if (this.selectedLogLocation === 'SD') {
             this.bothStartStream();
         }
         this.readLiveData();
@@ -332,7 +478,7 @@ export class LoggerComponent {
 
     fileExists(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.alertWrapper('File Exists', 'Your log file already exists. Would you like to overwrite or cancel?', 
+            this.alertWrapper('File Exists', 'Your log file already exists. Would you like to overwrite or cancel?',
                 [{
                     text: 'Cancel',
                     handler: (data) => {
@@ -508,9 +654,9 @@ export class LoggerComponent {
         this.loggerPlotService.setPosition('x', 1, newPos, false);
     }
 
-    modeSelect(event) {
+    logToSelect(event) {
         console.log(event);
-        if (this.selectedMode === 'stream' && event !== 'stream') {
+        if (this.selectedLogLocation === 'chart' && event !== 'chart') {
             for (let i = 0; i < this.analogChans.length; i++) {
                 this.analogChans[i].storageLocation = this.storageLocations[0];
                 this.setChannelDropdowns(i, {
@@ -525,7 +671,7 @@ export class LoggerComponent {
                 }); */
             }
         }
-        if (event === 'stream') {
+        if (event === 'chart') {
             for (let i = 0; i < this.analogChans.length; i++) {
                 this.analogChans[i].storageLocation = 'ram';
             }
@@ -533,10 +679,10 @@ export class LoggerComponent {
                 this.digitalChans[i].storageLocation = 'ram';
             }
         }
-        this.selectedMode = event;
+        this.selectedLogLocation = event;
     }
 
-    samplesSelect(event: 'finite' | 'continuous', instrument: 'analog' | 'digital', channel: number) {
+    modeSelect(event: 'finite' | 'continuous', instrument: 'analog' | 'digital', channel: number) {
         console.log(event);
         let chanObj = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
         if (event === 'finite') {
@@ -545,7 +691,7 @@ export class LoggerComponent {
         else {
             chanObj.maxSampleCount = -1;
         }
-        this.selectedSamples = event;
+        this.selectedMode = event;
     }
 
     linkSelect(event, instrument: 'analog' | 'digital', channel: number) {
@@ -558,7 +704,7 @@ export class LoggerComponent {
                     storageLocation: this.analogChans[linkedChan].storageLocation,
                     overflow: this.analogChans[linkedChan].overflow,
                     linkChan: -1,
-                    samples: this.analogChans[linkedChan].maxSampleCount === -1 ? 'continuous' : 'finite'
+                    mode: this.analogChans[linkedChan].maxSampleCount === -1 ? 'continuous' : 'finite'
                 });
             }
             this.analogChans[channel].linked = false;
@@ -586,11 +732,11 @@ export class LoggerComponent {
                 storageLocation: this.analogChans[channel].storageLocation,
                 overflow: this.analogChans[channel].overflow,
                 linkChan: linkChan,
-                samples: this.analogChans[channel].maxSampleCount === -1 ? 'continuous' : 'finite'
+                mode: this.analogChans[channel].maxSampleCount === -1 ? 'continuous' : 'finite'
             });
         }
         else {
-            
+
         }
         console.log(this.analogChans);
     }
@@ -607,10 +753,10 @@ export class LoggerComponent {
         }
     }
 
-    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, linkChan?: number, samples?: string }) {
+    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, linkChan?: number, mode?: string }) {
         setTimeout(() => {
             if (applyOptions.linkChan != undefined) {
-                let linkedChanString = applyOptions.linkChan > -1 ? 'Ch ' +  (applyOptions.linkChan + 1) : 'no';
+                let linkedChanString = applyOptions.linkChan > -1 ? 'Ch ' + (applyOptions.linkChan + 1) : 'no';
                 let id = 'link' + channel;
                 this.linkChildren.forEach((child) => {
                     if (id === child.elementRef.nativeElement.id) {
@@ -628,11 +774,11 @@ export class LoggerComponent {
                 });
             }
 
-            if (applyOptions.samples != undefined) {
-                let id = 'samples' + channel;
-                this.samplesChildren.forEach((child) => {
+            if (applyOptions.mode != undefined) {
+                let id = 'mode' + channel;
+                this.modeChildren.forEach((child) => {
                     if (id === child.elementRef.nativeElement.id) {
-                        child._applyActiveSelection(applyOptions.samples);
+                        child._applyActiveSelection(applyOptions.mode);
                     }
                 });
             }
@@ -668,11 +814,32 @@ export class LoggerComponent {
         }
     }
 
+    openProfileSettings(name, event?) {
+        let popover = this.popoverCtrl.create(ProfilePopover, { profileName: name }, {
+            cssClass: 'profilePopover'
+        });
+        popover.present({
+            ev: event
+        });
+    }
+
+    private profileSaveClick(name, event) {
+        // if new profile open popover, otherwise just save
+        if (name === 'New Profile') {
+            this.openProfileSettings('', event);
+        } else {
+            this.saveAndSetProfile(name);
+        }
+    }
+
     profileSelect(event) {
         console.log(event);
         let currentLogProfile = this.selectedLogProfile;
         this.selectedLogProfile = event;
-        if (event === this.loggingProfiles[0]) { return; }
+        if (event === this.loggingProfiles[0]) {
+            this.openProfileSettings('');
+            return;
+        }
         if (this.profileObjectMap[event] == undefined) {
             this.toastService.createToast('loggerProfileLoadErr', true, undefined, 5000);
             console.log('profile not found in profile map');
@@ -686,8 +853,28 @@ export class LoggerComponent {
         this.parseAndApplyProfileJson(JSON.parse(JSON.stringify(this.profileObjectMap[event])));
     }
 
-    saveAndSetProfile() {
-        this.saveProfile(this.profileNameScratch)
+    deleteProfile(profileName) {
+        this.activeDevice.file.delete('flash', this.settingsService.profileToken + profileName + '.json').subscribe(
+            (data) => {
+                console.log(data);
+                // remove from list of profiles
+                let nameIndex: number = this.loggingProfiles.indexOf(profileName);
+                if (nameIndex !== -1) {
+                    this.loggingProfiles.splice(nameIndex, 1);
+                }
+                this.selectedLogProfile = this.loggingProfiles[0];
+            },
+            (err) => {
+                console.log(err);
+                this.toastService.createToast('fileDeleteErr', true, undefined, 5000);
+            },
+            () => { }
+        );
+    }
+
+    saveAndSetProfile(profileName) {
+        console.log(profileName);
+        this.saveProfile(profileName)
             .then((data) => {
                 this.toastService.createToast('loggerSaveSuccess');
             })
@@ -695,18 +882,17 @@ export class LoggerComponent {
                 console.log(e);
                 this.toastService.createToast('loggerSaveFail');
             });
-        let nameIndex: number = this.loggingProfiles.indexOf(this.profileNameScratch);
+        let nameIndex: number = this.loggingProfiles.indexOf(profileName);
         if (nameIndex !== -1) {
             this.loggingProfiles.splice(nameIndex, 1);
         }
-        this.loggingProfiles.push(this.profileNameScratch);
+        this.loggingProfiles.push(profileName);
         let profileObj = this.generateProfileJson();
         let profileObjCopy = JSON.parse(JSON.stringify(profileObj));
-        this.profileObjectMap[this.profileNameScratch] = profileObjCopy;
+        this.profileObjectMap[profileName] = profileObjCopy;
         setTimeout(() => {
-            this.selectedLogProfile = this.profileNameScratch;
+            this.selectedLogProfile = profileName;
             this.profileChild._applyActiveSelection(this.selectedLogProfile);
-            this.profileNameScratch = this.defaultProfileName;
         }, 20);
     }
 
@@ -756,7 +942,7 @@ export class LoggerComponent {
                     try {
                         parsedData = JSON.parse(data.file);
                     }
-                    catch(e) {
+                    catch (e) {
                         console.log('error parsing json');
                         resolve(e);
                         return;
@@ -829,7 +1015,7 @@ export class LoggerComponent {
                 if (loadedObj[instrument][channel].linked) {
                     dropdownChangeObj['linkChan'] = loadedObj[instrument][channel].linkedChan;
                 }
-                dropdownChangeObj['samples'] = loadedObj[instrument][channel].maxSampleCount === -1 ? 'continuous' : 'finite';
+                dropdownChangeObj['mode'] = loadedObj[instrument][channel].maxSampleCount === -1 ? 'continuous' : 'finite';
                 this.setChannelDropdowns(parseInt(channel), dropdownChangeObj);
             }
         }
@@ -945,12 +1131,13 @@ export class LoggerComponent {
                 let dt = 1 / (channelObj.actualSampleFreq / 1000000);
                 let timeVal = channelObj.startIndex * dt;
 
+                let chanIndex: number = parseInt(channel) - 1;
                 for (let i = 0; i < channelObj.data.length; i++) {
-                    let data = (this.unitTransformer[channel]) ? this.unitTransformer[channel](channelObj.data[i]) :
-                        channelObj.data[i]; 
+                    let data = (this.unitTransformer[chanIndex]) ? this.unitTransformer[chanIndex](channelObj.data[i]) :
+                        channelObj.data[i];
 
                     formattedData.push([timeVal, data]);
-                    
+
                     timeVal += dt;
                 }
 
@@ -959,11 +1146,10 @@ export class LoggerComponent {
                     dataContainerIndex += this.analogChans.length;
                 }
 
-                let chanIndex: number;
-                dataContainerIndex += (chanIndex = parseInt(channel) - 1);
+                dataContainerIndex += chanIndex;
                 this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
-                
+
                 let overflow = 0;
                 let containerSize = this.analogChans[chanIndex].sampleFreq * this.xAxis.loggerBufferSize;
                 if ((overflow = this.dataContainers[dataContainerIndex].data.length - containerSize) >= 0) {
@@ -1001,7 +1187,7 @@ export class LoggerComponent {
             if (this.analogChans[i].storageLocation !== 'ram') {
                 foundChansMap[this.analogChans[i].uri] = 1;
             }
-            if (this.selectedMode === 'stream') { continue; }
+            if (this.selectedLogLocation === 'chart') { continue; }
             if (this.filesInStorage[this.analogChans[i].storageLocation].indexOf(this.analogChans[i].uri + '.dlog') !== -1) {
                 //File already exists on device display alert
                 existingFileFound = true;
@@ -1035,13 +1221,13 @@ export class LoggerComponent {
                 }
                 else if (returnData.reason === 0) {
                     this.setParametersAndRun(loading);
-                }  
+                }
             })
             .catch((e) => {
                 console.log(e);
                 loading.dismiss();
                 this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
-            });              
+            });
     }
 
     private setParametersAndRun(loading) {
@@ -1089,7 +1275,7 @@ export class LoggerComponent {
                 this.analogChansToRead = this.analogChanNumbers.slice();
                 console.log("ANALOG CHANS TO READ: ");
                 console.log(this.analogChansToRead);
-                if (this.selectedMode !== 'log') {
+                if (this.selectedLogLocation !== 'SD') {
                     this.readLiveData();
                 }
                 else {
@@ -1111,7 +1297,7 @@ export class LoggerComponent {
                 this.parseGetLiveStatePacket('analog', data);
                 if (this.running) {
                     setTimeout(() => {
-                        if (this.selectedMode === 'both') {
+                        if (this.selectedLogLocation === 'both') {
                             this.continueStream();
                         }
                         else {
@@ -1156,7 +1342,7 @@ export class LoggerComponent {
             .then((data) => {
                 this.parseReadResponseAndDraw(data);
                 if (this.running) {
-                    if (this.selectedMode !== 'log') {
+                    if (this.selectedLogLocation !== 'SD') {
                         if (this.activeDevice.transport.getType() === 'local') {
                             setTimeout(() => {
                                 this.readLiveData();
@@ -1218,6 +1404,10 @@ export class LoggerComponent {
         this.showLoggerSettings = !this.showLoggerSettings;
     }
 
+    toggleAdvSettings() {
+        this.showAdvSettings = !this.showAdvSettings;
+    }
+
     toggleSeriesSettings(instrument: 'analog' | 'digital', chan: number) {
         if (instrument === 'analog') {
             this.showAnalogChan[chan] = !this.showAnalogChan[chan];
@@ -1267,16 +1457,16 @@ export class LoggerComponent {
     }
 
     bothStopStream() {
-        this.selectedMode = 'log';
-        this.modeChild._applyActiveSelection('log');
+        this.selectedLogLocation = 'SD';
+        this.logToChild._applyActiveSelection('SD');
     }
 
     bothStartStream() {
         this.clearChart();
         this.viewMoved = false;
         this.setViewToEdge();
-        this.selectedMode = 'both';
-        this.modeChild._applyActiveSelection('both');
+        this.selectedLogLocation = 'both';
+        this.logToChild._applyActiveSelection('both');
     }
 
     private copyState(instrument: 'analog' | 'digital', respObj, channelInternalIndex: number, onlyCopyState: boolean = false) {
@@ -1317,9 +1507,9 @@ export class LoggerComponent {
         }
         activeChan.storageLocation = respObj.storageLocation;
         if (respObj.storageLocation === 'ram') {
-            console.log('setting selected mode to stream');
-            this.selectedMode = 'stream';
-            this.modeChild._applyActiveSelection('stream');
+            console.log('setting selected log to location to chart');
+            this.selectedLogLocation = 'chart';
+            this.logToChild._applyActiveSelection('chart');
         }
         it = 0;
         this.locationChildren.forEach((child) => {
@@ -1329,7 +1519,7 @@ export class LoggerComponent {
             it++;
         });
         it = 0;
-        this.samplesChildren.forEach((child) => {
+        this.modeChildren.forEach((child) => {
             if (channelInternalIndex === it) {
                 let setting = activeChan.maxSampleCount === -1 ? 'continuous' : 'finite';
                 child._applyActiveSelection(setting);
@@ -1386,14 +1576,14 @@ export class LoggerComponent {
                 }
                 console.log(paramObj);
                 observable = this.activeDevice.instruments.logger.analog.setParameters(
-                    chans, 
-                    paramObj[analogParamArray[0]], 
+                    chans,
+                    paramObj[analogParamArray[0]],
                     paramObj[analogParamArray[1]],
-                    paramObj[analogParamArray[2]], 
-                    paramObj[analogParamArray[3]], 
-                    paramObj[analogParamArray[4]], 
-                    paramObj[analogParamArray[5]], 
-                    paramObj[analogParamArray[6]], 
+                    paramObj[analogParamArray[2]],
+                    paramObj[analogParamArray[3]],
+                    paramObj[analogParamArray[4]],
+                    paramObj[analogParamArray[5]],
+                    paramObj[analogParamArray[6]],
                     paramObj[analogParamArray[7]]
                 );
             }
@@ -1413,12 +1603,12 @@ export class LoggerComponent {
                 }
                 console.log(paramObj);
                 observable = this.activeDevice.instruments.logger.digital.setParameters(
-                    chans, 
+                    chans,
                     paramObj[digitalParamArray[0]],
-                    paramObj[digitalParamArray[1]], 
-                    paramObj[digitalParamArray[2]], 
-                    paramObj[digitalParamArray[3]], 
-                    paramObj[digitalParamArray[4]], 
+                    paramObj[digitalParamArray[1]],
+                    paramObj[digitalParamArray[2]],
+                    paramObj[digitalParamArray[3]],
+                    paramObj[digitalParamArray[4]],
                     paramObj[digitalParamArray[5]],
                     paramObj[digitalParamArray[6]]
                 );
@@ -1521,18 +1711,20 @@ export class LoggerComponent {
                     counts.push(this.digitalChans[this.digitalChansToRead[i] - 1].count);
                 }
             }
-            
+
             let finalObj = {};
-            
+
             chans.reduce((accumulator, currentVal, currentIndex) => {
                 return accumulator.flatMap((data) => {
                     if (currentIndex > 0) {
                         let chanObj = instrument === 'analog' ? this.analogChans[currentIndex - 1] : this.digitalChans[currentIndex - 1];
                         if (chanObj.startIndex >= 0 && chanObj.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
-                            return Observable.create((observer) => { observer.error({
-                                message: 'Could not keep up with device',
-                                data: data
-                            }); });
+                            return Observable.create((observer) => {
+                                observer.error({
+                                    message: 'Could not keep up with device',
+                                    data: data
+                                });
+                            });
                         }
                         this.updateValuesFromRead(data, instrument, chans, currentIndex - 1);
                     }
@@ -1562,7 +1754,7 @@ export class LoggerComponent {
                             try {
                                 parsedData = JSON.parse(jsonString);
                             }
-                            catch(e) {
+                            catch (e) {
                                 reject(e);
                                 return;
                             }
@@ -1588,7 +1780,7 @@ export class LoggerComponent {
                         }
                         reject(err);
                     },
-                    () => {}
+                    () => { }
                 );
         });
     }

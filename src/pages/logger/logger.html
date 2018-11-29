@@ -20,18 +20,18 @@
                     <div>
                         <button ion-button icon-right class="text-button-side disable-hover main-button" (tap)="loggerComponent.running ? stopLogger() : runLogger()">
                             <!-- Ridiculous ternary operator to help angular change detection -->
-                            <span class="collapse-button">{{loggerComponent.running ? 'Stop' : loggerComponent.selectedMode === 'stream' ? 'Stream' : loggerComponent.selectedMode === 'both' ? 'Run' : 'Log'}}</span>
+                            <span class="collapse-button">{{loggerComponent.running ? 'Stop' : loggerComponent.selectedLogLocation === 'chart' ? 'Stream' : loggerComponent.selectedLogLocation === 'both' ? 'Run' : 'Log'}}</span>
                             <img class="custom-image-button" [src]="loggerComponent.running ? 'assets/img/stop.svg' : 'assets/img/run.svg'" />
                         </button>
-                        <button *ngIf="loggerComponent.selectedMode !== 'stream' && loggerComponent.running" ion-button icon-right 
+                        <button *ngIf="loggerComponent.selectedLogLocation !== 'chart' && loggerComponent.running" ion-button icon-right 
                             class="text-button-side disable-hover main-button" 
-                            (tap)="loggerComponent.selectedMode === 'log' ? loggerComponent.bothStartStream() : loggerComponent.bothStopStream()">
+                            (tap)="loggerComponent.selectedLogLocation === 'SD' ? loggerComponent.bothStartStream() : loggerComponent.bothStopStream()">
                             <span class="collapse-button">Stream</span>
-                            <img class="custom-image-button" [src]="loggerComponent.selectedMode === 'log' ? 'assets/img/run.svg' : 'assets/img/stop.svg'" />
+                            <img class="custom-image-button" [src]="loggerComponent.selectedLogLocation === 'SD' ? 'assets/img/run.svg' : 'assets/img/stop.svg'" />
                         </button>
                     </div>
                     <div text-center class="overal-run-status-container">
-                        {{!loggerComponent.running ? 'Idle' : loggerComponent.selectedMode === 'stream' ? 'Streaming' : loggerComponent.selectedMode === 'both' ? 'Running' : 'Logging'}}
+                        {{!loggerComponent.running ? 'Idle' : loggerComponent.selectedLogLocation === 'chart' ? 'Streaming' : loggerComponent.selectedLogLocation === 'both' ? 'Running' : 'Logging'}}
                     </div>
                 </div>
             </ion-col>
@@ -126,7 +126,7 @@
         </ion-col>
         
         <ion-col class="controls-col">
-            <logger-component #loggerComponent (updateScale)="updateScale($event)"></logger-component>
+            <logger-component #loggerComponent></logger-component>
 
             <fgen #fgenComponent (fgenTutorialFinish)="fgenTutorialFinished($event)"></fgen>
         </ion-col>

@@ -9,7 +9,7 @@ import { LoggerComponent } from '../../components/logger/logger.component';
 import { LoggerChartComponent } from '../../components/logger-chart/logger-chart.component';
 import { LoggerXAxisComponent } from '../../components/logger-xaxis/logger-xaxis.component';
 import { LoggerTimelineComponent } from '../../components/logger-timeline/logger-timeline.component';
-import { UnitScaleComponent } from '../../components/unit-scale/unit-scale.component';
+import { ProfilePopover } from '../../components/profile-popover/profile-popover.component';
 
 //Pages
 import { FileBrowserPage } from '../file-browser/file-browser';
@@ -17,13 +17,15 @@ import { LoggerPage } from './logger';
 
 //Services
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
+import { ScalingService } from '../../services/scaling/scaling.service';
  
 @NgModule({
     imports: [
         SharedModule,
         FGenModule,
         IonicModule.forRoot(LoggerPage),
-        IonicModule.forRoot(FileBrowserPage)
+        IonicModule.forRoot(FileBrowserPage),
+        IonicModule.forRoot(ProfilePopover)
     ],
     declarations: [
         LoggerPage,
@@ -31,12 +33,13 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
         LoggerChartComponent,
         LoggerXAxisComponent,
         LoggerTimelineComponent,
-        UnitScaleComponent,
-        FileBrowserPage
+        FileBrowserPage,
+        ProfilePopover
     ],
     exports: [LoggerPage],
     providers: [
-        LoggerPlotService
+        LoggerPlotService,
+        ScalingService
     ]
 })
 export class LoggerModule { }

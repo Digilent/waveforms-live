@@ -1,0 +1,28 @@
+<div class="profile-container">
+  <ion-row>
+    <ion-col center text-center class="header">
+      Profile
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col class="input-label">Name</ion-col>
+    <ion-col>
+        <input class="custom-input" [(ngModel)]="profileName" />
+    </ion-col>
+  </ion-row>
+
+  <ion-row margin-top>
+    <ion-col text-left>
+      <button ion-button class="text-button-side disable-hover" (click)="deleteProfile()" *ngIf="initialName != ''">
+        Delete
+      </button>
+    </ion-col>
+
+    <ion-col text-right>
+      <button ion-button class="text-button-side disable-hover" (click)="saveProfile()">
+        {{initialName == '' ? 'Save' : 'Save Changes'}}
+      </button>
+    </ion-col>
+  </ion-row>
+</div>
