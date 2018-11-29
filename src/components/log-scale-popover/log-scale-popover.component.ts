@@ -1,17 +1,19 @@
 import { Component } from '@angular/core';
 import { ViewController, NavParams, Events } from 'ionic-angular';
 
-import * as math from 'mathjs';
+// Services
 import { ToastService } from "../../services/toast/toast.service";
+import { ScalingService } from '../../services/scaling/scaling.service';
+
+//Interfaces
+import { ScaleParams } from '../../services/scaling/scaling.service';
 
 /**
  * LogScalePopover accepts a math expression string to convert the voltage into a more domain
  * specific unit, (ie Fahrenheit for an application measuring temperature).
  * 
- * If the user specifies a unit to convert to, the chart y-axis ticks are updated
- * to use the new unit, and data received from the device is transformed
- * (this bit could really be a service, yeah?) from voltage
- * to the new unit.
+ * If the user specifies a unit to convert to, the chart y-axis ticks are updated to use the
+ * new unit, and data received from the device is transformed from voltage to the new unit.
  */
 @Component({
   selector: 'log-scale-popover',
@@ -19,46 +21,61 @@ import { ToastService } from "../../services/toast/toast.service";
 })
 export class LogScalePopover {
   private channel: number;
-  private name: string;
-  private expressionString: string = 'v';
-  private unitDescriptor: string = 'V';
+  private name: string = "";
+  private savedName: string;
+  private expressionString: string = "";
+  private unitDescriptor: string = "";
+  private allScalingOptions: ScaleParams[] = [];
 
   constructor(
     private viewCtrl: ViewController,
     private navParams: NavParams,
     private events: Events,
-    private toastCtrl: ToastService
+    private toastService: ToastService,
+    private scalingService: ScalingService
   ) {
     this.channel = this.navParams.data.channel;
+    let scaleName = this.navParams.data.scaleName;
+    if (scaleName !== 'None') {
+      this.name = scaleName;
+      this.savedName = scaleName;
+    }
 
-    // TODO: get values from storage when existing option is selected
+    this.scalingService.getAllScalingOptions()
+      .then((result: ScaleParams[]) => {
+        if (result) {
+          this.allScalingOptions = result;
+
+          if (this.savedName) {
+            let selected = this.allScalingOptions.filter((option) => {
+              return option.name === this.savedName;
+            })[0];
+            this.expressionString = selected['expressionString'];
+            this.unitDescriptor = selected['unitDescriptor'];
+          }
+        }
+      })
+      .catch(() => {
+        console.log('error loading scale info');
+        this.toastService.createToast('loggerScaleLoadErr', true, undefined, 5000);
+      });
   }
-  
-  public signalUpdate() {
+
+  public evaluateParams() {
     return new Promise((resolve, reject) => {
-      this.validateExpression();
-
-      if (this.verifyExpression()) {
-        try {
-          let expression = math.eval(`f(v)=${this.expressionString}`);
-
-          expression(2); // note(andrew): test that we can actually use the expression here
-
-          let scaleObj = {
-            channel: this.channel,
+      this.scalingService.evaluateExpression(this.expressionString, this.unitDescriptor)
+        .then((expression) => {
+          let params: ScaleParams = {
             name: this.name,
-            expression: expression,
-            unit: this.unitDescriptor
-          };
-          resolve(scaleObj);
-        }
-        catch (err) {
-          console.log(err);
+            expressionString: this.expressionString,
+            unitDescriptor: this.unitDescriptor,
+            expression: expression
+          }
+          resolve(params);
+        })
+        .catch(() => {
           reject();
-        }
-      } else {
-        reject();
-      }
+        })
     });
   }
 
@@ -67,35 +84,52 @@ export class LogScalePopover {
   }
 
   save() {
-    if (!this.name) {
-      this.toastCtrl.createToast("scaleInvalidName", true);
+    if (this.name == "") {
+      this.toastService.createToast("scaleInvalidName", true);
+      return;
+    }
+    if (this.unitDescriptor.length !== 1) {
+      this.toastService.createToast("scaleInvalidUnits", true);
       return;
     }
 
-    this.signalUpdate()
-      .then((scaleObj) => {
-        // TODO: add name to dropdown list and save to local storage
+    this.evaluateParams()
+      .then((params: ScaleParams) => {
+        // save new scale function to storage
+        let index = this.allScalingOptions.map(option => option.name).indexOf(this.name);
+        if (index !== -1) {
+          this.allScalingOptions[index] = params;
+        } else {
+          this.allScalingOptions.push(params);
+        }
+        this.scalingService.saveScalingOptions(this.allScalingOptions);
 
-        this.events.publish('scale:update', scaleObj);
+        this.events.publish('scale:update', { params: params, channel: this.channel });
         this.close();
       })
       .catch(() => {
-        this.toastCtrl.createToast("scaleInvalidExpression", true);
+        this.toastService.createToast("scaleInvalidExpression", true);
       });
   }
 
   delete() {
-    // TODO: remove name from dropdown list and remove from local storage
+    // remove function from storage
+    let index = this.allScalingOptions.map(option => option.name).indexOf(this.savedName);
+    if (index !== -1) {
+      this.allScalingOptions.splice(index, 1);
+    } else {
+      this.toastService.createToast("loggerScaleLoadErr", true);
+      return;
+    }
 
+    this.scalingService.saveScalingOptions(this.allScalingOptions);
+
+    let scaleObj = {
+      channel: this.channel,
+      name: this.savedName
+    };
+    this.events.publish('scale:delete', scaleObj);
     this.close();
   }
 
-  public validateExpression() {
-    if (this.expressionString === "") this.expressionString = "v";
-    if (this.unitDescriptor === "") this.unitDescriptor = "V";
-  }
-
-  public verifyExpression(): boolean {
-    return this.expressionString.includes("v") && this.unitDescriptor.length === 1;
-  }
 }

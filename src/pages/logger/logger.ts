@@ -45,17 +45,8 @@ export class LoggerPage {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
         this.isRoot = this.navParams.get('isRoot') || this.isRoot;
         this.unitFormatPipeInstance = new UnitFormatPipe();
-
-        this.events.subscribe('scale:update', (params) => {
-            this.updateScale(params[0]['channel'], params[0]['unit']);
-        });
     }
-
-    updateScale(chan: number, unit: string) {
-        console.log({ chan, unit });
-        this.loggerChart.setChannelUnit(chan, unit);
-    }
-
+    
     ngOnInit() {
         this.cursorInfo = {
             currentType: 'disabled',
@@ -85,7 +76,6 @@ export class LoggerPage {
 
     ngOnDestroy() {
         this.loggerPlotService.resetService();
-        this.events.unsubscribe('scale:update');
     }
 
     runLogger() {

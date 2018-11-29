@@ -17,6 +17,7 @@ import { LoggerPage } from './logger';
 
 //Services
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
+import { ScalingService } from '../../services/scaling/scaling.service';
  
 @NgModule({
     imports: [
@@ -37,7 +38,8 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
     ],
     exports: [LoggerPage],
     providers: [
-        LoggerPlotService
+        LoggerPlotService,
+        ScalingService
     ]
 })
 export class LoggerModule { }

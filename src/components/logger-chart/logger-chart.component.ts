@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { Events } from 'ionic-angular';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
@@ -25,7 +26,8 @@ export class LoggerChartComponent {
 
     constructor(
         private loggerPlotService: LoggerPlotService,
-        private deviceManagerService: DeviceManagerService
+        private deviceManagerService: DeviceManagerService,
+        private events: Events
     ) {
         this.unitFormatPipeInstance = new UnitFormatPipe();
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
@@ -35,10 +37,17 @@ export class LoggerChartComponent {
         this.unitSymbols = Array.from({length}, () => 'V');
         
         this.loggerChartOptions = this.generateBodeOptions();
+
+        this.events.subscribe('units:update', (params) => {
+            this.setChannelUnit(params[0]['channel'], params[0]['units']);
+        });
     }
 
-    setChannelUnit(chan, unit) {
-        chan--;
+    ngOnDestroy() {
+        this.events.unsubscribe('units:update');
+    }
+
+    setChannelUnit(chan: number, unit?: string) {
         this.unitSymbols[chan] = unit || 'V';
 
         this.loggerChartOptions = this.generateBodeOptions();

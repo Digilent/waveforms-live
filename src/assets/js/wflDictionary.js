@@ -465,8 +465,14 @@ var waveformsLiveDictionary = (function() {
         scaleInvalidExpression: {
             english: "Invalid Expression"
         },
+        scaleInvalidUnits: {
+            english: "Invalid Units"
+        },
         scaleInvalidName: {
             english: "Invalid Expression Name"
+        },
+        loggerScaleLoadErr: {
+            english: 'Error Reading Scaling Equation. Please Try Again'
         }
     };
 

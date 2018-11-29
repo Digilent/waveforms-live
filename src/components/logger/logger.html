@@ -128,7 +128,8 @@
                     </div>
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [disabled]="running" [tooltip]="tooltipService.getTooltip('logSamples').message" [tooltipAnimation]="true" tooltipPlacement="top" />
+                    <input class="custom-input" step="any" [disabled]="running" [tooltip]="tooltipService.getTooltip('logSamples').message" [tooltipAnimation]="true"
+                        tooltipPlacement="top" />
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
@@ -257,13 +258,20 @@
                     <ion-col center class="vpd-label-col">
                         Scaling
                     </ion-col>
-                    <ion-col class="vpd-val-col one-button-col" center text-center>
-                        <dropdown-popover [disabled]="running">
+                    <ion-col class="vpd-val-col" center text-center>
+                        <dropdown-popover #dropPopScaling [dataArray]="scalingOptions" (onSelection)="scaleSelect($event, i)" [disabled]="running">
                         </dropdown-popover>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
-                            <button ion-button class="img-button disable-hover" (tap)="openScaleSettings(i+1, $event)" [disabled]="running">
+                            <button ion-button class="img-button disable-hover" (tap)="openScaleSettings($event, i, true)" [disabled]="running">
+                                <img class="custom-image-button svg-size" src="assets/img/add.svg">
+                            </button>
+                        </div>
+                    </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <div style="display:inline-block">
+                            <button ion-button class="img-button disable-hover" (tap)="openScaleSettings($event, i, false)" [disabled]="running || selectedScales[i] === 'None'">
                                 <img class="custom-image-button svg-size" src="assets/img/settings.svg">
                             </button>
                         </div>

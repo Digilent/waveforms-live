@@ -16,10 +16,12 @@ import { LoggerPlotService } from '../../services/logger-plot/logger-plot.servic
 import { ExportService } from '../../services/export/export.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { ScalingService } from '../../services/scaling/scaling.service';
 
 //Interfaces
 /* import { DataContainer } from '../chart/chart.interface'; */
 import { PlotDataContainer } from '../../services/logger-plot/logger-plot.service';
+import { ScaleParams } from '../../services/scaling/scaling.service';
 import { LoggerXAxisComponent } from '../logger-xaxis/logger-xaxis.component';
 import { ChannelSelectPopover } from '../channel-select-popover/channel-select-popover.component';
 import { LogScalePopover } from '../log-scale-popover/log-scale-popover.component';
@@ -36,6 +38,7 @@ export class LoggerComponent {
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
     @ViewChild('dropPopLogTo') logToChild: DropdownPopoverComponent;
     @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
+    @ViewChildren('dropPopScaling') scalingChildren: QueryList<DropdownPopoverComponent>;
 
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
@@ -95,6 +98,9 @@ export class LoggerComponent {
     private digitalChansToRead: number[] = [];
     private chartPanSubscriptionRef;
     private offsetChangeSubscriptionRef;
+    private scalingOptions: string[] = ['None'];
+    private selectedScales: string[];
+    private unitTransformer: any[] = [];
 
     private filesInStorage: any = {};
     private destroyed: boolean = false;
@@ -111,7 +117,8 @@ export class LoggerComponent {
         private settingsService: SettingsService,
         public tooltipService: TooltipService,
         private popoverCtrl: PopoverController,
-        public events: Events
+        public events: Events,
+        private scalingService: ScalingService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         console.log(this.activeDevice.instruments.logger);
@@ -140,14 +147,51 @@ export class LoggerComponent {
         this.events.subscribe('channels:selected', (params) => {
             this.selectedChannels = params[0]['analogChans'];
         });
-        this.events.subscribe('scale:update', (params) => {
-            this.updateScale(params[0]['channel'], params[0]['expression']);
+        this.events.subscribe('scale:update', (event) => {
+            let params = event[0]['params'];
+            let channel = event[0]['channel'];
+            this.updateScale(channel, params['expression'], params['name'], params['unitDescriptor']);
+        });
+        this.events.subscribe('scale:delete', (params) => {
+            this.deleteScale(params[0]['channel'], params[0]['name']);
         });
     }
 
-    private unitTransformer: any[] = [];
-    public updateScale(chan: number, expression: string) {
-        this.unitTransformer[chan] = expression;
+    public updateScale(chan: number, expression: string, scaleName: string, units: string) {
+        this.selectedScales[chan] = scaleName;
+        this.selectedScales.forEach((chanScale, index) => {
+            if (chanScale == scaleName) {
+                this.unitTransformer[index] = expression;
+                this.events.publish('units:update', { channel: index, units: units });
+            }
+        });
+
+        // add name to list if new
+        if (this.scalingOptions.indexOf(scaleName) === -1) {
+            this.scalingOptions.push(scaleName);
+        }
+        // set dropdown selection
+        setTimeout(() => {
+            this.scalingChildren.toArray()[chan]._applyActiveSelection(scaleName);
+        }, 20);
+    }
+
+    public deleteScale(chan: number, scaleName: string) {
+        this.unitTransformer[chan] = undefined;
+
+        // remove name from list
+        let nameIndex: number = this.scalingOptions.indexOf(scaleName);
+        if (nameIndex !== -1) {
+            this.scalingOptions.splice(nameIndex, 1);
+        }
+
+        // update any channels that were set to the delete option
+        this.selectedScales.forEach((chanScale, index) => {
+            if (chanScale == scaleName) {
+                this.selectedScales[index] = this.scalingOptions[0];
+                this.events.publish('units:update', { channel: index });
+            }
+        });
     }
 
     ngDoCheck() {
@@ -175,6 +219,7 @@ export class LoggerComponent {
         this.events.unsubscribe('profile:delete');
         this.events.unsubscribe('channels:selected');
         this.events.unsubscribe('scale:update');
+        this.events.unsubscribe('scale:delete');
         this.running = false;
         this.destroyed = true;
     }
@@ -259,6 +304,19 @@ export class LoggerComponent {
 
         this.selectedChannels = Array.apply(null, Array(this.analogChans.length)).map(() => false);
         this.selectedChannels[0] = true;
+
+        // load saved scaling functions
+        this.scalingService.getAllScalingOptions()
+            .then((result: ScaleParams[]) => {
+                result.forEach((option) => {
+                    this.scalingOptions.push(option.name);
+                });
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+
+        this.selectedScales = Array.apply(null, Array(this.analogChans.length)).map(() => this.scalingOptions[0]);
     }
 
     private loadDeviceInfo(): Promise<any> {
@@ -354,8 +412,38 @@ export class LoggerComponent {
         });
     }
 
-    openScaleSettings(chan: number, event?) {
-        let popover = this.popoverCtrl.create(LogScalePopover, { channel: chan }, {
+    private scaleSelect(event: string, channel: number) {
+        let currentScale = this.selectedScales[channel];
+        this.selectedScales[channel] = event;
+        if (event === 'None') {
+            // remove scaling on this channel and reset units
+            this.unitTransformer[channel] = undefined;
+            this.events.publish('units:update', { channel: channel });
+        } else {
+            // apply expression to this channel and update units
+            this.scalingService.getScalingOption(event)
+                .then((result) => {
+                    // apply scaling to this channel
+                    this.unitTransformer[channel] = result.expression;
+                    this.events.publish('units:update', { channel: channel, units: result.unitDescriptor });
+                })
+                .catch(() => {
+                    this.toastService.createToast('loggerScaleLoadErr', true, undefined, 5000);
+                    this.selectedScales[channel] = currentScale;
+                    setTimeout(() => {
+                        this.scalingChildren.toArray()[channel]._applyActiveSelection(currentScale);
+                    }, 20);
+                    return;
+                });
+        }
+    }
+
+    openScaleSettings(event: any, chan: number, newScale: boolean) {
+        let scaleData = { channel: chan };
+        if (!newScale) {
+            scaleData['scaleName'] = this.selectedScales[chan];
+        }
+        let popover = this.popoverCtrl.create(LogScalePopover, scaleData, {
             cssClass: 'logScalePopover'
         });
         popover.present({
@@ -1043,8 +1131,9 @@ export class LoggerComponent {
                 let dt = 1 / (channelObj.actualSampleFreq / 1000000);
                 let timeVal = channelObj.startIndex * dt;
 
+                let chanIndex: number = parseInt(channel) - 1;
                 for (let i = 0; i < channelObj.data.length; i++) {
-                    let data = (this.unitTransformer[channel]) ? this.unitTransformer[channel](channelObj.data[i]) :
+                    let data = (this.unitTransformer[chanIndex]) ? this.unitTransformer[chanIndex](channelObj.data[i]) :
                         channelObj.data[i];
 
                     formattedData.push([timeVal, data]);
@@ -1057,8 +1146,7 @@ export class LoggerComponent {
                     dataContainerIndex += this.analogChans.length;
                 }
 
-                let chanIndex: number;
-                dataContainerIndex += (chanIndex = parseInt(channel) - 1);
+                dataContainerIndex += chanIndex;
                 this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
 
