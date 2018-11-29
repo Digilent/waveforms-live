@@ -26,7 +26,7 @@
         "@angular/platform-browser-dynamic": "2.0.0",
         "@angular/platform-server": "2.0.0",
         "@ionic/storage": "1.0.3",
-        "cordova-browser": "^5.0.3",
+        "cordova-browser": "^5.0.4",
         "cordova-plugin-console": "^1.0.5",
         "cordova-plugin-device": "^1.1.4",
         "cordova-plugin-splashscreen": "^4.0.3",
@@ -38,15 +38,17 @@
         "ionic-native": "2.2.3",
         "ionic-plugin-keyboard": "^2.2.1",
         "ionicons": "3.0.0",
+        "mathjs": "^5.1.1",
         "rxjs": "5.0.0-beta.12",
         "sw-toolbox": "3.4.0",
         "zone.js": "0.6.21"
     },
     "devDependencies": {
         "@ionic/app-scripts": "1.0.0",
-        "typescript": "2.0.9",
+        "@types/mathjs": "^4.4.1",
         "electron": "^1.6.2",
-        "electron-packager": "^8.6.0"
+        "electron-packager": "^8.6.0",
+        "typescript": "2.0.9"
     },
     "description": "Web Waveforms: An Ionic project",
     "cordovaPlugins": [

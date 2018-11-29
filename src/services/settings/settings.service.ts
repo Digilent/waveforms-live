@@ -6,6 +6,14 @@ import { Platform } from 'ionic-angular';
 import { StorageService } from '../storage/storage.service';
 import { DeviceManagerService } from 'dip-angular2/services';
 
+interface firmwareUrls {
+    prettyName: string
+    listUrl: string
+    devListUrl: string
+    firmwareUrl: string
+    devFirmwareUrl: string
+}
+
 @Injectable()
 export class SettingsService {
 
@@ -25,15 +33,24 @@ export class SettingsService {
 
     readonly profileToken: string = 'profile.';
 
-    public knownFirmwareUrls: { openscopeMz: { prettyName: string, listUrl: string, devListUrl: string, firmwareUrl: string, devFirmwareUrl: string } } = {
+    public knownFirmwareUrls: { openscopeMz: firmwareUrls, openloggerMz: firmwareUrls } = {
         openscopeMz: {
             prettyName: 'OpenScope MZ',
             listUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/release/firmware/without-bootloader',
             devListUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/development/firmware/without-bootloader',
             firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/release/firmware/without-bootloader',
             devFirmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/development/firmware/without-bootloader'
+        },
+        openloggerMz: {
+            prettyName: 'OpenLogger MZ',
+            listUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenLogger+MZ/release/firmware/without-bootloader',
+            devListUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenLogger+MZ/development/firmware/without-bootloader',
+            firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenLogger+MZ/release/firmware/without-bootloader',
+            devFirmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenLogger+MZ/development/firmware/without-bootloader'
         }
     };
+
+    private loggerBufferSize: number = 5;
 
     constructor(_storageService: StorageService, _deviceManagerService: DeviceManagerService, public platform: Platform) {
         console.log('settings service constructor');
@@ -70,6 +87,10 @@ export class SettingsService {
             if (data == undefined) { return; }
             let parsedData = JSON.parse(data);
             this.deviceManagerService.setHttpTimeout(parsedData.timeout);
+        });
+
+        this.storageService.getData('loggerBufferSize').then((data) => {
+            this.loggerBufferSize = data || this.loggerBufferSize;
         });
         
         if (this.platform.is('ios') || this.platform.is('android') || this.platform.is('mobileweb')) {
@@ -191,5 +212,15 @@ export class SettingsService {
         });
     }
 
+    getLoggerBufferSize(): number{
+        return this.loggerBufferSize;
+    }
 
+    setLoggerBufferSize(size: number) {
+        this.loggerBufferSize = size;
+
+        this.storageService.saveData('loggerBufferSize', JSON.stringify(this.loggerBufferSize)).catch((e) => {
+            console.warn(e);
+        });
+    }
 }

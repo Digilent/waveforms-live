@@ -13,18 +13,19 @@ import { XAxisComponent } from '../../components/xaxis-controls/xaxis-controls.c
 import { YAxisComponent } from '../../components/yaxis-controls/yaxis-controls.component';
 import { TimelineChartComponent } from '../../components/timeline-chart/timeline-chart.component';
 import { TriggerComponent } from '../../components/trigger/trigger.component';
-import { FgenComponent } from '../../components/function-gen/function-gen.component';
 import { DigitalIoComponent } from '../../components/digital-io/digital-io.component';
 import { DcSupplyComponent } from '../../components/dc-supply/dc-supply.component';
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
 import { LaPopover } from '../../components/la-popover/la-popover.component';
 import { ChartAnnotationComponent } from '../../components/chart-annotation/chart-annotation.component';
+import { FGenModule } from '../../components/function-gen/function-gen.module';
  
 @NgModule({
     imports: [
         SharedModule,
         LoggerModule,
+        FGenModule,
         IonicModule.forRoot(InstrumentPanelPage),
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),
@@ -44,7 +45,6 @@ import { ChartAnnotationComponent } from '../../components/chart-annotation/char
         YAxisComponent,
         TimelineChartComponent,
         TriggerComponent,
-        FgenComponent,
         DigitalIoComponent,
         DcSupplyComponent,
         ChartAnnotationComponent

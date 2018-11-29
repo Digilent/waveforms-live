@@ -61,6 +61,14 @@ export class LoadFirmwarePage {
         console.log(this.agentAddress);
 
         this.deviceManagerService.transport.setHttpTransport(this.agentAddress);
+
+        this.checkDevice().then((descriptor) => {
+            console.log(descriptor);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+
         for (let device in this.settingsService.knownFirmwareUrls) {
             this.deviceFirmwareVersionDictionary[this.settingsService.knownFirmwareUrls[device].prettyName] = {
                 listUrl: this.settingsService.knownFirmwareUrls[device].listUrl,
@@ -79,6 +87,31 @@ export class LoadFirmwarePage {
 
         this.selectedDevice = this.knownDevicePrettyNames[0];
         this.firmwareStatus = 'Select a known device or choose a hex file.';
+    }
+
+    cautionMessage() {
+        return waveformsLiveDictionary.getMessage('firmwareCautionMessage').message;
+    }
+
+    /**
+     * 
+     * @param expectedModel 
+     */
+    private checkDevice(): Promise<any>{
+        return new Promise((resolve, reject) => {
+            let command = {
+                device: [
+                    {command: "enumerate"}
+                ]
+            }
+            this.deviceManagerService.transport.writeRead("/", JSON.stringify(command), 'json').subscribe((res) => {
+                let response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(res.slice(0))));
+
+                let deviceDescriptor = response.device[0];
+
+                resolve(deviceDescriptor);
+            }, (err) => { reject(err); });
+        });
     }
 
     //Need to use this lifestyle hook to make sure the slider exists before trying to get a reference to it

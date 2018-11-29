@@ -3,7 +3,7 @@
     
 
     <div>
-        <logger-xaxis (tpdChange)="xAxisValChange($event)" [tpdArray]="loggerPlotService.tpdArray" [tpdIndex]="loggerPlotService.tpdIndex" [tpdAbsolute]="loggerPlotService.xAxis.base"></logger-xaxis>
+        <logger-xaxis #xaxis (tpdChange)="xAxisValChange($event)" [tpdArray]="loggerPlotService.tpdArray" [tpdIndex]="loggerPlotService.tpdIndex" [tpdAbsolute]="loggerPlotService.xAxis.base"></logger-xaxis>
     </div>
 
     <div>
@@ -277,6 +277,7 @@
                     </ion-col>
                 </ion-row>
 
+                <unit-scale (update)="updateScale($event, i+1)" [running]="running"></unit-scale>
             </div>
             
             <ion-row class="controls-container" [ngClass]="{'display-none': selectedMode === 'stream'}">

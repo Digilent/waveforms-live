@@ -83,6 +83,10 @@
     }
 }
 
+.caution-message {
+    color: #cccccc;
+}
+
 @media screen and (max-width: 768px) {
     .load-firmware-container {
         background-color: rgba(0, 0, 0, 0.4);
