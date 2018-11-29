@@ -471,6 +471,9 @@ var waveformsLiveDictionary = (function() {
         logStorageLocation: {
             english: 'Log File Storage Location'
         },
+        logSelectChannels: {
+            english: 'Select Logger Channels'
+        },
         logFileName: {
             english: 'Log File Name'
         },

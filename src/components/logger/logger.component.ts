@@ -77,6 +77,16 @@ export class LoggerComponent {
     };
     public analogChans: AnalogLoggerParams[] = [];
     public digitalChans: DigitalLoggerParams[] = [];
+
+    private daqParams: DaqLoggerParams = {
+        maxSampleCount: -1,
+        startDelay: 0,
+        sampleFreq: 1000,
+        channels: []
+    };
+    public average: number = 1;
+    public maxAverage: number = 256;
+
     private analogChanNumbers: number[] = [];
     private digitalChanNumbers: number[] = [];
     public overflowConditions: ('circular')[] = ['circular'];
@@ -569,8 +579,7 @@ export class LoggerComponent {
     }
 
     incrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
-        let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
-        let valString = type === 'sampleFreq' ? axisObj.sampleFreq.toString() : axisObj.maxSampleCount.toString();
+        let valString = type === 'sampleFreq' ? this.daqParams.sampleFreq.toString() : this.daqParams.maxSampleCount.toString();
         let valNum = parseFloat(valString);
         let pow = 0;
         while (valNum * Math.pow(1000, pow) < 1) {
@@ -589,35 +598,37 @@ export class LoggerComponent {
     }
 
     private validateAndApply(newVal: number, instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
-        let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
         if (type === 'sampleFreq') {
-            let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
-            let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
-            let maxFreq = chanObj.sampleFreqMax * chanObj.sampleFreqUnits;
-            if (newVal < minFreq) {
-                newVal = minFreq;
-            }
-            else if (newVal > maxFreq) {
-                newVal = maxFreq;
-            }
-            axisObj.sampleFreq = newVal;
+            // TODO: get minFreq and maxFreq from instrument before setting
+
+            // let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
+            // let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
+            // let maxFreq = chanObj.sampleFreqMax * chanObj.sampleFreqUnits;
+            // if (newVal < minFreq) {
+            //     newVal = minFreq;
+            // }
+            // else if (newVal > maxFreq) {
+            //     newVal = maxFreq;
+            // }
+            this.daqParams.sampleFreq = newVal;
         }
         else if (type === 'samples') {
-            let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
-            let maxSampleSize = axisObj.storageLocation === 'ram' ? chanObj.bufferSizeMax : 2000000000; //2gb fat
+            // TODO: get maxSampleSize from instrument before setting
+
+            // let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
+            // let maxSampleSize = axisObj.storageLocation === 'ram' ? chanObj.bufferSizeMax : 2000000000; //2gb fat
             if (newVal < 1) {
                 newVal = 1;
             }
-            else if (newVal > maxSampleSize) {
-                newVal = maxSampleSize;
-            }
-            axisObj.maxSampleCount = newVal;
+            // else if (newVal > maxSampleSize) {
+            //     newVal = maxSampleSize;
+            // }
+            this.daqParams.maxSampleCount = newVal;
         }
     }
 
     decrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
-        let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
-        let valString = type === 'sampleFreq' ? axisObj.sampleFreq.toString() : axisObj.maxSampleCount.toString();
+        let valString = type === 'sampleFreq' ? this.daqParams.sampleFreq.toString() : this.daqParams.maxSampleCount.toString();
         let valNum = parseFloat(valString);
         let pow = 0;
         while (valNum * Math.pow(1000, pow) < 1) {
@@ -682,14 +693,13 @@ export class LoggerComponent {
         this.selectedLogLocation = event;
     }
 
-    modeSelect(event: 'finite' | 'continuous', instrument: 'analog' | 'digital', channel: number) {
+    modeSelect(event: 'finite' | 'continuous') {
         console.log(event);
-        let chanObj = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
         if (event === 'finite') {
-            this.analogChans[channel].maxSampleCount = 1000;
+            this.daqParams.maxSampleCount = 1000;
         }
         else {
-            chanObj.maxSampleCount = -1;
+            this.daqParams.maxSampleCount = -1;
         }
         this.selectedMode = event;
     }
@@ -1077,20 +1087,20 @@ export class LoggerComponent {
         this.loggerPlotService.setActiveSeries(convertedNum);
     }
 
-    formatInputAndUpdate(trueValue: number, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {
+    formatInputAndUpdate(trueValue: number, instrument: 'analog' | 'digital', type: LoggerInputType, channel?: number) {
         console.log(trueValue);
-        let chanType = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
+        let chanType = instrument === 'analog' ? this.analogChans : this.digitalChans;
         switch (type) {
             case 'delay':
-                chanType.startDelay = trueValue;
+                chanType[channel].startDelay = trueValue;
                 break;
             case 'offset':
-                (<AnalogLoggerParams>chanType).vOffset = trueValue;
+                (<AnalogLoggerParams>chanType[channel]).vOffset = trueValue;
                 this.loggerPlotService.setPosition('y', channel + 1, trueValue, true);
                 break;
             case 'samples':
                 trueValue = trueValue < 1 ? 1 : trueValue;
-                chanType.maxSampleCount = trueValue;
+                this.daqParams.maxSampleCount = trueValue;
                 break;
             case 'sampleFreq':
                 this.validateAndApply(trueValue, instrument, channel, 'sampleFreq');
@@ -1886,6 +1896,18 @@ export class LoggerComponent {
             );
         });
     }
+
+    decrementAverage() {
+        if (this.average > 1) {
+            this.average /= 2;
+        }
+    }
+
+    incrementAverage() {
+        if (this.average < this.maxAverage) {
+            this.average *= 2;
+        }
+    }
 }
 
 export interface LoggerParams {
@@ -1914,3 +1936,18 @@ export interface DigitalLoggerParams extends LoggerParams {
 }
 
 export type LoggerInputType = 'delay' | 'offset' | 'samples' | 'sampleFreq';
+
+export interface DaqChannelParams {
+    [channel: string]: {
+        average: number,
+        storageLocation: string,
+        uri: string
+    }
+}
+
+export interface DaqLoggerParams {
+    maxSampleCount: number,
+    startDelay: number,
+    sampleFreq: number,
+    channels: DaqChannelParams[]
+}
