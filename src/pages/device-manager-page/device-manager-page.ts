@@ -21,6 +21,7 @@ import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { UtilityService } from '../../services/utility/utility.service';
 
 interface tooltipInterface {
     addADevice: string,
@@ -58,6 +59,7 @@ export class DeviceManagerPage {
     public deviceManagerService: DeviceManagerService;
     public settingsService: SettingsService;
     public storage: StorageService;
+    public utilityService: UtilityService;
     public showDevMenu: boolean = false;
     public selectedSimulatedDevice: string = 'OpenScope MZ';
     public deviceBridgeAddress = 'http://localhost:42135';
@@ -86,7 +88,8 @@ export class DeviceManagerPage {
         _settingsService: SettingsService,
         _alertCtrl: AlertController,
         _toastService: ToastService,
-        _loadingCtrl: LoadingController
+        _loadingCtrl: LoadingController,
+        _utilService: UtilityService
     ) {
         console.log('tab1 constructor');
         this.app = _app;
@@ -103,6 +106,7 @@ export class DeviceManagerPage {
         this.addDeviceIp = "http://"
         this.deviceManagerService = _deviceManagerService;
         this.storage = _storage;
+        this.utilityService = _utilService;
         this.storage.getData('routeToStore').then((data) => {
             if ((data == null || data === true) && this.platform.is('mobileweb') && (this.platform.is('android') || this.platform.is('ios'))) {
                 this.routeToStore();
@@ -125,9 +129,14 @@ export class DeviceManagerPage {
 
     getFirmwareVersionsForDevices() {
         for (let i = 0; i < this.devices.length; i++) {
-            if (this.devices[i].ipAddress !== 'local') {
+            let device = this.devices[i];
+            if (device.ipAddress !== 'local') {
+                let deviceModel = this.utilityService.transformModelToPropKey(device.deviceDescriptor.deviceModel);
+
+                let listUrl = this.settingsService.knownFirmwareUrls[deviceModel].listUrl;
+
                 //TODO: read device enum for ip address and then call device man service getFirmwareVersionsFromUrl
-                this.deviceManagerService.getLatestFirmwareVersionFromUrl(this.listUrl).then((latestFirmwareVersion) => {
+                this.deviceManagerService.getLatestFirmwareVersionFromUrl(listUrl).then((latestFirmwareVersion) => {
                     this.determineIfOutdatedFirmware(latestFirmwareVersion, i);
                 }).catch((e) => {
                     console.log(e);
@@ -538,6 +547,7 @@ export class DeviceManagerPage {
             if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
                 let title = 'Uncalibrated Device';
                 let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
+
                 this.alertWrapper(title, subtitle)
                     .then((data) => {
                         return this.toCalibrationPage();
