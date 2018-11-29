@@ -259,19 +259,19 @@
                         Scaling
                     </ion-col>
                     <ion-col class="vpd-val-col" center text-center>
-                        <dropdown-popover #dropPopScaling [dataArray]="scalingOptions" (onSelection)="scaleSelect($event, i)" [disabled]="running">
+                        <dropdown-popover #dropPopScaling [dataArray]="scalingOptions" (onSelection)="scaleSelect($event, i)" [disabled]="running" [tooltip]="tooltipService.getTooltip('logSetScaling').message" [tooltipAnimation]="true" tooltipPlacement="top">
                         </dropdown-popover>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
-                            <button ion-button class="img-button disable-hover" (tap)="openScaleSettings($event, i, true)" [disabled]="running">
+                            <button ion-button class="img-button disable-hover" (tap)="openScaleSettings($event, i, true)" [disabled]="running" [tooltip]="tooltipService.getTooltip('logNewScale').message" [tooltipAnimation]="true" tooltipPlacement="top">
                                 <img class="custom-image-button svg-size" src="assets/img/add.svg">
                             </button>
                         </div>
                     </ion-col>
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
-                            <button ion-button class="img-button disable-hover" (tap)="openScaleSettings($event, i, false)" [disabled]="running || selectedScales[i] === 'None'">
+                            <button ion-button class="img-button disable-hover" (tap)="openScaleSettings($event, i, false)" [disabled]="running || selectedScales[i] === 'None'" [tooltip]="tooltipService.getTooltip('logScaleSettings').message" [tooltipAnimation]="true" tooltipPlacement="left">
                                 <img class="custom-image-button svg-size" src="assets/img/settings.svg">
                             </button>
                         </div>

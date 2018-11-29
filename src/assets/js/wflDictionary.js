@@ -148,6 +148,18 @@ var waveformsLiveDictionary = (function() {
         loggerProfileNameRequired: {
             english: 'Profile Name is Required.'
         },
+        scaleInvalidExpression: {
+            english: "Invalid Expression"
+        },
+        scaleInvalidUnits: {
+            english: "Invalid Units"
+        },
+        scaleInvalidName: {
+            english: "Invalid Expression Name"
+        },
+        loggerScaleLoadErr: {
+            english: 'Error Reading Scaling Equation. Please Try Again'
+        },
 
         //File
         fileDeleteErr: {
@@ -462,18 +474,16 @@ var waveformsLiveDictionary = (function() {
         logFileName: {
             english: 'Log File Name'
         },
-        scaleInvalidExpression: {
-            english: "Invalid Expression"
+        logSetScaling: {
+            english: 'Set Log Scaling'
         },
-        scaleInvalidUnits: {
-            english: "Invalid Units"
+        logNewScale: {
+            english: 'New Scale'
         },
-        scaleInvalidName: {
-            english: "Invalid Expression Name"
-        },
-        loggerScaleLoadErr: {
-            english: 'Error Reading Scaling Equation. Please Try Again'
+        logScaleSettings: {
+            english: 'Scale Settings'
         }
+
     };
 
     var statusCodes = {
