@@ -170,7 +170,7 @@
                 <ion-item class="card-item" [ngClass]="{'move-feature-to-front':tutorialStage===3 && tutorialMode && i === 0}" [tooltip]="tooltipMessages['deviceCard']" 
                     [forceShow]="tutorialStage===3 && tutorialMode && i===0" [tooltipAnimation]="true" tooltipPlacement="bottom" forceShowDelay="500">
                     <ion-avatar item-left (click)="connectToDevice(i)">
-                        <img src="assets/img/osmz.svg">
+                        <img [src]="getLogoName(i)">
                     </ion-avatar>
                     <ion-label class="card-label" (click)="connectToDevice(i)">
                         <h2 class="turn-white">{{device.hostname}}</h2>
