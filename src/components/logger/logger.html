@@ -115,7 +115,7 @@
                     Mode
                 </ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
-                    <dropdown-popover [dataArray]="modes" (onSelection)="modeSelect($event)" [disabled]="running" [tooltip]="tooltipService.getTooltip('logSampleMode').message"
+                    <dropdown-popover #dropPopMode [dataArray]="modes" (onSelection)="modeSelect($event)" [disabled]="running" [tooltip]="tooltipService.getTooltip('logSampleMode').message"
                         [tooltipAnimation]="true" tooltipPlacement="top">
                     </dropdown-popover>
                 </ion-col>
@@ -191,7 +191,7 @@
                 <ion-col class="header-side-col" center text-right>
                     <button ion-button id="channels-btn" class="img-button disable-hover" [tooltip]="tooltipService.getTooltip('logSelectChannels').message"
                         [tooltipAnimation]="true" tooltipPlacement="left">
-                        <img class="custom-image-button" src="assets/img/add.svg" (tap)="selectChannels($event)">
+                        <img class="custom-image-button" src="assets/img/add.svg" (tap)="openChannelSelector($event)">
                     </button>
                 </ion-col>
             </ion-row>
