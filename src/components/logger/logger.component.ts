@@ -80,6 +80,8 @@ export class LoggerComponent {
     public storageLocations: string[] = [];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
+    public logOnBootProfiles: string[] = ['None'];
+    public selectedLogOnBoot: string = this.logOnBootProfiles[0];
     private dirtyProfile: boolean = false;
     private profileObjectMap: any = {};
     public running: boolean = false;
@@ -707,6 +709,7 @@ export class LoggerComponent {
                 let nameIndex: number = this.loggingProfiles.indexOf(profileName);
                 if (nameIndex !== -1) {
                     this.loggingProfiles.splice(nameIndex, 1);
+                    this.logOnBootProfiles.splice(nameIndex, 1);
                 }
                 this.selectedLogProfile = this.loggingProfiles[0];
             },
@@ -731,8 +734,10 @@ export class LoggerComponent {
         let nameIndex: number = this.loggingProfiles.indexOf(profileName);
         if (nameIndex !== -1) {
             this.loggingProfiles.splice(nameIndex, 1);
+            this.logOnBootProfiles.splice(nameIndex, 1);
         }
         this.loggingProfiles.push(profileName);
+        this.logOnBootProfiles.push(profileName);
         let profileObj = this.generateProfileJson();
         let profileObjCopy = JSON.parse(JSON.stringify(profileObj));
         this.profileObjectMap[profileName] = profileObjCopy;
@@ -796,12 +801,14 @@ export class LoggerComponent {
                     let splitArray = profileName.split('.');
                     if (splitArray.length < 2) {
                         this.loggingProfiles.push(profileName);
+                        this.logOnBootProfiles.push(profileName);
                         this.profileObjectMap[profileName] = parsedData;
                     }
                     else {
                         splitArray.splice(splitArray.length - 1, 1);
                         let noExtName = splitArray.join('');
                         this.loggingProfiles.push(noExtName);
+                        this.logOnBootProfiles.push(noExtName);
                         this.profileObjectMap[noExtName] = parsedData;
                     }
                     resolve(data);
@@ -850,7 +857,6 @@ export class LoggerComponent {
             for (let i = 0; i < str.length; i++) {
                 bufView[i] = str.charCodeAt(i);
             }
-            // TODO: write to flash when file is implemented
             this.activeDevice.file.write('flash', this.settingsService.profileToken + profileName + '.json', buf).subscribe(
                 (data) => {
                     console.log(data);
@@ -862,7 +868,6 @@ export class LoggerComponent {
                 },
                 () => { }
             );
-            resolve();
         });
     }
 
