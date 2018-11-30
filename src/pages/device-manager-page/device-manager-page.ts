@@ -541,9 +541,6 @@ export class DeviceManagerPage {
     verifyCalibrationSource(deviceIndex: number, calibrationSource: string): Promise<any> {
         return new Promise((resolve, reject) => {
             console.log(deviceIndex, this.devices[deviceIndex]);
-            /*this.verifyFirmware(deviceIndex)
-                .then((data) => {*/
-            //Firmware updated
             if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
                 let title = 'Uncalibrated Device';
                 let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
@@ -562,25 +559,6 @@ export class DeviceManagerPage {
             else {
                 resolve();
             }
-            /*})*/
-            /*.catch((e) => {
-                //can't update firmware
-                if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
-                    let title = 'Uncalibrated Device';
-                    let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
-                    this.alertWrapper(title, subtitle)
-                        .then((data) => {
-                            return this.toCalibrationPage();
-                        })
-                        .then((data) => {
-                            resolve();
-                        })
-                        .catch((e) => {
-                            reject(e);
-                        });
-                }
-
-            });*/
         });
     }
 
