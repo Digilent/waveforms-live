@@ -3,6 +3,7 @@ import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
 import { FGenModule } from '../../components/function-gen/function-gen.module';
+import { DcSupplyModule } from '../../components/dc-supply/dc-supply.module';
 
 //Components
 import { LoggerComponent } from '../../components/logger/logger.component';
@@ -23,6 +24,7 @@ import { ScalingService } from '../../services/scaling/scaling.service';
     imports: [
         SharedModule,
         FGenModule,
+        DcSupplyModule,
         IonicModule.forRoot(LoggerPage),
         IonicModule.forRoot(FileBrowserPage),
         IonicModule.forRoot(ProfilePopover)
