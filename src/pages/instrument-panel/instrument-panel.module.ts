@@ -14,7 +14,7 @@ import { YAxisComponent } from '../../components/yaxis-controls/yaxis-controls.c
 import { TimelineChartComponent } from '../../components/timeline-chart/timeline-chart.component';
 import { TriggerComponent } from '../../components/trigger/trigger.component';
 import { DigitalIoComponent } from '../../components/digital-io/digital-io.component';
-import { DcSupplyComponent } from '../../components/dc-supply/dc-supply.component';
+import { DcSupplyModule } from '../../components/dc-supply/dc-supply.module';
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
 import { LaPopover } from '../../components/la-popover/la-popover.component';
@@ -26,6 +26,7 @@ import { FGenModule } from '../../components/function-gen/function-gen.module';
         SharedModule,
         LoggerModule,
         FGenModule,
+        DcSupplyModule,
         IonicModule.forRoot(InstrumentPanelPage),
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),
@@ -46,7 +47,6 @@ import { FGenModule } from '../../components/function-gen/function-gen.module';
         TimelineChartComponent,
         TriggerComponent,
         DigitalIoComponent,
-        DcSupplyComponent,
         ChartAnnotationComponent
     ],
     exports: [InstrumentPanelPage]
