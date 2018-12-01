@@ -612,19 +612,24 @@ export class LoggerComponent {
     logToSelect(event) {
         console.log(event);
         if (this.selectedLogLocation === 'chart' && event !== 'chart') {
-            for (let i = 0; i < this.analogChans.length; i++) {
-                this.analogChans[i].storageLocation = this.storageLocations[0];
-                this.setChannelDropdowns(i, {
-                    storageLocation: this.storageLocations[0]
-                });
-            }
+            this.daqChans.forEach((channel, index) => {
+                channel[index + 1].storageLocation = this.storageLocations[0];
+            });
         }
         if (event === 'chart') {
-            for (let i = 0; i < this.analogChans.length; i++) {
-                this.analogChans[i].storageLocation = 'ram';
-            }
+            this.daqChans.forEach((channel, index) => {
+                channel[index + 1].storageLocation = 'ram';
+            });
         }
         this.selectedLogLocation = event;
+    }
+
+    updateUri(event) {
+        let uri = event.target.value;
+        console.log(uri);
+        this.daqChans.forEach((channel, index) => {
+            channel[index + 1].uri = uri;
+        });
     }
 
     modeSelect(event: 'finite' | 'continuous') {
@@ -1575,12 +1580,20 @@ export class LoggerComponent {
         if (this.average > 1) {
             this.average /= 2;
         }
+        this.setChannelAverages();
     }
 
     incrementAverage() {
         if (this.average < this.maxAverage) {
             this.average *= 2;
         }
+        this.setChannelAverages();
+    }
+
+    setChannelAverages() {
+        this.daqChans.forEach((channel, index) => {
+            channel[index + 1].average = this.average;
+        });
     }
 }
 
