@@ -25,6 +25,9 @@ export class PinoutPopover {
                 console.log('openscope in get pinout');
                 this.pinoutAddress = 'assets/img/osmz-pinout.svg';
                 break;
+            case 'OpenLogger MZ':
+                this.pinoutAddress = 'assets/img/olmz-pinout.png';
+                break;
             default:
                 console.log('No pinout found');
         }
