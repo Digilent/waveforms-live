@@ -61,12 +61,13 @@ export class LoggerComponent {
     private daqParams: DaqLoggerParams = {
         maxSampleCount: -1,
         startDelay: 0,
-        sampleFreq: 1000,
-        channels: []
+        sampleFreq: 1000
     };
-    public defaultAverage: number = 1;
-    public defaultStorageLocation: string = 'ram';
-    public defaultUri: string = '';
+    private defaultDaqChannelParams: DaqChannelParams = {
+        average: 1,
+        storageLocation: 'ram',
+        uri: ''
+    };
     public daqChans: DaqChannelParams[] = [];
 
     public average: number = 1;
@@ -151,12 +152,6 @@ export class LoggerComponent {
 
     public selectChannels(selectedChans: boolean[]) {
         this.selectedChannels = selectedChans;
-        this.daqParams.channels = [];
-        this.selectedChannels.forEach((chan, index) => {
-            if (chan) {
-                this.daqParams.channels.push(this.daqChans[index]);
-            }
-        });
     }
 
     public updateScale(chan: number, expression: string, scaleName: string, units: string) {
@@ -200,7 +195,8 @@ export class LoggerComponent {
         // Check if there are unsaved changes to profile
         this.dirtyProfile = false;
         if (this.selectedLogProfile && this.selectedLogProfile != this.loggingProfiles[0]) {
-            this.dirtyProfile = JSON.stringify(this.daqParams) !== JSON.stringify(this.profileObjectMap[this.selectedLogProfile].daq);
+            let current = this.generateProfileJson();
+            this.dirtyProfile = JSON.stringify(current) !== JSON.stringify(this.profileObjectMap[this.selectedLogProfile]);
         }
     }
 
@@ -260,19 +256,13 @@ export class LoggerComponent {
 
         // TODO: change analog to daq
         for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
-            this.daqChans.push({
-                [i + 1]: {
-                    average: this.defaultAverage,
-                    storageLocation: this.defaultStorageLocation,
-                    uri: this.defaultUri
-                }
-            });
+            this.daqChans.push(Object.assign({}, this.defaultDaqChannelParams));
         }
 
         this.selectedChannels = Array.apply(null, Array(this.analogChans.length)).map(() => false);
         // select channel 1 by default
         this.selectedChannels[0] = true;
-        this.daqParams.channels.push(this.daqChans[0]);
+        // this.daqParams.channels.push(this.daqChans[0]);
 
         // load saved scaling functions
         this.scalingService.getAllScalingOptions()
@@ -349,6 +339,11 @@ export class LoggerComponent {
                 })
                 .catch((e) => {
                     console.log(e);
+                    // TODO: uncomment when getStorageLocations command is implemented
+                    // if (this.storageLocations.length < 1) {
+                    //     this.logToLocations = ['chart'];
+                    //     this.logToSelect('chart');
+                    // }
                     return this.getCurrentState('analog', analogChanArray);
                     //return this.analogGetMultipleChannelStates(analogChanArray);
                 })
@@ -613,12 +608,12 @@ export class LoggerComponent {
         console.log(event);
         if (this.selectedLogLocation === 'chart' && event !== 'chart') {
             this.daqChans.forEach((channel, index) => {
-                channel[index + 1].storageLocation = this.storageLocations[0];
+                channel.storageLocation = this.storageLocations[0];
             });
         }
         if (event === 'chart') {
             this.daqChans.forEach((channel, index) => {
-                channel[index + 1].storageLocation = 'ram';
+                channel.storageLocation = 'ram';
             });
         }
         this.selectedLogLocation = event;
@@ -628,7 +623,7 @@ export class LoggerComponent {
         let uri = event.target.value;
         console.log(uri);
         this.daqChans.forEach((channel, index) => {
-            channel[index + 1].uri = uri;
+            channel.uri = uri;
         });
     }
 
@@ -829,7 +824,14 @@ export class LoggerComponent {
 
     private generateProfileJson() {
         let saveObj = {};
-        saveObj['daq'] = this.daqParams;
+        if (this.daqChans.length > 0) {
+            saveObj['daq'] = this.daqParams;
+        }
+        this.daqChans.forEach((channel, index) => {
+            if (this.selectedChannels[index]) {
+                saveObj['daq'][(index + 1).toString()] = this.daqChans[index];
+            }
+        });
         return saveObj;
     }
 
@@ -873,6 +875,7 @@ export class LoggerComponent {
                 },
                 () => { }
             );
+            resolve();
         });
     }
 
@@ -1592,7 +1595,7 @@ export class LoggerComponent {
 
     setChannelAverages() {
         this.daqChans.forEach((channel, index) => {
-            channel[index + 1].average = this.average;
+            channel.average = this.average;
         });
     }
 }
@@ -1623,16 +1626,13 @@ export interface DigitalLoggerParams extends LoggerParams {
 export type LoggerInputType = 'delay' | 'offset' | 'samples' | 'sampleFreq';
 
 export interface DaqChannelParams {
-    [channel: string]: {
-        average: number,
-        storageLocation: string,
-        uri: string
-    }
+    average: number,
+    storageLocation: string,
+    uri: string
 }
 
 export interface DaqLoggerParams {
     maxSampleCount: number,
     startDelay: number,
-    sampleFreq: number,
-    channels: DaqChannelParams[]
+    sampleFreq: number
 }
