@@ -11,7 +11,7 @@
                 </ion-col>
                 <ion-col text-right center class="vpd-button-col">
                     <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', undefined, 'sampleFreq')"
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', 'sampleFreq')"
                             [disabled]="running">
                             <img class="custom-image-button" src="assets/img/remove.svg">
                         </button>
@@ -25,7 +25,7 @@
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', undefined, 'sampleFreq')"
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', 'sampleFreq')"
                             [disabled]="running">
                             <img class="custom-image-button" src="assets/img/add.svg">
                         </button>
@@ -126,7 +126,7 @@
                 </ion-col>
                 <ion-col text-right center class="vpd-button-col">
                     <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', undefined, 'samples')"
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', 'samples')"
                             [disabled]="running">
                             <img class="custom-image-button" src="assets/img/remove.svg">
                         </button>
@@ -140,7 +140,7 @@
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', undefined, 'samples')"
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', 'samples')"
                             [disabled]="running">
                             <img class="custom-image-button" src="assets/img/add.svg">
                         </button>

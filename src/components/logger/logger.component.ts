@@ -138,7 +138,7 @@ export class LoggerComponent {
             this.deleteProfile(params[0]['profileName']);
         });
         this.events.subscribe('channels:selected', (params) => {
-            this.selectChannels(params[0]['analogChans']);
+            this.selectChannels(params[0]['channels']);
         });
         this.events.subscribe('scale:update', (event) => {
             let params = event[0]['params'];
@@ -239,7 +239,12 @@ export class LoggerComponent {
             this.analogChans.push(Object.assign({}, this.defaultAnalogParams));
         }
 
-        for (let i = 0; i < this.analogChans.length; i++) {
+        // TODO: change analog to daq
+        for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
+            this.daqChans.push(Object.assign({}, this.defaultDaqChannelParams));
+        }
+
+        for (let i = 0; i < this.daqChans.length; i++) {
             this.analogChanNumbers.push(i + 1);
             this.dataContainers.push({
                 data: [],
@@ -254,15 +259,9 @@ export class LoggerComponent {
             });
         }
 
-        // TODO: change analog to daq
-        for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
-            this.daqChans.push(Object.assign({}, this.defaultDaqChannelParams));
-        }
-
-        this.selectedChannels = Array.apply(null, Array(this.analogChans.length)).map(() => false);
+        this.selectedChannels = Array.apply(null, Array(this.daqChans.length)).map(() => false);
         // select channel 1 by default
         this.selectedChannels[0] = true;
-        // this.daqParams.channels.push(this.daqChans[0]);
 
         // load saved scaling functions
         this.scalingService.getAllScalingOptions()
@@ -275,13 +274,13 @@ export class LoggerComponent {
                 console.log(e);
             });
 
-        this.selectedScales = Array.apply(null, Array(this.analogChans.length)).map(() => this.scalingOptions[0]);
+        this.selectedScales = Array.apply(null, Array(this.daqChans.length)).map(() => this.scalingOptions[0]);
     }
 
     private loadDeviceInfo(): Promise<any> {
         return new Promise((resolve, reject) => {
             let analogChanArray = [];
-            for (let i = 0; i < this.analogChans.length; i++) {
+            for (let i = 0; i < this.daqChans.length; i++) {
                 analogChanArray.push(i + 1);
             }
             if (analogChanArray.length < 1) {
@@ -349,7 +348,6 @@ export class LoggerComponent {
                 })
                 .then((data) => {
                     console.log(data);
-                    console.log(this.analogChans);
                     resolve(data);
                 })
                 .catch((e) => {
@@ -495,10 +493,10 @@ export class LoggerComponent {
             return;
         }
         if (event.deltaY < 0) {
-            input === 'vpd' ? this.decrementVpd(axisNum) : this.incrementFrequency(instrument, axisNum, input);
+            input === 'vpd' ? this.decrementVpd(axisNum) : this.incrementFrequency(instrument, input);
         }
         else {
-            input === 'vpd' ? this.incrementVpd(axisNum) : this.decrementFrequency(instrument, axisNum, input);
+            input === 'vpd' ? this.incrementVpd(axisNum) : this.decrementFrequency(instrument, input);
         }
     }
 
@@ -517,7 +515,7 @@ export class LoggerComponent {
         this.loggerPlotService.setPosition('y', axisNum + 1, this.analogChans[axisNum].vOffset, true);
     }
 
-    incrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+    incrementFrequency(instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
         let valString = type === 'sampleFreq' ? this.daqParams.sampleFreq.toString() : this.daqParams.maxSampleCount.toString();
         let valNum = parseFloat(valString);
         let pow = 0;
@@ -533,10 +531,10 @@ export class LoggerComponent {
             numberMag++;
         }
         let newFreq = (leadingNum * Math.pow(10, numberMag)) / Math.pow(1000, pow);
-        this.validateAndApply(newFreq, instrument, axisNum, type);
+        this.validateAndApply(newFreq, instrument, type);
     }
 
-    private validateAndApply(newVal: number, instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+    private validateAndApply(newVal: number, instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
         if (type === 'sampleFreq') {
             // TODO: get minFreq and maxFreq from instrument before setting
 
@@ -566,7 +564,7 @@ export class LoggerComponent {
         }
     }
 
-    decrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+    decrementFrequency(instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
         let valString = type === 'sampleFreq' ? this.daqParams.sampleFreq.toString() : this.daqParams.maxSampleCount.toString();
         let valNum = parseFloat(valString);
         let pow = 0;
@@ -582,7 +580,7 @@ export class LoggerComponent {
             numberMag--;
         }
         let newFreq = (leadingNum * Math.pow(10, numberMag)) / Math.pow(1000, pow);
-        this.validateAndApply(newFreq, instrument, axisNum, type);
+        this.validateAndApply(newFreq, instrument, type);
     }
 
     setViewToEdge() {
@@ -653,13 +651,6 @@ export class LoggerComponent {
                 this.modeChild._applyActiveSelection(applyOptions.mode);
             }
         }, 20);
-    }
-
-    locationSelect(event, instrument: 'analog' | 'digital', channel: number) {
-        console.log(event);
-        if (instrument === 'analog') {
-            this.analogChans[channel].storageLocation = event;
-        }
     }
 
     openProfileSettings(name, event?) {
@@ -826,10 +817,13 @@ export class LoggerComponent {
         let saveObj = {};
         if (this.daqChans.length > 0) {
             saveObj['daq'] = this.daqParams;
+            saveObj['daq'].channels = [];
         }
         this.daqChans.forEach((channel, index) => {
             if (this.selectedChannels[index]) {
-                saveObj['daq'][(index + 1).toString()] = this.daqChans[index];
+                let chanObj = {};
+                chanObj[(index + 1).toString()] = channel;
+                saveObj['daq']['channels'].push(chanObj);
             }
         });
         return saveObj;
@@ -875,7 +869,6 @@ export class LoggerComponent {
                 },
                 () => { }
             );
-            resolve();
         });
     }
 
@@ -896,7 +889,7 @@ export class LoggerComponent {
     }
 
     setActiveSeries(instrument: 'analog' | 'digital', axisNum: number) {
-        let convertedNum = instrument === 'analog' ? axisNum + 1 : axisNum + this.analogChans.length + 1;
+        let convertedNum = instrument === 'analog' ? axisNum + 1 : axisNum + this.daqChans.length + 1;
         this.loggerPlotService.setActiveSeries(convertedNum);
     }
 
@@ -915,7 +908,7 @@ export class LoggerComponent {
                 this.daqParams.maxSampleCount = trueValue;
                 break;
             case 'sampleFreq':
-                this.validateAndApply(trueValue, instrument, channel, 'sampleFreq');
+                this.validateAndApply(trueValue, instrument, 'sampleFreq');
                 break;
             default:
                 break;

@@ -22,6 +22,6 @@ export class ChannelSelectPopover {
 
   toggleChannel(index: number) {
     this.selectedChannels[index] = !this.selectedChannels[index];
-    this.events.publish('channels:selected', { analogChans: this.selectedChannels });
+    this.events.publish('channels:selected', { channels: this.selectedChannels });
   }
 }
