@@ -66,7 +66,9 @@ export class LoggerComponent {
     private defaultDaqChannelParams: DaqChannelParams = {
         average: 1,
         storageLocation: 'ram',
-        uri: ''
+        uri: '',
+        startIndex: 0,
+        count: 0
     };
     public daqChans: DaqChannelParams[] = [];
 
@@ -820,9 +822,14 @@ export class LoggerComponent {
             saveObj['daq'].channels = [];
         }
         this.daqChans.forEach((channel, index) => {
-            if (this.selectedChannels[index]) {
-                let chanObj = {};
-                chanObj[(index + 1).toString()] = channel;
+            if (this.selectedChannels[index]) {                
+                let chanObj = {
+                    [(index + 1).toString()]: {
+                        average: channel.average,
+                        storageLocation: channel.storageLocation,
+                        uri: channel.uri
+                    }
+                };
                 saveObj['daq']['channels'].push(chanObj);
             }
         });
@@ -1629,7 +1636,9 @@ export type LoggerInputType = 'delay' | 'offset' | 'samples' | 'sampleFreq';
 export interface DaqChannelParams {
     average: number,
     storageLocation: string,
-    uri: string
+    uri: string,
+    startIndex: number,
+    count: number
 }
 
 export interface DaqLoggerParams {
