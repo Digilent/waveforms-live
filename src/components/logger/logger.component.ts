@@ -19,7 +19,6 @@ import { TooltipService } from '../../services/tooltip/tooltip.service';
 import { ScalingService } from '../../services/scaling/scaling.service';
 
 //Interfaces
-/* import { DataContainer } from '../chart/chart.interface'; */
 import { PlotDataContainer } from '../../services/logger-plot/logger-plot.service';
 import { ScaleParams } from '../../services/scaling/scaling.service';
 import { LoggerXAxisComponent } from '../logger-xaxis/logger-xaxis.component';
@@ -31,10 +30,8 @@ import { LogScalePopover } from '../log-scale-popover/log-scale-popover.componen
     selector: 'logger-component'
 })
 export class LoggerComponent {
-    //@ViewChildren('dropPopOverflow') overflowChildren: QueryList<DropdownPopoverComponent>;
-    @ViewChildren('dropPopMode') modeChildren: QueryList<DropdownPopoverComponent>;
+    @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
     @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
-    @ViewChildren('dropPopLink') linkChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
     @ViewChild('dropPopLogTo') logToChild: DropdownPopoverComponent;
     @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
@@ -44,8 +41,6 @@ export class LoggerComponent {
     public showLoggerSettings: boolean = true;
     public showAdvSettings: boolean = false;
     public selectedChannels: boolean[] = [];
-    public showAnalogChan: boolean[] = [];
-    public showDigitalChan: boolean[] = [];
     private defaultAnalogParams: AnalogLoggerParams = {
         gain: 1,
         vOffset: 0,
@@ -57,39 +52,28 @@ export class LoggerComponent {
         uri: '',
         startIndex: 0,
         count: 0,
-        state: 'idle',
-        linked: false,
-        linkedChan: -1
+        state: 'idle'
     };
-    private defaultDigitalParams: DigitalLoggerParams = {
-        maxSampleCount: -1,
-        sampleFreq: 1000,
-        startDelay: 0,
-        overflow: 'circular',
-        storageLocation: 'ram',
-        uri: '',
-        startIndex: 0,
-        count: 0,
-        state: 'idle',
-        linked: false,
-        linkedChan: -1,
-        bitMask: 255 //TODO fix when digital channels exist
-    };
+
     public analogChans: AnalogLoggerParams[] = [];
     public digitalChans: DigitalLoggerParams[] = [];
 
     private daqParams: DaqLoggerParams = {
         maxSampleCount: -1,
         startDelay: 0,
-        sampleFreq: 1000,
-        channels: []
+        sampleFreq: 1000
     };
+    private defaultDaqChannelParams: DaqChannelParams = {
+        average: 1,
+        storageLocation: 'ram',
+        uri: ''
+    };
+    public daqChans: DaqChannelParams[] = [];
+
     public average: number = 1;
     public maxAverage: number = 256;
 
     private analogChanNumbers: number[] = [];
-    private digitalChanNumbers: number[] = [];
-    public overflowConditions: ('circular')[] = ['circular'];
     public logToLocations: string[] = ['chart', 'SD', 'both'];
     public modes: ('continuous' | 'finite')[] = ['continuous', 'finite'];
     public selectedMode: 'continuous' | 'finite' = this.modes[0];
@@ -97,15 +81,14 @@ export class LoggerComponent {
     public storageLocations: string[] = [];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
+    public logOnBootProfiles: string[] = ['None'];
+    public selectedLogOnBoot: string = this.logOnBootProfiles[0];
     private dirtyProfile: boolean = false;
-    public analogLinkOptions: string[][] = [];
-    public digitalLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
     public running: boolean = false;
     public dataContainers: PlotDataContainer[] = [];
     public viewMoved: boolean = false;
     private analogChansToRead: number[] = [];
-    private digitalChansToRead: number[] = [];
     private chartPanSubscriptionRef;
     private offsetChangeSubscriptionRef;
     private scalingOptions: string[] = ['None'];
@@ -155,7 +138,7 @@ export class LoggerComponent {
             this.deleteProfile(params[0]['profileName']);
         });
         this.events.subscribe('channels:selected', (params) => {
-            this.selectedChannels = params[0]['analogChans'];
+            this.selectChannels(params[0]['channels']);
         });
         this.events.subscribe('scale:update', (event) => {
             let params = event[0]['params'];
@@ -165,6 +148,10 @@ export class LoggerComponent {
         this.events.subscribe('scale:delete', (params) => {
             this.deleteScale(params[0]['channel'], params[0]['name']);
         });
+    }
+
+    public selectChannels(selectedChans: boolean[]) {
+        this.selectedChannels = selectedChans;
     }
 
     public updateScale(chan: number, expression: string, scaleName: string, units: string) {
@@ -208,17 +195,8 @@ export class LoggerComponent {
         // Check if there are unsaved changes to profile
         this.dirtyProfile = false;
         if (this.selectedLogProfile && this.selectedLogProfile != this.loggingProfiles[0]) {
-            let params: string[] = ['gain', 'linked', 'linkedChan', 'maxSampleCount', 'overflow', 'sampleFreq', 'startDelay', 'uri', 'vOffset'];
-            let profileValues = (<any>Object).values(this.profileObjectMap[this.selectedLogProfile].analog);
-
-            for (let i = 0; i < this.analogChans.length; i++) {
-                params.forEach((param) => {
-                    if (this.analogChans[i][param] != profileValues[i][param]) {
-                        this.dirtyProfile = true;
-                        return;
-                    }
-                });
-            }
+            let current = this.generateProfileJson();
+            this.dirtyProfile = JSON.stringify(current) !== JSON.stringify(this.profileObjectMap[this.selectedLogProfile]);
         }
     }
 
@@ -259,31 +237,14 @@ export class LoggerComponent {
         );
         for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
             this.analogChans.push(Object.assign({}, this.defaultAnalogParams));
-            this.showAnalogChan.push(true);
-
-            this.analogLinkOptions[i] = ['no'];
-            for (let j = 0; j < this.analogLinkOptions.length; j++) {
-                if (i !== j) {
-                    this.analogLinkOptions[j].push('Ch ' + (i + 1).toString());
-                    this.analogLinkOptions[i].push('Ch ' + (j + 1).toString());
-                }
-            }
-        }
-        for (let i = 0; i < this.activeDevice.instruments.logger.digital.numChans; i++) {
-            this.digitalChans.push(Object.assign({}, this.defaultDigitalParams));
-            this.showDigitalChan.push(i === 0);
-
-            this.digitalLinkOptions[i] = ['no'];
-            for (let j = 0; j < this.digitalLinkOptions.length; j++) {
-                if (i !== j) {
-                    this.digitalLinkOptions[j].push('Ch ' + (i + 1).toString());
-                    this.digitalLinkOptions[i].push('Ch ' + (j + 1).toString());
-                }
-            }
         }
 
+        // TODO: change analog to daq
+        for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
+            this.daqChans.push(Object.assign({}, this.defaultDaqChannelParams));
+        }
 
-        for (let i = 0; i < this.analogChans.length; i++) {
+        for (let i = 0; i < this.daqChans.length; i++) {
             this.analogChanNumbers.push(i + 1);
             this.dataContainers.push({
                 data: [],
@@ -297,22 +258,9 @@ export class LoggerComponent {
                 seriesOffset: 0
             });
         }
-        for (let i = 0; i < this.digitalChans.length; i++) {
-            this.digitalChanNumbers.push(i + 1);
-            this.dataContainers.push({
-                data: [],
-                yaxis: i + 1 + this.analogChans.length,
-                lines: {
-                    show: true
-                },
-                points: {
-                    show: false
-                },
-                seriesOffset: 0
-            })
-        }
 
-        this.selectedChannels = Array.apply(null, Array(this.analogChans.length)).map(() => false);
+        this.selectedChannels = Array.apply(null, Array(this.daqChans.length)).map(() => false);
+        // select channel 1 by default
         this.selectedChannels[0] = true;
 
         // load saved scaling functions
@@ -326,20 +274,16 @@ export class LoggerComponent {
                 console.log(e);
             });
 
-        this.selectedScales = Array.apply(null, Array(this.analogChans.length)).map(() => this.scalingOptions[0]);
+        this.selectedScales = Array.apply(null, Array(this.daqChans.length)).map(() => this.scalingOptions[0]);
     }
 
     private loadDeviceInfo(): Promise<any> {
         return new Promise((resolve, reject) => {
             let analogChanArray = [];
-            let digitalChanArray = [];
-            for (let i = 0; i < this.analogChans.length; i++) {
+            for (let i = 0; i < this.daqChans.length; i++) {
                 analogChanArray.push(i + 1);
             }
-            for (let i = 0; i < this.digitalChans.length; i++) {
-                digitalChanArray.push(i + 1);
-            }
-            if (analogChanArray.length < 1 && digitalChanArray.length < 1) {
+            if (analogChanArray.length < 1) {
                 resolve('done');
                 return;
             }
@@ -394,16 +338,16 @@ export class LoggerComponent {
                 })
                 .catch((e) => {
                     console.log(e);
+                    // TODO: uncomment when getStorageLocations command is implemented
+                    // if (this.storageLocations.length < 1) {
+                    //     this.logToLocations = ['chart'];
+                    //     this.logToSelect('chart');
+                    // }
                     return this.getCurrentState('analog', analogChanArray);
                     //return this.analogGetMultipleChannelStates(analogChanArray);
                 })
                 .then((data) => {
                     console.log(data);
-                    return this.getCurrentState('digital', digitalChanArray);
-                })
-                .then((data) => {
-                    console.log(data);
-                    console.log(this.analogChans);
                     resolve(data);
                 })
                 .catch((e) => {
@@ -413,7 +357,7 @@ export class LoggerComponent {
         });
     }
 
-    selectChannels(event) {
+    openChannelSelector(event) {
         let popover = this.popoverCtrl.create(ChannelSelectPopover, { selectedChannels: this.selectedChannels }, {
             cssClass: 'logChannelsPopover'
         });
@@ -470,13 +414,6 @@ export class LoggerComponent {
                 this.analogChansToRead.push(i + 1);
                 this.analogChans[i].count = -1000;
                 this.analogChans[i].startIndex = -1;
-            }
-        }
-        for (let i = 0; i < this.digitalChans.length; i++) {
-            if (this.digitalChans[i].state === 'running') {
-                this.digitalChansToRead.push(i + 1);
-                this.digitalChans[i].count = -1000;
-                this.digitalChans[i].startIndex = -1;
             }
         }
 
@@ -556,10 +493,10 @@ export class LoggerComponent {
             return;
         }
         if (event.deltaY < 0) {
-            input === 'vpd' ? this.decrementVpd(axisNum) : this.incrementFrequency(instrument, axisNum, input);
+            input === 'vpd' ? this.decrementVpd(axisNum) : this.incrementFrequency(instrument, input);
         }
         else {
-            input === 'vpd' ? this.incrementVpd(axisNum) : this.decrementFrequency(instrument, axisNum, input);
+            input === 'vpd' ? this.incrementVpd(axisNum) : this.decrementFrequency(instrument, input);
         }
     }
 
@@ -578,7 +515,7 @@ export class LoggerComponent {
         this.loggerPlotService.setPosition('y', axisNum + 1, this.analogChans[axisNum].vOffset, true);
     }
 
-    incrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+    incrementFrequency(instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
         let valString = type === 'sampleFreq' ? this.daqParams.sampleFreq.toString() : this.daqParams.maxSampleCount.toString();
         let valNum = parseFloat(valString);
         let pow = 0;
@@ -594,10 +531,10 @@ export class LoggerComponent {
             numberMag++;
         }
         let newFreq = (leadingNum * Math.pow(10, numberMag)) / Math.pow(1000, pow);
-        this.validateAndApply(newFreq, instrument, axisNum, type);
+        this.validateAndApply(newFreq, instrument, type);
     }
 
-    private validateAndApply(newVal: number, instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+    private validateAndApply(newVal: number, instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
         if (type === 'sampleFreq') {
             // TODO: get minFreq and maxFreq from instrument before setting
 
@@ -627,7 +564,7 @@ export class LoggerComponent {
         }
     }
 
-    decrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+    decrementFrequency(instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
         let valString = type === 'sampleFreq' ? this.daqParams.sampleFreq.toString() : this.daqParams.maxSampleCount.toString();
         let valNum = parseFloat(valString);
         let pow = 0;
@@ -643,7 +580,7 @@ export class LoggerComponent {
             numberMag--;
         }
         let newFreq = (leadingNum * Math.pow(10, numberMag)) / Math.pow(1000, pow);
-        this.validateAndApply(newFreq, instrument, axisNum, type);
+        this.validateAndApply(newFreq, instrument, type);
     }
 
     setViewToEdge() {
@@ -668,29 +605,24 @@ export class LoggerComponent {
     logToSelect(event) {
         console.log(event);
         if (this.selectedLogLocation === 'chart' && event !== 'chart') {
-            for (let i = 0; i < this.analogChans.length; i++) {
-                this.analogChans[i].storageLocation = this.storageLocations[0];
-                this.setChannelDropdowns(i, {
-                    storageLocation: this.storageLocations[0]
-                });
-            }
-            for (let i = 0; i < this.digitalChans.length; i++) {
-                this.digitalChans[i].storageLocation = this.storageLocations[0];
-                //TODO update to support digital in setChannelDropdowns
-                /* this.setChannelDropdowns(i, {
-                    storageLocation: this.storageLocations[0]
-                }); */
-            }
+            this.daqChans.forEach((channel, index) => {
+                channel.storageLocation = this.storageLocations[0];
+            });
         }
         if (event === 'chart') {
-            for (let i = 0; i < this.analogChans.length; i++) {
-                this.analogChans[i].storageLocation = 'ram';
-            }
-            for (let i = 0; i < this.digitalChans.length; i++) {
-                this.digitalChans[i].storageLocation = 'ram';
-            }
+            this.daqChans.forEach((channel, index) => {
+                channel.storageLocation = 'ram';
+            });
         }
         this.selectedLogLocation = event;
+    }
+
+    updateUri(event) {
+        let uri = event.target.value;
+        console.log(uri);
+        this.daqChans.forEach((channel, index) => {
+            channel.uri = uri;
+        });
     }
 
     modeSelect(event: 'finite' | 'continuous') {
@@ -704,77 +636,8 @@ export class LoggerComponent {
         this.selectedMode = event;
     }
 
-    linkSelect(event, instrument: 'analog' | 'digital', channel: number) {
-        console.log(event);
-        if (event === 'no') {
-            if (this.analogChans[channel].linked) {
-                let linkedChan = this.analogChans[channel].linkedChan;
-                this.copyLoggingProfile(instrument, channel, this.analogChans[linkedChan]);
-                this.setChannelDropdowns(channel, {
-                    storageLocation: this.analogChans[linkedChan].storageLocation,
-                    overflow: this.analogChans[linkedChan].overflow,
-                    linkChan: -1,
-                    mode: this.analogChans[linkedChan].maxSampleCount === -1 ? 'continuous' : 'finite'
-                });
-            }
-            this.analogChans[channel].linked = false;
-            this.analogChans[channel].linkedChan = -1;
-            return;
-        }
-        let linkChan: number = event.split(' ')[1] - 1;
-        console.log('linked chan selection: ' + linkChan);
-        if (instrument === 'analog') {
-            if (this.analogChans[linkChan].linked) {
-                //TODO display error
-                console.log('linked to linked channel');
-                let id = 'link' + channel;
-                this.linkChildren.forEach((child) => {
-                    if (id === child.elementRef.nativeElement.id) {
-                        child._applyActiveSelection('no');
-                    }
-                });
-                return;
-            }
-            this.copyLoggingProfile('analog', channel, this.analogChans[linkChan]);
-            this.analogChans[channel].linked = true;
-            this.analogChans[channel].linkedChan = linkChan;
-            this.setChannelDropdowns(channel, {
-                storageLocation: this.analogChans[channel].storageLocation,
-                overflow: this.analogChans[channel].overflow,
-                linkChan: linkChan,
-                mode: this.analogChans[channel].maxSampleCount === -1 ? 'continuous' : 'finite'
-            });
-        }
-        else {
-
-        }
-        console.log(this.analogChans);
-    }
-
-    private copyLoggingProfile(instrument: 'analog' | 'digital', channel: number, source: any) {
-        let instrumentChan = instrument === 'analog' ? this.analogChans : this.digitalChans;
-        instrumentChan[channel].maxSampleCount = source.maxSampleCount;
-        instrumentChan[channel].overflow = source.overflow;
-        instrumentChan[channel].sampleFreq = source.sampleFreq;
-        instrumentChan[channel].startDelay = source.startDelay;
-        instrumentChan[channel].storageLocation = source.storageLocation;
-        if (instrument === 'digital') {
-            (<DigitalLoggerParams>instrumentChan[channel]).bitMask = source.bitMask;
-        }
-    }
-
-    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, linkChan?: number, mode?: string }) {
+    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, mode?: string }) {
         setTimeout(() => {
-            if (applyOptions.linkChan != undefined) {
-                let linkedChanString = applyOptions.linkChan > -1 ? 'Ch ' + (applyOptions.linkChan + 1) : 'no';
-                let id = 'link' + channel;
-                this.linkChildren.forEach((child) => {
-                    if (id === child.elementRef.nativeElement.id) {
-                        child._applyActiveSelection(linkedChanString);
-                    }
-                });
-            }
-
             if (applyOptions.storageLocation != undefined) {
                 let id = 'location' + channel;
                 this.locationChildren.forEach((child) => {
@@ -785,43 +648,9 @@ export class LoggerComponent {
             }
 
             if (applyOptions.mode != undefined) {
-                let id = 'mode' + channel;
-                this.modeChildren.forEach((child) => {
-                    if (id === child.elementRef.nativeElement.id) {
-                        child._applyActiveSelection(applyOptions.mode);
-                    }
-                });
+                this.modeChild._applyActiveSelection(applyOptions.mode);
             }
-
-            /* if (applyOptions.overflow != undefined) {
-                let id = 'overflow' + channel;
-                this.overflowChildren.forEach((child) => {
-                    if (id === child.elementRef.nativeElement.id) {
-                        child._applyActiveSelection(applyOptions.overflow);
-                    }
-                });
-            } */
         }, 20);
-    }
-
-    overflowSelect(event, instrument: 'analog' | 'digital', channel: number) {
-        console.log(event);
-        if (instrument === 'analog') {
-            this.analogChans[channel].overflow = event;
-        }
-        else {
-            this.digitalChans[channel].overflow = event;
-        }
-    }
-
-    locationSelect(event, instrument: 'analog' | 'digital', channel: number) {
-        console.log(event);
-        if (instrument === 'analog') {
-            this.analogChans[channel].storageLocation = event;
-        }
-        else {
-            this.digitalChans[channel].storageLocation = event;
-        }
     }
 
     openProfileSettings(name, event?) {
@@ -871,6 +700,7 @@ export class LoggerComponent {
                 let nameIndex: number = this.loggingProfiles.indexOf(profileName);
                 if (nameIndex !== -1) {
                     this.loggingProfiles.splice(nameIndex, 1);
+                    this.logOnBootProfiles.splice(nameIndex, 1);
                 }
                 this.selectedLogProfile = this.loggingProfiles[0];
             },
@@ -895,8 +725,10 @@ export class LoggerComponent {
         let nameIndex: number = this.loggingProfiles.indexOf(profileName);
         if (nameIndex !== -1) {
             this.loggingProfiles.splice(nameIndex, 1);
+            this.logOnBootProfiles.splice(nameIndex, 1);
         }
         this.loggingProfiles.push(profileName);
+        this.logOnBootProfiles.push(profileName);
         let profileObj = this.generateProfileJson();
         let profileObjCopy = JSON.parse(JSON.stringify(profileObj));
         this.profileObjectMap[profileName] = profileObjCopy;
@@ -960,12 +792,14 @@ export class LoggerComponent {
                     let splitArray = profileName.split('.');
                     if (splitArray.length < 2) {
                         this.loggingProfiles.push(profileName);
+                        this.logOnBootProfiles.push(profileName);
                         this.profileObjectMap[profileName] = parsedData;
                     }
                     else {
                         splitArray.splice(splitArray.length - 1, 1);
                         let noExtName = splitArray.join('');
                         this.loggingProfiles.push(noExtName);
+                        this.logOnBootProfiles.push(noExtName);
                         this.profileObjectMap[noExtName] = parsedData;
                     }
                     resolve(data);
@@ -981,70 +815,42 @@ export class LoggerComponent {
 
     private generateProfileJson() {
         let saveObj = {};
-        if (this.analogChans.length > 0) {
-            saveObj['analog'] = {};
+        if (this.daqChans.length > 0) {
+            saveObj['daq'] = this.daqParams;
+            saveObj['daq'].channels = [];
         }
-        if (this.digitalChans.length > 0) {
-            saveObj['digital'] = {};
-        }
-        for (let i = 0; i < this.analogChans.length; i++) {
-            saveObj['analog'][i.toString()] = this.analogChans[i];
-        }
-        for (let i = 0; i < this.digitalChans.length; i++) {
-            saveObj['digital'][i.toString()] = this.analogChans[i];
-        }
+        this.daqChans.forEach((channel, index) => {
+            if (this.selectedChannels[index]) {
+                let chanObj = {};
+                chanObj[(index + 1).toString()] = channel;
+                saveObj['daq']['channels'].push(chanObj);
+            }
+        });
         return saveObj;
     }
 
     private parseAndApplyProfileJson(loadedObj) {
+        this.selectedChannels = this.selectedChannels.map(() => false);
         for (let instrument in loadedObj) {
-            for (let channel in loadedObj[instrument]) {
-                if (instrument === 'analog') {
-                    let currentState = this.analogChans[parseInt(channel)].state;
-                    let currentLocation = this.analogChans[parseInt(channel)].storageLocation;
-                    this.analogChans[parseInt(channel)] = loadedObj[instrument][channel];
-                    this.analogChans[parseInt(channel)].count = this.defaultAnalogParams.count;
-                    this.analogChans[parseInt(channel)].startIndex = this.defaultAnalogParams.startIndex;
-                    this.analogChans[parseInt(channel)].state = currentState;
-                    this.analogChans[parseInt(channel)].storageLocation = currentLocation
-                }
-                else if (instrument === 'digital') {
-                    let currentState = this.digitalChans[parseInt(channel)].state;
-                    let currentLocation = this.digitalChans[parseInt(channel)].storageLocation;
-                    this.digitalChans[parseInt(channel)] = loadedObj[instrument][channel];
-                    this.digitalChans[parseInt(channel)].count = this.defaultAnalogParams.count;
-                    this.digitalChans[parseInt(channel)].startIndex = this.defaultAnalogParams.startIndex;
-                    this.digitalChans[parseInt(channel)].state = currentState;
-                    this.analogChans[parseInt(channel)].storageLocation = currentLocation
-                }
-                //Wait for ngFor to execute on the dropPops (~20ms) before we apply the active selections (there has to be a better way)
+            if (instrument === 'daq') {
+                this.daqParams = loadedObj[instrument];
 
-                let dropdownChangeObj = {
-                    overflow: loadedObj[instrument][channel].overflow
-                };
-                if (loadedObj[instrument][channel].linked) {
-                    dropdownChangeObj['linkChan'] = loadedObj[instrument][channel].linkedChan;
-                }
-                dropdownChangeObj['mode'] = loadedObj[instrument][channel].maxSampleCount === -1 ? 'continuous' : 'finite';
-                this.setChannelDropdowns(parseInt(channel), dropdownChangeObj);
+                // select channels
+                loadedObj[instrument].channels.forEach((channel) => {
+                    let chanNum = parseInt(Object.keys(channel)[0]);
+                    this.selectedChannels[chanNum - 1] = true;
+                });
+
+                // set mode dropdown
+                let dropdownChangeObj = {};
+                dropdownChangeObj['mode'] = loadedObj[instrument].maxSampleCount === -1 ? 'continuous' : 'finite';
+                this.setChannelDropdowns(undefined, dropdownChangeObj);
             }
         }
     }
 
     private saveProfile(profileName: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            for (let i = 0; i < this.analogChans.length; i++) {
-                if (this.analogChans[i].linked) {
-                    this.copyLoggingProfile('analog', i, this.analogChans[this.analogChans[i].linkedChan]);
-                }
-            }
-
-            for (let i = 0; i < this.digitalChans.length; i++) {
-                if (this.digitalChans[i].linked) {
-                    this.copyLoggingProfile('digital', i, this.digitalChans[this.digitalChans[i].linkedChan]);
-                }
-            }
-
             let objToSave = this.generateProfileJson();
             let str = JSON.stringify(objToSave);
             let buf = new ArrayBuffer(str.length);
@@ -1083,19 +889,18 @@ export class LoggerComponent {
     }
 
     setActiveSeries(instrument: 'analog' | 'digital', axisNum: number) {
-        let convertedNum = instrument === 'analog' ? axisNum + 1 : axisNum + this.analogChans.length + 1;
+        let convertedNum = instrument === 'analog' ? axisNum + 1 : axisNum + this.daqChans.length + 1;
         this.loggerPlotService.setActiveSeries(convertedNum);
     }
 
     formatInputAndUpdate(trueValue: number, instrument: 'analog' | 'digital', type: LoggerInputType, channel?: number) {
         console.log(trueValue);
-        let chanType = instrument === 'analog' ? this.analogChans : this.digitalChans;
         switch (type) {
             case 'delay':
-                chanType[channel].startDelay = trueValue;
+                this.analogChans[channel].startDelay = trueValue;
                 break;
             case 'offset':
-                (<AnalogLoggerParams>chanType[channel]).vOffset = trueValue;
+                (<AnalogLoggerParams>this.analogChans[channel]).vOffset = trueValue;
                 this.loggerPlotService.setPosition('y', channel + 1, trueValue, true);
                 break;
             case 'samples':
@@ -1103,7 +908,7 @@ export class LoggerComponent {
                 this.daqParams.maxSampleCount = trueValue;
                 break;
             case 'sampleFreq':
-                this.validateAndApply(trueValue, instrument, channel, 'sampleFreq');
+                this.validateAndApply(trueValue, instrument, 'sampleFreq');
                 break;
             default:
                 break;
@@ -1112,10 +917,6 @@ export class LoggerComponent {
 
     stopLogger() {
         this.stop('analog', this.analogChanNumbers)
-            .then((data) => {
-                console.log(data);
-                return this.stop('digital', this.digitalChanNumbers);
-            })
             .then((data) => {
                 console.log(data);
                 this.running = false;
@@ -1152,9 +953,6 @@ export class LoggerComponent {
                 }
 
                 let dataContainerIndex = 0;
-                if (instrument === 'digital') {
-                    dataContainerIndex += this.analogChans.length;
-                }
 
                 dataContainerIndex += chanIndex;
                 this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
@@ -1216,9 +1014,6 @@ export class LoggerComponent {
         this.getCurrentState('analog', this.analogChanNumbers, true)
             .then((data) => {
                 console.log(data);
-                return this.getCurrentState('digital', this.digitalChanNumbers, true);
-            })
-            .then((data) => {
                 let returnData: { reason: number } = this.existingFileFoundAndValidate(loading);
                 if (returnData.reason === 2) {
                     loading.dismiss();
@@ -1242,23 +1037,11 @@ export class LoggerComponent {
 
     private setParametersAndRun(loading) {
         let analogChanArray = [];
-        let digitalChanArray = [];
         //TODO when each channel invidivdually, loop and check if channel is on before pushing
         for (let i = 0; i < this.analogChans.length; i++) {
             this.analogChans[i].count = -1000;
             this.analogChans[i].startIndex = -1;
-            if (this.analogChans[i].linked) {
-                this.copyLoggingProfile('analog', i, this.analogChans[this.analogChans[i].linkedChan]);
-            }
             analogChanArray.push(i + 1);
-        }
-        for (let i = 0; i < this.digitalChans.length; i++) {
-            this.digitalChans[i].count = -1000;
-            this.digitalChans[i].startIndex = -1;
-            if (this.digitalChans[i].linked) {
-                this.copyLoggingProfile('digital', i, this.digitalChans[this.digitalChans[i].linkedChan]);
-            }
-            digitalChanArray.push(i + 1);
         }
 
         this.clearChart();
@@ -1267,15 +1050,7 @@ export class LoggerComponent {
         this.setParameters('analog', analogChanArray)
             .then((data) => {
                 console.log(data);
-                return this.setParameters('digital', digitalChanArray);
-            })
-            .then((data) => {
-                console.log(data);
                 return this.run('analog', analogChanArray);
-            })
-            .then((data) => {
-                console.log(data);
-                return this.run('digital', digitalChanArray);
             })
             .then((data) => {
                 console.log(data);
@@ -1338,7 +1113,7 @@ export class LoggerComponent {
                 if (instrument === 'analog') {
                     this.analogChansToRead.splice(this.analogChansToRead.indexOf(parseInt(channel)), 1);
                 }
-                if (this.analogChansToRead.length < 1 && this.digitalChansToRead.length < 1) {
+                if (this.analogChansToRead.length < 1) {
                     this.toastService.createToast('loggerLogDone');
                     this.running = false;
                 }
@@ -1398,10 +1173,6 @@ export class LoggerComponent {
                 this.getCurrentState('analog', this.analogChanNumbers)
                     .then((data) => {
                         console.log(data);
-                        return this.getCurrentState('digital', this.digitalChanNumbers);
-                    })
-                    .then((data) => {
-                        console.log(data);
                     })
                     .catch((e) => {
                         console.log(e);
@@ -1418,15 +1189,6 @@ export class LoggerComponent {
         this.showAdvSettings = !this.showAdvSettings;
     }
 
-    toggleSeriesSettings(instrument: 'analog' | 'digital', chan: number) {
-        if (instrument === 'analog') {
-            this.showAnalogChan[chan] = !this.showAnalogChan[chan];
-        }
-        else {
-            this.showDigitalChan[chan] = !this.showDigitalChan[chan];
-        }
-    }
-
     exportCanvasAsPng() {
         let flotOverlayRef = document.getElementById('loggerChart').childNodes[1];
         this.exportService.exportCanvasAsPng(this.loggerPlotService.chart.getCanvas(), flotOverlayRef);
@@ -1434,25 +1196,15 @@ export class LoggerComponent {
 
     exportCsv(fileName: string) {
         let analogChanArray = [];
-        let digitalChanArray = [];
         for (let i = 0; i < this.analogChans.length; i++) {
             analogChanArray.push(i);
         }
-        for (let i = analogChanArray.length; i < this.dataContainers.length; i++) {
-            digitalChanArray.push(i);
-        }
-        this.exportService.exportGenericCsv(fileName, this.dataContainers, analogChanArray.concat(digitalChanArray), [{
+        this.exportService.exportGenericCsv(fileName, this.dataContainers, analogChanArray, [{
             instrument: 'Analog',
             seriesNumberOffset: 0,
             xUnit: 's',
             yUnit: 'V',
             channels: analogChanArray
-        }, {
-            instrument: 'Digital',
-            seriesNumberOffset: this.analogChans.length,
-            xUnit: 's',
-            yUnit: 'V',
-            channels: digitalChanArray
         }]);
     }
 
@@ -1490,12 +1242,6 @@ export class LoggerComponent {
                 activeChan.vOffset = respObj.actualVOffset / 1000; */
             }
         }
-        else {
-            activeChan = this.digitalChans[channelInternalIndex];
-            if (!onlyCopyState) {
-                activeChan.bitMask = respObj.bitMask;
-            }
-        }
         activeChan.state = respObj.state;
         if (onlyCopyState) {
             return;
@@ -1529,12 +1275,6 @@ export class LoggerComponent {
             it++;
         });
         it = 0;
-        this.modeChildren.forEach((child) => {
-            if (channelInternalIndex === it) {
-                let setting = activeChan.maxSampleCount === -1 ? 'continuous' : 'finite';
-                child._applyActiveSelection(setting);
-            }
-        });
         activeChan.uri = respObj.uri;
         if (activeChan.uri.indexOf('.dlog') !== -1) {
             //Remove .dlog from end of file
@@ -1597,32 +1337,6 @@ export class LoggerComponent {
                     paramObj[analogParamArray[7]]
                 );
             }
-            else {
-                if (this.digitalChans.length < 1) {
-                    resolve();
-                    return;
-                }
-                let digitalParamArray: string[] = ['maxSampleCount', 'sampleFreq', 'startDelay', 'overflow', 'storageLocation', 'uri', 'bitMask'];
-                for (let i = 0; i < chans.length; i++) {
-                    for (let j = 0; j < digitalParamArray.length; j++) {
-                        if (paramObj[digitalParamArray[j]] == undefined) {
-                            paramObj[digitalParamArray[j]] = [];
-                        }
-                        paramObj[digitalParamArray[j]].push(this.digitalChans[chans[i] - 1][digitalParamArray[j]]);
-                    }
-                }
-                console.log(paramObj);
-                observable = this.activeDevice.instruments.logger.digital.setParameters(
-                    chans,
-                    paramObj[digitalParamArray[0]],
-                    paramObj[digitalParamArray[1]],
-                    paramObj[digitalParamArray[2]],
-                    paramObj[digitalParamArray[3]],
-                    paramObj[digitalParamArray[4]],
-                    paramObj[digitalParamArray[5]],
-                    paramObj[digitalParamArray[6]]
-                );
-            }
             observable.subscribe(
                 (data) => {
                     console.log(data);
@@ -1643,21 +1357,6 @@ export class LoggerComponent {
                 resolve();
                 return;
             }
-            if (instrument === 'digital' && this.digitalChans.length < 1) {
-                resolve();
-                return;
-            }
-
-            /* chans.forEach((el, index, arr) => {
-                if (instrument === 'analog') {
-                    this.analogChans[el - 1].count = 0;
-                    this.analogChans[el - 1].startIndex = 0;
-                }
-                else {
-                    this.digitalChans[el - 1].count = 0;
-                    this.digitalChans[el - 1].startIndex = 0;
-                }
-            }); */
 
             this.activeDevice.instruments.logger[instrument].run(instrument, chans).subscribe(
                 (data) => {
@@ -1676,10 +1375,6 @@ export class LoggerComponent {
     stop(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
         return new Promise((resolve, reject) => {
             if (instrument === 'analog' && this.analogChans.length < 1) {
-                resolve();
-                return;
-            }
-            if (instrument === 'digital' && this.digitalChans.length < 1) {
                 resolve();
                 return;
             }
@@ -1711,23 +1406,13 @@ export class LoggerComponent {
                     counts.push(this.analogChans[this.analogChansToRead[i] - 1].count);
                 }
             }
-            if (instrument === 'digital') {
-                if (this.digitalChans.length < 1) {
-                    resolve();
-                    return;
-                }
-                for (let i = 0; i < this.digitalChansToRead.length; i++) {
-                    startIndices.push(this.digitalChans[this.digitalChansToRead[i] - 1].startIndex);
-                    counts.push(this.digitalChans[this.digitalChansToRead[i] - 1].count);
-                }
-            }
 
             let finalObj = {};
 
             chans.reduce((accumulator, currentVal, currentIndex) => {
                 return accumulator.flatMap((data) => {
                     if (currentIndex > 0) {
-                        let chanObj = instrument === 'analog' ? this.analogChans[currentIndex - 1] : this.digitalChans[currentIndex - 1];
+                        let chanObj = this.analogChans[currentIndex - 1];
                         if (chanObj.startIndex >= 0 && chanObj.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
                             return Observable.create((observer) => {
                                 observer.error({
@@ -1744,7 +1429,7 @@ export class LoggerComponent {
             }, Observable.create((observer) => { observer.next({}); observer.complete(); }))
                 .subscribe(
                     (data) => {
-                        let chanObj = instrument === 'analog' ? this.analogChans[chans[chans.length - 1] - 1] : this.digitalChans[chans[chans.length - 1] - 1];
+                        let chanObj = this.analogChans[chans[chans.length - 1] - 1];
                         if (chanObj.startIndex >= 0 && chanObj.startIndex !== data.instruments[instrument][chans[chans.length - 1]].startIndex) {
                             reject({
                                 message: 'Could not keep up with device',
@@ -1808,12 +1493,6 @@ export class LoggerComponent {
                     }
                 }
             }
-            else {
-                this.digitalChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount;
-                if (this.digitalChans[chans[index] - 1].maxSampleCount > 0 && this.digitalChans[chans[index] - 1].startIndex >= this.digitalChans[chans[index] - 1].maxSampleCount) {
-                    this.running = false;
-                }
-            }
         }
     }
 
@@ -1873,10 +1552,6 @@ export class LoggerComponent {
                 resolve();
                 return;
             }
-            if (instrument === 'digital' && this.digitalChans.length < 1) {
-                resolve();
-                return;
-            }
             if (chans.length < 1) {
                 resolve();
                 return;
@@ -1901,12 +1576,20 @@ export class LoggerComponent {
         if (this.average > 1) {
             this.average /= 2;
         }
+        this.setChannelAverages();
     }
 
     incrementAverage() {
         if (this.average < this.maxAverage) {
             this.average *= 2;
         }
+        this.setChannelAverages();
+    }
+
+    setChannelAverages() {
+        this.daqChans.forEach((channel, index) => {
+            channel.average = this.average;
+        });
     }
 }
 
@@ -1919,9 +1602,7 @@ export interface LoggerParams {
     uri: string,
     startIndex: number,
     count: number,
-    state: LoggerChannelState,
-    linked: boolean,
-    linkedChan: number
+    state: LoggerChannelState
 }
 
 export type LoggerChannelState = 'busy' | 'idle' | 'stopped' | 'running';
@@ -1938,16 +1619,13 @@ export interface DigitalLoggerParams extends LoggerParams {
 export type LoggerInputType = 'delay' | 'offset' | 'samples' | 'sampleFreq';
 
 export interface DaqChannelParams {
-    [channel: string]: {
-        average: number,
-        storageLocation: string,
-        uri: string
-    }
+    average: number,
+    storageLocation: string,
+    uri: string
 }
 
 export interface DaqLoggerParams {
     maxSampleCount: number,
     startDelay: number,
-    sampleFreq: number,
-    channels: DaqChannelParams[]
+    sampleFreq: number
 }
