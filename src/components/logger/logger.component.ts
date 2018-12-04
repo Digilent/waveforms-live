@@ -816,7 +816,7 @@ export class LoggerComponent {
     private generateProfileJson() {
         let saveObj = {};
         if (this.daqChans.length > 0) {
-            saveObj['daq'] = this.daqParams;
+            saveObj['daq'] = JSON.parse(JSON.stringify(this.daqParams));
             saveObj['daq'].channels = [];
         }
         this.daqChans.forEach((channel, index) => {
@@ -833,12 +833,20 @@ export class LoggerComponent {
         this.selectedChannels = this.selectedChannels.map(() => false);
         for (let instrument in loadedObj) {
             if (instrument === 'daq') {
-                this.daqParams = loadedObj[instrument];
+                this.daqParams.maxSampleCount = loadedObj[instrument]['maxSampleCount'];
+                this.daqParams.sampleFreq = loadedObj[instrument]['sampleFreq'];
+                this.daqParams.startDelay = loadedObj[instrument]['startDelay'];
 
                 // select channels
                 loadedObj[instrument].channels.forEach((channel) => {
                     let chanNum = parseInt(Object.keys(channel)[0]);
                     this.selectedChannels[chanNum - 1] = true;
+                    this.daqChans[chanNum - 1] = channel[chanNum];
+
+                    // set log to location based on storageLocation
+                    let logTo = channel[chanNum].storageLocation === 'ram' ? 'chart' : 'SD';
+                    this.selectedLogLocation = logTo;
+                    this.logToChild._applyActiveSelection(logTo);
                 });
 
                 // set mode dropdown
@@ -846,7 +854,7 @@ export class LoggerComponent {
                 dropdownChangeObj['mode'] = loadedObj[instrument].maxSampleCount === -1 ? 'continuous' : 'finite';
                 this.setChannelDropdowns(undefined, dropdownChangeObj);
             }
-        }
+        }        
     }
 
     private saveProfile(profileName: string): Promise<any> {
