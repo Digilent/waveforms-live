@@ -1,0 +1,110 @@
+openlogger-logger-component {
+    .logger-component-container .osc-title {
+        color: white;
+        height: 31px;
+    }
+    .logger-component-container {
+        border-bottom: solid black 1px;
+    }
+    .logger-component-container .pad-top {
+        padding-top: 5px;
+    }
+    .logger-component-container .pad-bottom {
+        padding-bottom: 5px;
+    }
+    .xaxis-left {
+        text-align: right;
+        padding: 0;
+        max-width: 26px;
+        font-size: 0;
+    }
+    .xaxis-right {
+        text-align: left;
+        padding: 0;
+        max-width: 32px;
+        font-size: 0;
+    }
+    .xaxis-center {
+        min-width: 80px;
+        padding: 0px 4px 0px 4px;
+    }
+    .logger-component-container .set-top-border {
+        border-top: solid black 1px;
+    }
+    .logger-component-container .vpd-input-col {
+        padding-left: 0px;
+        padding-top: 0px;
+        padding-right: 6px;
+        padding-bottom: 0px;
+    }
+    .logger-component-container .one-button-col {
+        min-width: 117px;
+    }
+    .logger-component-container .no-button-col {
+        min-width: 145px;
+    }
+    .logger-component-container .svg-size {
+        max-width: 16px;
+    }
+    .logger-component-container dropdown-popover select {
+        height: 25px;
+        text-transform: capitalize;
+    }
+    .logger-component-container dropdown-popover.profile-drop-pop select {
+        text-transform: none;
+    }
+    .logger-component-container dropdown-popover button {
+        height: 25px;
+    }
+    .logger-component-container .samplefreq-val-col {
+        min-width: 80px;
+        padding: 0px 4px 0px 4px;
+    }
+    .logger-component-container .highlight-input,
+    .logger-component-container .highlight-input .dropdown-select {
+        background-color: #AAAAAA;
+        color: black;
+    }
+    .logger-component-container .main-button {
+        color: #3A3A3A;
+        background-color: #EEEEEE;
+        font-size: 12px;
+        font-weight: 600;
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+    .logger-component-wrapper {
+        margin-left: 8px;
+    }
+    .logger-component-container .button-info-container {
+        padding-bottom: 5px;
+    }
+    .logger-component-container .custom-image-button {
+        display: block;
+    }
+    .logger-component-container .img-button {
+        border: solid black 1px;
+        height: 25px;
+        width: 26px;
+        padding: 0px;
+        background-color: #535353;
+        border-radius: 0px;
+        color: #CCCCCC;
+        margin: 0px;
+        box-shadow: none;
+        font-weight: 400;
+        display: block;
+    }
+    .logger-component-container .img-button:hover {
+        border: solid white 1px;
+    }
+    .logger-component-container .display-none {
+        display: none;
+    }
+    .logger-component-container .vpd-button-col .icon-only-button-side {
+        margin: 0;
+    }
+    .menu-button-container>button {
+        padding: 0 0.1em;
+    }
+}

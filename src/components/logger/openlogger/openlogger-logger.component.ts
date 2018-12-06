@@ -1,35 +1,35 @@
 import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { AlertController, PopoverController, Events } from 'ionic-angular';
-import { LoadingService } from '../../services/loading/loading.service';
-import { ToastService } from '../../services/toast/toast.service';
+import { LoadingService } from '../../../services/loading/loading.service';
+import { ToastService } from '../../../services/toast/toast.service';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
-import { ProfilePopover } from '../../components/profile-popover/profile-popover.component';
+import { DropdownPopoverComponent } from '../../dropdown-popover/dropdown-popover.component';
+import { ProfilePopover } from '../../../components/profile-popover/profile-popover.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
-import { UtilityService } from '../../services/utility/utility.service';
-import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
-import { ExportService } from '../../services/export/export.service';
-import { SettingsService } from '../../services/settings/settings.service';
-import { TooltipService } from '../../services/tooltip/tooltip.service';
-import { ScalingService } from '../../services/scaling/scaling.service';
+import { UtilityService } from '../../../services/utility/utility.service';
+import { LoggerPlotService } from '../../../services/logger-plot/logger-plot.service';
+import { ExportService } from '../../../services/export/export.service';
+import { SettingsService } from '../../../services/settings/settings.service';
+import { TooltipService } from '../../../services/tooltip/tooltip.service';
+import { ScalingService } from '../../../services/scaling/scaling.service';
 
 //Interfaces
-import { PlotDataContainer } from '../../services/logger-plot/logger-plot.service';
-import { ScaleParams } from '../../services/scaling/scaling.service';
-import { LoggerXAxisComponent } from '../logger-xaxis/logger-xaxis.component';
-import { ChannelSelectPopover } from '../channel-select-popover/channel-select-popover.component';
-import { LogScalePopover } from '../log-scale-popover/log-scale-popover.component';
+import { PlotDataContainer } from '../../../services/logger-plot/logger-plot.service';
+import { ScaleParams } from '../../../services/scaling/scaling.service';
+import { LoggerXAxisComponent } from '../../logger-xaxis/logger-xaxis.component';
+import { ChannelSelectPopover } from '../../channel-select-popover/channel-select-popover.component';
+import { LogScalePopover } from '../../log-scale-popover/log-scale-popover.component';
 
 @Component({
-    templateUrl: 'logger.html',
-    selector: 'logger-component'
+    templateUrl: 'openlogger-logger.html',
+    selector: 'openlogger-logger-component'
 })
-export class LoggerComponent {
+export class OpenLoggerLoggerComponent {
     @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
     @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
