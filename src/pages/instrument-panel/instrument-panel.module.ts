@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
-import { LoggerModule } from '../logger/logger.module';
+import { OpenScopeLoggerModule } from '../logger/openscope/openscope-logger.module';
 import { BodePageModule } from '../bode/bode.module'; 
 import { BodeModalPageModule } from '../bode-modal/bode-modal.module';
 import { SlowUSBModalPageModule } from '../slow-usb-modal/slow-usb-modal.module';
@@ -24,7 +24,7 @@ import { FGenModule } from '../../components/function-gen/function-gen.module';
 @NgModule({
     imports: [
         SharedModule,
-        LoggerModule,
+        OpenScopeLoggerModule,
         FGenModule,
         DcSupplyModule,
         IonicModule.forRoot(InstrumentPanelPage),

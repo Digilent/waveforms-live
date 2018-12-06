@@ -2,30 +2,30 @@ import { Component, ViewChild } from '@angular/core';
 import { NavController, NavParams, ModalController, PopoverController, Events } from 'ionic-angular';
 
 //Components
-import { LoggerComponent } from '../../components/logger/logger.component';
-import { GenPopover } from '../../components/gen-popover/gen-popover.component';
-import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
-import { MathPopoverComponent, MathPassData, MathOutput } from '../../components/math-popover/math-popover.component';
-import { CursorPopoverComponent, CursorPassData, CursorChannel, CursorSelection } from '../../components/cursor-popover/cursor-popover.component';
+import { OpenLoggerLoggerComponent } from '../../../components/logger/openlogger/openlogger-logger.component';
+import { GenPopover } from '../../../components/gen-popover/gen-popover.component';
+import { PinoutPopover } from '../../../components/pinout-popover/pinout-popover.component';
+import { MathPopoverComponent, MathPassData, MathOutput } from '../../../components/math-popover/math-popover.component';
+import { CursorPopoverComponent, CursorPassData, CursorChannel, CursorSelection } from '../../../components/cursor-popover/cursor-popover.component';
 
 //Pages
-import { FileBrowserPage } from '../file-browser/file-browser';
+import { FileBrowserPage } from '../../file-browser/file-browser';
 
 //Pipes
-import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
+import { UnitFormatPipe } from '../../../pipes/unit-format.pipe';
 
 //Services
-import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
-import { TooltipService } from '../../services/tooltip/tooltip.service';
-import { LoggerChartComponent } from '../../components/logger-chart/logger-chart.component';
+import { LoggerPlotService } from '../../../services/logger-plot/logger-plot.service';
+import { TooltipService } from '../../../services/tooltip/tooltip.service';
+import { LoggerChartComponent } from '../../../components/logger-chart/logger-chart.component';
 
 declare var mathFunctions: any;
 
 @Component({
-    templateUrl: "logger.html"
+    templateUrl: "openlogger-logger.html"
 })
-export class LoggerPage {
-    @ViewChild('loggerComponent') loggerComponent: LoggerComponent;
+export class OpenLoggerLoggerPage {
+    @ViewChild('loggerComponent') loggerComponent: OpenLoggerLoggerComponent;
     @ViewChild('chart') loggerChart: LoggerChartComponent;
     private dismissCallback: () => void;
     private unitFormatPipeInstance: UnitFormatPipe;
