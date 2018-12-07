@@ -31,7 +31,6 @@ import { LogScalePopover } from '../../log-scale-popover/log-scale-popover.compo
 })
 export class OpenLoggerLoggerComponent {
     @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
-    @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
     @ViewChild('dropPopLogTo') logToChild: DropdownPopoverComponent;
     @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
@@ -56,7 +55,6 @@ export class OpenLoggerLoggerComponent {
     };
 
     public analogChans: AnalogLoggerParams[] = [];
-    public digitalChans: DigitalLoggerParams[] = [];
 
     private daqParams: DaqLoggerParams = {
         maxSampleCount: -1,
@@ -68,7 +66,8 @@ export class OpenLoggerLoggerComponent {
         storageLocation: 'ram',
         uri: '',
         startIndex: 0,
-        count: 0
+        count: 0,
+        vOffset: 0
     };
     public daqChans: DaqChannelParams[] = [];
 
@@ -231,7 +230,7 @@ export class OpenLoggerLoggerComponent {
                     return;
                 }
                 else {
-                    this.analogChans[data.axisNum].vOffset = data.offset;
+                    this.daqChans[data.axisNum].vOffset = data.offset;
                 }
             },
             (err) => { },
@@ -489,16 +488,16 @@ export class OpenLoggerLoggerComponent {
         }, false); */
     }
 
-    mousewheel(event, instrument: 'analog' | 'digital', axisNum: number, input: 'offset' | 'sampleFreq' | 'samples' | 'vpd') {
+    mousewheel(event, input: 'offset' | 'sampleFreq' | 'samples' | 'vpd', axisNum?: number) {
         if (input === 'offset') {
             this.buttonChangeOffset(axisNum, event.deltaY < 0 ? 'increment' : 'decrement');
             return;
         }
         if (event.deltaY < 0) {
-            input === 'vpd' ? this.decrementVpd(axisNum) : this.incrementFrequency(instrument, input);
+            input === 'vpd' ? this.decrementVpd(axisNum) : this.incrementFrequency(input);
         }
         else {
-            input === 'vpd' ? this.incrementVpd(axisNum) : this.decrementFrequency(instrument, input);
+            input === 'vpd' ? this.incrementVpd(axisNum) : this.decrementFrequency(input);
         }
     }
 
@@ -513,11 +512,11 @@ export class OpenLoggerLoggerComponent {
     }
 
     buttonChangeOffset(axisNum: number, type: 'increment' | 'decrement') {
-        this.analogChans[axisNum].vOffset += type === 'increment' ? 0.1 : -0.1;
-        this.loggerPlotService.setPosition('y', axisNum + 1, this.analogChans[axisNum].vOffset, true);
+        this.daqChans[axisNum].vOffset += type === 'increment' ? 0.1 : -0.1;
+        this.loggerPlotService.setPosition('y', axisNum + 1, this.daqChans[axisNum].vOffset, true);
     }
 
-    incrementFrequency(instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
+    incrementFrequency(type: 'sampleFreq' | 'samples') {
         let valString = type === 'sampleFreq' ? this.daqParams.sampleFreq.toString() : this.daqParams.maxSampleCount.toString();
         let valNum = parseFloat(valString);
         let pow = 0;
@@ -533,10 +532,10 @@ export class OpenLoggerLoggerComponent {
             numberMag++;
         }
         let newFreq = (leadingNum * Math.pow(10, numberMag)) / Math.pow(1000, pow);
-        this.validateAndApply(newFreq, instrument, type);
+        this.validateAndApply(newFreq, type);
     }
 
-    private validateAndApply(newVal: number, instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
+    private validateAndApply(newVal: number, type: 'sampleFreq' | 'samples') {
         if (type === 'sampleFreq') {
             // TODO: get minFreq and maxFreq from instrument before setting
 
@@ -566,7 +565,7 @@ export class OpenLoggerLoggerComponent {
         }
     }
 
-    decrementFrequency(instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
+    decrementFrequency(type: 'sampleFreq' | 'samples') {
         let valString = type === 'sampleFreq' ? this.daqParams.sampleFreq.toString() : this.daqParams.maxSampleCount.toString();
         let valNum = parseFloat(valString);
         let pow = 0;
@@ -582,7 +581,7 @@ export class OpenLoggerLoggerComponent {
             numberMag--;
         }
         let newFreq = (leadingNum * Math.pow(10, numberMag)) / Math.pow(1000, pow);
-        this.validateAndApply(newFreq, instrument, type);
+        this.validateAndApply(newFreq, type);
     }
 
     setViewToEdge() {
@@ -636,23 +635,6 @@ export class OpenLoggerLoggerComponent {
             this.daqParams.maxSampleCount = -1;
         }
         this.selectedMode = event;
-    }
-
-    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, mode?: string }) {
-        setTimeout(() => {
-            if (applyOptions.storageLocation != undefined) {
-                let id = 'location' + channel;
-                this.locationChildren.forEach((child) => {
-                    if (id === child.elementRef.nativeElement.id) {
-                        child._applyActiveSelection(applyOptions.storageLocation);
-                    }
-                });
-            }
-
-            if (applyOptions.mode != undefined) {
-                this.modeChild._applyActiveSelection(applyOptions.mode);
-            }
-        }, 20);
     }
 
     openProfileSettings(name, event?) {
@@ -857,9 +839,8 @@ export class OpenLoggerLoggerComponent {
                 });
 
                 // set mode dropdown
-                let dropdownChangeObj = {};
-                dropdownChangeObj['mode'] = loadedObj[instrument].maxSampleCount === -1 ? 'continuous' : 'finite';
-                this.setChannelDropdowns(undefined, dropdownChangeObj);
+                let selection = loadedObj[instrument].maxSampleCount === -1 ? 'continuous' : 'finite';
+                this.modeChild._applyActiveSelection(selection);
             }
         }        
     }
@@ -903,19 +884,18 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    setActiveSeries(instrument: 'analog' | 'digital', axisNum: number) {
-        let convertedNum = instrument === 'analog' ? axisNum + 1 : axisNum + this.daqChans.length + 1;
-        this.loggerPlotService.setActiveSeries(convertedNum);
+    setActiveSeries(axisNum: number) {
+        this.loggerPlotService.setActiveSeries(axisNum + 1);
     }
 
-    formatInputAndUpdate(trueValue: number, instrument: 'analog' | 'digital', type: LoggerInputType, channel?: number) {
+    formatInputAndUpdate(trueValue: number, type: LoggerInputType, channel?: number) {
         console.log(trueValue);
         switch (type) {
             case 'delay':
                 this.analogChans[channel].startDelay = trueValue;
                 break;
             case 'offset':
-                (<AnalogLoggerParams>this.analogChans[channel]).vOffset = trueValue;
+                (<DaqChannelParams>this.daqChans[channel]).vOffset = trueValue;
                 this.loggerPlotService.setPosition('y', channel + 1, trueValue, true);
                 break;
             case 'samples':
@@ -923,7 +903,7 @@ export class OpenLoggerLoggerComponent {
                 this.daqParams.maxSampleCount = trueValue;
                 break;
             case 'sampleFreq':
-                this.validateAndApply(trueValue, instrument, 'sampleFreq');
+                this.validateAndApply(trueValue, 'sampleFreq');
                 break;
             default:
                 break;
@@ -1282,13 +1262,13 @@ export class OpenLoggerLoggerComponent {
             this.selectedLogLocation = 'chart';
             this.logToChild._applyActiveSelection('chart');
         }
-        it = 0;
-        this.locationChildren.forEach((child) => {
-            if (channelInternalIndex === it) {
-                child._applyActiveSelection(activeChan.storageLocation);
-            }
-            it++;
-        });
+        // it = 0;
+        // this.locationChildren.forEach((child) => {
+        //     if (channelInternalIndex === it) {
+        //         child._applyActiveSelection(activeChan.storageLocation);
+        //     }
+        //     it++;
+        // });
         it = 0;
         activeChan.uri = respObj.uri;
         if (activeChan.uri.indexOf('.dlog') !== -1) {
@@ -1627,10 +1607,6 @@ export interface AnalogLoggerParams extends LoggerParams {
     vOffset: number
 }
 
-export interface DigitalLoggerParams extends LoggerParams {
-    bitMask: number
-}
-
 export type LoggerInputType = 'delay' | 'offset' | 'samples' | 'sampleFreq';
 
 export interface DaqChannelParams {
@@ -1638,7 +1614,8 @@ export interface DaqChannelParams {
     storageLocation: string,
     uri: string,
     startIndex: number,
-    count: number
+    count: number,
+    vOffset: number
 }
 
 export interface DaqLoggerParams {

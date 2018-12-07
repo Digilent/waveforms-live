@@ -11,7 +11,7 @@
                 </ion-col>
                 <ion-col text-right center class="vpd-button-col">
                     <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', 'sampleFreq')"
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('sampleFreq')"
                             [disabled]="running">
                             <img class="custom-image-button" src="assets/img/remove.svg">
                         </button>
@@ -19,13 +19,13 @@
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
                     <input class="custom-input" step="any" [ngModel]="daqParams.sampleFreq | unitFormat:'S/s'" [disabled]="running" formatInput
-                        (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq')" (mousewheel)="mousewheel($event, 'analog', undefined, 'sampleFreq')"
+                        (valChange)="formatInputAndUpdate($event, 'sampleFreq')" (mousewheel)="mousewheel($event, 'sampleFreq')"
                         [tooltip]="tooltipService.getTooltip('logSampleFreq').message" [tooltipAnimation]="true" tooltipPlacement="top"
                     />
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', 'sampleFreq')"
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('sampleFreq')"
                             [disabled]="running">
                             <img class="custom-image-button" src="assets/img/add.svg">
                         </button>
@@ -126,7 +126,7 @@
                 </ion-col>
                 <ion-col text-right center class="vpd-button-col">
                     <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', 'samples')"
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('samples')"
                             [disabled]="running">
                             <img class="custom-image-button" src="assets/img/remove.svg">
                         </button>
@@ -134,13 +134,13 @@
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
                     <input class="custom-input" step="any" [ngModel]="daqParams.maxSampleCount | unitFormat:'S'" [disabled]="running" formatInput
-                        (valChange)="formatInputAndUpdate($event, 'analog', 'samples', undefined)" (mousewheel)="mousewheel($event, 'analog', undefined, 'samples')"
+                        (valChange)="formatInputAndUpdate($event, 'samples')" (mousewheel)="mousewheel($event, 'samples')"
                         [tooltip]="tooltipService.getTooltip('logSamples').message" [tooltipAnimation]="true" tooltipPlacement="top"
                     />
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">
                     <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', 'samples')"
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('samples')"
                             [disabled]="running">
                             <img class="custom-image-button" src="assets/img/add.svg">
                         </button>
@@ -197,7 +197,7 @@
         </div>
     </div>
 
-    <div *ngFor="let series of analogChans, let i = index;" (tap)="setActiveSeries('analog', i)" [ngClass]="{'display-none': !showLoggerSettings || !selectedChannels[i]}">
+    <div *ngFor="let series of daqChans, let i = index;" (tap)="setActiveSeries(i)" [ngClass]="{'display-none': !showLoggerSettings || !selectedChannels[i]}">
         <div>
             <ion-row class="pad-top">
                 <ion-col class="header-side-col" center text-left>
@@ -224,7 +224,7 @@
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
                     <input class="custom-input highlight-input" step="any" [ngModel]="loggerPlotService.vpdArray[loggerPlotService.vpdIndices[i]] | unitFormat:'V/'"
-                        formatInput (valChange)="yAxisValChange($event, i)" (mousewheel)="mousewheel($event, 'analog', i, 'vpd')"
+                        formatInput (valChange)="yAxisValChange($event, i)" (mousewheel)="mousewheel($event, 'vpd', i)"
                         [tooltip]="tooltipService.getTooltip('oscVpd').message" [tooltipAnimation]="true" tooltipPlacement="top"
                     />
                 </ion-col>
@@ -249,8 +249,8 @@
                     </div>
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'offset', i)"
-                        (mousewheel)="mousewheel($event, 'analog', i, 'offset')" [tooltip]="tooltipService.getTooltip('oscOffset').message"
+                    <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event, 'offset', i)"
+                        (mousewheel)="mousewheel($event, 'offset', i)" [tooltip]="tooltipService.getTooltip('oscOffset').message"
                         [tooltipAnimation]="true" tooltipPlacement="top" />
                 </ion-col>
                 <ion-col text-left center class="vpd-button-col margin-right">

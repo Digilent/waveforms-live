@@ -128,21 +128,12 @@ export class OpenLoggerLoggerPage {
             addedInfo: []
         };
 
-        for (let i = 0; i < this.loggerComponent.analogChans.length; i++) {
+        for (let i = 0; i < this.loggerComponent.daqChans.length; i++) {
             if (this.loggerComponent.dataContainers[i].data.length > 1) {
                 passData.availableChans.push({
                     instrument: 'Analog',
                     channel: i + 1,
                     seriesOffset: i
-                });
-            }
-        }
-        for (let i = 0; i < this.loggerComponent.digitalChans.length; i++) {
-            if (this.loggerComponent.dataContainers[i + this.loggerComponent.analogChans.length].data.length > 1) {
-                passData.availableChans.push({
-                    instrument: 'Digital',
-                    channel: i + 1,
-                    seriesOffset: this.loggerComponent.analogChans.length + i
                 });
             }
         }
@@ -168,7 +159,7 @@ export class OpenLoggerLoggerPage {
 
     openCursorModal(event) {
         let availableChannels: CursorChannel[] = [];
-        for (let i = 0; i < this.loggerComponent.analogChans.length; i++) {
+        for (let i = 0; i < this.loggerComponent.daqChans.length; i++) {
             if (this.loggerComponent.dataContainers[i].data.length > 1) {
                 availableChannels.push({
                     instrument: 'analog',
@@ -176,14 +167,7 @@ export class OpenLoggerLoggerPage {
                 });
             }
         }
-        for (let i = 0; i < this.loggerComponent.digitalChans.length; i++) {
-            if (this.loggerComponent.dataContainers[i + this.loggerComponent.analogChans.length].data.length > 1) {
-                availableChannels.push({
-                    instrument: 'digital',
-                    channel: i + 1
-                });
-            }
-        }
+
         let passData: CursorPassData = {
             availableChannels: availableChannels,
             currentChannels: this.cursorInfo.currentChannels,
