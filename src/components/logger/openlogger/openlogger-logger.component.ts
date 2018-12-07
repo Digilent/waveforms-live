@@ -1031,21 +1031,22 @@ export class OpenLoggerLoggerComponent {
     }
 
     private setParametersAndRun(loading) {
-        let analogChanArray = [];
-        //TODO when each channel invidivdually, loop and check if channel is on before pushing
-        for (let i = 0; i < this.analogChans.length; i++) {
-            this.analogChans[i].count = -1000;
-            this.analogChans[i].startIndex = -1;
-            analogChanArray.push(i + 1);
+        let daqChanArray = [];
+        for (let i = 0; i < this.daqChans.length; i++) {
+            this.daqChans[i].count = -1000;
+            this.daqChans[i].startIndex = -1;
+            if (this.selectedChannels[i]) {
+                daqChanArray.push(i + 1);
+            }
         }
 
         this.clearChart();
         this.setViewToEdge();
 
-        this.setParameters('analog', analogChanArray)
+        this.setParameters('analog', daqChanArray)
             .then((data) => {
                 console.log(data);
-                return this.run('analog', analogChanArray);
+                return this.run('analog', daqChanArray);
             })
             .then((data) => {
                 console.log(data);
@@ -1280,56 +1281,33 @@ export class OpenLoggerLoggerComponent {
         }
     }
 
-    private calculateGainFromWindow(channelNum: number): number {
-        let range = this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[channelNum]] * 10;
-        let j = 0;
-        while (range * this.activeDevice.instruments.logger.analog.chans[channelNum].gains[j] > this.activeDevice.instruments.logger.analog.chans[channelNum].adcVpp / 1000 &&
-            j < this.activeDevice.instruments.logger.analog.chans[channelNum].gains.length
-        ) {
-            j++;
-        }
-
-        if (j > this.activeDevice.instruments.logger.analog.chans[channelNum].gains.length - 1) {
-            j--;
-        }
-        return this.activeDevice.instruments.logger.analog.chans[channelNum].gains[j];
-    }
-
     setParameters(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
         return new Promise((resolve, reject) => {
             let observable;
-            let paramObj = {};
             if (instrument === 'analog') {
-                if (this.analogChans.length < 1) {
+                if (this.daqChans.length < 1) {
                     resolve();
                     return;
                 }
-                let analogParamArray: string[] = ['maxSampleCount', 'gain', 'vOffset', 'sampleFreq', 'startDelay', 'overflow', 'storageLocation', 'uri'];
-                for (let i = 0; i < chans.length; i++) {
-                    for (let j = 0; j < analogParamArray.length; j++) {
-                        if (paramObj[analogParamArray[j]] == undefined) {
-                            paramObj[analogParamArray[j]] = [];
-                        }
-                        let newIndex = paramObj[analogParamArray[j]].push(this.analogChans[chans[i] - 1][analogParamArray[j]]);
-                        if (analogParamArray[j] === 'uri') {
-                            paramObj[analogParamArray[j]][newIndex - 1] += '.dlog';
-                        }
-                        else if (analogParamArray[j] === 'gain') {
-                            paramObj[analogParamArray[j]][newIndex - 1] = this.calculateGainFromWindow(chans[i] - 1);
-                        }
-                    }
-                }
-                console.log(paramObj);
+
+                let overflows = [];
+                let storageLocations = [];
+                let uris = [];
+                chans.forEach((chan) => {
+                    overflows.push('circular');
+                    storageLocations.push(this.daqChans[chan - 1].storageLocation);
+                    uris.push(this.daqChans[chan - 1].uri + '.dlog');
+                });
+
                 observable = this.activeDevice.instruments.logger.analog.setParameters(
                     chans,
-                    paramObj[analogParamArray[0]],
-                    paramObj[analogParamArray[1]],
-                    paramObj[analogParamArray[2]],
-                    paramObj[analogParamArray[3]],
-                    paramObj[analogParamArray[4]],
-                    paramObj[analogParamArray[5]],
-                    paramObj[analogParamArray[6]],
-                    paramObj[analogParamArray[7]]
+                    this.daqParams.maxSampleCount,
+                    this.daqParams.sampleFreq,
+                    this.daqParams.startDelay,
+                    this.average,
+                    overflows,
+                    storageLocations,
+                    uris
                 );
             }
             observable.subscribe(
