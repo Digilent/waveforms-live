@@ -7,7 +7,7 @@ import { DeviceConfigurePage } from '../../pages/device-configure/device-configu
 import { LoadFirmwarePage } from '../../pages/load-firmware/load-firmware';
 import { UpdateFirmwarePage } from '../../pages/update-firmware/update-firmware';
 import { CalibratePage } from '../../pages/calibrate/calibrate';
-import { LoggerPage } from '../logger/logger';
+import { OpenLoggerLoggerPage } from '../logger/openlogger/openlogger-logger';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
@@ -860,7 +860,7 @@ export class DeviceManagerPage {
 
     connectToDevice(deviceIndex: number) {
         let isLogger = false;
-        let pageToDisplay = (isLogger = this.devices[deviceIndex].deviceDescriptor.deviceModel === 'OpenLogger MZ') ? LoggerPage : InstrumentPanelPage;
+        let pageToDisplay = (isLogger = this.devices[deviceIndex].deviceDescriptor.deviceModel === 'OpenLogger MZ') ? OpenLoggerLoggerPage : InstrumentPanelPage;
 
         let navParams = {
             tutorialMode: this.tutorialMode

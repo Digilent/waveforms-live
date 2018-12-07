@@ -78,7 +78,7 @@
         "analog": {
             "fileFormat": 1,
             "fileRevision": 1,
-            "numChans": 1,
+            "numChans": 8,
             "1": {
                 "resolution": 12,
                 "effectiveBits": 12,

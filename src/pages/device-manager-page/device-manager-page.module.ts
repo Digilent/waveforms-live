@@ -11,6 +11,7 @@ import { CalibrateModule } from '../calibrate/calibrate.module';
 import { WifiSetupModule } from '../wifi-setup/wifi-setup.module';
 import { LoadFirmwareModule } from '../load-firmware/load-firmware.module';
 import { UpdateFirmwareModule } from '../update-firmware/update-firmware.module';
+import { OpenLoggerLoggerModule } from '../logger/openlogger/openlogger-logger.module';
 
 import { GithubForkRibbon } from '../../components/github-fork-ribbon/github-fork-ribbon';
 
@@ -22,7 +23,8 @@ import { GithubForkRibbon } from '../../components/github-fork-ribbon/github-for
         CalibrateModule,
         WifiSetupModule,
         LoadFirmwareModule,
-        UpdateFirmwareModule
+        UpdateFirmwareModule,
+        OpenLoggerLoggerModule
     ],
     declarations: [
         GithubForkRibbon,

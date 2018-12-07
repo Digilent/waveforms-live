@@ -1,46 +1,40 @@
 import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
-import { AlertController, PopoverController, Events } from 'ionic-angular';
-import { LoadingService } from '../../services/loading/loading.service';
-import { ToastService } from '../../services/toast/toast.service';
+import { AlertController } from 'ionic-angular';
+import { LoadingService } from '../../../services/loading/loading.service';
+import { ToastService } from '../../../services/toast/toast.service';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
-import { ProfilePopover } from '../../components/profile-popover/profile-popover.component';
+import { DropdownPopoverComponent } from '../../dropdown-popover/dropdown-popover.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
-import { UtilityService } from '../../services/utility/utility.service';
-import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
-import { ExportService } from '../../services/export/export.service';
-import { SettingsService } from '../../services/settings/settings.service';
-import { TooltipService } from '../../services/tooltip/tooltip.service';
-import { ScalingService } from '../../services/scaling/scaling.service';
+import { UtilityService } from '../../../services/utility/utility.service';
+import { LoggerPlotService } from '../../../services/logger-plot/logger-plot.service';
+import { ExportService } from '../../../services/export/export.service';
+import { SettingsService } from '../../../services/settings/settings.service';
+import { TooltipService } from '../../../services/tooltip/tooltip.service';
 
 //Interfaces
-import { PlotDataContainer } from '../../services/logger-plot/logger-plot.service';
-import { ScaleParams } from '../../services/scaling/scaling.service';
-import { LoggerXAxisComponent } from '../logger-xaxis/logger-xaxis.component';
-import { ChannelSelectPopover } from '../channel-select-popover/channel-select-popover.component';
-import { LogScalePopover } from '../log-scale-popover/log-scale-popover.component';
+/* import { DataContainer } from '../chart/chart.interface'; */
+import { PlotDataContainer } from '../../../services/logger-plot/logger-plot.service';
 
 @Component({
-    templateUrl: 'logger.html',
-    selector: 'logger-component'
+    templateUrl: 'openscope-logger.html',
+    selector: 'openscope-logger-component'
 })
-export class LoggerComponent {
-    @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
+export class OpenScopeLoggerComponent {
+    //@ViewChildren('dropPopOverflow') overflowChildren: QueryList<DropdownPopoverComponent>;
+    @ViewChildren('dropPopSamples') samplesChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
+    @ViewChildren('dropPopLink') linkChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
-    @ViewChild('dropPopLogTo') logToChild: DropdownPopoverComponent;
-    @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
-    @ViewChildren('dropPopScaling') scalingChildren: QueryList<DropdownPopoverComponent>;
-
+    @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
-    public showAdvSettings: boolean = false;
-    public selectedChannels: boolean[] = [];
+    public showAnalogChan: boolean[] = [];
+    public showDigitalChan: boolean[] = [];
     private defaultAnalogParams: AnalogLoggerParams = {
         gain: 1,
         vOffset: 0,
@@ -52,48 +46,48 @@ export class LoggerComponent {
         uri: '',
         startIndex: 0,
         count: 0,
-        state: 'idle'
+        state: 'idle',
+        linked: false,
+        linkedChan: -1
     };
-
+    private defaultDigitalParams: DigitalLoggerParams = {
+        maxSampleCount: -1,
+        sampleFreq: 1000,
+        startDelay: 0,
+        overflow: 'circular',
+        storageLocation: 'ram',
+        uri: '',
+        startIndex: 0,
+        count: 0,
+        state: 'idle',
+        linked: false,
+        linkedChan: -1,
+        bitMask: 255 //TODO fix when digital channels exist
+    };
     public analogChans: AnalogLoggerParams[] = [];
     public digitalChans: DigitalLoggerParams[] = [];
-
-    private daqParams: DaqLoggerParams = {
-        maxSampleCount: -1,
-        startDelay: 0,
-        sampleFreq: 1000
-    };
-    private defaultDaqChannelParams: DaqChannelParams = {
-        average: 1,
-        storageLocation: 'ram',
-        uri: ''
-    };
-    public daqChans: DaqChannelParams[] = [];
-
-    public average: number = 1;
-    public maxAverage: number = 256;
-
     private analogChanNumbers: number[] = [];
-    public logToLocations: string[] = ['chart', 'SD', 'both'];
-    public modes: ('continuous' | 'finite')[] = ['continuous', 'finite'];
-    public selectedMode: 'continuous' | 'finite' = this.modes[0];
-    public selectedLogLocation: string = this.logToLocations[0];
+    private digitalChanNumbers: number[] = [];
+    public overflowConditions: ('circular')[] = ['circular'];
+    public modes: string[] = ['log', 'stream', 'both'];
+    public samples: ('continuous' | 'finite')[] = ['continuous', 'finite'];
+    public selectedSamples: 'continuous' | 'finite' = this.samples[0];
+    public selectedMode: string = this.modes[0];
     public storageLocations: string[] = [];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
-    public logOnBootProfiles: string[] = ['None'];
-    public selectedLogOnBoot: string = this.logOnBootProfiles[0];
-    private dirtyProfile: boolean = false;
+    private defaultProfileName: string = 'NewProfile';
+    public profileNameScratch: string = this.defaultProfileName;
+    public analogLinkOptions: string[][] = [];
+    public digitalLinkOptions: string[][] = [];
     private profileObjectMap: any = {};
     public running: boolean = false;
     public dataContainers: PlotDataContainer[] = [];
     public viewMoved: boolean = false;
     private analogChansToRead: number[] = [];
+    private digitalChansToRead: number[] = [];
     private chartPanSubscriptionRef;
     private offsetChangeSubscriptionRef;
-    private scalingOptions: string[] = ['None'];
-    private selectedScales: string[];
-    private unitTransformer: any[] = [];
 
     private filesInStorage: any = {};
     private destroyed: boolean = false;
@@ -108,10 +102,7 @@ export class LoggerComponent {
         private exportService: ExportService,
         private alertCtrl: AlertController,
         private settingsService: SettingsService,
-        public tooltipService: TooltipService,
-        private popoverCtrl: PopoverController,
-        public events: Events,
-        private scalingService: ScalingService
+        public tooltipService: TooltipService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         console.log(this.activeDevice.instruments.logger);
@@ -130,84 +121,11 @@ export class LoggerComponent {
                 this.toastService.createToast('deviceDroppedConnection', true, undefined, 5000);
                 loading.dismiss();
             });
-
-        this.events.subscribe('profile:save', (params) => {
-            this.saveAndSetProfile(params[0]['profileName']);
-        });
-        this.events.subscribe('profile:delete', (params) => {
-            this.deleteProfile(params[0]['profileName']);
-        });
-        this.events.subscribe('channels:selected', (params) => {
-            this.selectChannels(params[0]['channels']);
-        });
-        this.events.subscribe('scale:update', (event) => {
-            let params = event[0]['params'];
-            let channel = event[0]['channel'];
-            this.updateScale(channel, params['expression'], params['name'], params['unitDescriptor']);
-        });
-        this.events.subscribe('scale:delete', (params) => {
-            this.deleteScale(params[0]['channel'], params[0]['name']);
-        });
-    }
-
-    public selectChannels(selectedChans: boolean[]) {
-        this.selectedChannels = selectedChans;
-    }
-
-    public updateScale(chan: number, expression: string, scaleName: string, units: string) {
-        this.selectedScales[chan] = scaleName;
-        this.selectedScales.forEach((chanScale, index) => {
-            if (chanScale == scaleName) {
-                this.unitTransformer[index] = expression;
-                this.events.publish('units:update', { channel: index, units: units });
-            }
-        });
-
-        // add name to list if new
-        if (this.scalingOptions.indexOf(scaleName) === -1) {
-            this.scalingOptions.push(scaleName);
-        }
-        // set dropdown selection
-        setTimeout(() => {
-            this.scalingChildren.toArray()[chan]._applyActiveSelection(scaleName);
-        }, 20);
-    }
-
-    public deleteScale(chan: number, scaleName: string) {
-        this.unitTransformer[chan] = undefined;
-
-        // remove name from list
-        let nameIndex: number = this.scalingOptions.indexOf(scaleName);
-        if (nameIndex !== -1) {
-            this.scalingOptions.splice(nameIndex, 1);
-        }
-
-        // update any channels that were set to the delete option
-        this.selectedScales.forEach((chanScale, index) => {
-            if (chanScale == scaleName) {
-                this.selectedScales[index] = this.scalingOptions[0];
-                this.events.publish('units:update', { channel: index });
-            }
-        });
-    }
-
-    ngDoCheck() {
-        // Check if there are unsaved changes to profile
-        this.dirtyProfile = false;
-        if (this.selectedLogProfile && this.selectedLogProfile != this.loggingProfiles[0]) {
-            let current = this.generateProfileJson();
-            this.dirtyProfile = JSON.stringify(current) !== JSON.stringify(this.profileObjectMap[this.selectedLogProfile]);
-        }
     }
 
     ngOnDestroy() {
         this.chartPanSubscriptionRef.unsubscribe();
         this.offsetChangeSubscriptionRef.unsubscribe();
-        this.events.unsubscribe('profile:save');
-        this.events.unsubscribe('profile:delete');
-        this.events.unsubscribe('channels:selected');
-        this.events.unsubscribe('scale:update');
-        this.events.unsubscribe('scale:delete');
         this.running = false;
         this.destroyed = true;
     }
@@ -237,14 +155,31 @@ export class LoggerComponent {
         );
         for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
             this.analogChans.push(Object.assign({}, this.defaultAnalogParams));
+            this.showAnalogChan.push(true);
+
+            this.analogLinkOptions[i] = ['no'];
+            for (let j = 0; j < this.analogLinkOptions.length; j++) {
+                if (i !== j) {
+                    this.analogLinkOptions[j].push('Ch ' + (i + 1).toString());
+                    this.analogLinkOptions[i].push('Ch ' + (j + 1).toString());
+                }
+            }
+        }
+        for (let i = 0; i < this.activeDevice.instruments.logger.digital.numChans; i++) {
+            this.digitalChans.push(Object.assign({}, this.defaultDigitalParams));
+            this.showDigitalChan.push(i === 0);
+
+            this.digitalLinkOptions[i] = ['no'];
+            for (let j = 0; j < this.digitalLinkOptions.length; j++) {
+                if (i !== j) {
+                    this.digitalLinkOptions[j].push('Ch ' + (i + 1).toString());
+                    this.digitalLinkOptions[i].push('Ch ' + (j + 1).toString());
+                }
+            }
         }
 
-        // TODO: change analog to daq
-        for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
-            this.daqChans.push(Object.assign({}, this.defaultDaqChannelParams));
-        }
 
-        for (let i = 0; i < this.daqChans.length; i++) {
+        for (let i = 0; i < this.analogChans.length; i++) {
             this.analogChanNumbers.push(i + 1);
             this.dataContainers.push({
                 data: [],
@@ -258,40 +193,40 @@ export class LoggerComponent {
                 seriesOffset: 0
             });
         }
-
-        this.selectedChannels = Array.apply(null, Array(this.daqChans.length)).map(() => false);
-        // select channel 1 by default
-        this.selectedChannels[0] = true;
-
-        // load saved scaling functions
-        this.scalingService.getAllScalingOptions()
-            .then((result: ScaleParams[]) => {
-                result.forEach((option) => {
-                    this.scalingOptions.push(option.name);
-                });
+        for (let i = 0; i < this.digitalChans.length; i++) {
+            this.digitalChanNumbers.push(i + 1);
+            this.dataContainers.push({
+                data: [],
+                yaxis: i + 1 + this.analogChans.length,
+                lines: {
+                    show: true
+                },
+                points: {
+                    show: false
+                },
+                seriesOffset: 0
             })
-            .catch((e) => {
-                console.log(e);
-            });
-
-        this.selectedScales = Array.apply(null, Array(this.daqChans.length)).map(() => this.scalingOptions[0]);
+        }
     }
 
     private loadDeviceInfo(): Promise<any> {
         return new Promise((resolve, reject) => {
             let analogChanArray = [];
-            for (let i = 0; i < this.daqChans.length; i++) {
+            let digitalChanArray = [];
+            for (let i = 0; i < this.analogChans.length; i++) {
                 analogChanArray.push(i + 1);
             }
-            if (analogChanArray.length < 1) {
+            for (let i = 0; i < this.digitalChans.length; i++) {
+                digitalChanArray.push(i + 1);
+            }
+            if (analogChanArray.length < 1 && digitalChanArray.length < 1) { 
                 resolve('done');
-                return;
+                return; 
             }
 
             this.getStorageLocations()
                 .then((data) => {
                     console.log(data);
-
                     if (data && data.device && data.device[0]) {
                         data.device[0].storageLocations.forEach((el, index, arr) => {
                             if (el !== 'flash') {
@@ -299,14 +234,13 @@ export class LoggerComponent {
                             }
                         });
                     }
-
                     if (this.storageLocations.length < 1) {
-                        this.logToLocations = ['chart'];
-                        this.logToSelect('chart');
+                        this.modes = ['stream'];
+                        this.modeSelect('stream');
                         return new Promise((resolve, reject) => { resolve(); });
                     }
-                    else {
-                        return new Promise((resolve, reject) => {
+                    else {    
+                        return new Promise((resolve, reject) => {               
                             this.storageLocations.reduce((accumulator, currentVal, currentIndex) => {
                                 return accumulator
                                     .then((data) => {
@@ -324,7 +258,7 @@ export class LoggerComponent {
                                     console.log(e);
                                     resolve();
                                 });
-                        });
+                        });     
                     }
                 })
                 .then((data) => {
@@ -338,70 +272,22 @@ export class LoggerComponent {
                 })
                 .catch((e) => {
                     console.log(e);
-                    // TODO: uncomment when getStorageLocations command is implemented
-                    // if (this.storageLocations.length < 1) {
-                    //     this.logToLocations = ['chart'];
-                    //     this.logToSelect('chart');
-                    // }
                     return this.getCurrentState('analog', analogChanArray);
                     //return this.analogGetMultipleChannelStates(analogChanArray);
                 })
                 .then((data) => {
                     console.log(data);
+                    return this.getCurrentState('digital', digitalChanArray);
+                })
+                .then((data) => {
+                    console.log(data);
+                    console.log(this.analogChans);
                     resolve(data);
                 })
                 .catch((e) => {
                     console.log(e);
                     reject(e);
                 });
-        });
-    }
-
-    openChannelSelector(event) {
-        let popover = this.popoverCtrl.create(ChannelSelectPopover, { selectedChannels: this.selectedChannels }, {
-            cssClass: 'logChannelsPopover'
-        });
-        popover.present({
-            ev: event
-        });
-    }
-
-    private scaleSelect(event: string, channel: number) {
-        let currentScale = this.selectedScales[channel];
-        this.selectedScales[channel] = event;
-        if (event === 'None') {
-            // remove scaling on this channel and reset units
-            this.unitTransformer[channel] = undefined;
-            this.events.publish('units:update', { channel: channel });
-        } else {
-            // apply expression to this channel and update units
-            this.scalingService.getScalingOption(event)
-                .then((result) => {
-                    // apply scaling to this channel
-                    this.unitTransformer[channel] = result.expression;
-                    this.events.publish('units:update', { channel: channel, units: result.unitDescriptor });
-                })
-                .catch(() => {
-                    this.toastService.createToast('loggerScaleLoadErr', true, undefined, 5000);
-                    this.selectedScales[channel] = currentScale;
-                    setTimeout(() => {
-                        this.scalingChildren.toArray()[channel]._applyActiveSelection(currentScale);
-                    }, 20);
-                    return;
-                });
-        }
-    }
-
-    openScaleSettings(event: any, chan: number, newScale: boolean) {
-        let scaleData = { channel: chan };
-        if (!newScale) {
-            scaleData['scaleName'] = this.selectedScales[chan];
-        }
-        let popover = this.popoverCtrl.create(LogScalePopover, scaleData, {
-            cssClass: 'logScalePopover'
-        });
-        popover.present({
-            ev: event
         });
     }
 
@@ -416,8 +302,15 @@ export class LoggerComponent {
                 this.analogChans[i].startIndex = -1;
             }
         }
+        for (let i = 0; i < this.digitalChans.length; i++) {
+            if (this.digitalChans[i].state === 'running') {
+                this.digitalChansToRead.push(i + 1);
+                this.digitalChans[i].count = -1000;
+                this.digitalChans[i].startIndex = -1;
+            }
+        }
 
-        if (this.selectedLogLocation === 'SD') {
+        if (this.selectedMode === 'log') {
             this.bothStartStream();
         }
         this.readLiveData();
@@ -425,7 +318,7 @@ export class LoggerComponent {
 
     fileExists(): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.alertWrapper('File Exists', 'Your log file already exists. Would you like to overwrite or cancel?',
+            this.alertWrapper('File Exists', 'Your log file already exists. Would you like to overwrite or cancel?', 
                 [{
                     text: 'Cancel',
                     handler: (data) => {
@@ -493,10 +386,10 @@ export class LoggerComponent {
             return;
         }
         if (event.deltaY < 0) {
-            input === 'vpd' ? this.decrementVpd(axisNum) : this.incrementFrequency(instrument, input);
+            input === 'vpd' ? this.decrementVpd(axisNum) : this.incrementFrequency(instrument, axisNum, input);
         }
         else {
-            input === 'vpd' ? this.incrementVpd(axisNum) : this.decrementFrequency(instrument, input);
+            input === 'vpd' ? this.incrementVpd(axisNum) : this.decrementFrequency(instrument, axisNum, input);
         }
     }
 
@@ -515,8 +408,9 @@ export class LoggerComponent {
         this.loggerPlotService.setPosition('y', axisNum + 1, this.analogChans[axisNum].vOffset, true);
     }
 
-    incrementFrequency(instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
-        let valString = type === 'sampleFreq' ? this.daqParams.sampleFreq.toString() : this.daqParams.maxSampleCount.toString();
+    incrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+        let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
+        let valString = type === 'sampleFreq' ? axisObj.sampleFreq.toString() : axisObj.maxSampleCount.toString();
         let valNum = parseFloat(valString);
         let pow = 0;
         while (valNum * Math.pow(1000, pow) < 1) {
@@ -531,41 +425,39 @@ export class LoggerComponent {
             numberMag++;
         }
         let newFreq = (leadingNum * Math.pow(10, numberMag)) / Math.pow(1000, pow);
-        this.validateAndApply(newFreq, instrument, type);
+        this.validateAndApply(newFreq, instrument, axisNum, type);
     }
 
-    private validateAndApply(newVal: number, instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
+    private validateAndApply(newVal: number, instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+        let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
         if (type === 'sampleFreq') {
-            // TODO: get minFreq and maxFreq from instrument before setting
-
-            // let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
-            // let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
-            // let maxFreq = chanObj.sampleFreqMax * chanObj.sampleFreqUnits;
-            // if (newVal < minFreq) {
-            //     newVal = minFreq;
-            // }
-            // else if (newVal > maxFreq) {
-            //     newVal = maxFreq;
-            // }
-            this.daqParams.sampleFreq = newVal;
+            let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
+            let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
+            let maxFreq = chanObj.sampleFreqMax * chanObj.sampleFreqUnits;
+            if (newVal < minFreq) {
+                newVal = minFreq;
+            }
+            else if (newVal > maxFreq) {
+                newVal = maxFreq;
+            }
+            axisObj.sampleFreq = newVal;
         }
         else if (type === 'samples') {
-            // TODO: get maxSampleSize from instrument before setting
-
-            // let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
-            // let maxSampleSize = axisObj.storageLocation === 'ram' ? chanObj.bufferSizeMax : 2000000000; //2gb fat
+            let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
+            let maxSampleSize = axisObj.storageLocation === 'ram' ? chanObj.bufferSizeMax : 2000000000; //2gb fat
             if (newVal < 1) {
                 newVal = 1;
             }
-            // else if (newVal > maxSampleSize) {
-            //     newVal = maxSampleSize;
-            // }
-            this.daqParams.maxSampleCount = newVal;
+            else if (newVal > maxSampleSize) {
+                newVal = maxSampleSize;
+            }
+            axisObj.maxSampleCount = newVal;
         }
     }
 
-    decrementFrequency(instrument: 'analog' | 'digital', type: 'sampleFreq' | 'samples') {
-        let valString = type === 'sampleFreq' ? this.daqParams.sampleFreq.toString() : this.daqParams.maxSampleCount.toString();
+    decrementFrequency(instrument: 'analog' | 'digital', axisNum: number, type: 'sampleFreq' | 'samples') {
+        let axisObj = instrument === 'analog' ? this.analogChans[axisNum] : this.digitalChans[axisNum];
+        let valString = type === 'sampleFreq' ? axisObj.sampleFreq.toString() : axisObj.maxSampleCount.toString();
         let valNum = parseFloat(valString);
         let pow = 0;
         while (valNum * Math.pow(1000, pow) < 1) {
@@ -580,7 +472,7 @@ export class LoggerComponent {
             numberMag--;
         }
         let newFreq = (leadingNum * Math.pow(10, numberMag)) / Math.pow(1000, pow);
-        this.validateAndApply(newFreq, instrument, type);
+        this.validateAndApply(newFreq, instrument, axisNum, type);
     }
 
     setViewToEdge() {
@@ -602,42 +494,117 @@ export class LoggerComponent {
         this.loggerPlotService.setPosition('x', 1, newPos, false);
     }
 
-    logToSelect(event) {
+    modeSelect(event) {
         console.log(event);
-        if (this.selectedLogLocation === 'chart' && event !== 'chart') {
-            this.daqChans.forEach((channel, index) => {
-                channel.storageLocation = this.storageLocations[0];
-            });
+        if (this.selectedMode === 'stream' && event !== 'stream') {
+            for (let i = 0; i < this.analogChans.length; i++) {
+                this.analogChans[i].storageLocation = this.storageLocations[0];
+                this.setChannelDropdowns(i, {
+                    storageLocation: this.storageLocations[0]
+                });
+            }
+            for (let i = 0; i < this.digitalChans.length; i++) {
+                this.digitalChans[i].storageLocation = this.storageLocations[0];
+                //TODO update to support digital in setChannelDropdowns
+                /* this.setChannelDropdowns(i, {
+                    storageLocation: this.storageLocations[0]
+                }); */
+            }
         }
-        if (event === 'chart') {
-            this.daqChans.forEach((channel, index) => {
-                channel.storageLocation = 'ram';
-            });
-        }
-        this.selectedLogLocation = event;
-    }
-
-    updateUri(event) {
-        let uri = event.target.value;
-        console.log(uri);
-        this.daqChans.forEach((channel, index) => {
-            channel.uri = uri;
-        });
-    }
-
-    modeSelect(event: 'finite' | 'continuous') {
-        console.log(event);
-        if (event === 'finite') {
-            this.daqParams.maxSampleCount = 1000;
-        }
-        else {
-            this.daqParams.maxSampleCount = -1;
+        if (event === 'stream') {
+            for (let i = 0; i < this.analogChans.length; i++) {
+                this.analogChans[i].storageLocation = 'ram';
+            }
+            for (let i = 0; i < this.digitalChans.length; i++) {
+                this.digitalChans[i].storageLocation = 'ram';
+            }
         }
         this.selectedMode = event;
     }
 
-    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, mode?: string }) {
+    samplesSelect(event: 'finite' | 'continuous', instrument: 'analog' | 'digital', channel: number) {
+        console.log(event);
+        let chanObj = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
+        if (event === 'finite') {
+            this.analogChans[channel].maxSampleCount = 1000;
+        }
+        else {
+            chanObj.maxSampleCount = -1;
+        }
+        this.selectedSamples = event;
+    }
+
+    linkSelect(event, instrument: 'analog' | 'digital', channel: number) {
+        console.log(event);
+        if (event === 'no') {
+            if (this.analogChans[channel].linked) {
+                let linkedChan = this.analogChans[channel].linkedChan;
+                this.copyLoggingProfile(instrument, channel, this.analogChans[linkedChan]);
+                this.setChannelDropdowns(channel, {
+                    storageLocation: this.analogChans[linkedChan].storageLocation,
+                    overflow: this.analogChans[linkedChan].overflow,
+                    linkChan: -1,
+                    samples: this.analogChans[linkedChan].maxSampleCount === -1 ? 'continuous' : 'finite'
+                });
+            }
+            this.analogChans[channel].linked = false;
+            this.analogChans[channel].linkedChan = -1;
+            return;
+        }
+        let linkChan: number = event.split(' ')[1] - 1;
+        console.log('linked chan selection: ' + linkChan);
+        if (instrument === 'analog') {
+            if (this.analogChans[linkChan].linked) {
+                //TODO display error
+                console.log('linked to linked channel');
+                let id = 'link' + channel;
+                this.linkChildren.forEach((child) => {
+                    if (id === child.elementRef.nativeElement.id) {
+                        child._applyActiveSelection('no');
+                    }
+                });
+                return;
+            }
+            this.copyLoggingProfile('analog', channel, this.analogChans[linkChan]);
+            this.analogChans[channel].linked = true;
+            this.analogChans[channel].linkedChan = linkChan;
+            this.setChannelDropdowns(channel, {
+                storageLocation: this.analogChans[channel].storageLocation,
+                overflow: this.analogChans[channel].overflow,
+                linkChan: linkChan,
+                samples: this.analogChans[channel].maxSampleCount === -1 ? 'continuous' : 'finite'
+            });
+        }
+        else {
+            
+        }
+        console.log(this.analogChans);
+    }
+
+    private copyLoggingProfile(instrument: 'analog' | 'digital', channel: number, source: any) {
+        let instrumentChan = instrument === 'analog' ? this.analogChans : this.digitalChans;
+        instrumentChan[channel].maxSampleCount = source.maxSampleCount;
+        instrumentChan[channel].overflow = source.overflow;
+        instrumentChan[channel].sampleFreq = source.sampleFreq;
+        instrumentChan[channel].startDelay = source.startDelay;
+        instrumentChan[channel].storageLocation = source.storageLocation;
+        if (instrument === 'digital') {
+            (<DigitalLoggerParams>instrumentChan[channel]).bitMask = source.bitMask;
+        }
+    }
+
+    private setChannelDropdowns(channel: number, applyOptions: { storageLocation?: string, overflow?: string, linkChan?: number, samples?: string }) {
         setTimeout(() => {
+            if (applyOptions.linkChan != undefined) {
+                let linkedChanString = applyOptions.linkChan > -1 ? 'Ch ' +  (applyOptions.linkChan + 1) : 'no';
+                let id = 'link' + channel;
+                this.linkChildren.forEach((child) => {
+                    if (id === child.elementRef.nativeElement.id) {
+                        child._applyActiveSelection(linkedChanString);
+                    }
+                });
+            }
+
             if (applyOptions.storageLocation != undefined) {
                 let id = 'location' + channel;
                 this.locationChildren.forEach((child) => {
@@ -647,27 +614,43 @@ export class LoggerComponent {
                 });
             }
 
-            if (applyOptions.mode != undefined) {
-                this.modeChild._applyActiveSelection(applyOptions.mode);
+            if (applyOptions.samples != undefined) {
+                let id = 'samples' + channel;
+                this.samplesChildren.forEach((child) => {
+                    if (id === child.elementRef.nativeElement.id) {
+                        child._applyActiveSelection(applyOptions.samples);
+                    }
+                });
             }
+
+            /* if (applyOptions.overflow != undefined) {
+                let id = 'overflow' + channel;
+                this.overflowChildren.forEach((child) => {
+                    if (id === child.elementRef.nativeElement.id) {
+                        child._applyActiveSelection(applyOptions.overflow);
+                    }
+                });
+            } */
         }, 20);
     }
 
-    openProfileSettings(name, event?) {
-        let popover = this.popoverCtrl.create(ProfilePopover, { profileName: name }, {
-            cssClass: 'profilePopover'
-        });
-        popover.present({
-            ev: event
-        });
+    overflowSelect(event, instrument: 'analog' | 'digital', channel: number) {
+        console.log(event);
+        if (instrument === 'analog') {
+            this.analogChans[channel].overflow = event;
+        }
+        else {
+            this.digitalChans[channel].overflow = event;
+        }
     }
 
-    private profileSaveClick(name, event) {
-        // if new profile open popover, otherwise just save
-        if (name === 'New Profile') {
-            this.openProfileSettings('', event);
-        } else {
-            this.saveAndSetProfile(name);
+    locationSelect(event, instrument: 'analog' | 'digital', channel: number) {
+        console.log(event);
+        if (instrument === 'analog') {
+            this.analogChans[channel].storageLocation = event;
+        }
+        else {
+            this.digitalChans[channel].storageLocation = event;
         }
     }
 
@@ -675,10 +658,7 @@ export class LoggerComponent {
         console.log(event);
         let currentLogProfile = this.selectedLogProfile;
         this.selectedLogProfile = event;
-        if (event === this.loggingProfiles[0]) {
-            this.openProfileSettings('');
-            return;
-        }
+        if (event === this.loggingProfiles[0]) { return; }
         if (this.profileObjectMap[event] == undefined) {
             this.toastService.createToast('loggerProfileLoadErr', true, undefined, 5000);
             console.log('profile not found in profile map');
@@ -692,29 +672,8 @@ export class LoggerComponent {
         this.parseAndApplyProfileJson(JSON.parse(JSON.stringify(this.profileObjectMap[event])));
     }
 
-    deleteProfile(profileName) {
-        this.activeDevice.file.delete('flash', this.settingsService.profileToken + profileName + '.json').subscribe(
-            (data) => {
-                console.log(data);
-                // remove from list of profiles
-                let nameIndex: number = this.loggingProfiles.indexOf(profileName);
-                if (nameIndex !== -1) {
-                    this.loggingProfiles.splice(nameIndex, 1);
-                    this.logOnBootProfiles.splice(nameIndex, 1);
-                }
-                this.selectedLogProfile = this.loggingProfiles[0];
-            },
-            (err) => {
-                console.log(err);
-                this.toastService.createToast('fileDeleteErr', true, undefined, 5000);
-            },
-            () => { }
-        );
-    }
-
-    saveAndSetProfile(profileName) {
-        console.log(profileName);
-        this.saveProfile(profileName)
+    saveAndSetProfile() {
+        this.saveProfile(this.profileNameScratch)
             .then((data) => {
                 this.toastService.createToast('loggerSaveSuccess');
             })
@@ -722,19 +681,18 @@ export class LoggerComponent {
                 console.log(e);
                 this.toastService.createToast('loggerSaveFail');
             });
-        let nameIndex: number = this.loggingProfiles.indexOf(profileName);
+        let nameIndex: number = this.loggingProfiles.indexOf(this.profileNameScratch);
         if (nameIndex !== -1) {
             this.loggingProfiles.splice(nameIndex, 1);
-            this.logOnBootProfiles.splice(nameIndex, 1);
         }
-        this.loggingProfiles.push(profileName);
-        this.logOnBootProfiles.push(profileName);
+        this.loggingProfiles.push(this.profileNameScratch);
         let profileObj = this.generateProfileJson();
         let profileObjCopy = JSON.parse(JSON.stringify(profileObj));
-        this.profileObjectMap[profileName] = profileObjCopy;
+        this.profileObjectMap[this.profileNameScratch] = profileObjCopy;
         setTimeout(() => {
-            this.selectedLogProfile = profileName;
+            this.selectedLogProfile = this.profileNameScratch;
             this.profileChild._applyActiveSelection(this.selectedLogProfile);
+            this.profileNameScratch = this.defaultProfileName;
         }, 20);
     }
 
@@ -784,7 +742,7 @@ export class LoggerComponent {
                     try {
                         parsedData = JSON.parse(data.file);
                     }
-                    catch (e) {
+                    catch(e) {
                         console.log('error parsing json');
                         resolve(e);
                         return;
@@ -792,14 +750,12 @@ export class LoggerComponent {
                     let splitArray = profileName.split('.');
                     if (splitArray.length < 2) {
                         this.loggingProfiles.push(profileName);
-                        this.logOnBootProfiles.push(profileName);
                         this.profileObjectMap[profileName] = parsedData;
                     }
                     else {
                         splitArray.splice(splitArray.length - 1, 1);
                         let noExtName = splitArray.join('');
                         this.loggingProfiles.push(noExtName);
-                        this.logOnBootProfiles.push(noExtName);
                         this.profileObjectMap[noExtName] = parsedData;
                     }
                     resolve(data);
@@ -815,42 +771,70 @@ export class LoggerComponent {
 
     private generateProfileJson() {
         let saveObj = {};
-        if (this.daqChans.length > 0) {
-            saveObj['daq'] = this.daqParams;
-            saveObj['daq'].channels = [];
+        if (this.analogChans.length > 0) {
+            saveObj['analog'] = {};
         }
-        this.daqChans.forEach((channel, index) => {
-            if (this.selectedChannels[index]) {
-                let chanObj = {};
-                chanObj[(index + 1).toString()] = channel;
-                saveObj['daq']['channels'].push(chanObj);
-            }
-        });
+        if (this.digitalChans.length > 0) {
+            saveObj['digital'] = {};
+        }
+        for (let i = 0; i < this.analogChans.length; i++) {
+            saveObj['analog'][i.toString()] = this.analogChans[i];
+        }
+        for (let i = 0; i < this.digitalChans.length; i++) {
+            saveObj['digital'][i.toString()] = this.analogChans[i];
+        }
         return saveObj;
     }
 
     private parseAndApplyProfileJson(loadedObj) {
-        this.selectedChannels = this.selectedChannels.map(() => false);
         for (let instrument in loadedObj) {
-            if (instrument === 'daq') {
-                this.daqParams = loadedObj[instrument];
+            for (let channel in loadedObj[instrument]) {
+                if (instrument === 'analog') {
+                    let currentState = this.analogChans[parseInt(channel)].state;
+                    let currentLocation = this.analogChans[parseInt(channel)].storageLocation;
+                    this.analogChans[parseInt(channel)] = loadedObj[instrument][channel];
+                    this.analogChans[parseInt(channel)].count = this.defaultAnalogParams.count;
+                    this.analogChans[parseInt(channel)].startIndex = this.defaultAnalogParams.startIndex;
+                    this.analogChans[parseInt(channel)].state = currentState;
+                    this.analogChans[parseInt(channel)].storageLocation = currentLocation
+                }
+                else if (instrument === 'digital') {
+                    let currentState = this.digitalChans[parseInt(channel)].state;
+                    let currentLocation = this.digitalChans[parseInt(channel)].storageLocation;
+                    this.digitalChans[parseInt(channel)] = loadedObj[instrument][channel];
+                    this.digitalChans[parseInt(channel)].count = this.defaultAnalogParams.count;
+                    this.digitalChans[parseInt(channel)].startIndex = this.defaultAnalogParams.startIndex;
+                    this.digitalChans[parseInt(channel)].state = currentState;
+                    this.analogChans[parseInt(channel)].storageLocation = currentLocation
+                }
+                //Wait for ngFor to execute on the dropPops (~20ms) before we apply the active selections (there has to be a better way)
 
-                // select channels
-                loadedObj[instrument].channels.forEach((channel) => {
-                    let chanNum = parseInt(Object.keys(channel)[0]);
-                    this.selectedChannels[chanNum - 1] = true;
-                });
-
-                // set mode dropdown
-                let dropdownChangeObj = {};
-                dropdownChangeObj['mode'] = loadedObj[instrument].maxSampleCount === -1 ? 'continuous' : 'finite';
-                this.setChannelDropdowns(undefined, dropdownChangeObj);
+                let dropdownChangeObj = {
+                    overflow: loadedObj[instrument][channel].overflow
+                };
+                if (loadedObj[instrument][channel].linked) {
+                    dropdownChangeObj['linkChan'] = loadedObj[instrument][channel].linkedChan;
+                }
+                dropdownChangeObj['samples'] = loadedObj[instrument][channel].maxSampleCount === -1 ? 'continuous' : 'finite';
+                this.setChannelDropdowns(parseInt(channel), dropdownChangeObj);
             }
         }
     }
 
     private saveProfile(profileName: string): Promise<any> {
         return new Promise((resolve, reject) => {
+            for (let i = 0; i < this.analogChans.length; i++) {
+                if (this.analogChans[i].linked) {
+                    this.copyLoggingProfile('analog', i, this.analogChans[this.analogChans[i].linkedChan]);
+                }
+            }
+
+            for (let i = 0; i < this.digitalChans.length; i++) {
+                if (this.digitalChans[i].linked) {
+                    this.copyLoggingProfile('digital', i, this.digitalChans[this.digitalChans[i].linkedChan]);
+                }
+            }
+
             let objToSave = this.generateProfileJson();
             let str = JSON.stringify(objToSave);
             let buf = new ArrayBuffer(str.length);
@@ -889,26 +873,27 @@ export class LoggerComponent {
     }
 
     setActiveSeries(instrument: 'analog' | 'digital', axisNum: number) {
-        let convertedNum = instrument === 'analog' ? axisNum + 1 : axisNum + this.daqChans.length + 1;
+        let convertedNum = instrument === 'analog' ? axisNum + 1 : axisNum + this.analogChans.length + 1;
         this.loggerPlotService.setActiveSeries(convertedNum);
     }
 
-    formatInputAndUpdate(trueValue: number, instrument: 'analog' | 'digital', type: LoggerInputType, channel?: number) {
+    formatInputAndUpdate(trueValue: number, instrument: 'analog' | 'digital', type: LoggerInputType, channel: number) {
         console.log(trueValue);
+        let chanType = instrument === 'analog' ? this.analogChans[channel] : this.digitalChans[channel];
         switch (type) {
             case 'delay':
-                this.analogChans[channel].startDelay = trueValue;
+                chanType.startDelay = trueValue;
                 break;
             case 'offset':
-                (<AnalogLoggerParams>this.analogChans[channel]).vOffset = trueValue;
+                (<AnalogLoggerParams>chanType).vOffset = trueValue;
                 this.loggerPlotService.setPosition('y', channel + 1, trueValue, true);
                 break;
             case 'samples':
                 trueValue = trueValue < 1 ? 1 : trueValue;
-                this.daqParams.maxSampleCount = trueValue;
+                chanType.maxSampleCount = trueValue;
                 break;
             case 'sampleFreq':
-                this.validateAndApply(trueValue, instrument, 'sampleFreq');
+                this.validateAndApply(trueValue, instrument, channel, 'sampleFreq');
                 break;
             default:
                 break;
@@ -917,6 +902,10 @@ export class LoggerComponent {
 
     stopLogger() {
         this.stop('analog', this.analogChanNumbers)
+            .then((data) => {
+                console.log(data);
+                return this.stop('digital', this.digitalChanNumbers);
+            })
             .then((data) => {
                 console.log(data);
                 this.running = false;
@@ -941,28 +930,17 @@ export class LoggerComponent {
                 let channelObj = readResponse.instruments[instrument][channel];
                 let dt = 1 / (channelObj.actualSampleFreq / 1000000);
                 let timeVal = channelObj.startIndex * dt;
-
-                let chanIndex: number = parseInt(channel) - 1;
                 for (let i = 0; i < channelObj.data.length; i++) {
-                    let data = (this.unitTransformer[chanIndex]) ? this.unitTransformer[chanIndex](channelObj.data[i]) :
-                        channelObj.data[i];
-
-                    formattedData.push([timeVal, data]);
-
+                    formattedData.push([timeVal, channelObj.data[i]]);
                     timeVal += dt;
                 }
-
                 let dataContainerIndex = 0;
-
-                dataContainerIndex += chanIndex;
+                if (instrument === 'digital') {
+                    dataContainerIndex += this.analogChans.length;
+                }
+                dataContainerIndex += parseInt(channel) - 1;
                 this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
-
-                let overflow = 0;
-                let containerSize = this.analogChans[chanIndex].sampleFreq * this.xAxis.loggerBufferSize;
-                if ((overflow = this.dataContainers[dataContainerIndex].data.length - containerSize) >= 0) {
-                    this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.slice(overflow); // older data is closer to the front of the array, so remove it by the overflow amount
-                }
             }
         }
         this.setViewToEdge();
@@ -995,7 +973,7 @@ export class LoggerComponent {
             if (this.analogChans[i].storageLocation !== 'ram') {
                 foundChansMap[this.analogChans[i].uri] = 1;
             }
-            if (this.selectedLogLocation === 'chart') { continue; }
+            if (this.selectedMode === 'stream') { continue; }
             if (this.filesInStorage[this.analogChans[i].storageLocation].indexOf(this.analogChans[i].uri + '.dlog') !== -1) {
                 //File already exists on device display alert
                 existingFileFound = true;
@@ -1014,6 +992,9 @@ export class LoggerComponent {
         this.getCurrentState('analog', this.analogChanNumbers, true)
             .then((data) => {
                 console.log(data);
+                return this.getCurrentState('digital', this.digitalChanNumbers, true);
+            })
+            .then((data) => {
                 let returnData: { reason: number } = this.existingFileFoundAndValidate(loading);
                 if (returnData.reason === 2) {
                     loading.dismiss();
@@ -1026,22 +1007,34 @@ export class LoggerComponent {
                 }
                 else if (returnData.reason === 0) {
                     this.setParametersAndRun(loading);
-                }
+                }  
             })
             .catch((e) => {
                 console.log(e);
                 loading.dismiss();
                 this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
-            });
+            });              
     }
 
     private setParametersAndRun(loading) {
         let analogChanArray = [];
+        let digitalChanArray = [];
         //TODO when each channel invidivdually, loop and check if channel is on before pushing
         for (let i = 0; i < this.analogChans.length; i++) {
             this.analogChans[i].count = -1000;
             this.analogChans[i].startIndex = -1;
+            if (this.analogChans[i].linked) {
+                this.copyLoggingProfile('analog', i, this.analogChans[this.analogChans[i].linkedChan]);
+            }
             analogChanArray.push(i + 1);
+        }
+        for (let i = 0; i < this.digitalChans.length; i++) {
+            this.digitalChans[i].count = -1000;
+            this.digitalChans[i].startIndex = -1;
+            if (this.digitalChans[i].linked) {
+                this.copyLoggingProfile('digital', i, this.digitalChans[this.digitalChans[i].linkedChan]);
+            }
+            digitalChanArray.push(i + 1);
         }
 
         this.clearChart();
@@ -1050,7 +1043,15 @@ export class LoggerComponent {
         this.setParameters('analog', analogChanArray)
             .then((data) => {
                 console.log(data);
+                return this.setParameters('digital', digitalChanArray);
+            })
+            .then((data) => {
+                console.log(data);
                 return this.run('analog', analogChanArray);
+            })
+            .then((data) => {
+                console.log(data);
+                return this.run('digital', digitalChanArray);
             })
             .then((data) => {
                 console.log(data);
@@ -1060,7 +1061,7 @@ export class LoggerComponent {
                 this.analogChansToRead = this.analogChanNumbers.slice();
                 console.log("ANALOG CHANS TO READ: ");
                 console.log(this.analogChansToRead);
-                if (this.selectedLogLocation !== 'SD') {
+                if (this.selectedMode !== 'log') {
                     this.readLiveData();
                 }
                 else {
@@ -1082,7 +1083,7 @@ export class LoggerComponent {
                 this.parseGetLiveStatePacket('analog', data);
                 if (this.running) {
                     setTimeout(() => {
-                        if (this.selectedLogLocation === 'both') {
+                        if (this.selectedMode === 'both') {
                             this.continueStream();
                         }
                         else {
@@ -1113,7 +1114,7 @@ export class LoggerComponent {
                 if (instrument === 'analog') {
                     this.analogChansToRead.splice(this.analogChansToRead.indexOf(parseInt(channel)), 1);
                 }
-                if (this.analogChansToRead.length < 1) {
+                if (this.analogChansToRead.length < 1 && this.digitalChansToRead.length < 1) {
                     this.toastService.createToast('loggerLogDone');
                     this.running = false;
                 }
@@ -1127,14 +1128,8 @@ export class LoggerComponent {
             .then((data) => {
                 this.parseReadResponseAndDraw(data);
                 if (this.running) {
-                    if (this.selectedLogLocation !== 'SD') {
-                        if (this.activeDevice.transport.getType() === 'local') {
-                            setTimeout(() => {
-                                this.readLiveData();
-                            }, 1000); // grab wait from one of the channels?? Or rather, if we are simulating then wait otherwise just continue as norm    
-                        } else {
-                            this.readLiveData();
-                        }
+                    if (this.selectedMode !== 'log') {
+                        this.readLiveData();
                     }
                     else {
                         this.getLiveState();
@@ -1173,6 +1168,10 @@ export class LoggerComponent {
                 this.getCurrentState('analog', this.analogChanNumbers)
                     .then((data) => {
                         console.log(data);
+                        return this.getCurrentState('digital', this.digitalChanNumbers);
+                    })
+                    .then((data) => {
+                        console.log(data);
                     })
                     .catch((e) => {
                         console.log(e);
@@ -1185,8 +1184,13 @@ export class LoggerComponent {
         this.showLoggerSettings = !this.showLoggerSettings;
     }
 
-    toggleAdvSettings() {
-        this.showAdvSettings = !this.showAdvSettings;
+    toggleSeriesSettings(instrument: 'analog' | 'digital', chan: number) {
+        if (instrument === 'analog') {
+            this.showAnalogChan[chan] = !this.showAnalogChan[chan];
+        }
+        else {
+            this.showDigitalChan[chan] = !this.showDigitalChan[chan];
+        }
     }
 
     exportCanvasAsPng() {
@@ -1196,15 +1200,25 @@ export class LoggerComponent {
 
     exportCsv(fileName: string) {
         let analogChanArray = [];
+        let digitalChanArray = [];
         for (let i = 0; i < this.analogChans.length; i++) {
             analogChanArray.push(i);
         }
-        this.exportService.exportGenericCsv(fileName, this.dataContainers, analogChanArray, [{
+        for (let i = analogChanArray.length; i < this.dataContainers.length; i++) {
+            digitalChanArray.push(i);
+        }
+        this.exportService.exportGenericCsv(fileName, this.dataContainers, analogChanArray.concat(digitalChanArray), [{
             instrument: 'Analog',
             seriesNumberOffset: 0,
             xUnit: 's',
             yUnit: 'V',
             channels: analogChanArray
+        }, {
+            instrument: 'Digital',
+            seriesNumberOffset: this.analogChans.length,
+            xUnit: 's',
+            yUnit: 'V',
+            channels: digitalChanArray
         }]);
     }
 
@@ -1219,16 +1233,16 @@ export class LoggerComponent {
     }
 
     bothStopStream() {
-        this.selectedLogLocation = 'SD';
-        this.logToChild._applyActiveSelection('SD');
+        this.selectedMode = 'log';
+        this.modeChild._applyActiveSelection('log');
     }
 
     bothStartStream() {
         this.clearChart();
         this.viewMoved = false;
         this.setViewToEdge();
-        this.selectedLogLocation = 'both';
-        this.logToChild._applyActiveSelection('both');
+        this.selectedMode = 'both';
+        this.modeChild._applyActiveSelection('both');
     }
 
     private copyState(instrument: 'analog' | 'digital', respObj, channelInternalIndex: number, onlyCopyState: boolean = false) {
@@ -1240,6 +1254,12 @@ export class LoggerComponent {
                 //Perhaps update the window to match gain?
                 /* activeChan.gain = respObj.actualGain;
                 activeChan.vOffset = respObj.actualVOffset / 1000; */
+            }
+        }
+        else {
+            activeChan = this.digitalChans[channelInternalIndex];
+            if (!onlyCopyState) {
+                activeChan.bitMask = respObj.bitMask;
             }
         }
         activeChan.state = respObj.state;
@@ -1263,9 +1283,9 @@ export class LoggerComponent {
         }
         activeChan.storageLocation = respObj.storageLocation;
         if (respObj.storageLocation === 'ram') {
-            console.log('setting selected log to location to chart');
-            this.selectedLogLocation = 'chart';
-            this.logToChild._applyActiveSelection('chart');
+            console.log('setting selected mode to stream');
+            this.selectedMode = 'stream';
+            this.modeChild._applyActiveSelection('stream');
         }
         it = 0;
         this.locationChildren.forEach((child) => {
@@ -1275,6 +1295,12 @@ export class LoggerComponent {
             it++;
         });
         it = 0;
+        this.samplesChildren.forEach((child) => {
+            if (channelInternalIndex === it) {
+                let setting = activeChan.maxSampleCount === -1 ? 'continuous' : 'finite';
+                child._applyActiveSelection(setting);
+            }
+        });
         activeChan.uri = respObj.uri;
         if (activeChan.uri.indexOf('.dlog') !== -1) {
             //Remove .dlog from end of file
@@ -1326,15 +1352,41 @@ export class LoggerComponent {
                 }
                 console.log(paramObj);
                 observable = this.activeDevice.instruments.logger.analog.setParameters(
-                    chans,
-                    paramObj[analogParamArray[0]],
+                    chans, 
+                    paramObj[analogParamArray[0]], 
                     paramObj[analogParamArray[1]],
-                    paramObj[analogParamArray[2]],
-                    paramObj[analogParamArray[3]],
-                    paramObj[analogParamArray[4]],
-                    paramObj[analogParamArray[5]],
-                    paramObj[analogParamArray[6]],
+                    paramObj[analogParamArray[2]], 
+                    paramObj[analogParamArray[3]], 
+                    paramObj[analogParamArray[4]], 
+                    paramObj[analogParamArray[5]], 
+                    paramObj[analogParamArray[6]], 
                     paramObj[analogParamArray[7]]
+                );
+            }
+            else {
+                if (this.digitalChans.length < 1) {
+                    resolve();
+                    return;
+                }
+                let digitalParamArray: string[] = ['maxSampleCount', 'sampleFreq', 'startDelay', 'overflow', 'storageLocation', 'uri', 'bitMask'];
+                for (let i = 0; i < chans.length; i++) {
+                    for (let j = 0; j < digitalParamArray.length; j++) {
+                        if (paramObj[digitalParamArray[j]] == undefined) {
+                            paramObj[digitalParamArray[j]] = [];
+                        }
+                        paramObj[digitalParamArray[j]].push(this.digitalChans[chans[i] - 1][digitalParamArray[j]]);
+                    }
+                }
+                console.log(paramObj);
+                observable = this.activeDevice.instruments.logger.digital.setParameters(
+                    chans, 
+                    paramObj[digitalParamArray[0]],
+                    paramObj[digitalParamArray[1]], 
+                    paramObj[digitalParamArray[2]], 
+                    paramObj[digitalParamArray[3]], 
+                    paramObj[digitalParamArray[4]], 
+                    paramObj[digitalParamArray[5]],
+                    paramObj[digitalParamArray[6]]
                 );
             }
             observable.subscribe(
@@ -1357,6 +1409,21 @@ export class LoggerComponent {
                 resolve();
                 return;
             }
+            if (instrument === 'digital' && this.digitalChans.length < 1) {
+                resolve();
+                return;
+            }
+
+            /* chans.forEach((el, index, arr) => {
+                if (instrument === 'analog') {
+                    this.analogChans[el - 1].count = 0;
+                    this.analogChans[el - 1].startIndex = 0;
+                }
+                else {
+                    this.digitalChans[el - 1].count = 0;
+                    this.digitalChans[el - 1].startIndex = 0;
+                }
+            }); */
 
             this.activeDevice.instruments.logger[instrument].run(instrument, chans).subscribe(
                 (data) => {
@@ -1375,6 +1442,10 @@ export class LoggerComponent {
     stop(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
         return new Promise((resolve, reject) => {
             if (instrument === 'analog' && this.analogChans.length < 1) {
+                resolve();
+                return;
+            }
+            if (instrument === 'digital' && this.digitalChans.length < 1) {
                 resolve();
                 return;
             }
@@ -1406,20 +1477,28 @@ export class LoggerComponent {
                     counts.push(this.analogChans[this.analogChansToRead[i] - 1].count);
                 }
             }
-
+            if (instrument === 'digital') {
+                if (this.digitalChans.length < 1) {
+                    resolve();
+                    return;
+                }
+                for (let i = 0; i < this.digitalChansToRead.length; i++) {
+                    startIndices.push(this.digitalChans[this.digitalChansToRead[i] - 1].startIndex);
+                    counts.push(this.digitalChans[this.digitalChansToRead[i] - 1].count);
+                }
+            }
+            
             let finalObj = {};
-
+            
             chans.reduce((accumulator, currentVal, currentIndex) => {
                 return accumulator.flatMap((data) => {
                     if (currentIndex > 0) {
-                        let chanObj = this.analogChans[currentIndex - 1];
+                        let chanObj = instrument === 'analog' ? this.analogChans[currentIndex - 1] : this.digitalChans[currentIndex - 1];
                         if (chanObj.startIndex >= 0 && chanObj.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
-                            return Observable.create((observer) => {
-                                observer.error({
-                                    message: 'Could not keep up with device',
-                                    data: data
-                                });
-                            });
+                            return Observable.create((observer) => { observer.error({
+                                message: 'Could not keep up with device',
+                                data: data
+                            }); });
                         }
                         this.updateValuesFromRead(data, instrument, chans, currentIndex - 1);
                     }
@@ -1429,7 +1508,7 @@ export class LoggerComponent {
             }, Observable.create((observer) => { observer.next({}); observer.complete(); }))
                 .subscribe(
                     (data) => {
-                        let chanObj = this.analogChans[chans[chans.length - 1] - 1];
+                        let chanObj = instrument === 'analog' ? this.analogChans[chans[chans.length - 1] - 1] : this.digitalChans[chans[chans.length - 1] - 1];
                         if (chanObj.startIndex >= 0 && chanObj.startIndex !== data.instruments[instrument][chans[chans.length - 1]].startIndex) {
                             reject({
                                 message: 'Could not keep up with device',
@@ -1449,7 +1528,7 @@ export class LoggerComponent {
                             try {
                                 parsedData = JSON.parse(jsonString);
                             }
-                            catch (e) {
+                            catch(e) {
                                 reject(e);
                                 return;
                             }
@@ -1475,7 +1554,7 @@ export class LoggerComponent {
                         }
                         reject(err);
                     },
-                    () => { }
+                    () => {}
                 );
         });
     }
@@ -1491,6 +1570,12 @@ export class LoggerComponent {
                     if (this.analogChansToRead.length < 1) {
                         this.running = false;
                     }
+                }
+            }
+            else {
+                this.digitalChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount;
+                if (this.digitalChans[chans[index] - 1].maxSampleCount > 0 && this.digitalChans[chans[index] - 1].startIndex >= this.digitalChans[chans[index] - 1].maxSampleCount) {
+                    this.running = false;
                 }
             }
         }
@@ -1552,6 +1637,10 @@ export class LoggerComponent {
                 resolve();
                 return;
             }
+            if (instrument === 'digital' && this.digitalChans.length < 1) {
+                resolve();
+                return;
+            }
             if (chans.length < 1) {
                 resolve();
                 return;
@@ -1571,26 +1660,6 @@ export class LoggerComponent {
             );
         });
     }
-
-    decrementAverage() {
-        if (this.average > 1) {
-            this.average /= 2;
-        }
-        this.setChannelAverages();
-    }
-
-    incrementAverage() {
-        if (this.average < this.maxAverage) {
-            this.average *= 2;
-        }
-        this.setChannelAverages();
-    }
-
-    setChannelAverages() {
-        this.daqChans.forEach((channel, index) => {
-            channel.average = this.average;
-        });
-    }
 }
 
 export interface LoggerParams {
@@ -1602,7 +1671,9 @@ export interface LoggerParams {
     uri: string,
     startIndex: number,
     count: number,
-    state: LoggerChannelState
+    state: LoggerChannelState,
+    linked: boolean,
+    linkedChan: number
 }
 
 export type LoggerChannelState = 'busy' | 'idle' | 'stopped' | 'running';
@@ -1617,15 +1688,3 @@ export interface DigitalLoggerParams extends LoggerParams {
 }
 
 export type LoggerInputType = 'delay' | 'offset' | 'samples' | 'sampleFreq';
-
-export interface DaqChannelParams {
-    average: number,
-    storageLocation: string,
-    uri: string
-}
-
-export interface DaqLoggerParams {
-    maxSampleCount: number,
-    startDelay: number,
-    sampleFreq: number
-}

@@ -13,7 +13,7 @@ import { ChartAnnotationComponent } from '../chart-annotation/chart-annotation.c
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
 import { BodePage } from '../../pages/bode/bode';
-import { LoggerPage } from '../../pages/logger/logger';
+import { OpenScopeLoggerPage } from '../../pages/logger/openscope/openscope-logger';
 
 //Interfaces
 import { Chart, CursorPositions, DataContainer } from './instrument-panel-chart.interface';
@@ -513,7 +513,7 @@ export class InstrumentPanelChart {
             this.toastService.createToast('upgradeFirmware', true, '. Please Upload At Least Version ' + this.minLogFirmwareVersion + '.', 8000);
             return;
         }
-        this.navCtrl.push(LoggerPage, {
+        this.navCtrl.push(OpenScopeLoggerPage, {
             onLoggerDismiss: (() => {
                 console.log('logger dismiss');
                 this.resetDevice.emit();
