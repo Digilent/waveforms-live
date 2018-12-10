@@ -7,6 +7,7 @@ import 'rxjs/Rx';
 
 //Components
 import { DropdownPopoverComponent } from '../../dropdown-popover/dropdown-popover.component';
+import { LoggerXAxisComponent } from '../../logger-xaxis/logger-xaxis.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -31,6 +32,7 @@ export class OpenScopeLoggerComponent {
     @ViewChildren('dropPopLink') linkChildren: QueryList<DropdownPopoverComponent>;
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
     @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
+    @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
     public showAnalogChan: boolean[] = [];
@@ -938,9 +940,16 @@ export class OpenScopeLoggerComponent {
                 if (instrument === 'digital') {
                     dataContainerIndex += this.analogChans.length;
                 }
-                dataContainerIndex += parseInt(channel) - 1;
+                let chanIndex: number = parseInt(channel) - 1;
+                dataContainerIndex += chanIndex;
                 this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
+
+                let overflow = 0;
+                let containerSize = this.analogChans[chanIndex].sampleFreq * this.xAxis.loggerBufferSize;
+                if ((overflow = this.dataContainers[dataContainerIndex].data.length - containerSize) >= 0) {
+                    this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.slice(overflow); // older data is closer to the front of the array, so remove it by the overflow amount
+                }
             }
         }
         this.setViewToEdge();
