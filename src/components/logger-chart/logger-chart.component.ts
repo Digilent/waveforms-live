@@ -21,6 +21,7 @@ export class LoggerChartComponent {
     public colorArray: string[] = ['#FFA500', '#4487BA', '#ff3b99', '#00c864'];
     public loggerChartOptions: any;
     private activeDevice: DeviceService;
+    private instrument: any;
 
     public unitSymbols: string[];
 
@@ -31,9 +32,10 @@ export class LoggerChartComponent {
     ) {
         this.unitFormatPipeInstance = new UnitFormatPipe();
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+        this.instrument = this.activeDevice.instruments.logger.daq.numChans > 0 ? 'daq' : 'analog';
         
         // set the unit to v for volts initially
-        let length = this.activeDevice.instruments.logger.analog.numChans;
+        let length = this.activeDevice.instruments.logger[this.instrument].numChans;
         this.unitSymbols = Array.from({length}, () => 'V');
         
         this.loggerChartOptions = this.generateBodeOptions();
@@ -70,7 +72,7 @@ export class LoggerChartComponent {
         this.loggerChart.digilentChart.setVoltsPerDivArray(this.generateNiceNumArray(0.001, 5));
         this.loggerChart.digilentChart.setActiveXIndex(15);
 
-        let analongChans = this.deviceManagerService.getActiveDevice().instruments.logger.analog.numChans;
+        let analongChans =  this.activeDevice.instruments.logger[this.instrument].numChans;
         let indices = Array.from({length: analongChans}, () => 8);
 
         this.loggerChart.digilentChart.setActiveYIndices(indices);
@@ -182,7 +184,7 @@ export class LoggerChartComponent {
 
     generateFftYaxisOptions() {
         let fftYAxes: any = [];
-        for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
+        for (let i = 0; i < this.activeDevice.instruments.logger[this.instrument].numChans; i++) {
             let axisOptions = {
                 position: 'left',
                 axisLabel: 'Ch ' + (i + 1),

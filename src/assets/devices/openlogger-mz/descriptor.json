@@ -75,7 +75,7 @@
         "numChans": 0
     },
     "log": {
-        "analog": {
+        "daq": {
             "fileFormat": 1,
             "fileRevision": 1,
             "numChans": 8,
