@@ -75,7 +75,8 @@ export class OpenLoggerLoggerComponent {
     public maxAverage: number = 256;
 
     private analogChanNumbers: number[] = [];
-    public logToLocations: string[] = ['chart', 'SD', 'both'];
+    public logToLocations: string[] = ['chart', 'SD'];
+    public logAndStream: boolean = false;
     public modes: ('continuous' | 'finite')[] = ['continuous', 'finite'];
     public selectedMode: 'continuous' | 'finite' = this.modes[0];
     public selectedLogLocation: string = this.logToLocations[0];
@@ -431,6 +432,7 @@ export class OpenLoggerLoggerComponent {
         }
 
         if (this.selectedLogLocation === 'SD') {
+            this.logAndStream = true;
             this.bothStartStream();
         }
         this.readLiveData();
@@ -1075,11 +1077,10 @@ export class OpenLoggerLoggerComponent {
                     this.analogChansToRead = this.analogChanNumbers.slice();
                     console.log("ANALOG CHANS TO READ: ");
                     console.log(this.analogChansToRead);
-                    if (this.selectedLogLocation !== 'SD') {
-                        this.readLiveData();
-                    }
-                    else {
+                    if (this.selectedLogLocation === 'SD' && !this.logAndStream) {
                         this.getLiveState();
+                    } else {
+                        this.readLiveData();
                     }
                 }
             })
@@ -1098,7 +1099,7 @@ export class OpenLoggerLoggerComponent {
                 this.parseGetLiveStatePacket('analog', data);
                 if (this.running) {
                     setTimeout(() => {
-                        if (this.selectedLogLocation === 'both') {
+                        if (this.selectedLogLocation === 'SD' && this.logAndStream) {
                             this.continueStream();
                         }
                         else {
@@ -1143,7 +1144,9 @@ export class OpenLoggerLoggerComponent {
             .then((data) => {
                 this.parseReadResponseAndDraw(data);
                 if (this.running) {
-                    if (this.selectedLogLocation !== 'SD') {
+                    if (this.selectedLogLocation === 'SD' && !this.logAndStream) {
+                        this.getLiveState();
+                    } else {
                         if (this.activeDevice.transport.getType() === 'local') {
                             setTimeout(() => {
                                 this.readLiveData();
@@ -1151,9 +1154,6 @@ export class OpenLoggerLoggerComponent {
                         } else {
                             this.readLiveData();
                         }
-                    }
-                    else {
-                        this.getLiveState();
                     }
                 }
                 else {
@@ -1268,17 +1268,16 @@ export class OpenLoggerLoggerComponent {
         }
     }
 
-    bothStopStream() {
-        this.selectedLogLocation = 'SD';
-        this.logToChild._applyActiveSelection('SD');
+    logAndStreamChange() {
+        if (this.logAndStream) {
+            this.bothStartStream();
+        }
     }
 
     bothStartStream() {
         this.clearChart();
         this.viewMoved = false;
         this.setViewToEdge();
-        this.selectedLogLocation = 'both';
-        this.logToChild._applyActiveSelection('both');
     }
 
     private copyChannelState(respObj, channelInternalIndex: number) {

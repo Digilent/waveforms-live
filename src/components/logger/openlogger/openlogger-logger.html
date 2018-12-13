@@ -2,6 +2,12 @@
 
     <div>
         <div class="button-info-container">
+            <ion-row *ngIf="selectedLogLocation === 'SD'">
+                <ion-col class="checkbox-container">
+                    <ion-checkbox [(ngModel)]="logAndStream" (ionChange)="logAndStreamChange()"></ion-checkbox> <span class="checkbox-label">Stream to Chart</span>
+                </ion-col>
+            </ion-row>
+
             <logger-xaxis #xaxis (tpdChange)="xAxisValChange($event)" [tpdArray]="loggerPlotService.tpdArray" [tpdIndex]="loggerPlotService.tpdIndex"
                 [tpdAbsolute]="loggerPlotService.xAxis.base"></logger-xaxis>
 
