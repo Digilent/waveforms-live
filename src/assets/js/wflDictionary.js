@@ -160,6 +160,9 @@ var waveformsLiveDictionary = (function() {
         loggerScaleLoadErr: {
             english: 'Error Reading Scaling Equation. Please Try Again'
         },
+        loggerSampleFreqMax: {
+            english: 'Maximum Samples/ for Selected Channels Is '
+        },
 
         //File
         fileDeleteErr: {

@@ -99,6 +99,7 @@ export class OpenLoggerLoggerComponent {
     private filesInStorage: any = {};
     private destroyed: boolean = false;
     public dataAvailable: boolean = false;
+    private chanSelectTimer;
 
     constructor(
         private devicemanagerService: DeviceManagerService,
@@ -153,6 +154,18 @@ export class OpenLoggerLoggerComponent {
 
     public selectChannels(selectedChans: boolean[]) {
         this.selectedChannels = selectedChans;
+        window.clearTimeout(this.chanSelectTimer);
+        
+        if (this.selectedChannels.indexOf(true) > -1) {
+            this.validateAndApply(this.daqParams.sampleFreq, 'sampleFreq');
+
+            this.chanSelectTimer = window.setTimeout(() => {
+                let numChans = this.selectedChannels.lastIndexOf(true) + 1;
+                let chanObj = this.activeDevice.instruments.logger.daq.chans[0];
+                let maxFreq = Math.floor(chanObj.sampleFreqMax / numChans) * chanObj.sampleFreqUnits;    
+                this.toastService.createToast('loggerSampleFreqMax', true, Math.round((maxFreq / 1000) * 100) / 100 + ' kS/s', 5000);
+            }, 1500);
+        }
     }
 
     public updateScale(chan: number, expression: string, scaleName: string, units: string) {
@@ -533,17 +546,17 @@ export class OpenLoggerLoggerComponent {
 
     private validateAndApply(newVal: number, type: 'sampleFreq' | 'samples') {
         if (type === 'sampleFreq') {
-            // TODO: get minFreq and maxFreq from instrument before setting
+            let numChans = this.selectedChannels.lastIndexOf(true) + 1;
 
-            // let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
-            // let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
-            // let maxFreq = chanObj.sampleFreqMax * chanObj.sampleFreqUnits;
-            // if (newVal < minFreq) {
-            //     newVal = minFreq;
-            // }
-            // else if (newVal > maxFreq) {
-            //     newVal = maxFreq;
-            // }
+            let chanObj = this.activeDevice.instruments.logger.daq.chans[0];
+            let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
+            let maxFreq = Math.floor(chanObj.sampleFreqMax / numChans) * chanObj.sampleFreqUnits;
+            if (newVal < minFreq) {
+                newVal = minFreq;
+            }
+            else if (newVal > maxFreq) {
+                newVal = maxFreq;
+            }
             this.daqParams.sampleFreq = newVal;
         }
         else if (type === 'samples') {
@@ -1226,7 +1239,7 @@ export class OpenLoggerLoggerComponent {
                     this.modeChild._applyActiveSelection(this.selectedMode);
                 }
                 if (stateData.actualSampleFreq != undefined) {
-                    this.daqParams.sampleFreq = stateData.actualSampleFreq;
+                    this.daqParams.sampleFreq = stateData.actualSampleFreq / 1000000;
                 }
                 if (stateData.actualStartDelay != undefined) {
                     this.daqParams.startDelay = stateData.actualStartDelay / Math.pow(10, 12);
@@ -1237,7 +1250,7 @@ export class OpenLoggerLoggerComponent {
                     stateData.channels.forEach((channel) => {
                         let key = Object.keys(channel)[0];
                         let index = parseInt(key) - 1;
-                        
+
                         // select channel
                         this.selectedChannels[index] = true;
 
@@ -1266,7 +1279,7 @@ export class OpenLoggerLoggerComponent {
 
     private copyChannelState(respObj, channelInternalIndex: number) {
         let activeChan = this.daqChans[channelInternalIndex];
-        
+
         if (this.storageLocations.length < 1) {
             respObj.storageLocation = 'ram';
         }
