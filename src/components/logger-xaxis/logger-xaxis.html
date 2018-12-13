@@ -30,8 +30,8 @@
         </ion-col>
         <ion-col center class="xaxis-left">
             <div style="display:inline-block">
-                <button ion-button (tap)="decrementLoggerBufferSize()" [disabled]="tpdIndex == tpdArray.length-1" class="img-button disable-hover">
-                    <img class="custom-image-button" src="assets/img/zoom-out.svg">
+                <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementLoggerBufferSize()" [disabled]="tpdIndex == tpdArray.length-1">
+                    <img class="custom-image-button" src="assets/img/remove.svg">
                 </button>
             </div>
         </ion-col>
@@ -42,8 +42,8 @@
         </ion-col>
         <ion-col center class="xaxis-right">
             <div style="display:inline-block">
-                <button ion-button (tap)="incrementLoggerBufferSize()" class="img-button disable-hover">
-                    <img class="custom-image-button" src="assets/img/zoom-in.svg">
+                <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementLoggerBufferSize()">
+                    <img class="custom-image-button" src="assets/img/add.svg">
                 </button>
             </div>
         </ion-col>

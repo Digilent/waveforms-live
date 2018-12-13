@@ -154,7 +154,7 @@
                 </ion-col>
                 <ion-col center class="xaxis-left">
                     <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover" (tap)="decrementAverage()" [disabled]="average === 1">
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementAverage()" [disabled]="average === 1">
                             <img class="custom-image-button" src="assets/img/remove.svg">
                         </button>
                     </div>
@@ -166,7 +166,7 @@
                 </ion-col>
                 <ion-col center class="xaxis-right">
                     <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover" (tap)="incrementAverage()" [disabled]="average === maxAverage">
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementAverage()" [disabled]="average === maxAverage">
                             <img class="custom-image-button" src="assets/img/add.svg">
                         </button>
                     </div>
@@ -249,7 +249,7 @@
                     </div>
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event, 'offset', i)"
+                    <input class="custom-input highlight-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event, 'offset', i)"
                         (mousewheel)="mousewheel($event, 'offset', i)" [tooltip]="tooltipService.getTooltip('oscOffset').message"
                         [tooltipAnimation]="true" tooltipPlacement="top" />
                 </ion-col>
