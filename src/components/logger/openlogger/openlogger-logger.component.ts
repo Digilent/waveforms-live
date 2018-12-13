@@ -155,16 +155,19 @@ export class OpenLoggerLoggerComponent {
     public selectChannels(selectedChans: boolean[]) {
         this.selectedChannels = selectedChans;
         window.clearTimeout(this.chanSelectTimer);
-        
-        if (this.selectedChannels.indexOf(true) > -1) {
-            this.validateAndApply(this.daqParams.sampleFreq, 'sampleFreq');
 
-            this.chanSelectTimer = window.setTimeout(() => {
-                let numChans = this.selectedChannels.lastIndexOf(true) + 1;
-                let chanObj = this.activeDevice.instruments.logger.daq.chans[0];
-                let maxFreq = Math.floor(chanObj.sampleFreqMax / numChans) * chanObj.sampleFreqUnits;    
-                this.toastService.createToast('loggerSampleFreqMax', true, Math.round((maxFreq / 1000) * 100) / 100 + ' kS/s', 5000);
-            }, 1500);
+        if (this.selectedChannels.indexOf(true) > -1) {
+            let currentVal = this.daqParams.sampleFreq;
+            let newVal = this.validateAndApply(this.daqParams.sampleFreq, 'sampleFreq');
+
+            if (currentVal > newVal) {
+                this.chanSelectTimer = window.setTimeout(() => {
+                    let numChans = this.selectedChannels.lastIndexOf(true) + 1;
+                    let chanObj = this.activeDevice.instruments.logger.daq.chans[0];
+                    let maxFreq = Math.floor(chanObj.sampleFreqMax / numChans) * chanObj.sampleFreqUnits;    
+                    this.toastService.createToast('loggerSampleFreqMax', true, Math.round((maxFreq / 1000) * 100) / 100 + ' kS/s', 5000);
+                }, 1500);
+            }
         }
     }
 
@@ -544,7 +547,7 @@ export class OpenLoggerLoggerComponent {
         this.validateAndApply(newFreq, type);
     }
 
-    private validateAndApply(newVal: number, type: 'sampleFreq' | 'samples') {
+    private validateAndApply(newVal: number, type: 'sampleFreq' | 'samples'): number {
         if (type === 'sampleFreq') {
             let numChans = this.selectedChannels.lastIndexOf(true) + 1;
 
@@ -572,6 +575,7 @@ export class OpenLoggerLoggerComponent {
             // }
             this.daqParams.maxSampleCount = newVal;
         }
+        return newVal;
     }
 
     decrementFrequency(type: 'sampleFreq' | 'samples') {
