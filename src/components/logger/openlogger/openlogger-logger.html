@@ -166,7 +166,7 @@
                     </div>
                 </ion-col>
                 <ion-col class="xaxis-center" center text-center>
-                    <div style="display:inline-block;" [tooltip]="tooltipService.getTooltip('xAxisTf').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
+                    <div style="display:inline-block;" [tooltip]="tooltipService.getTooltip('logAveraging').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
                         <input formatInput readonly="readonly" class="custom-input" step="any" [ngModel]="average | averageFormat: 'Sample'" />
                     </div>
                 </ion-col>
@@ -281,7 +281,7 @@
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
                             <button ion-button class="img-button disable-hover" (tap)="openScaleSettings($event, i, true)" [disabled]="running" [tooltip]="tooltipService.getTooltip('logNewScale').message"
-                                [tooltipAnimation]="true" tooltipPlacement="top">
+                                [tooltipAnimation]="true" tooltipPlacement="left">
                                 <img class="custom-image-button svg-size" src="assets/img/add.svg">
                             </button>
                         </div>

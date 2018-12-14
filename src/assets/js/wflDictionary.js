@@ -429,6 +429,9 @@ var waveformsLiveDictionary = (function() {
         xAxisTpd: {
             english: 'Set Time / Division'
         },
+        xAxisBuffer: {
+            english: 'Set Chart Buffer Size'
+        },
         awgFreq: {
             english: 'Set Wavegen Frequency'
         }, 
@@ -445,7 +448,7 @@ var waveformsLiveDictionary = (function() {
             english: 'Retry Enumeration'
         },
         logProfile: {
-            english: 'Log Profile'
+            english: 'Set Log Profile'
         },
         logProfileSettings: {
             english: 'Log Profile Settings'
@@ -454,7 +457,7 @@ var waveformsLiveDictionary = (function() {
             english: 'Save Log Profile'
         },
         logLocation: {
-            english: 'Location To Log To'
+            english: 'Set Location To Log To'
         },
         logLink: {
             english: 'Link Channel To Another'
@@ -463,13 +466,19 @@ var waveformsLiveDictionary = (function() {
             english: 'Device State'
         },
         logSampleFreq: {
-            english: 'Sample Frequency'
+            english: 'Set Sample Frequency'
         },
         logSamples: {
             english: 'Number Of Samples'
         },
+        logMode: {
+            english: 'Set Logger Mode'
+        },
         logSampleMode: {
-            english: 'Sampling Mode'
+            english: 'Set Sampling Mode'
+        },
+        logSampleType: {
+            english: 'Set Sampling Type'
         },
         logStorageLocation: {
             english: 'Log File Storage Location'
@@ -481,13 +490,16 @@ var waveformsLiveDictionary = (function() {
             english: 'Log File Name'
         },
         logSetScaling: {
-            english: 'Set Log Scaling'
+            english: 'Set Log Scaling Equation'
         },
         logNewScale: {
-            english: 'New Scale'
+            english: 'New Scaling Equation'
         },
         logScaleSettings: {
-            english: 'Scale Settings'
+            english: 'Scaling Settings'
+        },
+        logAveraging: {
+            english: 'Set Log Averaging'
         }
 
     };
