@@ -1118,9 +1118,9 @@ export class OpenLoggerLoggerComponent {
                 if (this.running) {
                     if (this.selectedLogLocation !== 'SD') {
                         if (this.activeDevice.transport.getType() === 'local') {
-                            setTimeout(() => {
-                                this.readLiveData();
-                            }, 1000); // grab wait from one of the channels?? Or rather, if we are simulating then wait otherwise just continue as norm    
+                            requestAnimationFrame(() => { // note: calling readLiveData without some delay while simulating freezes the UI, so we request the browser keep time for us.
+                                    this.readLiveData();
+                            });
                         } else {
                             this.readLiveData();
                         }
