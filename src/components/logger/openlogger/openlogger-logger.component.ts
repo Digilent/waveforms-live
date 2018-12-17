@@ -573,6 +573,9 @@ export class OpenLoggerLoggerComponent {
 
         let rightPos = this.dataContainers[0].data[this.dataContainers[0].data.length - 1][0];
         for (let i = 1; i < this.dataContainers.length; i++) {
+            let len = this.dataContainers[i].data.length - 1;
+
+            if (len <= 0) continue;
             let tempRightPos = this.dataContainers[i].data[this.dataContainers[i].data.length - 1][0];
             rightPos = tempRightPos > rightPos ? tempRightPos : rightPos;
         }
