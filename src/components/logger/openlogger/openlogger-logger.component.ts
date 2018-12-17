@@ -1216,7 +1216,7 @@ export class OpenLoggerLoggerComponent {
                     this.modeChild._applyActiveSelection(this.selectedMode);
                 }
                 if (stateData.actualSampleFreq != undefined) {
-                    this.daqParams.sampleFreq = stateData.actualSampleFreq;
+                    this.daqParams.sampleFreq = stateData.actualSampleFreq / 1000000;
                 }
                 if (stateData.actualStartDelay != undefined) {
                     this.daqParams.startDelay = stateData.actualStartDelay / Math.pow(10, 12);
