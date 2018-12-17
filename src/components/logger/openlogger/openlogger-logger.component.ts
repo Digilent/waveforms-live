@@ -44,20 +44,22 @@ export class OpenLoggerLoggerComponent {
     private daqParams: DaqLoggerParams = {
         maxSampleCount: -1,
         startDelay: 0,
-        sampleFreq: 1000
+        sampleFreq: 1000,
+        state: 'idle'
     };
     private defaultDaqChannelParams: DaqChannelParams = {
         average: 1,
         storageLocation: 'ram',
         uri: '',
-        startIndex: 0,
-        count: 0,
         vOffset: 0
     };
     public daqChans: DaqChannelParams[] = [];
 
     public average: number = 1;
     public maxAverage: number = 256;
+
+    public startIndex: number = 0;
+    public count: number = 0;
 
     private daqChanNumbers: number[] = [];
     public logToLocations: string[] = ['chart', 'SD', 'both'];
@@ -390,6 +392,8 @@ export class OpenLoggerLoggerComponent {
         for (let i = 0; i < this.daqChans.length; i++) {
             if (this.daqParams.state === 'running') { // if currently running & the channel is active, then push it(?)
                 this.daqChansToRead.push(i + 1);
+                this.count = -1000;
+                this.startIndex = -1;
             }
         }
 
@@ -566,15 +570,19 @@ export class OpenLoggerLoggerComponent {
             this.loggerPlotService.setPosition('x', 1, this.loggerPlotService.xAxis.base * 5, true);
             return;
         }
+
         let rightPos = this.dataContainers[0].data[this.dataContainers[0].data.length - 1][0];
         for (let i = 1; i < this.dataContainers.length; i++) {
             let tempRightPos = this.dataContainers[i].data[this.dataContainers[i].data.length - 1][0];
             rightPos = tempRightPos > rightPos ? tempRightPos : rightPos;
         }
+
         let span = this.loggerPlotService.xAxis.base * 10;
         let leftPos = rightPos - span;
         if (leftPos < 0) { return; }
+
         let newPos = (rightPos + leftPos) / 2;
+
         this.loggerPlotService.setPosition('x', 1, newPos, false);
     }
 
@@ -1008,8 +1016,8 @@ export class OpenLoggerLoggerComponent {
     private setParametersAndRun(loading) {
         let daqChanArray = [];
         for (let i = 0; i < this.daqChans.length; i++) {
-            this.daqChans[i].count = -1000;
-            this.daqChans[i].startIndex = -1;
+            this.count = -1000;
+            this.startIndex = 0;
             if (this.selectedChannels[i]) {
                 daqChanArray.push(i + 1);
             }
@@ -1365,6 +1373,8 @@ export class OpenLoggerLoggerComponent {
             }
 
             for (let i = 0; i < this.daqChansToRead.length; i++) {
+                startIndices.push(this.startIndex);
+                counts.push(this.count);
             }
 
             let finalObj = {};
@@ -1373,6 +1383,8 @@ export class OpenLoggerLoggerComponent {
                 return accumulator.flatMap((data) => {
                     if (currentIndex > 0) {
                         let chanObj = this.daqChans[currentIndex - 1];
+                        
+                        if (this.startIndex >= 0 && this.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
                             return Observable.create((observer) => {
                                 observer.error({
                                     message: 'Could not keep up with device',
@@ -1380,25 +1392,29 @@ export class OpenLoggerLoggerComponent {
                                 });
                             });
                         }
+
                         this.updateValuesFromRead(data, instrument, chans, currentIndex - 1);
                     }
+
                     this.deepMergeObj(finalObj, data);
 
                     return this.activeDevice.instruments.logger.daq.read(instrument, [chans[currentIndex]], [startIndices[currentIndex]], [counts[currentIndex]]);
                 });
             }, Observable.create((observer) => { observer.next({}); observer.complete(); }))
                 .subscribe(
-                    (data) => {
-                        let chanObj = this.analogChans[chans[chans.length - 1] - 1];
-                        if (chanObj.startIndex >= 0 && chanObj.startIndex !== data.instruments[instrument][chans[chans.length - 1]].startIndex) {
+                        let data = {cmdRespObj, instruments};
+                        if (this.startIndex >= 0 && this.startIndex !== cmdRespObj.log.daq.startIndex) {
                             reject({
                                 message: 'Could not keep up with device',
                                 data: data
                             });
                             return;
                         }
+
                         this.updateValuesFromRead(data, instrument, chans, chans.length - 1);
+
                         this.deepMergeObj(finalObj, data);
+
                         resolve(finalObj);
                     },
                     (err) => {
@@ -1442,13 +1458,14 @@ export class OpenLoggerLoggerComponent {
 
     private updateValuesFromRead(data, instrument: 'analog' | 'digital', chans: number[], index: number) {
         if (data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[index]].statusCode === 0) {
-            if (instrument === 'analog') {
-                this.analogChans[chans[index] - 1].startIndex = data.instruments[instrument][chans[index]].startIndex;
-                this.analogChans[chans[index] - 1].startIndex += data.instruments[instrument][chans[index]].actualCount;
-                this.analogChans[chans[index] - 1].count = 0;
-                if (this.analogChans[chans[index] - 1].maxSampleCount > 0 && this.analogChans[chans[index] - 1].startIndex >= this.analogChans[chans[index] - 1].maxSampleCount) {
-                    this.analogChansToRead.splice(this.analogChansToRead.indexOf(chans[index]), 1);
-                    if (this.analogChansToRead.length < 1) {
+            if (instrument === 'daq') {
+                this.startIndex = data.cmdRespObj.log.daq.startIndex;
+                this.startIndex += data.cmdRespObj.log.daq.actualCount + 1; 
+                this.count = -1000;
+                if (this.daqParams.maxSampleCount > 0 && this.startIndex >= this.daqParams.maxSampleCount) {
+                    this.daqChansToRead.splice(this.daqChansToRead.indexOf(chans[index]), 1);
+
+                    if (this.daqChansToRead.length < 1) {
                         this.running = false;
                     }
                 }
@@ -1575,8 +1592,6 @@ export interface DaqChannelParams {
     average: number,
     storageLocation: string,
     uri: string,
-    startIndex: number,
-    count: number,
     vOffset: number
 }
 
