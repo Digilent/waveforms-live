@@ -1405,6 +1405,7 @@ export class OpenLoggerLoggerComponent {
                 });
             }, Observable.create((observer) => { observer.next({}); observer.complete(); }))
                 .subscribe(
+                    ({cmdRespObj, instruments}) => {
                         let data = {cmdRespObj, instruments};
                         if (this.startIndex >= 0 && this.startIndex !== cmdRespObj.log.daq.startIndex) {
                             reject({
@@ -1435,7 +1436,7 @@ export class OpenLoggerLoggerComponent {
                             //Check if data is not ready
                             if (parsedData && parsedData.log && parsedData.log[instrument]) {
                                 for (let chan in parsedData.log[instrument]) {
-                                    if (parsedData.log[instrument][chan][0].statusCode === 2684354593) {
+                                    if (parsedData.log[instrument].statusCode === 2684354593) {
                                         console.log('data not ready');
                                         reject({
                                             message: 'Data not ready',
@@ -1443,7 +1444,7 @@ export class OpenLoggerLoggerComponent {
                                         });
                                         return;
                                     }
-                                    else if (parsedData.log[instrument][chan][0].statusCode === 2684354595) {
+                                    else if (parsedData.log[instrument].statusCode === 2684354595) {
                                         reject({
                                             message: 'Could not keep up with device',
                                             data: parsedData
@@ -1459,7 +1460,7 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    private updateValuesFromRead(data, instrument: 'analog' | 'digital', chans: number[], index: number) {
+    private updateValuesFromRead(data, instrument: 'analog' | 'digital' | 'daq', chans: number[], index: number) {
         if (data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[index]].statusCode === 0) {
             if (instrument === 'daq') {
                 this.startIndex = data.cmdRespObj.log.daq.startIndex;
@@ -1601,5 +1602,6 @@ export interface DaqChannelParams {
 export interface DaqLoggerParams {
     maxSampleCount: number,
     startDelay: number,
-    sampleFreq: number
+    sampleFreq: number,
+    state: string
 }
