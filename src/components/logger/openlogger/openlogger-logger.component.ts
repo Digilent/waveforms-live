@@ -940,6 +940,7 @@ export class OpenLoggerLoggerComponent {
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
 
                 let overflow = 0;
+                let numChans = this.selectedChannels.lastIndexOf(true) + 1;
                 let containerSize = (this.daqParams.sampleFreq / numChans)* this.xAxis.loggerBufferSize;
                 if ((overflow = this.dataContainers[dataContainerIndex].data.length - containerSize) >= 0) {
                     this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.slice(overflow); // older data is closer to the front of the array, so remove it by the overflow amount
@@ -1045,9 +1046,8 @@ export class OpenLoggerLoggerComponent {
                     this.running = true;
                     loading.dismiss();
                     //TODO load this value from the selected chans assuming individual channel selection is an added feature later
-                    this.analogChansToRead = this.analogChanNumbers.slice();
-                    console.log("ANALOG CHANS TO READ: ");
-                    console.log(this.analogChansToRead);
+                    this.daqChansToRead = this.selectedChannels.filter(isSelected => isSelected === true)
+                                                .map((_, index) => index + 1);
                     if (this.selectedLogLocation !== 'SD') {
                         this.readLiveData();
                     }
