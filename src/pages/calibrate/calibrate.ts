@@ -190,7 +190,7 @@ export class CalibratePage {
             this.calibrationResultsIndicator = 'Error saving calibration. Choose a valid storage location.';
             return Promise.reject(this.calibrationResultsIndicator);
         }
-        if (this.calibrationResults.indexOf('IDEAL') !== -1 || this.calibrationResults.indexOf('UNCALIBRATED') !== -1 || this.calibrationResults.indexOf('UnCalibrated') !== -1 || this.calibrationResults.indexOf('FailedCalibration') !== -1) {
+        if (this.calibrationResults.indexOf('IDEAL') !== -1 || this.calibrationResults.indexOf('UNCALIBRATED') !== -1 || this.calibrationResults.indexOf('uncalibrated') !== -1 || this.calibrationResults.indexOf('failed calibration') !== -1) {
             this.calibrationFailed = true;
             this.calibrationResultsIndicator = 'Error saving calibration. One or more channels fell back to ideal values. Rerun calibration.';
             return Promise.reject(this.calibrationResultsIndicator);
@@ -230,7 +230,7 @@ export class CalibratePage {
         console.log(this.deviceManagerService);
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationGetInstructions().subscribe(
             (data) => {
-                if (data.device[0].instructions == undefined && data.device[0].step == undefined) { 
+                if (data.device[0].instructions == undefined && data.device[0].step == undefined) {
                     this.calibrationInstructions = this.isLogger ? Array.apply(null, Array(8)) : [null];
                     return;
                 }
@@ -426,13 +426,15 @@ export class CalibratePage {
         this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].calibrationRead().subscribe(
             (data) => {
                 console.log(data);
-                // Make sure calibration did not fail          
-                if (this.isLogger && data.device[0].calibrationData.daq[this.currentStep + 1].status === 'FailedCalibration') {
-                    this.calibrationFailed = true;
-                    this.calibrationStatus = 'Calibration failed. Check your calibration setup and try again.';
-                    return;
+                // Make sure calibration did not fail
+                if (this.isLogger) {
+                    let status = data.device[0].calibrationData.daq[this.currentStep + 1].status;
+                    if (status === 'failed calibration' || status === 'uncalibrated') {
+                        this.calibrationFailed = true;
+                        this.calibrationStatus = 'Calibration failed. Check your calibration setup and try again.';
+                        return;
+                    }
                 }
-
                 this.calibrationStatus = 'Calibration Successful!';
                 this.parseCalibrationInformation(data);
                 this.calibrationSuccessful = true;

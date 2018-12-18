@@ -198,7 +198,7 @@ export class DeviceConfigurePage {
                     else if (calibrationObjectString.indexOf('FACTORY') !== -1 || calibrationObjectString.indexOf('FLASH') !== -1 || calibrationObjectString.indexOf('flash') !== -1) {
                         this.currentCalibration = 'Flash';
                     }
-                    else if (calibrationObjectString.indexOf('UnCalibrated') !== -1 || calibrationObjectString.indexOf('UNCALIBRATED') !== -1 || calibrationObjectString.indexOf('IDEAL') !== -1) {
+                    else if (calibrationObjectString.indexOf('uncalibrated') !== -1 || calibrationObjectString.indexOf('UNCALIBRATED') !== -1 || calibrationObjectString.indexOf('IDEAL') !== -1) {
                         this.currentCalibration = 'Uncalibrated';
                         if (routeToCalibrationWizard) {
                             this.deviceManagerPageRef.verifyCalibrationSource(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex, 'UNCALIBRATED')
