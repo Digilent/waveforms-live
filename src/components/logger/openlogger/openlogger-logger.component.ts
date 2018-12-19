@@ -897,7 +897,7 @@ export class OpenLoggerLoggerComponent {
     }
 
     stopLogger() {
-        this.stop('daq', this.daqChanNumbers)
+        this.stop()
             .then((data) => {
                 console.log(data);
                 this.running = false;
@@ -1148,7 +1148,7 @@ export class OpenLoggerLoggerComponent {
                 }
                 else if (e.message && e.message === 'Could not keep up with device') {
                     this.toastService.createToast('loggerCouldNotKeepUp', false, undefined, 10000);
-                    this.stop('daq', this.daqChansToRead)
+                    this.stop()
                         .then((data) => {
                             console.log(data);
                         })
@@ -1345,13 +1345,13 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    stop(instrument: 'analog' | 'digital' | 'daq', chans: number[]): Promise<any> {
+    stop(): Promise<any> {
         return new Promise((resolve, reject) => {
             if (this.daqChans.length < 1) {
                 resolve();
                 return;
             }
-            this.activeDevice.instruments.logger.daq.stop(instrument, chans).subscribe(
+            this.activeDevice.instruments.logger.daq.stop().subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);
