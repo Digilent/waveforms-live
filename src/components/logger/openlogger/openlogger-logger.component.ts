@@ -1367,46 +1367,19 @@ export class OpenLoggerLoggerComponent {
 
     read(instrument: 'analog' | 'digital' | 'daq', chans: number[]): Promise<any> {
         return new Promise((resolve, reject) => {
-            let startIndices: number[] = [];
-            let counts: number[] = [];
 
             if (this.daqChansToRead.length < 1 || this.daqChans.length < 1) {
                 resolve();
                 return;
             }
 
-            for (let i = 0; i < this.daqChansToRead.length; i++) {
-                startIndices.push(this.startIndex);
-                counts.push(this.count);
-            }
-
             let finalObj = {};
-
-            chans.reduce((accumulator, currentVal, currentIndex) => {
-                return accumulator.flatMap((data) => {
-                    if (currentIndex > 0) {
-                        let chanObj = this.daqChans[currentIndex - 1];
-                        
-                        if (this.startIndex >= 0 && this.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
-                            return Observable.create((observer) => {
-                                observer.error({
-                                    message: 'Could not keep up with device',
-                                    data: data
-                                });
-                            });
-                        }
-
-                        this.updateValuesFromRead(data, instrument, chans, currentIndex - 1);
-                    }
-
-                    this.deepMergeObj(finalObj, data);
-
-                    return this.activeDevice.instruments.logger.daq.read(instrument, [chans[currentIndex]], [startIndices[currentIndex]], [counts[currentIndex]]);
-                });
-            }, Observable.create((observer) => { observer.next({}); observer.complete(); }))
+            
+            this.activeDevice.instruments.logger.daq.read(instrument, chans, this.startIndex, this.count)
                 .subscribe(
                     ({cmdRespObj, instruments}) => {
                         let data = {cmdRespObj, instruments};
+                        
                         if (this.startIndex >= 0 && this.startIndex !== cmdRespObj.log.daq.startIndex) {
                             reject({
                                 message: 'Could not keep up with device',
