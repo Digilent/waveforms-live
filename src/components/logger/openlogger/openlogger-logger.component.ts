@@ -565,6 +565,7 @@ export class OpenLoggerLoggerComponent {
 
     setViewToEdge() {
         if (this.viewMoved) { return; }
+        
         if (this.dataContainers[0].data[0] == undefined || this.dataContainers[0].data[0][0] == undefined) {
             //Data was cleared
             this.loggerPlotService.setPosition('x', 1, this.loggerPlotService.xAxis.base * 5, true);
@@ -574,8 +575,9 @@ export class OpenLoggerLoggerComponent {
         let rightPos = this.dataContainers[0].data[this.dataContainers[0].data.length - 1][0];
         for (let i = 1; i < this.dataContainers.length; i++) {
             let len = this.dataContainers[i].data.length - 1;
-
+            
             if (len <= 0) continue;
+
             let tempRightPos = this.dataContainers[i].data[this.dataContainers[i].data.length - 1][0];
             rightPos = tempRightPos > rightPos ? tempRightPos : rightPos;
         }
