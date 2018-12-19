@@ -936,7 +936,7 @@ export class OpenLoggerLoggerComponent {
                 let dataContainerIndex = 0;
 
                 dataContainerIndex += chanIndex;
-                this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
+                this.dataContainers[dataContainerIndex].seriesOffset = 0;
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
 
                 let overflow = 0;
