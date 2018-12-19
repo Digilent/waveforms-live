@@ -52,11 +52,11 @@ export class OpenLoggerLoggerPage {
             currentType: 'disabled',
             currentChannels: {
                 c1: {
-                    instrument: this.loggerComponent.analogChans.length > 0 ? 'analog' : 'digital',
+                    instrument: this.loggerComponent.daqChans.length > 0 ? 'analog' : 'digital',
                     channel: 1
                 },
                 c2: {
-                    instrument: this.loggerComponent.analogChans.length > 0 ? 'analog' : 'digital',
+                    instrument: this.loggerComponent.daqChans.length > 0 ? 'analog' : 'digital',
                     channel: 1
                 }
             }
@@ -217,7 +217,7 @@ export class OpenLoggerLoggerPage {
                 let cursorNum = i === 0 ? newCursorData.currentChannels.c1 : newCursorData.currentChannels.c2;
                 seriesIndex = cursorNum.channel - 1;
                 if (cursorNum.instrument === 'digital') {
-                    seriesIndex += this.loggerComponent.analogChans.length;
+                    seriesIndex += this.loggerComponent.daqChans.length;
                 }
                 let series = this.loggerPlotService.chart.getData();
                 let color = series[seriesIndex].color
@@ -246,7 +246,7 @@ export class OpenLoggerLoggerPage {
                 let cursorNum = i === 0 ? newCursorData.currentChannels.c1 : newCursorData.currentChannels.c2;
                 seriesIndex = cursorNum.channel - 1;
                 if (cursorNum.instrument === 'digital') {
-                    seriesIndex += this.loggerComponent.analogChans.length;
+                    seriesIndex += this.loggerComponent.daqChans.length;
                 }
                 let series = this.loggerPlotService.chart.getData();
                 let color = series[seriesIndex].color
@@ -275,7 +275,7 @@ export class OpenLoggerLoggerPage {
                 let cursorNum = i === 0 ? newCursorData.currentChannels.c1 : newCursorData.currentChannels.c2;
                 seriesIndex = cursorNum.channel - 1;
                 if (cursorNum.instrument === 'digital') {
-                    seriesIndex += this.loggerComponent.analogChans.length;
+                    seriesIndex += this.loggerComponent.daqChans.length;
                 }
                 let series = this.loggerPlotService.chart.getData();
                 let color = series[seriesIndex].color
