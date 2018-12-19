@@ -144,24 +144,40 @@ export class LoggerPlotService {
 
     shouldShowIndividualPoints(redraw?: boolean) {
         redraw = redraw == undefined ? false : redraw;
+
         let series = this.chart.getData();
         let axesInfo = this.chart.getAxes();
         let shouldRedraw = false;
+
         for (let i = 0; i < series.length; i++) {
             if (series[0].data.length < 1) { return; }
+
             if (series[0].data.length < 2) {
                 shouldRedraw = true;
+
                 series[i].points.show = true;
+
                 continue;
             }
-            let numPointsInView = (axesInfo.xaxis.max - axesInfo.xaxis.min) / (series[i].data[1][0] - series[i].data[0][0]);
+
+            let dt;
+            try {
+               dt = (series[i].data[1][0] - series[i].data[0][0]);
+            } catch(e) {
+                continue;
+            }
+            
+            let numPointsInView = (axesInfo.xaxis.max - axesInfo.xaxis.min) / dt;
             let currentVal = series[i].points.show;
             let shouldShowPoints = numPointsInView < 50;
+
             series[i].points.show = shouldShowPoints;
+
             if (currentVal !== shouldShowPoints) {
                 shouldRedraw = true;
             }
         }
+
         if (shouldRedraw && redraw) {
             this.chart.draw();
         }
