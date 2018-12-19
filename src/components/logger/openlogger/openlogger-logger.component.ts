@@ -583,6 +583,7 @@ export class OpenLoggerLoggerComponent {
 
     setViewToEdge() {
         if (this.viewMoved) { return; }
+        
         if (this.dataContainers[0].data[0] == undefined || this.dataContainers[0].data[0][0] == undefined) {
             //Data was cleared
             this.loggerPlotService.setPosition('x', 1, this.loggerPlotService.xAxis.base * 5, true);
@@ -592,8 +593,9 @@ export class OpenLoggerLoggerComponent {
         let rightPos = this.dataContainers[0].data[this.dataContainers[0].data.length - 1][0];
         for (let i = 1; i < this.dataContainers.length; i++) {
             let len = this.dataContainers[i].data.length - 1;
-
+            
             if (len <= 0) continue;
+
             let tempRightPos = this.dataContainers[i].data[this.dataContainers[i].data.length - 1][0];
             rightPos = tempRightPos > rightPos ? tempRightPos : rightPos;
         }
@@ -915,7 +917,7 @@ export class OpenLoggerLoggerComponent {
     }
 
     stopLogger() {
-        this.stop('daq', this.daqChanNumbers)
+        this.stop()
             .then((data) => {
                 console.log(data);
                 this.running = false;
@@ -954,7 +956,7 @@ export class OpenLoggerLoggerComponent {
                 let dataContainerIndex = 0;
 
                 dataContainerIndex += chanIndex;
-                this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
+                this.dataContainers[dataContainerIndex].seriesOffset = 0;
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
 
                 let overflow = 0;
@@ -1163,7 +1165,7 @@ export class OpenLoggerLoggerComponent {
                 }
                 else if (e.message && e.message === 'Could not keep up with device') {
                     this.toastService.createToast('loggerCouldNotKeepUp', false, undefined, 10000);
-                    this.stop('daq', this.daqChansToRead)
+                    this.stop()
                         .then((data) => {
                             console.log(data);
                         })
@@ -1359,13 +1361,13 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    stop(instrument: 'analog' | 'digital' | 'daq', chans: number[]): Promise<any> {
+    stop(): Promise<any> {
         return new Promise((resolve, reject) => {
             if (this.daqChans.length < 1) {
                 resolve();
                 return;
             }
-            this.activeDevice.instruments.logger.daq.stop(instrument, chans).subscribe(
+            this.activeDevice.instruments.logger.daq.stop().subscribe(
                 (data) => {
                     console.log(data);
                     resolve(data);
@@ -1381,46 +1383,19 @@ export class OpenLoggerLoggerComponent {
 
     read(instrument: 'analog' | 'digital' | 'daq', chans: number[]): Promise<any> {
         return new Promise((resolve, reject) => {
-            let startIndices: number[] = [];
-            let counts: number[] = [];
 
             if (this.daqChansToRead.length < 1 || this.daqChans.length < 1) {
                 resolve();
                 return;
             }
 
-            for (let i = 0; i < this.daqChansToRead.length; i++) {
-                startIndices.push(this.startIndex);
-                counts.push(this.count);
-            }
-
             let finalObj = {};
-
-            chans.reduce((accumulator, currentVal, currentIndex) => {
-                return accumulator.flatMap((data) => {
-                    if (currentIndex > 0) {
-                        let chanObj = this.daqChans[currentIndex - 1];
-                        
-                        if (this.startIndex >= 0 && this.startIndex !== data.instruments[instrument][currentIndex].startIndex) {
-                            return Observable.create((observer) => {
-                                observer.error({
-                                    message: 'Could not keep up with device',
-                                    data: data
-                                });
-                            });
-                        }
-
-                        this.updateValuesFromRead(data, instrument, chans, currentIndex - 1);
-                    }
-
-                    this.deepMergeObj(finalObj, data);
-
-                    return this.activeDevice.instruments.logger.daq.read(instrument, [chans[currentIndex]], [startIndices[currentIndex]], [counts[currentIndex]]);
-                });
-            }, Observable.create((observer) => { observer.next({}); observer.complete(); }))
+            
+            this.activeDevice.instruments.logger.daq.read(instrument, chans, this.startIndex, this.count)
                 .subscribe(
                     ({cmdRespObj, instruments}) => {
                         let data = {cmdRespObj, instruments};
+                        
                         if (this.startIndex >= 0 && this.startIndex !== cmdRespObj.log.daq.startIndex) {
                             reject({
                                 message: 'Could not keep up with device',
