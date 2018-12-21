@@ -107,4 +107,14 @@ openlogger-logger-component {
     .menu-button-container>button {
         padding: 0 0.1em;
     }
+    .checkbox-container {
+        color: #CCCCCC;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0px 0px 5px 0px;
+    }
+    .checkbox-label {
+        margin-left: 10px;
+    }
 }

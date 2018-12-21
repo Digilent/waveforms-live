@@ -2,6 +2,12 @@
 
     <div>
         <div class="button-info-container">
+            <ion-row *ngIf="selectedLogLocation === 'SD'">
+                <ion-col class="checkbox-container">
+                    <ion-checkbox [(ngModel)]="logAndStream" (ionChange)="logAndStreamChange()"></ion-checkbox> <span class="checkbox-label">Stream to Chart</span>
+                </ion-col>
+            </ion-row>
+
             <logger-xaxis #xaxis (tpdChange)="xAxisValChange($event)" [tpdArray]="loggerPlotService.tpdArray" [tpdIndex]="loggerPlotService.tpdIndex"
                 [tpdAbsolute]="loggerPlotService.xAxis.base"></logger-xaxis>
 
@@ -99,7 +105,7 @@
                 </ion-col>
             </ion-row>
 
-            <ion-row class="controls-container">
+            <!-- <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
                     Log On Boot
                 </ion-col>
@@ -107,7 +113,7 @@
                     <dropdown-popover class="profile-drop-pop" [dataArray]="logOnBootProfiles" [disabled]="running">
                     </dropdown-popover>
                 </ion-col>
-            </ion-row>
+            </ion-row> -->
 
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
@@ -154,19 +160,19 @@
                 </ion-col>
                 <ion-col center class="xaxis-left">
                     <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover" (tap)="decrementAverage()" [disabled]="average === 1">
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementAverage()" [disabled]="average === 1">
                             <img class="custom-image-button" src="assets/img/remove.svg">
                         </button>
                     </div>
                 </ion-col>
                 <ion-col class="xaxis-center" center text-center>
-                    <div style="display:inline-block;" [tooltip]="tooltipService.getTooltip('xAxisTf').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
+                    <div style="display:inline-block;" [tooltip]="tooltipService.getTooltip('logAveraging').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
                         <input formatInput readonly="readonly" class="custom-input" step="any" [ngModel]="average | averageFormat: 'Sample'" />
                     </div>
                 </ion-col>
                 <ion-col center class="xaxis-right">
                     <div style="display:inline-block">
-                        <button ion-button class="img-button disable-hover" (tap)="incrementAverage()" [disabled]="average === maxAverage">
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementAverage()" [disabled]="average === maxAverage">
                             <img class="custom-image-button" src="assets/img/add.svg">
                         </button>
                     </div>
@@ -249,7 +255,7 @@
                     </div>
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event, 'offset', i)"
+                    <input class="custom-input highlight-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" formatInput (valChange)="formatInputAndUpdate($event, 'offset', i)"
                         (mousewheel)="mousewheel($event, 'offset', i)" [tooltip]="tooltipService.getTooltip('oscOffset').message"
                         [tooltipAnimation]="true" tooltipPlacement="top" />
                 </ion-col>
@@ -275,7 +281,7 @@
                     <ion-col text-left center class="vpd-button-col margin-right">
                         <div style="display:inline-block">
                             <button ion-button class="img-button disable-hover" (tap)="openScaleSettings($event, i, true)" [disabled]="running" [tooltip]="tooltipService.getTooltip('logNewScale').message"
-                                [tooltipAnimation]="true" tooltipPlacement="top">
+                                [tooltipAnimation]="true" tooltipPlacement="left">
                                 <img class="custom-image-button svg-size" src="assets/img/add.svg">
                             </button>
                         </div>

@@ -57,12 +57,12 @@ export class OpenLoggerLoggerComponent {
 
     public average: number = 1;
     public maxAverage: number = 256;
-
+    
     public startIndex: number = 0;
     public count: number = 0;
-
     private daqChanNumbers: number[] = [];
-    public logToLocations: string[] = ['chart', 'SD', 'both'];
+    public logToLocations: string[] = ['chart', 'SD'];
+    public logAndStream: boolean = false;
     public modes: ('continuous' | 'finite')[] = ['continuous', 'finite'];
     public selectedMode: 'continuous' | 'finite' = this.modes[0];
     public selectedLogLocation: string = this.logToLocations[0];
@@ -86,6 +86,7 @@ export class OpenLoggerLoggerComponent {
     private filesInStorage: any = {};
     private destroyed: boolean = false;
     public dataAvailable: boolean = false;
+    private chanSelectTimer;
 
     constructor(
         private devicemanagerService: DeviceManagerService,
@@ -140,6 +141,21 @@ export class OpenLoggerLoggerComponent {
 
     public selectChannels(selectedChans: boolean[]) {
         this.selectedChannels = selectedChans;
+        window.clearTimeout(this.chanSelectTimer);
+
+        if (this.selectedChannels.indexOf(true) > -1) {
+            let currentVal = this.daqParams.sampleFreq;
+            let newVal = this.validateAndApply(this.daqParams.sampleFreq, 'sampleFreq');
+
+            if (currentVal > newVal) {
+                this.chanSelectTimer = window.setTimeout(() => {
+                    let numChans = this.selectedChannels.lastIndexOf(true) + 1;
+                    let chanObj = this.activeDevice.instruments.logger.daq.chans[0];
+                    let maxFreq = Math.floor(chanObj.sampleFreqMax / numChans) * chanObj.sampleFreqUnits;    
+                    this.toastService.createToast('loggerSampleFreqMax', true, Math.round((maxFreq / 1000) * 100) / 100 + ' kS/s', 5000);
+                }, 1500);
+            }
+        }
     }
 
     public updateScale(chan: number, expression: string, scaleName: string, units: string) {
@@ -398,6 +414,7 @@ export class OpenLoggerLoggerComponent {
         }
 
         if (this.selectedLogLocation === 'SD') {
+            this.logAndStream = true;
             this.bothStartStream();
         }
         this.readLiveData();
@@ -514,19 +531,19 @@ export class OpenLoggerLoggerComponent {
         this.validateAndApply(newFreq, type);
     }
 
-    private validateAndApply(newVal: number, type: 'sampleFreq' | 'samples') {
+    private validateAndApply(newVal: number, type: 'sampleFreq' | 'samples'): number {
         if (type === 'sampleFreq') {
-            // TODO: get minFreq and maxFreq from instrument before setting
+            let numChans = this.selectedChannels.lastIndexOf(true) + 1;
 
-            // let chanObj = this.activeDevice.instruments.logger[instrument].chans[axisNum];
-            // let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
-            // let maxFreq = chanObj.sampleFreqMax * chanObj.sampleFreqUnits;
-            // if (newVal < minFreq) {
-            //     newVal = minFreq;
-            // }
-            // else if (newVal > maxFreq) {
-            //     newVal = maxFreq;
-            // }
+            let chanObj = this.activeDevice.instruments.logger.daq.chans[0];
+            let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
+            let maxFreq = Math.floor(chanObj.sampleFreqMax / numChans) * chanObj.sampleFreqUnits;
+            if (newVal < minFreq) {
+                newVal = minFreq;
+            }
+            else if (newVal > maxFreq) {
+                newVal = maxFreq;
+            }
             this.daqParams.sampleFreq = newVal;
         }
         else if (type === 'samples') {
@@ -542,6 +559,7 @@ export class OpenLoggerLoggerComponent {
             // }
             this.daqParams.maxSampleCount = newVal;
         }
+        return newVal;
     }
 
     decrementFrequency(type: 'sampleFreq' | 'samples') {
@@ -1047,14 +1065,12 @@ export class OpenLoggerLoggerComponent {
                     console.log(data);
                     this.running = true;
                     loading.dismiss();
-                    //TODO load this value from the selected chans assuming individual channel selection is an added feature later
-                    this.daqChansToRead = this.selectedChannels.filter(isSelected => isSelected === true)
-                                                .map((_, index) => index + 1);
-                    if (this.selectedLogLocation !== 'SD') {
-                        this.readLiveData();
-                    }
-                    else {
+
+                    this.daqChansToRead = this.selectedChannels.filter(isSelected => isSelected === true).map((_, index) => index + 1);              
+                    if (this.selectedLogLocation === 'SD' && !this.logAndStream) {
                         this.getLiveState();
+                    } else {
+                        this.readLiveData();
                     }
                 }
             })
@@ -1073,7 +1089,7 @@ export class OpenLoggerLoggerComponent {
                 this.parseGetLiveStatePacket('analog', data);
                 if (this.running) {
                     setTimeout(() => {
-                        if (this.selectedLogLocation === 'both') {
+                        if (this.selectedLogLocation === 'SD' && this.logAndStream) {
                             this.continueStream();
                         }
                         else {
@@ -1118,7 +1134,9 @@ export class OpenLoggerLoggerComponent {
             .then((data) => {
                 this.parseReadResponseAndDraw(data);
                 if (this.running) {
-                    if (this.selectedLogLocation !== 'SD') {
+                    if (this.selectedLogLocation === 'SD' && !this.logAndStream) {
+                        this.getLiveState();
+                    } else {
                         if (this.activeDevice.transport.getType() === 'local') {
                             requestAnimationFrame(() => { // note: calling readLiveData without some delay while simulating freezes the UI, so we request the browser keep time for us.
                                     this.readLiveData();
@@ -1126,9 +1144,6 @@ export class OpenLoggerLoggerComponent {
                         } else {
                             this.readLiveData();
                         }
-                    }
-                    else {
-                        this.getLiveState();
                     }
                 }
                 else {
@@ -1229,7 +1244,7 @@ export class OpenLoggerLoggerComponent {
                     stateData.channels.forEach((channel) => {
                         let key = Object.keys(channel)[0];
                         let index = parseInt(key) - 1;
-                        
+
                         // select channel
                         this.selectedChannels[index] = true;
 
@@ -1243,22 +1258,21 @@ export class OpenLoggerLoggerComponent {
         }
     }
 
-    bothStopStream() {
-        this.selectedLogLocation = 'SD';
-        this.logToChild._applyActiveSelection('SD');
+    logAndStreamChange() {
+        if (this.logAndStream) {
+            this.bothStartStream();
+        }
     }
 
     bothStartStream() {
         this.clearChart();
         this.viewMoved = false;
         this.setViewToEdge();
-        this.selectedLogLocation = 'both';
-        this.logToChild._applyActiveSelection('both');
     }
 
     private copyChannelState(respObj, channelInternalIndex: number) {
         let activeChan = this.daqChans[channelInternalIndex];
-        
+
         if (this.storageLocations.length < 1) {
             respObj.storageLocation = 'ram';
         }
