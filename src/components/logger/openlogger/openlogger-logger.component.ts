@@ -327,20 +327,19 @@ export class OpenLoggerLoggerComponent {
                 })
                 .then((data) => {
                     console.log(data);
-                    return this.loadProfilesFromDevice();
-                })
-                .then((data) => {
-                    console.log(data);
                     return this.getCurrentState(daqChanArray);
                 })
                 .catch((e) => {
                     console.log(e);
-                    // TODO: uncomment when getStorageLocations command is implemented
-                    // if (this.storageLocations.length < 1) {
-                    //     this.logToLocations = ['chart'];
-                    //     this.logToSelect('chart');
-                    // }
+                    if (this.storageLocations.length < 1) {
+                        this.logToLocations = ['chart'];
+                        this.logToSelect('chart');
+                    }
                     return this.getCurrentState(daqChanArray);
+                })
+                .then((data) => {
+                    console.log(data);
+                    return this.loadProfilesFromDevice();
                 })
                 .then((data) => {
                     console.log(data);
