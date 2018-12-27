@@ -1452,7 +1452,7 @@ export class OpenLoggerLoggerComponent {
         if (data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[index]].statusCode === 0) {
             if (instrument === 'daq') {
                 this.startIndex = data.cmdRespObj.log.daq.startIndex;
-                this.startIndex += data.cmdRespObj.log.daq.actualCount + 1; 
+                this.startIndex += data.cmdRespObj.log.daq.actualCount; 
                 this.count = -1000;
                 if (this.daqParams.maxSampleCount > 0 && this.startIndex >= this.daqParams.maxSampleCount) {
                     this.daqChansToRead.splice(this.daqChansToRead.indexOf(chans[index]), 1);
