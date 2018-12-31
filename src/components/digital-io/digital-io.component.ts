@@ -32,6 +32,7 @@ export class DigitalIoComponent {
     public showDigiContent: boolean = true;
     public selectedMode: string = 'io';
     public directionMode: boolean = false;
+    public isLogger: boolean = false;
 
     constructor(
         _alertCtrl: AlertController,
@@ -62,6 +63,8 @@ export class DigitalIoComponent {
             this.dataTransferService.laChanActive = false;
         }
         this.contentHidden = true;
+
+        this.isLogger = this.activeDev.deviceModel === 'OpenLogger MZ';
     }
 
     emitEvent() {
