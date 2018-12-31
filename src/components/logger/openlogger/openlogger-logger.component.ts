@@ -835,7 +835,10 @@ export class OpenLoggerLoggerComponent {
                 loadedObj[instrument].channels.forEach((channel) => {
                     let chanNum = parseInt(Object.keys(channel)[0]);
                     this.selectedChannels[chanNum - 1] = true;
-                    this.daqChans[chanNum - 1] = channel[chanNum];
+                    let chan = this.daqChans[chanNum - 1];
+                    chan.average = channel[chanNum].average;
+                    chan.storageLocation = channel[chanNum].storageLocation;
+                    chan.uri = channel[chanNum].uri;
 
                     // set log to location based on storageLocation
                     let logTo = channel[chanNum].storageLocation === 'ram' ? 'chart' : 'SD';

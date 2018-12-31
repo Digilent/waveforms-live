@@ -35,7 +35,7 @@ export class MyApp {
             { title: 'Settings', component: SettingsPage }
         ];
         this.settingsService = _settingsService;
-        // this.settingsService.changeConsoleLog('None');
+        this.settingsService.changeConsoleLog('None');
         if ((this.platform.is('ios') || this.platform.is('android')) && this.platform.is('mobileweb')) {
             this.isMobile = true;
         }
