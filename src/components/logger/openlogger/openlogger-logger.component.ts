@@ -1010,6 +1010,12 @@ export class OpenLoggerLoggerComponent {
     }
 
     startLogger() {
+        if (this.selectedChannels.indexOf(true) === -1) {
+            let mode = this.selectedLogLocation === 'chart' ? 'Streaming' : 'Logging';
+            this.toastService.createToast('loggerNoChannelsError', true, mode, 5000);
+            return;
+        }
+
         let loading = this.loadingService.displayLoading('Starting data logging...');
 
         this.getCurrentState(this.daqChanNumbers, true)

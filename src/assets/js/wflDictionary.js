@@ -163,6 +163,9 @@ var waveformsLiveDictionary = (function() {
         loggerSampleFreqMax: {
             english: 'Maximum Samples/ for Selected Channels Is '
         },
+        loggerNoChannelsError: {
+            english: 'Please Select at Least One Logger Channel To Begin '
+        },
 
         //File
         fileDeleteErr: {
