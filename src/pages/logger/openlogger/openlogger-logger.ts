@@ -7,6 +7,7 @@ import { GenPopover } from '../../../components/gen-popover/gen-popover.componen
 import { PinoutPopover } from '../../../components/pinout-popover/pinout-popover.component';
 import { MathPopoverComponent, MathPassData, MathOutput } from '../../../components/math-popover/math-popover.component';
 import { CursorPopoverComponent, CursorPassData, CursorChannel, CursorSelection } from '../../../components/cursor-popover/cursor-popover.component';
+import { DigitalIoComponent } from '../../../components/digital-io/digital-io.component';
 
 //Pages
 import { FileBrowserPage } from '../../file-browser/file-browser';
@@ -18,6 +19,7 @@ import { UnitFormatPipe } from '../../../pipes/unit-format.pipe';
 import { LoggerPlotService } from '../../../services/logger-plot/logger-plot.service';
 import { TooltipService } from '../../../services/tooltip/tooltip.service';
 import { LoggerChartComponent } from '../../../components/logger-chart/logger-chart.component';
+import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 
 declare var mathFunctions: any;
 
@@ -27,11 +29,14 @@ declare var mathFunctions: any;
 export class OpenLoggerLoggerPage {
     @ViewChild('loggerComponent') loggerComponent: OpenLoggerLoggerComponent;
     @ViewChild('chart') loggerChart: LoggerChartComponent;
+    @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
     private dismissCallback: () => void;
     private unitFormatPipeInstance: UnitFormatPipe;
     private selectedMathInfo: MathOutput[] = [];
     private cursorInfo: CursorSelection;
     private isRoot: boolean = false;
+
+    public activeDevice: DeviceService;
 
     constructor(
         private navCtrl: NavController,
@@ -40,11 +45,22 @@ export class OpenLoggerLoggerPage {
         private modalCtrl: ModalController,
         private popoverCtrl: PopoverController,
         public tooltipService: TooltipService,
-        private events: Events
+        private events: Events,
+        private deviceManagerService: DeviceManagerService
     ) {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
         this.isRoot = this.navParams.get('isRoot') || this.isRoot;
         this.unitFormatPipeInstance = new UnitFormatPipe();
+
+        this.activeDevice = this.deviceManagerService.getActiveDevice();
+        // TODO: uncomment when gpio is implemented
+        // this.readCurrentGpioStates()
+        //     .then((data) => {
+        //         console.log(data);
+        //     })
+        //     .catch((err) => {
+        //         console.log(err);
+        //     });
     }
     
     ngOnInit() {
@@ -395,6 +411,60 @@ export class OpenLoggerLoggerPage {
             default:
                 return 'default'
         }
+    }
+
+    readCurrentGpioStates(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let chanArray = [];
+            for (let i = 0; i < this.activeDevice.instruments.gpio.numChans; i++) {
+                chanArray.push(i + 1);
+            }
+            this.activeDevice.instruments.gpio.read(chanArray).subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    if (err.gpio) {
+                        let setToInputChanArray = [];
+                        let inputStringArray = [];
+                        for (let channel in err.gpio) {
+                            for (let command in err.gpio[channel]) {
+                                if (err.gpio[channel][command].statusCode === 1073741826 && err.gpio[channel][command].direction === 'tristate') {
+                                    setToInputChanArray.push(parseInt(channel));
+                                    inputStringArray.push('input');
+                                }
+                                else if (err.gpio[channel][command].statusCode === 1073741826 && err.gpio[channel][command].direction === 'output') {
+                                    this.gpioComponent.gpioVals[parseInt(channel) - 1] = err.gpio[channel][command].value !== 0;
+                                    this.gpioComponent.gpioDirections[parseInt(channel) - 1] = true;
+                                }
+                            }
+                        }
+                        if (setToInputChanArray.length > 0) {
+                            this.activeDevice.instruments.gpio.setParameters(setToInputChanArray, inputStringArray).subscribe(
+                                (data) => {
+                                    console.log(data);
+                                    resolve(data);
+                                },
+                                (err) => {
+                                    console.log(err);
+                                    reject(err);
+                                },
+                                () => { }
+                            );
+                        }
+                        else {
+                            resolve(err);
+                        }
+                    }
+                    else {
+                        reject(err);
+                    }
+                },
+                () => { }
+            );
+        });
     }
 
     private fgenTutorialFinished(event) {
