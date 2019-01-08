@@ -6,6 +6,7 @@ import { IonicModule } from 'ionic-angular';
 import { LoggerModule } from '../logger.module';
 import { FGenModule } from '../../../components/function-gen/function-gen.module';
 import { DcSupplyModule } from '../../../components/dc-supply/dc-supply.module';
+import { DigitalIoModule } from '../../../components/digital-io/digital-io.module';
 
 //Components
 import { OpenLoggerLoggerComponent } from '../../../components/logger/openlogger/openlogger-logger.component';
@@ -23,6 +24,7 @@ import { ScalingService } from '../../../services/scaling/scaling.service';
         LoggerModule,
         FGenModule,
         DcSupplyModule,
+        DigitalIoModule,
         IonicModule.forRoot(OpenLoggerLoggerPage),
         IonicModule.forRoot(ProfilePopover)
     ],

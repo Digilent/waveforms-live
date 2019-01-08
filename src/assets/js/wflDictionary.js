@@ -163,6 +163,9 @@ var waveformsLiveDictionary = (function() {
         loggerSampleFreqMax: {
             english: 'Maximum Samples/ for Selected Channels Is '
         },
+        loggerNoChannelsError: {
+            english: 'Please Select at Least One Logger Channel To Begin '
+        },
 
         //File
         fileDeleteErr: {
@@ -219,7 +222,7 @@ var waveformsLiveDictionary = (function() {
 
         firmwareCautionMessage: {
             english: 'Caution: Flashing firmware intended for a different device can\
-            cause damage to the hardware. Extra caution when\
+            cause damage to the hardware. Use extra caution when\
             selecting firmware.'
         },
 

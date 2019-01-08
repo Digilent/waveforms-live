@@ -327,20 +327,19 @@ export class OpenLoggerLoggerComponent {
                 })
                 .then((data) => {
                     console.log(data);
-                    return this.loadProfilesFromDevice();
-                })
-                .then((data) => {
-                    console.log(data);
                     return this.getCurrentState(daqChanArray);
                 })
                 .catch((e) => {
                     console.log(e);
-                    // TODO: uncomment when getStorageLocations command is implemented
-                    // if (this.storageLocations.length < 1) {
-                    //     this.logToLocations = ['chart'];
-                    //     this.logToSelect('chart');
-                    // }
+                    if (this.storageLocations.length < 1) {
+                        this.logToLocations = ['chart'];
+                        this.logToSelect('chart');
+                    }
                     return this.getCurrentState(daqChanArray);
+                })
+                .then((data) => {
+                    console.log(data);
+                    return this.loadProfilesFromDevice();
                 })
                 .then((data) => {
                     console.log(data);
@@ -836,7 +835,10 @@ export class OpenLoggerLoggerComponent {
                 loadedObj[instrument].channels.forEach((channel) => {
                     let chanNum = parseInt(Object.keys(channel)[0]);
                     this.selectedChannels[chanNum - 1] = true;
-                    this.daqChans[chanNum - 1] = channel[chanNum];
+                    let chan = this.daqChans[chanNum - 1];
+                    chan.average = channel[chanNum].average;
+                    chan.storageLocation = channel[chanNum].storageLocation;
+                    chan.uri = channel[chanNum].uri;
 
                     // set log to location based on storageLocation
                     let logTo = channel[chanNum].storageLocation === 'ram' ? 'chart' : 'SD';
@@ -1011,6 +1013,12 @@ export class OpenLoggerLoggerComponent {
     }
 
     startLogger() {
+        if (this.selectedChannels.indexOf(true) === -1) {
+            let mode = this.selectedLogLocation === 'chart' ? 'Streaming' : 'Logging';
+            this.toastService.createToast('loggerNoChannelsError', true, mode, 5000);
+            return;
+        }
+
         let loading = this.loadingService.displayLoading('Starting data logging...');
 
         this.getCurrentState(this.daqChanNumbers, true)
@@ -1138,9 +1146,9 @@ export class OpenLoggerLoggerComponent {
                         this.getLiveState();
                     } else {
                         if (this.activeDevice.transport.getType() === 'local') {
-                            requestAnimationFrame(() => { // note: calling readLiveData without some delay while simulating freezes the UI, so we request the browser keep time for us.
-                                    this.readLiveData();
-                            });
+                            setTimeout(() => { // note: calling readLiveData without some delay while simulating freezes the UI, so we request the browser keep time for us.
+                                this.readLiveData();
+                            }, 300);
                         } else {
                             this.readLiveData();
                         }
@@ -1453,7 +1461,7 @@ export class OpenLoggerLoggerComponent {
         if (data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[index]].statusCode === 0) {
             if (instrument === 'daq') {
                 this.startIndex = data.cmdRespObj.log.daq.startIndex;
-                this.startIndex += data.cmdRespObj.log.daq.actualCount + 1; 
+                this.startIndex += data.cmdRespObj.log.daq.actualCount; 
                 this.count = -1000;
                 if (this.daqParams.maxSampleCount > 0 && this.startIndex >= this.daqParams.maxSampleCount) {
                     this.daqChansToRead.splice(this.daqChansToRead.indexOf(chans[index]), 1);
