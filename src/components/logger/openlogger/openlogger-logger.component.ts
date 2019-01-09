@@ -1075,7 +1075,13 @@ export class OpenLoggerLoggerComponent {
                     this.running = true;
                     loading.dismiss();
 
-                    this.daqChansToRead = this.selectedChannels.filter(isSelected => isSelected === true).map((_, index) => index + 1);              
+                    this.daqChansToRead = this.selectedChannels.reduce((chanArray, isSelected, i) => {
+                        if (isSelected) {
+                            chanArray.push(i + 1);
+                        }
+                        return chanArray;
+                    }, []);
+
                     if (this.selectedLogLocation === 'SD' && !this.logAndStream) {
                         this.getLiveState();
                     } else {
