@@ -1,8 +1,9 @@
 import { Component, ViewChild, ViewChildren, QueryList, trigger, state, animate, transition, style } from '@angular/core';
-import { NavParams, Slides, ViewController, LoadingController, AlertController } from 'ionic-angular';
+import { NavParams, Slides, ViewController, LoadingController, AlertController, PopoverController } from 'ionic-angular';
 
 //Components
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar.component';
+import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
 
 //Services
 import { StorageService } from '../../services/storage/storage.service';
@@ -89,7 +90,8 @@ export class CalibratePage {
         _viewCtrl: ViewController,
         _deviceManagerService: DeviceManagerService,
         public loadingCtrl: LoadingController,
-        private alertCtrl: AlertController
+        private alertCtrl: AlertController,
+        private popoverCtrl: PopoverController
     ) {
         this.deviceManagerService = _deviceManagerService;
         this.storageService = _storageService;
@@ -501,6 +503,15 @@ export class CalibratePage {
                 },
                 () => { }
             );
+        });
+    }
+
+    openDevicePinout(event) {
+        let popover = this.popoverCtrl.create(PinoutPopover, undefined, {
+            cssClass: 'pinoutPopover'
+        });
+        popover.present({
+            ev: event
         });
     }
 }

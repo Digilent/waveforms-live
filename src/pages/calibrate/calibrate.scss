@@ -246,6 +246,22 @@
     margin-top: 16px;
 }
 
+.pinout-icon {
+    font-size:8px;
+    height: 25px;
+    width: 25px;
+    background-color: #535353;
+    border: solid black 1px;
+    border-radius: 0px;
+    box-shadow: none;
+    padding: 4px;
+}
+
+.pinout-icon:hover {
+    border: solid white 1px;
+    background-color: #535353;
+}
+
 @media screen and (max-width: 768px) {
     .calibration-container {
         background-color: rgba(0, 0, 0, 0.4);
