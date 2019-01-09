@@ -1187,11 +1187,12 @@ export class OpenLoggerLoggerComponent {
                 this.getCurrentState(this.daqChanNumbers)
                     .then((data) => {
                         console.log(data);
+                        this.stopLogger();
                     })
                     .catch((e) => {
                         console.log(e);
+                        this.stopLogger();
                     });
-                this.running = false;
             });
     }
 
