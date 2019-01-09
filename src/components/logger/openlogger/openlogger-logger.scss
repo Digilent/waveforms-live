@@ -117,4 +117,15 @@ openlogger-logger-component {
     .checkbox-label {
         margin-left: 10px;
     }
+    .logger-component-container .channel-header {
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    .logger-component-container .channel-color {
+        height: 10px;
+        width: 10px;
+        margin-right: 10px;
+    }
 }

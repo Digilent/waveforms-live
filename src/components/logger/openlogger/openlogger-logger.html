@@ -211,7 +211,10 @@
                 <ion-col class="header-side-col" center text-left>
                 </ion-col>
                 <ion-col center text-center>
-                    <div class="instrument-header">Analog Ch {{i + 1}}</div>
+                    <ion-row class="instrument-header channel-header">
+                        <div class="channel-color" [ngStyle]="{'backgroundColor': colorArray[i]}"></div>
+                        <div>Analog Ch {{i + 1}}</div>
+                    </ion-row>
                 </ion-col>
                 <ion-col class="header-side-col" center text-right>
                 </ion-col>

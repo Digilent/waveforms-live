@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
 import { AlertController, PopoverController, Events } from 'ionic-angular';
 import { LoadingService } from '../../../services/loading/loading.service';
 import { ToastService } from '../../../services/toast/toast.service';
@@ -35,6 +35,7 @@ export class OpenLoggerLoggerComponent {
     @ViewChild('dropPopLogTo') logToChild: DropdownPopoverComponent;
     @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
     @ViewChildren('dropPopScaling') scalingChildren: QueryList<DropdownPopoverComponent>;
+    @Input() colorArray: any;
 
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
