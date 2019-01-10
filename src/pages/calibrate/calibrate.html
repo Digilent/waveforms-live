@@ -40,6 +40,13 @@
                             </ion-col>
                         </ion-row>
                     </div>
+                    <ion-row>
+                        <ion-col center text-center>
+                            <button ion-button class="pinout-icon disable-hover" (tap)="openDevicePinout($event)">
+                                PIN
+                            </button>
+                        </ion-col>
+                    </ion-row>
                 </div>
                 <div>
                     <ion-item class="configure-item">
@@ -77,7 +84,7 @@
             <div class="content-container" [hidden]="!runningCalibration">
                 <div>
                     <div class="slide-header">Calibrating</div>
-                    <div class="calibration-instructions pad-above">
+                    <div class="calibration-instructions">
                         Step {{i + 1}} of {{calibrationInstructions.length}}
                     </div>
                     <div text-center class="pad-above">
@@ -86,11 +93,20 @@
                     <div class="calibration-instructions pad-above">
                         {{calibrationStatus}}
                         <div class="calibration-connection-image-container">
-                            <ion-row *ngIf="calibrationFailed">
-                                <ion-col class="icon-col pad-above" center text-center>
-                                    <img [src]="connectionImage(i+1)" class="calibration-connection-image" *ngIf="calibrationInstructions[i]" />
-                                </ion-col>
-                            </ion-row>
+                            <div *ngIf="calibrationFailed">
+                                <ion-row>
+                                    <ion-col class="icon-col pad-above" center text-center>
+                                        <img [src]="connectionImage(i+1)" class="calibration-connection-image" *ngIf="calibrationInstructions[i]" />
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col center text-center>
+                                        <button ion-button class="pinout-icon disable-hover" (tap)="openDevicePinout($event)">
+                                            PIN
+                                        </button>
+                                    </ion-col>
+                                </ion-row>
+                            </div>
                         </div>
                     </div>
                 </div>

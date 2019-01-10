@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
 import { AlertController, PopoverController, Events } from 'ionic-angular';
 import { LoadingService } from '../../../services/loading/loading.service';
 import { ToastService } from '../../../services/toast/toast.service';
@@ -35,6 +35,7 @@ export class OpenLoggerLoggerComponent {
     @ViewChild('dropPopLogTo') logToChild: DropdownPopoverComponent;
     @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
     @ViewChildren('dropPopScaling') scalingChildren: QueryList<DropdownPopoverComponent>;
+    @Input() colorArray: any;
 
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
@@ -1074,7 +1075,13 @@ export class OpenLoggerLoggerComponent {
                     this.running = true;
                     loading.dismiss();
 
-                    this.daqChansToRead = this.selectedChannels.filter(isSelected => isSelected === true).map((_, index) => index + 1);              
+                    this.daqChansToRead = this.selectedChannels.reduce((chanArray, isSelected, i) => {
+                        if (isSelected) {
+                            chanArray.push(i + 1);
+                        }
+                        return chanArray;
+                    }, []);
+
                     if (this.selectedLogLocation === 'SD' && !this.logAndStream) {
                         this.getLiveState();
                     } else {
@@ -1187,11 +1194,12 @@ export class OpenLoggerLoggerComponent {
                 this.getCurrentState(this.daqChanNumbers)
                     .then((data) => {
                         console.log(data);
+                        this.stopLogger();
                     })
                     .catch((e) => {
                         console.log(e);
+                        this.stopLogger();
                     });
-                this.running = false;
             });
     }
 

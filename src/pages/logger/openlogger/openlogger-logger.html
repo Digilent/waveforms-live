@@ -119,7 +119,7 @@
         </ion-col>
         
         <ion-col class="controls-col">
-            <openlogger-logger-component #loggerComponent></openlogger-logger-component>
+            <openlogger-logger-component #loggerComponent [colorArray]="loggerChart.colorArray"></openlogger-logger-component>
 
             <fgen #fgenComponent (fgenTutorialFinish)="fgenTutorialFinished($event)"></fgen>
 
