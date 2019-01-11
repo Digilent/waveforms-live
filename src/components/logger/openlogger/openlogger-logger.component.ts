@@ -2,7 +2,6 @@ import { Component, ViewChild, ViewChildren, QueryList, Input } from '@angular/c
 import { AlertController, PopoverController, Events } from 'ionic-angular';
 import { LoadingService } from '../../../services/loading/loading.service';
 import { ToastService } from '../../../services/toast/toast.service';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
@@ -362,7 +361,7 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    private scaleSelect(event: string, channel: number) {
+    public scaleSelect(event: string, channel: number) {
         let currentScale = this.selectedScales[channel];
         this.selectedScales[channel] = event;
         if (event === 'None') {
@@ -417,6 +416,7 @@ export class OpenLoggerLoggerComponent {
         if (this.daqChansToRead !== []) {
             this.count = -1000;
         }
+
         if (this.selectedLogLocation === 'SD') {
             this.logAndStream = true;
             this.bothStartStream();
@@ -1505,10 +1505,19 @@ export class OpenLoggerLoggerComponent {
     private updateValuesFromRead(data, instrument: 'analog' | 'digital' | 'daq', chans: number[], index: number) {
         if (data != undefined && data.instruments != undefined && data.instruments[instrument] != undefined && data.instruments[instrument][chans[index]].statusCode === 0) {
             if (instrument === 'daq') {
+                // update the start index w/ what the device gives us
                 this.startIndex = data.cmdRespObj.log.daq.startIndex;
+
+                // increment startIndex by the actual count given
                 this.startIndex += data.cmdRespObj.log.daq.actualCount; 
+
+                // reset count. A negative value tells the OpenLogger to give everything it currently has
                 this.count = -1000;
+
+                // if the start index is greater than maxSample count
                 if (this.daqParams.maxSampleCount > 0 && this.startIndex >= this.daqParams.maxSampleCount) {
+
+                    // splice the channels to read list, removing everything after the bad index...
                     this.daqChansToRead.splice(this.daqChansToRead.indexOf(chans[index]), 1);
 
                     if (this.daqChansToRead.length < 1) {
@@ -1521,14 +1530,17 @@ export class OpenLoggerLoggerComponent {
 
     private deepMergeObj(destObj, sourceObj) {
         if (this.isObject(destObj) && this.isObject(sourceObj)) {
+
             Object.keys(sourceObj).forEach((key) => {
                 if (sourceObj[key].constructor === Array) {
                     destObj[key] = [];
+
                     sourceObj[key].forEach((el, index, arr) => {
                         if (this.isObject(el)) {
                             if (destObj[key][index] == undefined) {
                                 destObj[key][index] = {};
                             }
+
                             this.deepMergeObj(destObj[key][index], sourceObj[key][index]);
                         }
                         else {
@@ -1540,6 +1552,7 @@ export class OpenLoggerLoggerComponent {
                     if (destObj[key] == undefined) {
                         destObj[key] = {};
                     }
+
                     this.deepMergeObj(destObj[key], sourceObj[key]);
                 }
                 else {
