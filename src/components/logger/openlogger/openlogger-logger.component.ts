@@ -920,16 +920,25 @@ export class OpenLoggerLoggerComponent {
                 break;
         }
     }
+    
+    stagedStop: (() => Promise<any>) | null = null;
 
     stopLogger() {
-        this.stop()
-            .then((data) => {
-                console.log(data);
-                this.running = false;
-            })
-            .catch((e) => {
-                console.log(e);
-            });
+        if (this.running) {
+            // stage the actual call to this.stop, but don't fire yet...(cont. readLiveData)
+            if (this.stagedStop === null) this.stagedStop = (): Promise<any> => {
+                return this.stop().then(() => this.running = false);
+            }
+        } else {
+            this.stop()
+                .then((data) => {
+                    console.log(data);
+                    this.running = false;
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        }
     }
 
     private clearChart() {
@@ -1146,6 +1155,24 @@ export class OpenLoggerLoggerComponent {
     }
 
     private readLiveData() {
+        // (cont. from stopLogger) if a stop has been staged, send that off
+        if (this.stagedStop !== null) {
+            console.log('ATTEMPTING');
+
+            this.stagedStop().then(() => {
+                console.log('STOPPED');
+                
+                // do some more cleanup here I think...
+
+                this.stagedStop = null;
+            }).catch(e => {
+                this.stagedStop = null;
+                
+                console.log("STAGED STOP:", e);
+            });
+            
+            return;
+        }
         //Make copies of analogChansToRead so mid-read changes to analogChansToRead don't change the channel array
         this.read('daq', this.daqChansToRead.slice())
             .then((data) => {
