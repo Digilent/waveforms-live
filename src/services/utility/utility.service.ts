@@ -47,4 +47,21 @@ export class UtilityService {
         return model.join("");
     }
 
+    public getShortName(deviceModel: string): string {
+        let name = '';
+
+        switch(deviceModel) {
+            case 'OpenScope MZ':
+                name = 'osmz';
+                break;
+            case 'OpenLogger MZ':
+                name = 'olmz';
+                break;
+            default:
+                name = 'osmz';
+                break;
+        }
+
+        return name;
+    }
 }

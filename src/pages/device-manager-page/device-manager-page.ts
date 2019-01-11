@@ -674,19 +674,7 @@ export class DeviceManagerPage {
     }
 
     getLogoName(deviceIndex: number) {
-        let name = '';
-
-        switch (this.devices[deviceIndex].deviceDescriptor.deviceModel) {
-            case 'OpenScope MZ':
-                name = 'osmz';
-                break;
-            case 'OpenLogger MZ':
-                name = 'olmz';
-                break;
-            default:
-                name = 'osmz';
-                break;
-        }
+        let name = this.utilityService.getShortName(this.devices[deviceIndex].deviceDescriptor.deviceModel);
 
         return `assets/img/${name}.svg`;
     }
