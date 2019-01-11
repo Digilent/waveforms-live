@@ -61,7 +61,8 @@ export class OpenLoggerLoggerComponent {
     public startIndex: number = 0;
     public count: number = 0;
     private daqChanNumbers: number[] = [];
-    public logToLocations: string[] = ['chart', 'SD'];
+    // TODO: add SD when implemented
+    public logToLocations: string[] = ['chart'];
     public logAndStream: boolean = false;
     public modes: ('continuous' | 'finite')[] = ['continuous', 'finite'];
     public selectedMode: 'continuous' | 'finite' = this.modes[0];

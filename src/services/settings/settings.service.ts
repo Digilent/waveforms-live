@@ -153,9 +153,22 @@ export class SettingsService {
 
     localStorageLog(argumentArray?) {
         for (let i = 0; i < arguments.length; i++) {
-            let arg = arguments[i][0];
+            let arg = arguments[i];
             if (typeof(arg) === 'object') {
-                arg = JSON.stringify(arg);
+                let cache = new Set();
+                arg = JSON.stringify(arg, (key, value) => {
+                    if (typeof(value) === 'object' && value !== null) {
+                        if (cache.has(value)) {
+                            try {
+                                return JSON.parse(JSON.stringify(value));
+                            } catch (err) {
+                                return '[object]';
+                            }
+                        }
+                        cache.add(value);
+                    }
+                    return value;
+                });
             }
             this.logArguments.push(arg);
         }
@@ -181,7 +194,7 @@ export class SettingsService {
     }
 
     exportLogFile() {
-        let fileName = 'OpenScopeLogs.txt';
+        let fileName = 'WaveFormsLiveLogs.txt';
         let csvContent = 'data:text/csv;charset=utf-8,';
         if (this.logArguments.length === 0) {
             csvContent += 'No Logs Found\n';

@@ -154,32 +154,30 @@
                 </ion-col>
             </ion-row>
 
-            <ion-row class="pad-bottom"></ion-row>
-
-            <!-- <ion-row class="controls-container pad-bottom">
+            <ion-row class="controls-container pad-bottom">
                 <ion-col center class="vpd-label-col">
                     Average
                 </ion-col>
                 <ion-col center class="xaxis-left">
                     <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementAverage()" [disabled]="average === 1">
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementAverage()" [disabled]="average === 1 || running">
                             <img class="custom-image-button" src="assets/img/remove.svg">
                         </button>
                     </div>
                 </ion-col>
                 <ion-col class="xaxis-center" center text-center>
                     <div style="display:inline-block;" [tooltip]="tooltipService.getTooltip('logAveraging').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
-                        <input formatInput readonly="readonly" class="custom-input" step="any" [ngModel]="average | averageFormat: 'Sample'" />
+                        <input formatInput readonly="readonly" class="custom-input" step="any" [ngModel]="average | averageFormat: 'Sample'" [disabled]="running" />
                     </div>
                 </ion-col>
                 <ion-col center class="xaxis-right">
                     <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementAverage()" [disabled]="average === maxAverage">
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementAverage()" [disabled]="average === maxAverage || running">
                             <img class="custom-image-button" src="assets/img/add.svg">
                         </button>
                     </div>
                 </ion-col>
-            </ion-row> -->
+            </ion-row>
 
         </div>
     </div>
@@ -196,7 +194,7 @@
                     <div class="instrument-header">Logger</div>
                 </ion-col>
                 <ion-col class="header-side-col" center text-right>
-                    <button ion-button id="channels-btn" class="img-button disable-hover" [tooltip]="tooltipService.getTooltip('logSelectChannels').message"
+                    <button ion-button id="channels-btn" class="img-button disable-hover" [disabled]="running" [tooltip]="tooltipService.getTooltip('logSelectChannels').message"
                         [tooltipAnimation]="true" tooltipPlacement="left">
                         <img class="custom-image-button" src="assets/img/add.svg" (tap)="openChannelSelector($event)">
                     </button>
