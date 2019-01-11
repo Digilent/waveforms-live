@@ -880,6 +880,31 @@ export class DeviceManagerPage {
             return;
         }
 
+        let ipAddress = this.devices[deviceIndex].ipAddress;
+
+        let fwVer = this.devices[deviceIndex].deviceDescriptor.firmwareVersion;
+
+        // force the user to update firmware to proceed 
+        if (fwVer.major === 0 && fwVer.minor === 1359 && fwVer.patch === 0) {
+            let toast = this.toastService.toastCtrl.create({
+                message: 'Please update the firmware to access the logger page',
+                duration: 3000,
+                showCloseButton: true
+            });
+
+            toast.present();
+
+            this.openUpdateFirmware(deviceIndex)
+                .then((data) => {
+                    console.log(data);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+
+            return;
+        }
+        
         let loading = this.displayLoading();
         let ipAddress = this.devices[deviceIndex].ipAddress;
         if (this.devices[deviceIndex].bridge) {
