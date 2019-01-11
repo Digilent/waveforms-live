@@ -54,6 +54,8 @@ export class DeviceConfigurePage {
     public deviceArrayIndex: number;
     public currentCalibration: string = '';
 
+    public isOpenLogger: boolean = false;
+
     constructor(
         _platform: Platform,
         _modalCtrl: ModalController,
@@ -83,6 +85,9 @@ export class DeviceConfigurePage {
             this.invalidEnumeration = false;
             let addDeviceAddress = this.deviceObject.bridge ? this.deviceObject.deviceBridgeAddress : this.deviceObject.ipAddress;
             this.deviceManagerService.addDeviceFromDescriptor(addDeviceAddress, { device: [this.deviceObject.deviceDescriptor] });
+
+            this.checkIfOpenLogger();
+
             if (this.deviceObject.bridge) {
                 let loading = this.deviceManagerPageRef.displayLoading();
                 this.setAgentActiveDeviceFromExisting()
@@ -165,6 +170,10 @@ export class DeviceConfigurePage {
         else if (this.deviceObject == undefined && this.bridgeConfigure) {
             this.reEnumerateAgent(false);
         }
+    }
+
+    checkIfOpenLogger() {
+        this.isOpenLogger = (this.deviceObject.deviceDescriptor.deviceModel === "OpenLogger MZ");
     }
 
     getNicStatus(adapter: string): Promise<any> {
@@ -457,6 +466,9 @@ export class DeviceConfigurePage {
                                 this.deviceManagerService.addDeviceFromDescriptor(this.deviceObject.deviceBridgeAddress, { device: [this.deviceObject.deviceDescriptor] });
                                 this.deviceConfigure = true;
                                 this.deviceManagerPageRef.getFirmwareVersionsForDevices();
+
+                                this.checkIfOpenLogger();
+
                                 this.getNicStatus('wlan0').then(() => {
                                     return this.deviceManagerPageRef.verifyFirmware(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex);
                                 })

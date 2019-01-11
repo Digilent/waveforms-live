@@ -64,7 +64,7 @@
                 </ion-list>
             </div>
 
-            <div *ngIf="deviceConfigure && !invalidEnumeration">
+            <div *ngIf="deviceConfigure && !invalidEnumeration && !isOpenLogger">
                 <ion-list class="section-list">
                     <ion-item-divider class="list-header">Network Settings</ion-item-divider>
                     <ion-item class="configure-item first-item">
