@@ -485,6 +485,8 @@ export class OpenLoggerLoggerComponent {
     }
 
     mousewheel(event, input: 'offset' | 'sampleFreq' | 'samples' | 'vpd', axisNum?: number) {
+        event.preventDefault();
+
         if (input === 'offset') {
             this.buttonChangeOffset(axisNum, event.deltaY < 0 ? 'increment' : 'decrement');
             return;
