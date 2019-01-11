@@ -9,8 +9,9 @@ import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { DeviceManagerService } from 'dip-angular2/services';
 import { CommandUtilityService } from '../../services/device/command-utility.service';
+import { UtilityService } from '../../services/utility/utility.service';
 
-//Interfaaces
+//Interfaces
 import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
 
 declare var waveformsLiveDictionary: any;
@@ -25,6 +26,7 @@ export class UpdateFirmwarePage {
     public settingsService: SettingsService;
     public loadingCtrl: LoadingController;
     public commandUtilityService: CommandUtilityService;
+    public utilityService: UtilityService;
     public params: NavParams;
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
@@ -62,12 +64,14 @@ export class UpdateFirmwarePage {
         _params: NavParams,
         _viewCtrl: ViewController,
         _cmdUtilSrv: CommandUtilityService,
+        _utilSertice: UtilityService,
         _loadingCtrl: LoadingController,
         _deviceManagerService: DeviceManagerService,
         _toastCtrl: ToastController
     ) {
         this.deviceManagerService = _deviceManagerService;
         this.commandUtilityService = _cmdUtilSrv;
+        this.utilityService = _utilSertice;
         this.storageService = _storageService;
         this.loadingCtrl = _loadingCtrl;
         this.settingsService = _settingsService;
@@ -88,16 +92,18 @@ export class UpdateFirmwarePage {
 
         this.deviceManagerService.transport.setHttpTransport(this.deviceObject.deviceBridgeAddress);
 
+        // note(andrew): In the edge case where a different device has been connected to the PC and has
+        // the same COM port as the previous one, we double check the device here,
+        // as programming the wrong firmware can damage the hardware
         this.checkDevice().then((descriptor) => {
-                let device = descriptor.deviceModel;
-                device = this.transformModelToPropKey(device);
+                this.deviceObject.deviceDescriptor = descriptor;
+
+                let deviceModel = this.utilityService.transformModelToPropKey(descriptor.deviceModel);
                 
-                let {listUrl, firmwareUrl} = this.settingsService.knownFirmwareUrls[device];
+                let {listUrl, firmwareUrl} = this.settingsService.knownFirmwareUrls[deviceModel];
                 
                 this.listUrl = listUrl;
                 this.firmwareRepositoryUrl = firmwareUrl;
-
-                this.deviceObject.deviceDescriptor = descriptor;
 
                 this.getDeviceFirmware();
                 this.getFirmwareList();
@@ -113,14 +119,6 @@ export class UpdateFirmwarePage {
 
                 this.viewCtrl.dismiss();
             });
-    }
-
-    private transformModelToPropKey(deviceModel: string): string {
-        let model: string[] = deviceModel.toLowerCase().split(" ");
-        
-        model[1] = model[1].charAt(0).toUpperCase() + model[1].slice(1);
-        
-        return model.join("");
     }
 
     public retrievedModel: string;
@@ -143,7 +141,7 @@ export class UpdateFirmwarePage {
 
                 resolve(deviceDescriptor);
             }, (err) => { reject(err); });
-        })
+        });
     }
 
     public cautionMessage() {
@@ -323,7 +321,8 @@ export class UpdateFirmwarePage {
                     });
             }
             else {
-                this.getFirmwareFromUrl(this.firmwareRepositoryUrl + '/OpenScopeMZ-' + this.selectedFirmwareVersion + '.hex')
+                let device = this.deviceObject.deviceDescriptor.deviceModel.replace(" ", "");
+                this.getFirmwareFromUrl(this.firmwareRepositoryUrl + `/${device}-` + this.selectedFirmwareVersion + '.hex')
                     .then(() => {
                         resolve();
                     })
