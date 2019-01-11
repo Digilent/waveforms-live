@@ -1478,23 +1478,22 @@ export class OpenLoggerLoggerComponent {
                             }
                             //Check if data is not ready
                             if (parsedData && parsedData.log && parsedData.log[instrument]) {
-                                for (let chan in parsedData.log[instrument]) {
-                                    if (parsedData.log[instrument].statusCode === 2684354593) {
-                                        console.log('data not ready');
-                                        reject({
-                                            message: 'Data not ready',
-                                            data: parsedData
-                                        });
-                                        return;
-                                    }
-                                    else if (parsedData.log[instrument].statusCode === 2684354595) {
-                                        reject({
-                                            message: 'Could not keep up with device',
-                                            data: parsedData
-                                        })
-                                    }
+                                if (parsedData.log[instrument].statusCode === 2684354593) {
+                                    console.log('data not ready');
+                                    reject({
+                                        message: 'Data not ready',
+                                        data: parsedData
+                                    });
+                                    return;
+                                }
+                                else if (parsedData.log[instrument].statusCode === 2684354595) {
+                                    reject({
+                                        message: 'Could not keep up with device',
+                                        data: parsedData
+                                    })
                                 }
                             }
+                        }
                         }
                         reject(err);
                     },
