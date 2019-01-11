@@ -868,8 +868,6 @@ export class DeviceManagerPage {
             return;
         }
 
-        let ipAddress = this.devices[deviceIndex].ipAddress;
-
         let fwVer = this.devices[deviceIndex].deviceDescriptor.firmwareVersion;
 
         // force the user to update firmware to proceed 
