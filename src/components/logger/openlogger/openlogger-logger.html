@@ -196,7 +196,7 @@
                     <div class="instrument-header">Logger</div>
                 </ion-col>
                 <ion-col class="header-side-col" center text-right>
-                    <button ion-button id="channels-btn" class="img-button disable-hover" [tooltip]="tooltipService.getTooltip('logSelectChannels').message"
+                    <button ion-button id="channels-btn" class="img-button disable-hover" [disabled]="running" [tooltip]="tooltipService.getTooltip('logSelectChannels').message"
                         [tooltipAnimation]="true" tooltipPlacement="left">
                         <img class="custom-image-button" src="assets/img/add.svg" (tap)="openChannelSelector($event)">
                     </button>
