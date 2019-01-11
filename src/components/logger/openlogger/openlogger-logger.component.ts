@@ -1176,6 +1176,8 @@ export class OpenLoggerLoggerComponent {
             
             return;
         }
+
+        if (this.destroyed) return; // if we are leaving, don't do another read
         //Make copies of analogChansToRead so mid-read changes to analogChansToRead don't change the channel array
         this.read('daq', this.daqChansToRead.slice())
             .then((data) => {
