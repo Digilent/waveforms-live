@@ -413,6 +413,10 @@ export class OpenLoggerLoggerComponent {
             }
         }
 
+        this.daqChansToRead = this.selectedChannels.filter(isSelected => isSelected === true).map((_, index) => index + 1);
+        if (this.daqChansToRead !== []) {
+            this.count = -1000;
+        }
         if (this.selectedLogLocation === 'SD') {
             this.logAndStream = true;
             this.bothStartStream();
@@ -1298,6 +1302,10 @@ export class OpenLoggerLoggerComponent {
                 } else {
                     // select channel 1 by default
                     this.selectedChannels[0] = true;
+                }
+
+                if (stateData.actualCount != undefined && stateData.actualCount > 0) {
+                    this.startIndex = stateData.actualCount;
                 }
             }
         }
