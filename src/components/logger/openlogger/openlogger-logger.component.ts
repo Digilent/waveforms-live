@@ -403,17 +403,14 @@ export class OpenLoggerLoggerComponent {
 
     continueStream() {
         if (!this.running) { return; }
+        
         //Device was in stream mode and should be ready to stream
-        this.daqChansToRead = [];
-        for (let i = 0; i < this.daqChans.length; i++) {
-            if (this.daqParams.state === 'running') { // if currently running & the channel is active, then push it(?)
-                this.daqChansToRead.push(i + 1);
-                this.count = -1000;
-                this.startIndex = -1;
+        this.daqChansToRead = this.selectedChannels.reduce((chanArray, isSelected, i) => {
+            if (isSelected) {
+                chanArray.push(i + 1);
             }
-        }
-
-        this.daqChansToRead = this.selectedChannels.filter(isSelected => isSelected === true).map((_, index) => index + 1);
+            return chanArray;
+        }, []);
         if (this.daqChansToRead !== []) {
             this.count = -1000;
         }
