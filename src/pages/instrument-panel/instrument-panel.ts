@@ -1218,7 +1218,7 @@ export class InstrumentPanelPage {
     }
 
     public displaySlowUSBMessage(): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             // display a toast because it is less obtrusive than a modal
             let toast = this.toastService.toastCtrl.create({
                 message: 'Data Transfer Issue: Some data chunks were lost. Visit the Digilent Forums for more info.',
