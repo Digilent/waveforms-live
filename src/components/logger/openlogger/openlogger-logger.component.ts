@@ -1495,7 +1495,6 @@ export class OpenLoggerLoggerComponent {
                                 }
                             }
                         }
-                        }
                         reject(err);
                     },
                     () => { }
