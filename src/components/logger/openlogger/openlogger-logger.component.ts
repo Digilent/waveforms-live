@@ -403,17 +403,14 @@ export class OpenLoggerLoggerComponent {
 
     continueStream() {
         if (!this.running) { return; }
+        
         //Device was in stream mode and should be ready to stream
-        this.daqChansToRead = [];
-        for (let i = 0; i < this.daqChans.length; i++) {
-            if (this.daqParams.state === 'running') { // if currently running & the channel is active, then push it(?)
-                this.daqChansToRead.push(i + 1);
-                this.count = -1000;
-                this.startIndex = -1;
+        this.daqChansToRead = this.selectedChannels.reduce((chanArray, isSelected, i) => {
+            if (isSelected) {
+                chanArray.push(i + 1);
             }
-        }
-
-        this.daqChansToRead = this.selectedChannels.filter(isSelected => isSelected === true).map((_, index) => index + 1);
+            return chanArray;
+        }, []);
         if (this.daqChansToRead !== []) {
             this.count = -1000;
         }
@@ -950,11 +947,12 @@ export class OpenLoggerLoggerComponent {
         for (let i = 0; i < this.dataContainers.length; i++) {
             this.dataContainers[i].data = [];
         }
-        this.loggerPlotService.setData(this.dataContainers, false);
+        this.loggerPlotService.setData(this.dataContainers, false, this.viewMoved);
         this.dataAvailable = false;
     }
 
     private parseReadResponseAndDraw(readResponse) {
+        let t0 = performance.now();
         for (let instrument in readResponse.instruments) {
             for (let channel in readResponse.instruments[instrument]) {
                 let formattedData: number[][] = [];
@@ -986,8 +984,10 @@ export class OpenLoggerLoggerComponent {
             }
         }
         this.setViewToEdge();
-        this.loggerPlotService.setData(this.dataContainers, false);
+        this.loggerPlotService.setData(this.dataContainers, false, this.viewMoved);
         this.dataAvailable = true;
+        let t1 = performance.now();
+        console.log('time to parse and draw:', t1 - t0);
     }
 
     private existingFileFoundAndValidate(loading): { reason: number } {
