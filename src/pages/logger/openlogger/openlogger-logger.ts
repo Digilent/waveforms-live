@@ -82,7 +82,7 @@ export class OpenLoggerLoggerPage {
     snapViewToFront() {
         this.loggerComponent.viewMoved = false;
         this.loggerComponent.setViewToEdge();
-        this.loggerPlotService.redrawChart();
+        this.loggerPlotService.setViewToFront();
     }
 
     done() {
