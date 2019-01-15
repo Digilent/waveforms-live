@@ -947,11 +947,12 @@ export class OpenLoggerLoggerComponent {
         for (let i = 0; i < this.dataContainers.length; i++) {
             this.dataContainers[i].data = [];
         }
-        this.loggerPlotService.setData(this.dataContainers, false);
+        this.loggerPlotService.setData(this.dataContainers, false, this.viewMoved);
         this.dataAvailable = false;
     }
 
     private parseReadResponseAndDraw(readResponse) {
+        let t0 = performance.now();
         for (let instrument in readResponse.instruments) {
             for (let channel in readResponse.instruments[instrument]) {
                 let formattedData: number[][] = [];
@@ -983,8 +984,10 @@ export class OpenLoggerLoggerComponent {
             }
         }
         this.setViewToEdge();
-        this.loggerPlotService.setData(this.dataContainers, false);
+        this.loggerPlotService.setData(this.dataContainers, false, this.viewMoved);
         this.dataAvailable = true;
+        let t1 = performance.now();
+        console.log('time to parse and draw:', t1 - t0);
     }
 
     private existingFileFoundAndValidate(loading): { reason: number } {

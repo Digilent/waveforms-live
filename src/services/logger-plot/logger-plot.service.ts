@@ -106,26 +106,46 @@ export class LoggerPlotService {
         this.attachTimelineListeners();
     }
 
-    setData(data: PlotDataContainer[], autoscale?: boolean) {
-        this.dataContainers = data;
-        this.digilentChart.setData(data, autoscale);
+    setData(data: PlotDataContainer[], autoscale: boolean, viewMoved: boolean) {
+        // deep copy
+        this.dataContainers = data.map(a => ({...a}));
+        let timelineData = data.map(a => ({...a}));
+
+        this.trimChartData(autoscale, !viewMoved);
+        
+        for (let i = 0; i < timelineData.length; i++) {
+            timelineData[i].yaxis = 1;
+            timelineData[i].data = largestTriangleThreeBuckets(timelineData[i].data, 1000, 0, 1);
+        }
+
         if (this.timelineChartRef != undefined) {
-            let tempYaxisNums: number[] = [];
-            let tempAllData: number[][][] = [];
-            for (let i = 0; i < data.length; i++) {
-                tempYaxisNums.push(data[i].yaxis);
-                data[i].yaxis = 1;
-                tempAllData.push(data[i].data);
-                data[i].data = largestTriangleThreeBuckets(data[i].data, 1000, 0, 1);
-            }
-            this.timelineChartRef.setData(data, false);
-            for (let i = 0; i < data.length; i++) {
-                data[i].yaxis = tempYaxisNums[i];
-                data[i].data = tempAllData[i];
-            }
+            this.timelineChartRef.setData(timelineData, false);
             this.updateTimelineCurtains();
         }
         this.shouldShowIndividualPoints(true);
+    }
+
+    trimChartData(autoscale: boolean, snappedToFront: boolean = false) {
+        let chartData = this.dataContainers.map(a => ({...a})); // deep copy
+        let xaxis = this.chart.getAxes().xaxis;
+
+        // trim data to visible section of xaxis and draw
+        for (let i = 0; i < chartData.length; i++) {
+            let diff = 0;
+            if (snappedToFront && chartData[i].data.length > 0) {
+                diff = chartData[i].data[chartData[i].data.length - 1][0] - xaxis.max;
+            }
+
+            let lastIndex = chartData[i].data.length - 1;
+            chartData[i].data = chartData[i].data.filter((point, index) => {
+                let t0 = index === lastIndex ? point[0] : chartData[i].data[index + 1][0];
+                let t1 = index === 0 ? point[0] : chartData[i].data[index - 1][0];
+
+                return t0 >= (xaxis.min + diff) && t1 <= (xaxis.max + diff);
+            });
+            chartData[i].data = largestTriangleThreeBuckets(chartData[i].data, 1000, 0, 1);
+        }
+        this.digilentChart.setData(chartData, false);
     }
 
     redrawChart() {
@@ -231,6 +251,9 @@ export class LoggerPlotService {
         if (redraw) {
             this.redrawChart();
         }
+        setTimeout(() => {
+            this.trimChartData(false);
+        }, 1);
     }
 
     private setNearestPerDivVal(axis: Axis, axisNum: number) {
@@ -285,6 +308,7 @@ export class LoggerPlotService {
             this.xAxis.base = this.tpdArray[this.tpdIndex];
             this.xAxis.position = wheelData.mid;
             setTimeout(() => {
+                this.trimChartData(false);
                 this.shouldShowIndividualPoints(true);
             }, 1);
         });
@@ -292,6 +316,9 @@ export class LoggerPlotService {
         $("#loggerTimeline").bind("timelinePanEvent", (event, data) => {
             this.xAxis.position = data.mid;
             this.chartPan.next(data);
+            setTimeout(() => {
+                this.trimChartData(false);
+            }, 1);
         });
     }
 
@@ -300,6 +327,9 @@ export class LoggerPlotService {
             if (panData.axis === 'xaxis') {
                 this.chartPan.next(panData);
                 this.xAxis.position = panData.mid;
+                setTimeout(() => {
+                    this.trimChartData(false);
+                }, 1);
             }
             else {
                 this.yAxis[panData.axisNum - 1].position = panData.mid;
@@ -314,6 +344,7 @@ export class LoggerPlotService {
                 this.xAxis.base = this.tpdArray[this.tpdIndex];
                 this.xAxis.position = wheelData.mid;
                 setTimeout(() => {
+                    this.trimChartData(false);
                     this.shouldShowIndividualPoints(true);
                 }, 1);
             }
