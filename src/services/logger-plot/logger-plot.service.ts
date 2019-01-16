@@ -599,7 +599,7 @@ export class LoggerPlotService {
     }
 
     updateSeriesAnchors(plot: any, ctx: any) {
-        if (this.dataContainers == undefined) { return; }
+        if (this.dataContainers == undefined || this.chart == undefined) { return; }
 
         let offsets = this.chart.offset();
         let getAxes = this.chart.getAxes();
