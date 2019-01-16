@@ -485,6 +485,9 @@ export class FgenComponent {
 
     //Stop awg
     stop(chans: number[]) {
+        this.stopPromise(chans).catch(e => console.error(e));
+    }
+
     stopPromise(chans: number[]) {
         return new Promise((resolve, reject) => {
             this.awaitingResponse = true;
