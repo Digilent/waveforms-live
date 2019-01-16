@@ -447,7 +447,7 @@ export class FgenComponent {
                 );
             }
             else {
-                this.promiseStop(chans).then(resolve);
+                this.stopPromise(chans).then(resolve);
             }
         });
     }
