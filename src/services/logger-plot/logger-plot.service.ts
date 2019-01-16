@@ -370,6 +370,16 @@ export class LoggerPlotService {
                     });
             }, 1);
         });
+
+        $("#loggerTimeline").bind("click", (event) => {
+            this.trimChartData(false)
+                .then(() => {
+                    this.shouldShowIndividualPoints(true);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        });
     }
 
     private attachListeners() {
