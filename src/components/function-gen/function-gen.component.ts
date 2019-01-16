@@ -485,33 +485,39 @@ export class FgenComponent {
 
     //Stop awg
     stop(chans: number[]) {
-        this.awaitingResponse = true;
+    stopPromise(chans: number[]) {
+        return new Promise((resolve, reject) => {
+            this.awaitingResponse = true;
+    
+            this.activeDevice.instruments.awg.stop(chans).subscribe(
+                (data) => {
+                    this.awaitingResponse = false;
+    
+                    let powerOffResult = false;
+    
+                    for (let chan in chans) {
+                        this.powerOn[chan] = false;
+                        powerOffResult = powerOffResult || (data.awg[chans[chan]][0].statusCode === 0 && this.attemptingPowerOff);
+                    }
+    
+                    this.dataTransferService.awgPower = false;
+    
+                    if (powerOffResult) {
+                        this.attemptingPowerOff = false;
+                        this.toastService.createToast('awgRunError', true);
+                    }
 
-        this.activeDevice.instruments.awg.stop(chans).subscribe(
-            (data) => {
-                this.awaitingResponse = false;
-
-                let powerOffResult = false;
-
-                for (let chan in chans) {
-                    this.powerOn[chan] = false;
-                    powerOffResult = powerOffResult || (data.awg[chans[chan]][0].statusCode === 0 && this.attemptingPowerOff);
-                }
-
-                this.dataTransferService.awgPower = false;
-
-                if (powerOffResult) {
-                    this.attemptingPowerOff = false;
-                    this.toastService.createToast('awgRunError', true);
-                }
-            },
-            (err) => {
-                this.awaitingResponse = false;
-                console.log('AWG Stop Failed');
-            },
-            () => {
-
-            });
+                    resolve();
+                },
+                (err) => {
+                    this.awaitingResponse = false;
+                    console.log('AWG Stop Failed');
+                    reject(err);
+                },
+                () => {
+    
+                });
+        })
     }
 
     //Determines if active wave type is a square wave
