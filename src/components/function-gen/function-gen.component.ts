@@ -376,6 +376,9 @@ export class FgenComponent {
 
     //Toggle power to awg
     togglePower(event, index) {
+        this.togglePromise(event, index).catch(e => console.error(e));
+    }
+
     togglePromise(event, index) {
         return new Promise((resolve, reject) => {
             
