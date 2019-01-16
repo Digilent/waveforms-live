@@ -77,6 +77,8 @@ export class OpenLoggerLoggerPage {
                 }
             }
         };
+
+        this.fGenComponent.initializeValues();
     }
 
     snapViewToFront() {
