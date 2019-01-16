@@ -376,69 +376,77 @@ export class FgenComponent {
 
     //Toggle power to awg
     togglePower(event, index) {
-        this.awaitingResponse = true;
+    togglePromise(event, index) {
+        return new Promise((resolve, reject) => {
+            
+            this.awaitingResponse = true;
 
-        if (this.tutorialMode) {
-            this.finishTutorial();
-        }
-
-        let chans = [];
-        let settings = [];
-
-        chans[index] = index + 1;
-
-        settings[index] = {
-            signalType: this.waveType[index],
-            signalFreq: this.frequency[index],
-            vpp: this.waveType[index] === 'dc' ? 0 : this.amplitude[index],
-            vOffset: this.offset[index]
-        };
-
-        if (!this.powerOn[index]) {
-            console.log(this.dataTransferService);
-
-            if ((this.dataTransferService.laChanActive || this.dataTransferService.triggerSource === 'LA') && this.activeDevice.transport.getType() !== 'local') {
-                this.toastService.createToast('laOnNoAwg');
-                this.awaitingResponse = false;
-                return;
+            if (this.tutorialMode) {
+                this.finishTutorial();
             }
 
-            let singleCommand = {
-                awg: {
-                    setRegularWaveform: [chans, settings],
-                    run: [chans]
+            let chans = [];
+            let settings = [];
+
+            chans[index] = index + 1;
+
+            settings[index] = {
+                signalType: this.waveType[index],
+                signalFreq: this.frequency[index],
+                vpp: this.waveType[index] === 'dc' ? 0 : this.amplitude[index],
+                vOffset: this.offset[index]
+            };
+
+            if (!this.powerOn[index]) {
+                console.log(this.dataTransferService);
+
+                if ((this.dataTransferService.laChanActive || this.dataTransferService.triggerSource === 'LA') && this.activeDevice.transport.getType() !== 'local') {
+                    this.toastService.createToast('laOnNoAwg');
+                    this.awaitingResponse = false;
+                    return;
                 }
-            }
 
-            this.activeDevice.multiCommand(singleCommand).subscribe(
-                (data) => {
-                    console.log(data);
-
-                    if (data.command && data.command == 'setRegularWaveform') {
-                        this.frequency[index] = data.actualSignalFreq / 1000;
+                let singleCommand = {
+                    awg: {
+                        setRegularWaveform: [chans, settings],
+                        run: [chans]
                     }
-
-                    this.awaitingResponse = false;
-                },
-                (err) => {
-                    console.log(err);
-
-                    this.awaitingResponse = false;
-
-                    console.log('AWG Set Regular and Run Failed');
-
-                    this.stop(chans);
-                    this.toastService.createToast('awgRunError', true);
-                },
-                () => {
-                    this.powerOn[index] = !this.powerOn[index];
-                    this.dataTransferService.awgPower = this.powerOn[index];
                 }
-            );
-        }
-        else {
-            this.stop(chans);
-        }
+
+                this.activeDevice.multiCommand(singleCommand).subscribe(
+                    (data) => {
+                        console.log(data);
+
+                        if (data.command && data.command == 'setRegularWaveform') {
+                            this.frequency[index] = data.actualSignalFreq / 1000;
+                        }
+
+                        this.awaitingResponse = false;
+
+                        resolve();
+                    },
+                    (err) => {
+                        console.log(err);
+
+                        this.awaitingResponse = false;
+
+                        console.log('AWG Set Regular and Run Failed');
+
+                        this.stop(chans);
+                        this.toastService.createToast('awgRunError', true);
+
+                        reject(err);
+                    },
+                    () => {
+                        this.powerOn[index] = !this.powerOn[index];
+                        this.dataTransferService.awgPower = this.powerOn[index];
+                    }
+                );
+            }
+            else {
+                this.promiseStop(chans).then(resolve);
+            }
+        });
     }
 
     //Get settings from awg
