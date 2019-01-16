@@ -947,7 +947,7 @@ export class OpenLoggerLoggerComponent {
         for (let i = 0; i < this.dataContainers.length; i++) {
             this.dataContainers[i].data = [];
         }
-        this.loggerPlotService.setData(this.dataContainers, false, this.viewMoved);
+        this.loggerPlotService.setData(this.dataContainers, this.viewMoved);
         this.dataAvailable = false;
     }
 
@@ -984,7 +984,7 @@ export class OpenLoggerLoggerComponent {
             }
         }
         this.setViewToEdge();
-        this.loggerPlotService.setData(this.dataContainers, false, this.viewMoved);
+        this.loggerPlotService.setData(this.dataContainers, this.viewMoved);
         this.dataAvailable = true;
         let t1 = performance.now();
         console.log('time to parse and draw:', t1 - t0);

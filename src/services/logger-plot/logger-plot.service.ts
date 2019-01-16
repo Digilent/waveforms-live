@@ -106,12 +106,12 @@ export class LoggerPlotService {
         this.attachTimelineListeners();
     }
 
-    setData(data: PlotDataContainer[], autoscale: boolean, viewMoved: boolean) {
+    setData(data: PlotDataContainer[], viewMoved: boolean) {
         // deep copy
         this.dataContainers = data.map(a => ({ ...a }));
         let timelineData = data.map(a => ({ ...a }));
 
-        this.trimChartData(autoscale, !viewMoved)
+        this.trimChartData(!viewMoved)
             .then(() => {
                 this.shouldShowIndividualPoints(true);
             })
@@ -130,28 +130,31 @@ export class LoggerPlotService {
         }
     }
 
-    trimChartData(autoscale: boolean, snappedToFront: boolean = false) {
+    trimChartData(snappedToFront: boolean = false) {
         return new Promise((resolve, reject) => {
             let chartData = this.dataContainers.map(a => ({ ...a })); // deep copy
-        let xaxis = this.chart.getAxes().xaxis;
+            let xaxis = this.chart.getAxes().xaxis;
 
-        // trim data to visible section of xaxis and draw
-        for (let i = 0; i < chartData.length; i++) {
-            let diff = 0;
-            if (snappedToFront && chartData[i].data.length > 0) {
-                diff = chartData[i].data[chartData[i].data.length - 1][0] - xaxis.max;
+            // trim data to visible section of xaxis and draw
+            for (let i = 0; i < chartData.length; i++) {
+                let diff = 0;
+                if (snappedToFront && chartData[i].data.length > 0) {
+                    diff = chartData[i].data[chartData[i].data.length - 1][0] - xaxis.max;
+                }
+
+                let lastIndex = chartData[i].data.length - 1;
+                chartData[i].data = chartData[i].data.filter((point, index) => {
+                    let t0 = index === lastIndex ? point[0] : chartData[i].data[index + 1][0];
+                    let t1 = index === 0 ? point[0] : chartData[i].data[index - 1][0];
+
+                    return t0 >= (xaxis.min + diff) && t1 <= (xaxis.max + diff);
+                });
+                chartData[i].data = largestTriangleThreeBuckets(chartData[i].data, 1000, 0, 1);
             }
 
-            let lastIndex = chartData[i].data.length - 1;
-            chartData[i].data = chartData[i].data.filter((point, index) => {
-                let t0 = index === lastIndex ? point[0] : chartData[i].data[index + 1][0];
-                let t1 = index === 0 ? point[0] : chartData[i].data[index - 1][0];
-
-                return t0 >= (xaxis.min + diff) && t1 <= (xaxis.max + diff);
-            });
-            chartData[i].data = largestTriangleThreeBuckets(chartData[i].data, 1000, 0, 1);
-        }
-        this.digilentChart.setData(chartData, false);
+            this.chart.setData(chartData);
+            this.chart.setupGrid();
+            this.chart.draw();
             resolve();
         });
     }
@@ -162,7 +165,7 @@ export class LoggerPlotService {
             this.updateTimelineCurtains();
         }
         setTimeout(() => {
-            this.trimChartData(false, true)
+            this.trimChartData(true)
                 .then(() => {
                     this.shouldShowIndividualPoints(false);
                     this.chart.draw();
