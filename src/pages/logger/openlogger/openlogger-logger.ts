@@ -79,8 +79,8 @@ export class OpenLoggerLoggerPage {
                 }
             }
         };
-
-        this.fGenComponent.initializeValues();
+        
+        this.getAwgStatus();
 
         let toggle = this.fGenComponent.togglePromise.bind(this.fGenComponent);
         this.fGenComponent.togglePower = (event, index) => {
@@ -94,6 +94,28 @@ export class OpenLoggerLoggerPage {
                 toggle(event, index).catch(e => console.error(e));
             }
         }
+    }
+
+    getAwgStatus(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let chans = [];
+            for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {
+                chans.push(i + 1);
+            }
+            this.activeDevice.instruments.awg.getCurrentState(chans).subscribe(
+                (data) => {
+                    console.log(data);
+                    this.fGenComponent.initializeFromGetStatus(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log('error getting awg status');
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
     }
 
     snapViewToFront() {
