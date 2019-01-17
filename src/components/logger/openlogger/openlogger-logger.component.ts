@@ -1156,26 +1156,19 @@ export class OpenLoggerLoggerComponent {
     }
 
     private readLiveData() {
-        // (cont. from stopLogger) if a stop has been staged, send that off
-        if (this.stagedStop !== null) {
-            console.log('ATTEMPTING');
-
-            this.stagedStop().then(() => {
-                console.log('STOPPED');
-                
-                // do some more cleanup here I think...
-
-                this.stagedStop = null;
-            }).catch(e => {
-                this.stagedStop = null;
-                
-                console.log("STAGED STOP:", e);
+        // if the messageQueue has something in it, run that instead, then pop it off the queue. Call readLiveData again (if running?).
+        let message;
+        if ((message = this.messageQueue.shift()) !== undefined) {
+            message().then(() => {
+                console.warn('STARTING AGAIN');
+                this.readLiveData(); // try to read again
             });
-            
+
             return;
         }
 
         if (this.destroyed) return; // if we are leaving, don't do another read
+
         //Make copies of analogChansToRead so mid-read changes to analogChansToRead don't change the channel array
         this.read('daq', this.daqChansToRead.slice())
             .then((data) => {
