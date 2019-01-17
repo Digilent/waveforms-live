@@ -924,15 +924,10 @@ export class OpenLoggerLoggerComponent {
                 break;
         }
     }
-    
-    stagedStop: (() => Promise<any>) | null = null;
 
     stopLogger() {
         if (this.running) {
-            // stage the actual call to this.stop, but don't fire yet...(cont. readLiveData)
-            if (this.stagedStop === null) this.stagedStop = (): Promise<any> => {
-                return this.stop().then(() => this.running = false);
-            }
+            this.messageQueue.push(() => this.stop().then(() => this.running = false));
         } else {
             this.stop()
                 .then((data) => {
