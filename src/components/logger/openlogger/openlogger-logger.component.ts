@@ -1260,6 +1260,7 @@ export class OpenLoggerLoggerComponent {
             if (instrument === 'daq') {
                 let stateData = data.log[instrument];
                 if (stateData.statusCode == undefined) { return; }
+                this.daqParams.state = stateData.state.trim();
                 if (stateData.state === 'running') {
                     this.running = true;
                 }
