@@ -89,6 +89,8 @@ export class OpenLoggerLoggerComponent {
     public dataAvailable: boolean = false;
     private chanSelectTimer;
 
+    public messageQueue: any[] = [];
+
     constructor(
         private devicemanagerService: DeviceManagerService,
         private loadingService: LoadingService,
