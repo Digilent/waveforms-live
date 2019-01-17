@@ -8,6 +8,7 @@ import { PinoutPopover } from '../../../components/pinout-popover/pinout-popover
 import { MathPopoverComponent, MathPassData, MathOutput } from '../../../components/math-popover/math-popover.component';
 import { CursorPopoverComponent, CursorPassData, CursorChannel, CursorSelection } from '../../../components/cursor-popover/cursor-popover.component';
 import { DigitalIoComponent } from '../../../components/digital-io/digital-io.component';
+import { FgenComponent } from '../../../components/function-gen/function-gen.component';
 
 //Pages
 import { FileBrowserPage } from '../../file-browser/file-browser';
@@ -30,6 +31,7 @@ export class OpenLoggerLoggerPage {
     @ViewChild('loggerComponent') loggerComponent: OpenLoggerLoggerComponent;
     @ViewChild('chart') loggerChart: LoggerChartComponent;
     @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
+    @ViewChild('fgenComponent') fGenComponent: FgenComponent;
     private dismissCallback: () => void;
     private unitFormatPipeInstance: UnitFormatPipe;
     private selectedMathInfo: MathOutput[] = [];
@@ -77,6 +79,21 @@ export class OpenLoggerLoggerPage {
                 }
             }
         };
+
+        this.fGenComponent.initializeValues();
+
+        let toggle = this.fGenComponent.togglePromise.bind(this.fGenComponent);
+        this.fGenComponent.togglePower = (event, index) => {
+            if (this.loggerComponent.running) {
+                // this.loggerComponent.messageQueue.push(() => new Promise((resolve) => {
+                //     toggle(event, index).then(resolve).catch(e => console.error(e));
+                // }));
+                
+                this.loggerComponent.messageQueue.push(() => toggle(event, index).catch(e => console.error(e))); // fires after talking to the FGen
+            } else {
+                toggle(event, index).catch(e => console.error(e));
+            }
+        }
     }
 
     snapViewToFront() {
