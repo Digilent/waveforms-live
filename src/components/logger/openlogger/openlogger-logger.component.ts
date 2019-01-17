@@ -154,7 +154,9 @@ export class OpenLoggerLoggerComponent {
                 this.chanSelectTimer = window.setTimeout(() => {
                     let numChans = this.selectedChannels.lastIndexOf(true) + 1;
                     let chanObj = this.activeDevice.instruments.logger.daq.chans[0];
-                    let maxFreq = Math.floor(chanObj.sampleFreqMax / numChans) * chanObj.sampleFreqUnits;    
+                    let maxAggregate = this.getMaxSampleFreq();
+                    let maxFreq = Math.floor(maxAggregate / numChans) * chanObj.sampleFreqUnits;   
+
                     this.toastService.createToast('loggerSampleFreqMax', true, Math.round((maxFreq / 1000) * 100) / 100 + ' kS/s', 5000);
                 }, 1500);
             }
@@ -537,13 +539,26 @@ export class OpenLoggerLoggerComponent {
         this.validateAndApply(newFreq, type);
     }
 
+    private getMaxSampleFreq(): number {
+        let targets = this.activeDevice.instruments.logger.daq.targets;
+        let max;
+        if (this.selectedLogLocation === 'chart') {
+            max = targets.ram.sampleFreqMax;
+        } else if (this.selectedLogLocation === 'SD') {
+            max = targets.sd0.sampleFreqMax;
+        } else {
+            max = this.activeDevice.instruments.logger.daq.chans[0].sampleFreqMax;
+        }
+        return max;
+    }
+
     private validateAndApply(newVal: number, type: 'sampleFreq' | 'samples'): number {
         if (type === 'sampleFreq') {
-            let numChans = this.selectedChannels.lastIndexOf(true) + 1;
-
             let chanObj = this.activeDevice.instruments.logger.daq.chans[0];
+            let maxAggregate = this.getMaxSampleFreq();
+            let numChans = this.selectedChannels.lastIndexOf(true) + 1;
             let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
-            let maxFreq = Math.floor(chanObj.sampleFreqMax / numChans) * chanObj.sampleFreqUnits;
+            let maxFreq = Math.floor(maxAggregate / numChans) * chanObj.sampleFreqUnits;
             if (newVal < minFreq) {
                 newVal = minFreq;
             }
