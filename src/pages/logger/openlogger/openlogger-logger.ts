@@ -84,12 +84,8 @@ export class OpenLoggerLoggerPage {
 
         let toggle = this.fGenComponent.togglePromise.bind(this.fGenComponent);
         this.fGenComponent.togglePower = (event, index) => {
-            if (this.loggerComponent.running) {
-                // this.loggerComponent.messageQueue.push(() => new Promise((resolve) => {
-                //     toggle(event, index).then(resolve).catch(e => console.error(e));
-                // }));
-                
-                this.loggerComponent.messageQueue.push(() => toggle(event, index).catch(e => console.error(e))); // fires after talking to the FGen
+            if (this.loggerComponent.running) {                
+                this.loggerComponent.messageQueue.push(() => toggle(event, index).catch(e => console.error(e)));
             } else {
                 toggle(event, index).catch(e => console.error(e));
             }
