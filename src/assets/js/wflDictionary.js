@@ -375,6 +375,12 @@ var waveformsLiveDictionary = (function() {
         chartResetDevice: {
             english: 'Reset Device And ReInitialize'
         },
+        chartSetViewToFront: {
+            english: 'Set View to Front'
+        },
+        chartToFileExplorer: {
+            english: 'To File Explorer'
+        },
         sineButton: {
             english: 'Sine Wave'
         },

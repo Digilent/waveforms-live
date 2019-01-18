@@ -34,16 +34,16 @@
     <ion-row class="page-row">
         <ion-col class="chart-container-col">
             <div class="chart-button-container">
-                <button ion-button class="chart-button disable-hover" [disabled]="!loggerComponent.viewMoved && loggerComponent.running" (tap)="snapViewToFront()">
+                <button ion-button class="chart-button disable-hover" [disabled]="!loggerComponent.viewMoved && loggerComponent.running" (tap)="snapViewToFront()" [tooltip]="tooltipService.getTooltip('chartSetViewToFront').message" [tooltipAnimation]="true" tooltipPlacement="left">
                     <img class="button-side-svg" src="assets/img/logger-to-front.svg" />
                 </button>
-                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="presentExportPop($event)">
+                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="presentExportPop($event)" [tooltip]="tooltipService.getTooltip('chartSettings').message" [tooltipAnimation]="true" tooltipPlacement="left">
                     <img class="button-side-svg" src="assets/img/download.svg" />
                 </button>
-                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="openFileBrowser()">
+                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="openFileBrowser()" [tooltip]="tooltipService.getTooltip('chartToFileExplorer').message" [tooltipAnimation]="true" tooltipPlacement="left">
                     <img class="button-side-svg" src="assets/img/folder.svg" />
                 </button>
-                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="openDevicePinout($event)">
+                <button ion-button class="chart-button disable-hover" (tap)="openDevicePinout($event)"  [tooltip]="tooltipService.getTooltip('chartShowDevicePinout').message" [tooltipAnimation]="true" tooltipPlacement="left">
                     PIN
                 </button>
             </div>
