@@ -45,7 +45,6 @@ export class OpenLoggerLoggerComponent {
         maxSampleCount: -1,
         startDelay: 0,
         sampleFreq: 1000,
-        state: 'idle'
     };
     private defaultDaqChannelParams: DaqChannelParams = {
         average: 1,
@@ -54,6 +53,7 @@ export class OpenLoggerLoggerComponent {
         vOffset: 0
     };
     public daqChans: DaqChannelParams[] = [];
+    public loggerState: string = 'idle';
 
     public average: number = 1;
     public maxAverage: number = 256;
@@ -1011,7 +1011,7 @@ export class OpenLoggerLoggerComponent {
                 this.toastService.createToast('loggerInvalidFileName', true, undefined, 8000);
                 return { reason: 1 };
             }
-            if (this.daqParams.state !== 'idle' && this.daqParams.state !== 'stopped') {
+            if (this.loggerState !== 'idle' && this.loggerState !== 'stopped') {
                 loading.dismiss();
                 this.toastService.createToast('loggerInvalidState', true, undefined, 8000);
                 return { reason: 1 };
@@ -1275,7 +1275,7 @@ export class OpenLoggerLoggerComponent {
             if (instrument === 'daq') {
                 let stateData = data.log[instrument];
                 if (stateData.statusCode == undefined) { return; }
-                this.daqParams.state = stateData.state.trim();
+                this.loggerState = stateData.state.trim();
                 if (stateData.state === 'running') {
                     this.running = true;
                 }
@@ -1663,6 +1663,5 @@ export interface DaqChannelParams {
 export interface DaqLoggerParams {
     maxSampleCount: number,
     startDelay: number,
-    sampleFreq: number,
-    state: string
+    sampleFreq: number
 }
