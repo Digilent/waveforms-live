@@ -376,6 +376,8 @@ export class OpenLoggerLoggerComponent {
             // remove scaling on this channel and reset units
             this.unitTransformer[channel] = undefined;
             this.events.publish('units:update', { channel: channel });
+
+            this.chanUnits[channel] = 'V';
         } else {
             // apply expression to this channel and update units
             this.scalingService.getScalingOption(event)
@@ -383,6 +385,8 @@ export class OpenLoggerLoggerComponent {
                     // apply scaling to this channel
                     this.unitTransformer[channel] = result.expression;
                     this.events.publish('units:update', { channel: channel, units: result.unitDescriptor });
+
+                    this.chanUnits[channel] = result.unitDescriptor;
                 })
                 .catch(() => {
                     this.toastService.createToast('loggerScaleLoadErr', true, undefined, 5000);
