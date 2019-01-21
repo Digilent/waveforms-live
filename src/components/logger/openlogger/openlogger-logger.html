@@ -222,7 +222,7 @@
         <div class="button-info-container pad-bottom">
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
-                    Volts/
+                    {{ (chanUnits[i] === 'V') ? "Volts/" : "Units/" }}
                 </ion-col>
                 <ion-col text-right center class="vpd-button-col">
                     <div style="display:inline-block">
@@ -232,7 +232,7 @@
                     </div>
                 </ion-col>
                 <ion-col class="vpd-val-col" center text-center>
-                    <input class="custom-input highlight-input" step="any" [ngModel]="loggerPlotService.vpdArray[loggerPlotService.vpdIndices[i]] | unitFormat:'V/'"
+                    <input class="custom-input highlight-input" step="any" [ngModel]="loggerPlotService.vpdArray[loggerPlotService.vpdIndices[i]] | unitFormat:chanUnits[i]+'/'"
                         formatInput (valChange)="yAxisValChange($event, i)" (mousewheel)="mousewheel($event, 'vpd', i)"
                         [tooltip]="tooltipService.getTooltip('oscVpd').message" [tooltipAnimation]="true" tooltipPlacement="top"
                     />
