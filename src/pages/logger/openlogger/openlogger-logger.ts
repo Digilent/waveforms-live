@@ -130,6 +130,10 @@ export class OpenLoggerLoggerPage {
     }
 
     runLogger() {
+        this.loggerChart.loggerChart.digilentChart == undefined;
+        this.loggerChart.loggerChart.createChart();
+        this.loggerChart.loggerChart.chartLoad.emit();
+
         this.loggerComponent.startLogger();
     }
 

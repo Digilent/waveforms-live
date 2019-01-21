@@ -58,10 +58,6 @@ export class LoggerChartComponent {
 
         console.log(this.loggerChartOptions, this.loggerChart.flotOptions);
         console.log(this.unitSymbols, chan);
-
-        this.loggerChart.digilentChart == undefined;
-        this.loggerChart.createChart();
-        this.loggerChart.chartLoad.emit();
     }
 
     plotLoaded() {
