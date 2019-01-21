@@ -605,13 +605,15 @@ export class OpenLoggerLoggerComponent {
     setViewToEdge() {
         if (this.viewMoved) { return; }
         
-        if (this.dataContainers[0].data[0] == undefined || this.dataContainers[0].data[0][0] == undefined) {
+        let index = this.selectedChannels.findIndex((e) => e);
+        
+        if (!this.dataAvailable || index === -1 || this.dataContainers[index].data[0] == undefined || this.dataContainers[index].data[0][0] == undefined) {
             //Data was cleared
             this.loggerPlotService.setPosition('x', 1, this.loggerPlotService.xAxis.base * 5, true);
             return;
         }
 
-        let rightPos = this.dataContainers[0].data[this.dataContainers[0].data.length - 1][0];
+        let rightPos = this.dataContainers[index].data[this.dataContainers[index].data.length - 1][0];
         for (let i = 1; i < this.dataContainers.length; i++) {
             let len = this.dataContainers[i].data.length - 1;
             
