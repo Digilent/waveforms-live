@@ -326,7 +326,7 @@ export class CalibratePage {
             (data) => {
                 console.log(data);
                 let waitTime = data.device[0].wait < 0 ? this.timeBetweenReadAttempts : data.device[0].wait;
-                this.calibrationStatus = 'This should take about ' + (data.device[0].wait / 1000) + ' seconds.';
+                this.calibrationStatus = 'This should take about ' + Math.round(data.device[0].wait / 1000) + ' seconds.';
                 this.calibrationReadAttempts = 0;
                 this.runProgressBar(waitTime);
             },
