@@ -506,7 +506,6 @@ export class OpenLoggerLoggerPage {
         });
     }
 
-    private fgenTutorialFinished(event) {
-
+    public fgenTutorialFinished(event) {
     }
 }

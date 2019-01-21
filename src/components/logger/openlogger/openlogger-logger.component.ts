@@ -682,7 +682,7 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    private profileSaveClick(name, event) {
+    public profileSaveClick(name, event) {
         // if new profile open popover, otherwise just save
         if (name === 'New Profile') {
             this.openProfileSettings('', event);
