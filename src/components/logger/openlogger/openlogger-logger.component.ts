@@ -123,6 +123,8 @@ export class OpenLoggerLoggerComponent {
                 loading.dismiss();
             });
 
+        this.chanUnits = this.daqChans.map(() => 'V');
+
         this.events.subscribe('profile:save', (params) => {
             this.saveAndSetProfile(params[0]['profileName']);
         });
@@ -163,6 +165,7 @@ export class OpenLoggerLoggerComponent {
         }
     }
 
+    chanUnits: string[] = []; // start w/ 'V' for all the channels
     public updateScale(chan: number, expression: string, scaleName: string, units: string) {
         this.selectedScales[chan] = scaleName;
         this.selectedScales.forEach((chanScale, index) => {
