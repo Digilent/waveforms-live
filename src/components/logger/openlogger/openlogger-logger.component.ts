@@ -45,11 +45,11 @@ export class OpenLoggerLoggerComponent {
         maxSampleCount: -1,
         startDelay: 0,
         sampleFreq: 1000,
+        storageLocation: 'ram',
+        uri: ''
     };
     private defaultDaqChannelParams: DaqChannelParams = {
         average: 1,
-        storageLocation: 'ram',
-        uri: '',
         vOffset: 0
     };
     public daqChans: DaqChannelParams[] = [];
@@ -635,24 +635,17 @@ export class OpenLoggerLoggerComponent {
     logToSelect(event) {
         console.log(event);
         if (this.selectedLogLocation === 'chart' && event !== 'chart') {
-            this.daqChans.forEach((channel, index) => {
-                channel.storageLocation = this.storageLocations[0];
-            });
+            this.daqParams.storageLocation = this.storageLocations[0];
         }
         if (event === 'chart') {
-            this.daqChans.forEach((channel, index) => {
-                channel.storageLocation = 'ram';
-            });
+            this.daqParams.storageLocation = 'ram';
         }
         this.selectedLogLocation = event;
     }
 
     updateUri(event) {
         let uri = event.target.value;
-        console.log(uri);
-        this.daqChans.forEach((channel, index) => {
-            channel.uri = uri;
-        });
+        this.daqParams.uri = uri;
     }
 
     modeSelect(event: 'finite' | 'continuous') {
@@ -836,9 +829,7 @@ export class OpenLoggerLoggerComponent {
             if (this.selectedChannels[index]) {
                 let chanObj = {
                     [(index + 1).toString()]: {
-                        average: channel.average,
-                        storageLocation: channel.storageLocation,
-                        uri: channel.uri
+                        average: channel.average
                     }
                 };
                 saveObj['daq']['channels'].push(chanObj);
@@ -854,20 +845,19 @@ export class OpenLoggerLoggerComponent {
                 this.daqParams.maxSampleCount = loadedObj[instrument]['maxSampleCount'];
                 this.daqParams.sampleFreq = loadedObj[instrument]['sampleFreq'];
                 this.daqParams.startDelay = loadedObj[instrument]['startDelay'];
+                this.daqParams.storageLocation = loadedObj[instrument]['storageLocation'];
+                this.daqParams.uri = loadedObj[instrument]['uri'];
+
+                // set log to location based on storageLocation
+                let logTo = loadedObj[instrument]['storageLocation'] === 'ram' ? 'chart' : 'SD';
+                this.selectedLogLocation = logTo;
+                this.logToChild._applyActiveSelection(logTo);
 
                 // select channels
                 loadedObj[instrument].channels.forEach((channel) => {
                     let chanNum = parseInt(Object.keys(channel)[0]);
                     this.selectedChannels[chanNum - 1] = true;
-                    let chan = this.daqChans[chanNum - 1];
-                    chan.average = channel[chanNum].average;
-                    chan.storageLocation = channel[chanNum].storageLocation;
-                    chan.uri = channel[chanNum].uri;
-
-                    // set log to location based on storageLocation
-                    let logTo = channel[chanNum].storageLocation === 'ram' ? 'chart' : 'SD';
-                    this.selectedLogLocation = logTo;
-                    this.logToChild._applyActiveSelection(logTo);
+                    this.daqChans[chanNum - 1].average = channel[chanNum].average;
                 });
 
                 // set mode dropdown
@@ -1006,38 +996,26 @@ export class OpenLoggerLoggerComponent {
 
     private existingFileFoundAndValidate(loading): { reason: number } {
         let existingFileFound: boolean = false;
-        let foundChansMap = {};
-        for (let i = 0; i < this.daqChans.length; i++) {
-            if (this.daqChans[i].storageLocation !== 'ram' && this.daqChans[i].uri === '') {
-                loading.dismiss();
-                this.toastService.createToast('loggerInvalidFileName', true, undefined, 8000);
-                return { reason: 1 };
-            }
-            if (this.loggerState !== 'idle' && this.loggerState !== 'stopped') {
-                loading.dismiss();
-                this.toastService.createToast('loggerInvalidState', true, undefined, 8000);
-                return { reason: 1 };
-            }
+        if (this.daqParams.storageLocation !== 'ram' && this.daqParams.uri === '') {
+            loading.dismiss();
+            this.toastService.createToast('loggerInvalidFileName', true, undefined, 8000);
+            return { reason: 1 };
+        }
+        if (this.loggerState !== 'idle' && this.loggerState !== 'stopped') {
+            loading.dismiss();
+            this.toastService.createToast('loggerInvalidState', true, undefined, 8000);
+            return { reason: 1 };
+        }
 
-            if (foundChansMap[this.daqChans[i].uri] != undefined) {
-                loading.dismiss();
-                this.toastService.createToast('loggerMatchingFileNames', true, undefined, 8000);
-                return { reason: 1 };
-            }
+        if (this.selectedLogLocation === 'chart') {
+            return { reason: 0 };
+        }
 
-
-            if (this.daqChans[i].storageLocation !== 'ram') {
-                foundChansMap[this.daqChans[i].uri] = 1;
-            }
-            if (this.selectedLogLocation === 'chart') { continue; }
-            if (this.filesInStorage[this.daqChans[i].storageLocation].indexOf(this.daqChans[i].uri + '.dlog') !== -1) {
-                //File already exists on device display alert
-                existingFileFound = true;
-            }
-            else {
-                //TODO fix this so that new uris are only pushed after all channels are processed. Could create a new obj and then deep merge
-                this.filesInStorage[this.daqChans[i].storageLocation].push(this.daqChans[i].uri + '.dlog');
-            }
+        if (this.filesInStorage[this.daqParams.storageLocation].indexOf(this.daqParams.uri + '.dlog') !== -1) {
+            //File already exists on device display alert
+            existingFileFound = true;
+        } else {
+            this.filesInStorage[this.daqParams.storageLocation].push(this.daqParams.uri + '.dlog');
         }
         return (existingFileFound ? { reason: 2 } : { reason: 0 });
     }
@@ -1297,6 +1275,25 @@ export class OpenLoggerLoggerComponent {
                 if (stateData.actualStartDelay != undefined) {
                     this.daqParams.startDelay = stateData.actualStartDelay / Math.pow(10, 12);
                 }
+                if (stateData.uri != undefined) {
+                    if (stateData.uri.indexOf('.dlog') !== -1) {
+                        // Remove .dlog from end of file
+                        stateData.uri = stateData.uri.slice(0, stateData.uri.indexOf('.dlog'));
+                    }
+                    this.daqParams.uri = stateData.uri;
+                }
+
+                if (this.storageLocations.length <= 1) {
+                    stateData.storageLocation = 'ram';
+                }
+                this.daqParams.storageLocation = stateData.storageLocation;
+                if (stateData.storageLocation === 'ram') {
+                    this.selectedLogLocation = 'chart';
+                    this.logToChild._applyActiveSelection('chart');
+                } else {
+                    this.selectedLogLocation = 'SD';
+                    this.logToChild._applyActiveSelection('SD');
+                }
 
                 this.selectedChannels = this.selectedChannels.map(() => false);
                 if (stateData.channels != undefined && stateData.channels.length > 0) {
@@ -1335,29 +1332,8 @@ export class OpenLoggerLoggerComponent {
 
     private copyChannelState(respObj, channelInternalIndex: number) {
         let activeChan = this.daqChans[channelInternalIndex];
-
-        if (this.storageLocations.length < 1) {
-            respObj.storageLocation = 'ram';
-        }
-        activeChan.storageLocation = respObj.storageLocation;
-        if (respObj.storageLocation === 'ram') {
-            this.selectedLogLocation = 'chart';
-            this.logToChild._applyActiveSelection('chart');
-        } else {
-            this.selectedLogLocation = 'SD';
-            this.logToChild._applyActiveSelection('SD');
-        }
-
         activeChan.average = respObj.average;
         this.average = respObj.average;
-
-        if (respObj.uri) {
-            if (respObj.uri.indexOf('.dlog') !== -1) {
-                // Remove .dlog from end of file
-                respObj.uri = respObj.uri.slice(0, respObj.uri.indexOf('.dlog'));
-            }
-            activeChan.uri = respObj.uri;
-        }
     }
 
     setParameters(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
@@ -1369,24 +1345,17 @@ export class OpenLoggerLoggerComponent {
                     return;
                 }
 
-                let overflows = [];
-                let storageLocations = [];
-                let uris = [];
-                chans.forEach((chan) => {
-                    overflows.push('circular');
-                    storageLocations.push(this.daqChans[chan - 1].storageLocation);
-                    uris.push(this.daqChans[chan - 1].uri + '.dlog');
-                });
+                let overflows = Array.apply(null, Array(chans.length)).map(() => 'circular');
 
                 observable = this.activeDevice.instruments.logger.daq.setParameters(
                     chans,
                     this.daqParams.maxSampleCount,
                     this.daqParams.sampleFreq,
                     this.daqParams.startDelay,
+                    this.daqParams.storageLocation,
+                    this.daqParams.uri,
                     this.average,
-                    overflows,
-                    storageLocations,
-                    uris
+                    overflows
                 );
             }
             observable.subscribe(
@@ -1657,13 +1626,13 @@ export type LoggerInputType = 'delay' | 'offset' | 'samples' | 'sampleFreq';
 
 export interface DaqChannelParams {
     average: number,
-    storageLocation: string,
-    uri: string,
     vOffset: number
 }
 
 export interface DaqLoggerParams {
     maxSampleCount: number,
     startDelay: number,
-    sampleFreq: number
+    sampleFreq: number,
+    storageLocation: string,
+    uri: string,
 }
