@@ -961,9 +961,7 @@ export class DeviceManagerPage {
 
         this.sendEnumeration(ipAddress, loading, deviceIndex)
             .then(() => {
-                this.navCtrl.setRoot(pageToDisplay, {
-                    tutorialMode: this.tutorialMode
-                });
+                this.navCtrl.setRoot(pageToDisplay, navParams);
             });
     }
 
