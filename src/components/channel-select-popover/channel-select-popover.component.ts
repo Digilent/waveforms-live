@@ -7,6 +7,7 @@ import { ViewController, NavParams, Events } from 'ionic-angular';
 })
 export class ChannelSelectPopover {
   private selectedChannels: boolean[];
+  private colorArray: string[];
 
   constructor(
     private viewCtrl: ViewController,
@@ -14,6 +15,7 @@ export class ChannelSelectPopover {
     private events: Events
   ) {
     this.selectedChannels = this.params.get('selectedChannels');
+    this.colorArray = this.params.get('colorArray');
   }
 
   close() {

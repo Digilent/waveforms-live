@@ -358,7 +358,7 @@ export class OpenLoggerLoggerComponent {
     }
 
     openChannelSelector(event) {
-        let popover = this.popoverCtrl.create(ChannelSelectPopover, { selectedChannels: this.selectedChannels }, {
+        let popover = this.popoverCtrl.create(ChannelSelectPopover, { selectedChannels: this.selectedChannels, colorArray: this.colorArray }, {
             cssClass: 'logChannelsPopover'
         });
         popover.present({

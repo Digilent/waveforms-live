@@ -6,7 +6,7 @@
     </ion-row>
     <ion-row wrap class="button-container" text-center>
         <ion-col width-25 *ngFor="let chan of selectedChannels, let i = index">
-            <button class="channel-button" [ngClass]="{'button-on': selectedChannels[i]}" (click)="toggleChannel(i)">
+            <button class="channel-button" [ngStyle]="{'backgroundColor': colorArray[i]}" [ngClass]="{'button-on': selectedChannels[i]}" (click)="toggleChannel(i)">
                 {{i+1}}
             </button>
         </ion-col>
