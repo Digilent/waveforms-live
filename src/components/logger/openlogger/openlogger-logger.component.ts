@@ -124,7 +124,7 @@ export class OpenLoggerLoggerComponent {
             });
 
         this.events.subscribe('profile:save', (params) => {
-            this.saveAndSetProfile(params[0]['profileName']);
+            this.saveAndSetProfile(params[0]['profileName'], params[0]['saveChart'], params[0]['saveDaq']);
         });
         this.events.subscribe('profile:delete', (params) => {
             this.deleteProfile(params[0]['profileName']);
@@ -204,7 +204,7 @@ export class OpenLoggerLoggerComponent {
         // Check if there are unsaved changes to profile
         this.dirtyProfile = false;
         if (this.selectedLogProfile && this.selectedLogProfile != this.loggingProfiles[0]) {
-            let current = this.generateProfileJson();
+            let current = this.generateProfileJson(this.profileObjectMap[this.selectedLogProfile].chart, this.profileObjectMap[this.selectedLogProfile].daq);
             this.dirtyProfile = JSON.stringify(current) !== JSON.stringify(this.profileObjectMap[this.selectedLogProfile]);
         }
     }
@@ -604,7 +604,7 @@ export class OpenLoggerLoggerComponent {
 
     setViewToEdge() {
         if (this.viewMoved) { return; }
-        
+
         let index = this.selectedChannels.findIndex((e) => e);
         
         if (!this.dataAvailable || index === -1 || this.dataContainers[index].data[0] == undefined || this.dataContainers[index].data[0][0] == undefined) {
@@ -660,7 +660,7 @@ export class OpenLoggerLoggerComponent {
     }
 
     openProfileSettings(name, event?) {
-        let popover = this.popoverCtrl.create(ProfilePopover, { profileName: name }, {
+        let popover = this.popoverCtrl.create(ProfilePopover, { profileName: name, profileObj: this.profileObjectMap[name] }, {
             cssClass: 'profilePopover'
         });
         popover.present({
@@ -673,7 +673,7 @@ export class OpenLoggerLoggerComponent {
         if (name === 'New Profile') {
             this.openProfileSettings('', event);
         } else {
-            this.saveAndSetProfile(name);
+            this.saveAndSetProfile(name, this.profileObjectMap[name].chart !== undefined, this.profileObjectMap[name].daq !== undefined);
         }
     }
 
@@ -718,9 +718,9 @@ export class OpenLoggerLoggerComponent {
         );
     }
 
-    saveAndSetProfile(profileName) {
+    saveAndSetProfile(profileName, saveChart, saveDaq) {
         console.log(profileName);
-        this.saveProfile(profileName)
+        this.saveProfile(profileName, saveChart, saveDaq)
             .then((data) => {
                 this.toastService.createToast('loggerSaveSuccess');
             })
@@ -735,7 +735,7 @@ export class OpenLoggerLoggerComponent {
         }
         this.loggingProfiles.push(profileName);
         this.logOnBootProfiles.push(profileName);
-        let profileObj = this.generateProfileJson();
+        let profileObj = this.generateProfileJson(saveChart, saveDaq);
         let profileObjCopy = JSON.parse(JSON.stringify(profileObj));
         this.profileObjectMap[profileName] = profileObjCopy;
         setTimeout(() => {
@@ -819,27 +819,46 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    private generateProfileJson() {
+    generateProfileJson(saveChart, saveDaq) {
         let saveObj = {};
-        if (this.daqChans.length > 0) {
-            saveObj['daq'] = JSON.parse(JSON.stringify(this.daqParams));
-            saveObj['daq'].channels = [];
-        }
-        this.daqChans.forEach((channel, index) => {
-            if (this.selectedChannels[index]) {
+        if (saveChart) {
+            saveObj['chart'] = {
+                tpd: this.xAxis.tpdArray[this.xAxis.tpdIndex],
+                bufferSize: this.xAxis.loggerBufferSize,
+                channels: []
+            };
+            // Save chart data for all channels, not just selected?
+            for (let i = 0; i < this.daqChans.length; i++) {
                 let chanObj = {
-                    [(index + 1).toString()]: {
-                        average: channel.average
+                    [(i + 1).toString()]: {
+                        vpd: this.loggerPlotService.vpdArray[i],
+                        vOffset: this.daqChans[i].vOffset
                     }
                 };
-                saveObj['daq']['channels'].push(chanObj);
+                saveObj['chart']['channels'].push(chanObj);
             }
-        });
+        }
+        if (saveDaq) {
+            saveObj['daq'] = JSON.parse(JSON.stringify(this.daqParams));
+            saveObj['daq'].channels = [];
+            this.daqChans.forEach((channel, index) => {
+                if (this.selectedChannels[index]) {
+                    let chanObj = {
+                        [(index + 1).toString()]: {
+                            average: channel.average
+                        }
+                    };
+                    saveObj['daq']['channels'].push(chanObj);
+                }
+            });
+        }
         return saveObj;
     }
 
     private parseAndApplyProfileJson(loadedObj) {
-        this.selectedChannels = this.selectedChannels.map(() => false);
+        if (loadedObj.daq !== undefined) {
+            this.selectedChannels = this.selectedChannels.map(() => false);
+        }
         for (let instrument in loadedObj) {
             if (instrument === 'daq') {
                 this.daqParams.maxSampleCount = loadedObj[instrument]['maxSampleCount'];
@@ -863,13 +882,24 @@ export class OpenLoggerLoggerComponent {
                 // set mode dropdown
                 let selection = loadedObj[instrument].maxSampleCount === -1 ? 'continuous' : 'finite';
                 this.modeChild._applyActiveSelection(selection);
+            } else if (instrument === 'chart') {
+                this.xAxis.valChange(loadedObj[instrument]['tpd']);
+                this.xAxis.loggerBufferSize = loadedObj[instrument]['bufferSize'];
+
+                loadedObj[instrument].channels.forEach((channel) => {
+                    let chanNum = parseInt(Object.keys(channel)[0]);
+                    if (this.loggerPlotService.vpdArray.indexOf(channel[chanNum].vpd) !== -1) {
+                        this.loggerPlotService.vpdIndices[chanNum - 1] = this.loggerPlotService.vpdArray.indexOf(channel[chanNum].vpd);
+                    }
+                    this.daqChans[chanNum - 1].vOffset = channel[chanNum].vOffset;
+                });
             }
         }
     }
 
-    private saveProfile(profileName: string): Promise<any> {
+    private saveProfile(profileName: string, saveChart: boolean, saveDaq: boolean): Promise<any> {
         return new Promise((resolve, reject) => {
-            let objToSave = this.generateProfileJson();
+            let objToSave = this.generateProfileJson(saveChart, saveDaq);
             let str = JSON.stringify(objToSave);
             let buf = new ArrayBuffer(str.length);
             let bufView = new Uint8Array(buf);
