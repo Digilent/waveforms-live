@@ -831,7 +831,7 @@ export class OpenLoggerLoggerComponent {
             for (let i = 0; i < this.daqChans.length; i++) {
                 let chanObj = {
                     [(i + 1).toString()]: {
-                        vpd: this.loggerPlotService.vpdArray[i],
+                        vpd: this.loggerPlotService.vpdArray[this.loggerPlotService.vpdIndices[i]],
                         vOffset: this.daqChans[i].vOffset
                     }
                 };

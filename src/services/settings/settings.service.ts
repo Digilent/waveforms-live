@@ -90,7 +90,7 @@ export class SettingsService {
         });
 
         this.storageService.getData('loggerBufferSize').then((data) => {
-            this.loggerBufferSize = data || this.loggerBufferSize;
+            this.loggerBufferSize = parseFloat(data) || this.loggerBufferSize;
         });
         
         if (this.platform.is('ios') || this.platform.is('android') || this.platform.is('mobileweb')) {
