@@ -566,14 +566,19 @@ export class DeviceManagerPage {
     }
 
     openGettingStartedPopover(event) {
-        /*let popover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['OpenScope MZ']
-        });
+        let popover = this.popoverCtrl.create(GenPopover, {
+            dataArray: ['OpenScope MZ', 'OpenLogger MZ']
+        }, {cssClass: 'gettingStartedPopover'});
         popover.onWillDismiss((data) => {
             if (data == undefined) { return; }
+            let openTab;
             switch (data.option) {
                 case 'OpenScope MZ':
-                    let openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/getting-started', '_blank');
+                    openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/start', '_blank');
+                    openTab.location;
+                    break;
+                case 'OpenLogger MZ':
+                    openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openlogger/getting-started', '_blank');
                     openTab.location;
                     break;
                 default:
@@ -582,9 +587,7 @@ export class DeviceManagerPage {
         });
         popover.present({
             ev: event
-        });*/
-        let openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/start', '_blank');
-        openTab.location;
+        });
     }
 
     verifyFirmware(deviceIndex): Promise<any> {
