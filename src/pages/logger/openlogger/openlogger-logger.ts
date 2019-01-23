@@ -82,7 +82,7 @@ export class OpenLoggerLoggerPage {
             }
         };
         
-        this.getAwgStatus();
+        this.getAwgStatus().then(() => this.getVoltages());
 
         let toggle = this.fGenComponent.togglePromise.bind(this.fGenComponent);
         this.fGenComponent.togglePower = (event, index) => {
@@ -112,6 +112,29 @@ export class OpenLoggerLoggerPage {
                     reject(err);
                 },
                 () => { }
+            );
+        });
+    }
+
+    getVoltages(): Promise<any> {
+        let chans = [];
+        for (let i = 0; i < this.activeDevice.instruments.dc.numChans; i++) {
+            chans.push(i + 1);
+        }
+        return new Promise((resolve, reject) => {
+            this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
+                (data) => {
+                    this.dcComponent.initializeFromGetStatus(data);
+                    console.log('HUZZAH!');
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => {
+                    //console.log('getVoltage Done');
+                }
             );
         });
     }
