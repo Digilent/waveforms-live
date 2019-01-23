@@ -1202,9 +1202,9 @@ export class OpenLoggerLoggerComponent {
                         this.getLiveState();
                     } else {
                         if (this.activeDevice.transport.getType() === 'local') {
-                            setTimeout(() => { // note: calling readLiveData without some delay while simulating freezes the UI, so we request the browser keep time for us.
+                            requestAnimationFrame(() => { // note: calling readLiveData without some delay while simulating freezes the UI, so we request the browser keep time for us.
                                 this.readLiveData();
-                            }, 300);
+                            });
                         } else {
                             this.readLiveData();
                         }
