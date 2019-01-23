@@ -21,6 +21,7 @@ import { LoggerPlotService } from '../../../services/logger-plot/logger-plot.ser
 import { TooltipService } from '../../../services/tooltip/tooltip.service';
 import { LoggerChartComponent } from '../../../components/logger-chart/logger-chart.component';
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
+import { DcSupplyComponent } from '../../../components/dc-supply/dc-supply.component';
 
 declare var mathFunctions: any;
 
@@ -32,6 +33,7 @@ export class OpenLoggerLoggerPage {
     @ViewChild('chart') loggerChart: LoggerChartComponent;
     @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
     @ViewChild('fgenComponent') fGenComponent: FgenComponent;
+    @ViewChild('dcComponent') dcComponent: DcSupplyComponent;
     private dismissCallback: () => void;
     private unitFormatPipeInstance: UnitFormatPipe;
     private selectedMathInfo: MathOutput[] = [];
