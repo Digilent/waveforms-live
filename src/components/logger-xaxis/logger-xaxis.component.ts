@@ -27,6 +27,10 @@ export class LoggerXAxisComponent {
         this.loggerBufferSize = this.settingsService.getLoggerBufferSize() || this.loggerBufferSize;
     }
 
+    ngOnDestroy() {
+        this.settingsService.setLoggerBufferSize(this.loggerBufferSize);
+    }
+
     loggerBufferSizeChange(trueVal) {
         console.log("Timeframe changed:", trueVal);
         
@@ -89,7 +93,7 @@ export class LoggerXAxisComponent {
             oneTenth *= 10;
         }
 
-        if (this.loggerBufferSize - oneTenth < 0) return;
+        if (this.loggerBufferSize - oneTenth <= 0) return;
 
         this.loggerBufferSize -= oneTenth;
     }
