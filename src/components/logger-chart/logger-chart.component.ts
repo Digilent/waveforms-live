@@ -58,10 +58,6 @@ export class LoggerChartComponent {
 
         console.log(this.loggerChartOptions, this.loggerChart.flotOptions);
         console.log(this.unitSymbols, chan);
-
-        this.loggerChart.digilentChart == undefined;
-        this.loggerChart.createChart();
-        this.loggerChart.chartLoad.emit();
     }
 
     plotLoaded() {
@@ -248,15 +244,18 @@ export class LoggerChartComponent {
 
     xTickFormatter(val, axis) {
         let timePerDiv = Math.abs(axis.max - axis.min) / 10;
+
         if (parseFloat(val) == 0) {
             return 0 + ' s';
         }
+        
         let i = 0;
         let unit = '';
         while (timePerDiv < 1) {
             i++;
             timePerDiv = timePerDiv * 1000;
         }
+
         val = (parseFloat(val) * Math.pow(1000, i));
         let numDigits = val.toFixed(0).length;
         let fixedDigits;

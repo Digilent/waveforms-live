@@ -299,7 +299,7 @@ export class UpdateFirmwarePage {
                 loading.dismiss();
             })
             .catch((e) => {
-                console.log('Error caught trying to upload the firmware');
+                console.log('Error caught trying to upload the firmware:', e);
                 loading.dismiss();
                 this.updateStatus = 'Error uploading firmware. Please try again.';
             });

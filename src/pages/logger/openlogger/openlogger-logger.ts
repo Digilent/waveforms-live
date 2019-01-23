@@ -21,6 +21,7 @@ import { LoggerPlotService } from '../../../services/logger-plot/logger-plot.ser
 import { TooltipService } from '../../../services/tooltip/tooltip.service';
 import { LoggerChartComponent } from '../../../components/logger-chart/logger-chart.component';
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
+import { DcSupplyComponent } from '../../../components/dc-supply/dc-supply.component';
 
 declare var mathFunctions: any;
 
@@ -32,6 +33,7 @@ export class OpenLoggerLoggerPage {
     @ViewChild('chart') loggerChart: LoggerChartComponent;
     @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
     @ViewChild('fgenComponent') fGenComponent: FgenComponent;
+    @ViewChild('dcComponent') dcComponent: DcSupplyComponent;
     private dismissCallback: () => void;
     private unitFormatPipeInstance: UnitFormatPipe;
     private selectedMathInfo: MathOutput[] = [];
@@ -79,21 +81,62 @@ export class OpenLoggerLoggerPage {
                 }
             }
         };
-
-        this.fGenComponent.initializeValues();
+        
+        this.getAwgStatus().then(() => this.getVoltages());
 
         let toggle = this.fGenComponent.togglePromise.bind(this.fGenComponent);
         this.fGenComponent.togglePower = (event, index) => {
-            if (this.loggerComponent.running) {
-                // this.loggerComponent.messageQueue.push(() => new Promise((resolve) => {
-                //     toggle(event, index).then(resolve).catch(e => console.error(e));
-                // }));
-                
-                this.loggerComponent.messageQueue.push(() => toggle(event, index).catch(e => console.error(e))); // fires after talking to the FGen
+            if (this.loggerComponent.running) {                
+                this.loggerComponent.messageQueue.push(() => toggle(event, index).catch(e => console.error(e)));
             } else {
                 toggle(event, index).catch(e => console.error(e));
             }
         }
+    }
+
+    getAwgStatus(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let chans = [];
+            for (let i = 0; i < this.activeDevice.instruments.awg.numChans; i++) {
+                chans.push(i + 1);
+            }
+            this.activeDevice.instruments.awg.getCurrentState(chans).subscribe(
+                (data) => {
+                    console.log(data);
+                    this.fGenComponent.initializeFromGetStatus(data);
+                    resolve(data);
+                },
+                (err) => {
+                    console.log('error getting awg status');
+                    console.log(err);
+                    reject(err);
+                },
+                () => { }
+            );
+        });
+    }
+
+    getVoltages(): Promise<any> {
+        let chans = [];
+        for (let i = 0; i < this.activeDevice.instruments.dc.numChans; i++) {
+            chans.push(i + 1);
+        }
+        return new Promise((resolve, reject) => {
+            this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
+                (data) => {
+                    this.dcComponent.initializeFromGetStatus(data);
+                    console.log('HUZZAH!');
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
+                },
+                () => {
+                    //console.log('getVoltage Done');
+                }
+            );
+        });
     }
 
     snapViewToFront() {
@@ -112,6 +155,10 @@ export class OpenLoggerLoggerPage {
     }
 
     runLogger() {
+        this.loggerChart.loggerChart.digilentChart == undefined;
+        this.loggerChart.loggerChart.createChart();
+        this.loggerChart.loggerChart.chartLoad.emit();
+
         this.loggerComponent.startLogger();
     }
 
@@ -484,7 +531,6 @@ export class OpenLoggerLoggerPage {
         });
     }
 
-    private fgenTutorialFinished(event) {
-
+    public fgenTutorialFinished(event) {
     }
 }

@@ -123,6 +123,8 @@ export class OpenLoggerLoggerComponent {
                 loading.dismiss();
             });
 
+        this.chanUnits = this.daqChans.map(() => 'V');
+
         this.events.subscribe('profile:save', (params) => {
             this.saveAndSetProfile(params[0]['profileName'], params[0]['saveChart'], params[0]['saveDaq']);
         });
@@ -163,6 +165,7 @@ export class OpenLoggerLoggerComponent {
         }
     }
 
+    chanUnits: string[] = []; // start w/ 'V' for all the channels
     public updateScale(chan: number, expression: string, scaleName: string, units: string) {
         this.selectedScales[chan] = scaleName;
         this.selectedScales.forEach((chanScale, index) => {
@@ -373,6 +376,8 @@ export class OpenLoggerLoggerComponent {
             // remove scaling on this channel and reset units
             this.unitTransformer[channel] = undefined;
             this.events.publish('units:update', { channel: channel });
+
+            this.chanUnits[channel] = 'V';
         } else {
             // apply expression to this channel and update units
             this.scalingService.getScalingOption(event)
@@ -380,6 +385,8 @@ export class OpenLoggerLoggerComponent {
                     // apply scaling to this channel
                     this.unitTransformer[channel] = result.expression;
                     this.events.publish('units:update', { channel: channel, units: result.unitDescriptor });
+
+                    this.chanUnits[channel] = result.unitDescriptor;
                 })
                 .catch(() => {
                     this.toastService.createToast('loggerScaleLoadErr', true, undefined, 5000);
@@ -668,7 +675,7 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    private profileSaveClick(name, event) {
+    public profileSaveClick(name, event) {
         // if new profile open popover, otherwise just save
         if (name === 'New Profile') {
             this.openProfileSettings('', event);
@@ -1203,9 +1210,9 @@ export class OpenLoggerLoggerComponent {
                         this.getLiveState();
                     } else {
                         if (this.activeDevice.transport.getType() === 'local') {
-                            setTimeout(() => { // note: calling readLiveData without some delay while simulating freezes the UI, so we request the browser keep time for us.
+                            requestAnimationFrame(() => { // note: calling readLiveData without some delay while simulating freezes the UI, so we request the browser keep time for us.
                                 this.readLiveData();
-                            }, 300);
+                            });
                         } else {
                             this.readLiveData();
                         }
