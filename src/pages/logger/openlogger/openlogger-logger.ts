@@ -22,6 +22,7 @@ import { TooltipService } from '../../../services/tooltip/tooltip.service';
 import { LoggerChartComponent } from '../../../components/logger-chart/logger-chart.component';
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
 import { DcSupplyComponent } from '../../../components/dc-supply/dc-supply.component';
+import { LoggerTimelineComponent } from '../../../components/logger-timeline/logger-timeline.component';
 
 declare var mathFunctions: any;
 
@@ -31,6 +32,7 @@ declare var mathFunctions: any;
 export class OpenLoggerLoggerPage {
     @ViewChild('loggerComponent') loggerComponent: OpenLoggerLoggerComponent;
     @ViewChild('chart') loggerChart: LoggerChartComponent;
+    @ViewChild('timeline') timeline: LoggerTimelineComponent;
     @ViewChild('gpioComponent') gpioComponent: DigitalIoComponent;
     @ViewChild('fgenComponent') fGenComponent: FgenComponent;
     @ViewChild('dcComponent') dcComponent: DcSupplyComponent;
@@ -158,6 +160,7 @@ export class OpenLoggerLoggerPage {
         this.loggerChart.loggerChart.digilentChart == undefined;
         this.loggerChart.loggerChart.createChart();
         this.loggerChart.loggerChart.chartLoad.emit();
+        this.timeline.loggerTimeline.chartLoad.emit();
 
         this.loggerComponent.startLogger();
     }
