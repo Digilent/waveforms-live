@@ -509,6 +509,9 @@ var waveformsLiveDictionary = (function() {
         },
         logAveraging: {
             english: 'Set Log Averaging'
+        },
+        logAveragingToggle: {
+            english: 'Toggle Channel Averaging Controls'
         }
 
     };

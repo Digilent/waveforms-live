@@ -128,4 +128,11 @@ openlogger-logger-component {
         width: 10px;
         margin-right: 10px;
     }
+    .logger-component-container .averaging-toggle {
+        padding-left: 5px;
+    }
+    .logger-component-container .toggle {
+        zoom: 0.8;
+        cursor: pointer;
+    }
 }
