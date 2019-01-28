@@ -44,7 +44,7 @@ export class OpenLoggerLoggerComponent {
     private daqParams: DaqLoggerParams = {
         maxSampleCount: -1,
         startDelay: 0,
-        sampleFreq: 1000,
+        sampleFreq: 500000,
         storageLocation: 'ram',
         uri: ''
     };
