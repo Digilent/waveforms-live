@@ -32,6 +32,7 @@ export class SettingsService {
     public isMobile: boolean = false;
 
     readonly profileToken: string = 'profile.';
+    private selectedLogProfiles: any = {};
 
     public knownFirmwareUrls: { openscopeMz: firmwareUrls, openloggerMz: firmwareUrls } = {
         openscopeMz: {
@@ -96,6 +97,12 @@ export class SettingsService {
         if (this.platform.is('ios') || this.platform.is('android') || this.platform.is('mobileweb')) {
             this.isMobile = true;
         }
+
+        this.storageService.getData('deviceProfiles').then((data) => {
+            if (data != undefined) {
+                this.selectedLogProfiles = JSON.parse(data);
+            }
+        });
     }
 
     setRouteToStore(route: boolean) {
@@ -235,5 +242,18 @@ export class SettingsService {
         this.storageService.saveData('loggerBufferSize', JSON.stringify(this.loggerBufferSize)).catch((e) => {
             console.warn(e);
         });
+    }
+
+    getLoggerProfile(macAddress: string) {
+        return this.selectedLogProfiles[macAddress];
+    }
+
+    saveLoggerProfile(macAddress: string, profileName: string) {
+        this.selectedLogProfiles[macAddress] = profileName;
+
+        this.storageService.saveData('selectedLogProfiles', this.selectedLogProfiles)
+            .catch((e) => {
+                console.warn(e);
+            });
     }
 }
