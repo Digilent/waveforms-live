@@ -34,7 +34,6 @@ export class SettingsPage {
     private currentTimeout: number;
     public timeout: number;
     private ignoreFocusOut: boolean = false;
-    public loggerTimeframe: number;
 
     constructor(_storageService: StorageService, _popCtrl: PopoverController, _settingsService: SettingsService, public navCtrl: NavController) {
         this.storageService = _storageService;
@@ -48,7 +47,6 @@ export class SettingsPage {
         }
         this.currentTimeout = this.settingsService.deviceManagerService.getHttpTimeout();
         this.timeout = this.currentTimeout / 1000;
-        this.loggerTimeframe = this.settingsService.getLoggerBufferSize();
     }
 
     setTimeout() {
@@ -167,30 +165,5 @@ export class SettingsPage {
         else {
             this.keithCount = 0;
         }
-    }
-
-    saveTimeFrame(event) {
-        let value: string = event.target.value;
-        
-        const prefixes = new Map([
-            ['G', 1e9], ['M', 1e6], ['k', 1e3], ['K', 1e3], ['m', 1e-3], ['u', 1e-6], ['n', 1e-9]
-        ]);
-        
-        let exp = /^\d+\.?\d*\s*\w*$/g; // ex: 100.0 usec
-        if (!exp.test(value)) {
-            console.log("Malformed:", value);
-            return;
-        }
-        
-        let [num, unit] = value.match(/^\d+\.?(?=\d+)|\w?sec$/g);
-        let numericValue = parseFloat(num);
-        let prefix = (unit !== undefined) ? unit.split("sec")[0] : "";
-        let multiplier = prefixes.get(prefix) || 1;
-
-        let parsed = numericValue * multiplier;
-
-        this.settingsService.setLoggerBufferSize(parsed);
-
-        this.loggerTimeframe = parsed;
     }
 }

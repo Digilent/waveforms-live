@@ -54,8 +54,7 @@ export class OpenLoggerLoggerComponent {
     };
     public daqChans: DaqChannelParams[] = [];
     public loggerState: string = 'idle';
-
-    public average: number = 1;
+    public averagingEnabled: boolean = false;
     public maxAverage: number = 256;
     
     public startIndex: number = 0;
@@ -106,7 +105,7 @@ export class OpenLoggerLoggerComponent {
         private scalingService: ScalingService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
-        console.log(this.activeDevice.instruments.logger);
+        console.log(this.activeDevice.instruments.logger); 
         let loading = this.loadingService.displayLoading('Loading device info...');
         this.init();
         this.loadDeviceInfo()
@@ -213,6 +212,7 @@ export class OpenLoggerLoggerComponent {
     }
 
     ngOnDestroy() {
+        this.clearChart();
         this.chartPanSubscriptionRef.unsubscribe();
         this.offsetChangeSubscriptionRef.unsubscribe();
         this.events.unsubscribe('profile:save');
@@ -865,6 +865,7 @@ export class OpenLoggerLoggerComponent {
     private parseAndApplyProfileJson(loadedObj) {
         if (loadedObj.daq !== undefined) {
             this.selectedChannels = this.selectedChannels.map(() => false);
+            this.averagingEnabled = false;
         }
         for (let instrument in loadedObj) {
             if (instrument === 'daq') {
@@ -884,6 +885,10 @@ export class OpenLoggerLoggerComponent {
                     let chanNum = parseInt(Object.keys(channel)[0]);
                     this.selectedChannels[chanNum - 1] = true;
                     this.daqChans[chanNum - 1].average = channel[chanNum].average;
+
+                    if (channel[chanNum].average > 1) {
+                        this.averagingEnabled = true;
+                    }
                 });
 
                 // set mode dropdown
@@ -1333,6 +1338,7 @@ export class OpenLoggerLoggerComponent {
                 }
 
                 this.selectedChannels = this.selectedChannels.map(() => false);
+                this.averagingEnabled = false;
                 if (stateData.channels != undefined && stateData.channels.length > 0) {
                     stateData.channels.forEach((channel) => {
                         let key = Object.keys(channel)[0];
@@ -1341,7 +1347,10 @@ export class OpenLoggerLoggerComponent {
                         // select channel
                         this.selectedChannels[index] = true;
 
-                        this.copyChannelState(channel[key], index);
+                        this.daqChans[index].average = channel[key].average;
+                        if (channel[key].average > 1) {
+                            this.averagingEnabled = true;
+                        }
                     });
                 } else {
                     // select channel 1 by default
@@ -1367,12 +1376,6 @@ export class OpenLoggerLoggerComponent {
         this.setViewToEdge();
     }
 
-    private copyChannelState(respObj, channelInternalIndex: number) {
-        let activeChan = this.daqChans[channelInternalIndex];
-        activeChan.average = respObj.average;
-        this.average = respObj.average;
-    }
-
     setParameters(instrument: 'analog' | 'digital', chans: number[]): Promise<any> {
         return new Promise((resolve, reject) => {
             let observable;
@@ -1382,6 +1385,7 @@ export class OpenLoggerLoggerComponent {
                     return;
                 }
 
+                let averages = chans.map((chan) => this.daqChans[chan - 1].average);
                 let overflows = Array.apply(null, Array(chans.length)).map(() => 'circular');
 
                 observable = this.activeDevice.instruments.logger.daq.setParameters(
@@ -1391,7 +1395,7 @@ export class OpenLoggerLoggerComponent {
                     this.daqParams.startDelay,
                     this.daqParams.storageLocation,
                     this.daqParams.uri,
-                    this.average,
+                    averages,
                     overflows
                 );
             }
@@ -1619,24 +1623,24 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    decrementAverage() {
-        if (this.average > 1) {
-            this.average /= 2;
+    decrementAverage(chanIndex) {
+        if (this.daqChans[chanIndex].average > 1) {
+            this.daqChans[chanIndex].average /= 2;
         }
-        this.setChannelAverages();
     }
 
-    incrementAverage() {
-        if (this.average < this.maxAverage) {
-            this.average *= 2;
+    incrementAverage(chanIndex) {
+        if (this.daqChans[chanIndex].average < this.maxAverage) {
+            this.daqChans[chanIndex].average *= 2;
         }
-        this.setChannelAverages();
     }
 
-    setChannelAverages() {
-        this.daqChans.forEach((channel, index) => {
-            channel.average = this.average;
-        });
+    toggleAveraging(event) {
+        if (!event.checked) {
+            this.daqChans.forEach((chan) => {
+                chan.average = 1;
+            });
+        }
     }
 }
 

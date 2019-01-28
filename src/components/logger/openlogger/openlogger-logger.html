@@ -156,26 +156,10 @@
 
             <ion-row class="controls-container pad-bottom">
                 <ion-col center class="vpd-label-col">
-                    Average
+                    Averaging
                 </ion-col>
-                <ion-col center class="xaxis-left">
-                    <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementAverage()" [disabled]="average === 1 || running">
-                            <img class="custom-image-button" src="assets/img/remove.svg">
-                        </button>
-                    </div>
-                </ion-col>
-                <ion-col class="xaxis-center" center text-center>
-                    <div style="display:inline-block;" [tooltip]="tooltipService.getTooltip('logAveraging').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
-                        <input formatInput readonly="readonly" class="custom-input" step="any" [ngModel]="average | averageFormat: 'Sample'" [disabled]="running" />
-                    </div>
-                </ion-col>
-                <ion-col center class="xaxis-right">
-                    <div style="display:inline-block">
-                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementAverage()" [disabled]="average === maxAverage || running">
-                            <img class="custom-image-button" src="assets/img/add.svg">
-                        </button>
-                    </div>
+                <ion-col class="vpd-input-col no-button-col averaging-toggle" center padding-left [tooltip]="tooltipService.getTooltip('logAveragingToggle').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                    <ion-toggle class="toggle" color="primary" [(ngModel)]="averagingEnabled" (ionChange)="toggleAveraging($event)"></ion-toggle>
                 </ion-col>
             </ion-row>
 
@@ -220,6 +204,31 @@
         </div>
 
         <div class="button-info-container pad-bottom">
+            <ion-row class="controls-container" *ngIf="averagingEnabled">
+                <ion-col center class="vpd-label-col">
+                    Average
+                </ion-col>
+                <ion-col center class="xaxis-left">
+                    <div style="display:inline-block">
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementAverage(i)" [disabled]="series.average === 1 || running">
+                            <img class="custom-image-button" src="assets/img/remove.svg">
+                        </button>
+                    </div>
+                </ion-col>
+                <ion-col class="xaxis-center" center text-center>
+                    <div style="display:inline-block;" [tooltip]="tooltipService.getTooltip('logAveraging').message" [tooltipAnimation]="true" tooltipPlacement="bottom">
+                        <input formatInput readonly="readonly" class="custom-input" step="any" [ngModel]="series.average | averageFormat: 'Sample'" [disabled]="running" />
+                    </div>
+                </ion-col>
+                <ion-col center class="xaxis-right">
+                    <div style="display:inline-block">
+                        <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementAverage(i)" [disabled]="series.average === maxAverage || running">
+                            <img class="custom-image-button" src="assets/img/add.svg">
+                        </button>
+                    </div>
+                </ion-col>
+            </ion-row>
+                    
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
                     {{ (chanUnits[i] === 'V') ? "Volts/" : "Units/" }}

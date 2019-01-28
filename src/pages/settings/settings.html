@@ -78,12 +78,6 @@
                                 <button ion-button class="text-button-side item-button disable-hover" [disabled]="timeout * 1000 === currentTimeout" (click)="setTimeout()">Set</button>
                             </div>
                         </ion-item>
-                        <ion-item class="configure-item only-button-item">
-                            <ion-label>Time Frame</ion-label>
-                            <div item-right>
-                                <input class="custom-input timeframe-input" style="width: 70%; float: right" step="any" [ngModel]="loggerTimeframe | unitFormat: 'sec'" (focusout)="saveTimeFrame($event)"/>
-                            </div>
-                        </ion-item>
                         <ion-item class="configure-item">
                             <ion-label>Use Dev Firmware Builds</ion-label>
                             <ion-toggle [(ngModel)]="settingsService.useDevBuilds" (ngModelChange)="saveDevBuilds($event)"></ion-toggle>
