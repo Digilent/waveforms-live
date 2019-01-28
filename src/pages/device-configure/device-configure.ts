@@ -488,8 +488,6 @@ export class DeviceConfigurePage {
                                 
                                 this.deviceManagerPageRef.getFirmwareVersionsForDevices();
 
-                                this.checkIfOpenLogger();
-
                                 this.getNicStatus('wlan0').then(() => {
                                     return this.deviceManagerPageRef.verifyFirmware(this.deviceArrayIndex == undefined ? 0 : this.deviceArrayIndex);
                                 })
@@ -521,6 +519,8 @@ export class DeviceConfigurePage {
                                 }).catch((e) => {
                                     this.getCurrentCalibration().catch((e) => { });
                                 });
+
+                            this.checkIfOpenLogger(); 
                         },
                         (err) => {
                             console.log(err);

@@ -157,10 +157,16 @@ export class OpenLoggerLoggerPage {
     }
 
     runLogger() {
+        let { tpdIndex, vpdIndices } = this.loggerPlotService;
+
         this.loggerChart.loggerChart.digilentChart == undefined;
         this.loggerChart.loggerChart.createChart();
         this.loggerChart.loggerChart.chartLoad.emit();
         this.timeline.loggerTimeline.chartLoad.emit();
+
+        // NOTE(andrew): remove this once a better solution to updating chart axis is found
+        this.loggerPlotService.tpdIndex = tpdIndex;
+        this.loggerPlotService.vpdIndices = vpdIndices;
 
         this.loggerComponent.startLogger();
     }
