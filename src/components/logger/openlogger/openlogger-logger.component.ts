@@ -212,6 +212,7 @@ export class OpenLoggerLoggerComponent {
     }
 
     ngOnDestroy() {
+        this.clearChart();
         this.chartPanSubscriptionRef.unsubscribe();
         this.offsetChangeSubscriptionRef.unsubscribe();
         this.events.unsubscribe('profile:save');
