@@ -16,6 +16,7 @@ import { ExportService } from '../../../services/export/export.service';
 import { SettingsService } from '../../../services/settings/settings.service';
 import { TooltipService } from '../../../services/tooltip/tooltip.service';
 import { ScalingService } from '../../../services/scaling/scaling.service';
+import { StorageService } from '../../../services/storage/storage.service';
 
 //Interfaces
 import { PlotDataContainer } from '../../../services/logger-plot/logger-plot.service';
@@ -102,7 +103,8 @@ export class OpenLoggerLoggerComponent {
         public tooltipService: TooltipService,
         private popoverCtrl: PopoverController,
         public events: Events,
-        private scalingService: ScalingService
+        private scalingService: ScalingService,
+        private storageService: StorageService
     ) {
         this.activeDevice = this.devicemanagerService.devices[this.devicemanagerService.activeDeviceIndex];
         console.log(this.activeDevice.instruments.logger); 
@@ -115,6 +117,7 @@ export class OpenLoggerLoggerComponent {
                 if (this.running) {
                     this.continueStream();
                 }
+                this.getProfileFromStorage();
             })
             .catch((e) => {
                 console.log(e);
@@ -212,6 +215,11 @@ export class OpenLoggerLoggerComponent {
     }
 
     ngOnDestroy() {
+        this.storageService.saveData('selectedLogProfile', this.selectedLogProfile)
+            .catch((e) => {
+                console.warn(e);
+            });
+
         this.clearChart();
         this.chartPanSubscriptionRef.unsubscribe();
         this.offsetChangeSubscriptionRef.unsubscribe();
@@ -786,6 +794,20 @@ export class OpenLoggerLoggerComponent {
                     reject(e);
                 });
         });
+    }
+
+    private getProfileFromStorage() {
+        this.storageService.getData('selectedLogProfile')
+            .then((profileName) => {
+                if (profileName !== this.loggingProfiles[0] && this.profileObjectMap[profileName] !== undefined) {
+                    this.selectedLogProfile = profileName;
+                    this.profileChild._applyActiveSelection(profileName);
+                    this.parseAndApplyProfileJson(JSON.parse(JSON.stringify(this.profileObjectMap[profileName])));
+                }
+            })
+            .catch((e) => {
+                console.warn(e);
+            });
     }
 
     private readProfile(profileName: string): Promise<any> {
