@@ -288,15 +288,6 @@ export class OpenLoggerLoggerComponent {
 
     private loadDeviceInfo(): Promise<any> {
         return new Promise((resolve, reject) => {
-            let daqChanArray = [];
-            for (let i = 0; i < this.daqChans.length; i++) {
-                daqChanArray.push(i + 1);
-            }
-            if (daqChanArray.length < 1) {
-                resolve('done');
-                return;
-            }
-
             this.getStorageLocations()
                 .then((data) => {
                     console.log(data);
@@ -338,7 +329,7 @@ export class OpenLoggerLoggerComponent {
                 })
                 .then((data) => {
                     console.log(data);
-                    return this.getCurrentState(daqChanArray);
+                    return this.getCurrentState();
                 })
                 .catch((e) => {
                     console.log(e);
@@ -346,7 +337,7 @@ export class OpenLoggerLoggerComponent {
                         this.logToLocations = ['chart'];
                         this.logToSelect('chart');
                     }
-                    return this.getCurrentState(daqChanArray);
+                    return this.getCurrentState();
                 })
                 .then((data) => {
                     console.log(data);
@@ -1083,7 +1074,7 @@ export class OpenLoggerLoggerComponent {
 
         let loading = this.loadingService.displayLoading('Starting data logging...');
 
-        this.getCurrentState(this.daqChanNumbers, true)
+        this.getCurrentState(true)
             .then((data) => {
                 console.log(data);
                 let returnData: { reason: number } = this.existingFileFoundAndValidate(loading);
@@ -1160,7 +1151,7 @@ export class OpenLoggerLoggerComponent {
     }
 
     private getLiveState() {
-        this.getCurrentState(this.daqChansToRead.slice())
+        this.getCurrentState()
             .then((data) => {
                 this.parseGetLiveStatePacket('analog', data);
                 if (this.running) {
@@ -1265,7 +1256,7 @@ export class OpenLoggerLoggerComponent {
                 else {
                     this.toastService.createToast('loggerUnknownRunError', true, undefined, 8000);
                 }
-                this.getCurrentState(this.daqChanNumbers)
+                this.getCurrentState()
                     .then((data) => {
                         console.log(data);
                         this.stopLogger();
@@ -1612,14 +1603,14 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    getCurrentState(chans: number[], onlyCopyState: boolean = false): Promise<any> {
+    getCurrentState(onlyCopyState: boolean = false): Promise<any> {
         return new Promise((resolve, reject) => {
-            if (this.daqChans.length < 1 || chans.length < 1) {
+            if (this.daqChans.length < 1) {
                 resolve();
                 return;
             }
 
-            this.activeDevice.instruments.logger.daq.getCurrentState('daq', chans).subscribe(
+            this.activeDevice.instruments.logger.daq.getCurrentState().subscribe(
                 (data) => {
                     if (data.log != undefined && data.log.daq != undefined) {
                         this.applyCurrentStateResponse(data, onlyCopyState);
