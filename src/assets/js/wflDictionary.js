@@ -375,6 +375,9 @@ var waveformsLiveDictionary = (function() {
         chartResetDevice: {
             english: 'Reset Device And ReInitialize'
         },
+        chartResetInstruments: {
+            english: 'Reset Instruments'
+        },
         chartSetViewToFront: {
             english: 'Set View to Front'
         },

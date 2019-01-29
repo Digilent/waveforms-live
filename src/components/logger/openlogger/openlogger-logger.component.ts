@@ -1301,9 +1301,7 @@ export class OpenLoggerLoggerComponent {
                 let stateData = data.log[instrument];
                 if (stateData.statusCode == undefined) { return; }
                 this.loggerState = stateData.state.trim();
-                if (stateData.state === 'running') {
-                    this.running = true;
-                }
+                this.running = stateData.state === 'running';
                 if (onlyCopyState) {
                     return;
                 }

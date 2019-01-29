@@ -9,6 +9,9 @@ import { MathPopoverComponent, MathPassData, MathOutput } from '../../../compone
 import { CursorPopoverComponent, CursorPassData, CursorChannel, CursorSelection } from '../../../components/cursor-popover/cursor-popover.component';
 import { DigitalIoComponent } from '../../../components/digital-io/digital-io.component';
 import { FgenComponent } from '../../../components/function-gen/function-gen.component';
+import { LoggerChartComponent } from '../../../components/logger-chart/logger-chart.component';
+import { DcSupplyComponent } from '../../../components/dc-supply/dc-supply.component';
+import { LoggerTimelineComponent } from '../../../components/logger-timeline/logger-timeline.component';
 
 //Pages
 import { FileBrowserPage } from '../../file-browser/file-browser';
@@ -19,10 +22,9 @@ import { UnitFormatPipe } from '../../../pipes/unit-format.pipe';
 //Services
 import { LoggerPlotService } from '../../../services/logger-plot/logger-plot.service';
 import { TooltipService } from '../../../services/tooltip/tooltip.service';
-import { LoggerChartComponent } from '../../../components/logger-chart/logger-chart.component';
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
-import { DcSupplyComponent } from '../../../components/dc-supply/dc-supply.component';
-import { LoggerTimelineComponent } from '../../../components/logger-timeline/logger-timeline.component';
+import { LoadingService } from '../../../services/loading/loading.service';
+import { ToastService } from '../../../services/toast/toast.service';
 
 declare var mathFunctions: any;
 
@@ -52,7 +54,10 @@ export class OpenLoggerLoggerPage {
         private popoverCtrl: PopoverController,
         public tooltipService: TooltipService,
         private events: Events,
-        private deviceManagerService: DeviceManagerService
+        private deviceManagerService: DeviceManagerService,
+        private loadingService: LoadingService,
+        private toastService: ToastService
+
     ) {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
         this.isRoot = this.navParams.get('isRoot') || this.isRoot;
@@ -68,7 +73,7 @@ export class OpenLoggerLoggerPage {
         //         console.log(err);
         //     });
     }
-    
+
     ngOnInit() {
         this.cursorInfo = {
             currentType: 'disabled',
@@ -83,12 +88,12 @@ export class OpenLoggerLoggerPage {
                 }
             }
         };
-        
+
         this.getAwgStatus().then(() => this.getVoltages());
 
         let toggle = this.fGenComponent.togglePromise.bind(this.fGenComponent);
         this.fGenComponent.togglePower = (event, index) => {
-            if (this.loggerComponent.running) {                
+            if (this.loggerComponent.running) {
                 this.loggerComponent.messageQueue.push(() => toggle(event, index).catch(e => console.error(e)));
             } else {
                 toggle(event, index).catch(e => console.error(e));
@@ -127,7 +132,6 @@ export class OpenLoggerLoggerPage {
             this.activeDevice.instruments.dc.getVoltages(chans).subscribe(
                 (data) => {
                     this.dcComponent.initializeFromGetStatus(data);
-                    console.log('HUZZAH!');
                     resolve(data);
                 },
                 (err) => {
@@ -534,6 +538,65 @@ export class OpenLoggerLoggerPage {
                     else {
                         reject(err);
                     }
+                },
+                () => { }
+            );
+        });
+    }
+
+    resetInstruments() {
+        let loading = this.loadingService.displayLoading('Resetting Instruments...');
+
+        this.activeDevice.resetInstruments().subscribe(
+            (data) => {
+                setTimeout(() => {
+                    this.loggerComponent.getCurrentState(true)
+                        .then((data) => {
+                            return this.getAwgStatus();
+                        })
+                        .then((data) => {
+                            return this.getVoltages();
+                        })
+                        // TODO: uncomment when gpio is implemented
+                        // .then((data) => {
+                        //     this.gpioComponent.gpioDirections.forEach((val, index, array) => {
+                        //         this.gpioComponent.gpioDirections[index] = false;
+                        //         this.gpioComponent.gpioVals[index] = false;
+                        //     });
+                        //     return this.setGpioDirection('input');
+                        // })
+                        .then((data) => {
+                            loading.dismiss();
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            loading.dismiss();
+                        });
+                }, data.device[0].wait);
+            },
+            (err) => {
+                loading.dismiss();
+                this.toastService.createToast('deviceResetError');
+            },
+            () => { }
+        );
+    }
+
+    setGpioDirection(direction: 'input' | 'output'): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let chanArray = [];
+            let valArray = [];
+            for (let i = 0; i < this.activeDevice.instruments.gpio.numChans; i++) {
+                chanArray.push(i + 1);
+                valArray.push(direction);
+            }
+            this.activeDevice.instruments.gpio.setParameters(chanArray, valArray).subscribe(
+                (data) => {
+                    resolve(data);
+                },
+                (err) => {
+                    console.log(err);
+                    reject(err);
                 },
                 () => { }
             );

@@ -46,6 +46,9 @@
                 <button ion-button class="chart-button disable-hover" (tap)="openDevicePinout($event)"  [tooltip]="tooltipService.getTooltip('chartShowDevicePinout').message" [tooltipAnimation]="true" tooltipPlacement="left">
                     PIN
                 </button>
+                <button ion-button class="chart-button disable-hover" (tap)="resetInstruments()" [tooltip]="tooltipService.getTooltip('chartResetInstruments').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                    <img class="button-size-svg" src="assets/img/restore.svg" />
+                </button>
             </div>
             <div class="chart-and-bottom-container">
                 <div class="logger-page-chart-container">
