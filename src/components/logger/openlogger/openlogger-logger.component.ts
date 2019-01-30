@@ -559,7 +559,8 @@ export class OpenLoggerLoggerComponent {
             let maxAggregate = this.getMaxSampleFreq();
             let numChans = this.selectedChannels.lastIndexOf(true) + 1;
             let minFreq = chanObj.sampleFreqMin * chanObj.sampleFreqUnits;
-            let maxFreq = Math.floor(maxAggregate / numChans) * chanObj.sampleFreqUnits;
+            let maxFreq = this.selectedChannels.filter((e) => e).length > 1 ? Math.floor(maxAggregate / numChans) : maxAggregate;
+            maxFreq = maxFreq * chanObj.sampleFreqUnits;
             if (newVal < minFreq) {
                 newVal = minFreq;
             }
