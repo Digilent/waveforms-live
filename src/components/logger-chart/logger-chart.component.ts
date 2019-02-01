@@ -66,7 +66,7 @@ export class LoggerChartComponent {
 
         this.loggerChart.digilentChart.setSecsPerDivArray(this.generateNiceNumArray(0.000001, 100000000));
         this.loggerChart.digilentChart.setVoltsPerDivArray(this.generateNiceNumArray(0.001, 5));
-        this.loggerChart.digilentChart.setActiveXIndex(15);
+        this.loggerChart.digilentChart.setActiveXIndex(7);
 
         let analongChans =  this.activeDevice.instruments.logger[this.instrument].numChans;
         let indices = Array.from({length: analongChans}, () => 8);
