@@ -782,10 +782,12 @@ export class OpenLoggerLoggerComponent {
     private getProfileFromStorage() {
         let profileName = this.settingsService.getLoggerProfile(this.activeDevice.macAddress);
         if (profileName !== undefined && profileName !== this.loggingProfiles[0] && this.profileObjectMap[profileName] !== undefined) {
-                    this.selectedLogProfile = profileName;
-                    this.profileChild._applyActiveSelection(profileName);
-                    this.parseAndApplyProfileJson(JSON.parse(JSON.stringify(this.profileObjectMap[profileName])));
-                }
+            this.selectedLogProfile = profileName;
+            this.parseAndApplyProfileJson(JSON.parse(JSON.stringify(this.profileObjectMap[profileName])));
+            setTimeout(() => {
+                this.profileChild._applyActiveSelection(profileName);
+            }, 20);
+        }
     }
 
     private readProfile(profileName: string): Promise<any> {

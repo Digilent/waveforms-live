@@ -98,7 +98,7 @@ export class SettingsService {
             this.isMobile = true;
         }
 
-        this.storageService.getData('deviceProfiles').then((data) => {
+        this.storageService.getData('selectedLogProfiles').then((data) => {
             if (data != undefined) {
                 this.selectedLogProfiles = JSON.parse(data);
             }
@@ -251,7 +251,7 @@ export class SettingsService {
     saveLoggerProfile(macAddress: string, profileName: string) {
         this.selectedLogProfiles[macAddress] = profileName;
 
-        this.storageService.saveData('selectedLogProfiles', this.selectedLogProfiles)
+        this.storageService.saveData('selectedLogProfiles', JSON.stringify(this.selectedLogProfiles))
             .catch((e) => {
                 console.warn(e);
             });
