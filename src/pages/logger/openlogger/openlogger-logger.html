@@ -1,4 +1,4 @@
-<ion-content class="logger-page-container">
+<ion-content class="openlogger-page-container">
     <div>
         <ion-row class="logger-header">
             <ion-col class="back-button-col timeline-back-button" center text-center>
@@ -122,13 +122,21 @@
         </ion-col>
         
         <ion-col class="controls-col">
-            <openlogger-logger-component #loggerComponent [colorArray]="loggerChart.colorArray"></openlogger-logger-component>
+            <ion-row class="controls-row">
+                <openlogger-logger-component #loggerComponent [colorArray]="loggerChart.colorArray"></openlogger-logger-component>
 
-            <fgen #fgenComponent (fgenTutorialFinish)="fgenTutorialFinished($event)"></fgen>
+                <fgen #fgenComponent (fgenTutorialFinish)="fgenTutorialFinished($event)"></fgen>
 
-            <!-- <digital-io #gpioComponent [chart]="chart1"></digital-io> -->
-            
-            <dc-supply #dcComponent></dc-supply>
+                <!-- <digital-io #gpioComponent [chart]="chart1"></digital-io> -->
+                
+                <dc-supply #dcComponent></dc-supply>
+            </ion-row>
+
+            <ion-row>
+                <ion-col center text-center no-padding>
+                    <button ion-button class="text-button-side disable-hover" (tap)="loggerComponent.restoreDefaults()" [disabled]="loggerComponent.running">Restore Defaults</button>
+                </ion-col>
+            </ion-row>
         </ion-col>
     </ion-row>
 </ion-content>

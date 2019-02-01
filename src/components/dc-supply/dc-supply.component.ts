@@ -1,4 +1,5 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Events } from 'ionic-angular';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -31,7 +32,12 @@ export class DcSupplyComponent {
     public showDcSettings: boolean = true;
     public toastService: ToastService;
 
-    constructor(_deviceManagerService: DeviceManagerService, _toastService: ToastService, public tooltipService: TooltipService) {
+    constructor(
+        _deviceManagerService: DeviceManagerService,
+        _toastService: ToastService,
+        public tooltipService: TooltipService,
+        public events: Events
+    ) {
         this.toastService = _toastService;
         this.voltageSupplies = [0, 1, 2];
         this.contentHidden = true;
@@ -47,6 +53,12 @@ export class DcSupplyComponent {
         if (this.activeDevice.instruments.dc.chans[0].currentIncrement !== 0) {
             this.showCurrent = true;
         }
+
+        this.events.subscribe('restore-defaults', () => {
+            for (let i = 0; i < this.activeDevice.instruments.dc.chans.length; i++) {
+                this.formatInputAndUpdate(0.000, i);
+            }
+        });
     }
 
     formatInputAndUpdate(trueValue: number, channel: number) {
@@ -81,6 +93,10 @@ export class DcSupplyComponent {
             }
             this.voltageSupplies = channelNumArray;
         }
+    }
+
+    ngOnDestroy() {
+        this.events.unsubscribe('restore-defaults');
     }
 
     formatExtremes(channel: number) {

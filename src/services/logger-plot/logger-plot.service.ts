@@ -16,6 +16,8 @@ export class LoggerPlotService {
     public tpdIndex: number;
     public vpdArray: number[];
     public vpdIndices: number[];
+    public defaultTpdIndex: number;
+    public defaultVpdIndices: number[];
 
     public xAxis: AxisInfo = {
         position: 0.5,
@@ -67,6 +69,8 @@ export class LoggerPlotService {
         this.tpdIndex = this.chart.getActiveXIndex();
         this.vpdArray = this.chart.getVoltsPerDivArray();
         this.vpdIndices = this.chart.getActiveYIndices();
+        this.defaultVpdIndices = this.vpdIndices.slice();
+        this.defaultTpdIndex = this.tpdIndex;
 
         this.setValPerDivAndUpdate('x', 1, this.tpdArray[this.tpdIndex], false);
 

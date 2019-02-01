@@ -1,4 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
+import { Events } from 'ionic-angular';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -48,7 +49,8 @@ export class FgenComponent {
         _toastService: ToastService,
         _settingsService: SettingsService,
         _tooltipService: TooltipService,
-        public dataTransferService: DeviceDataTransferService
+        public dataTransferService: DeviceDataTransferService,
+        public events: Events
     ) {
         this.settingsService = _settingsService;
         this.tooltipService = _tooltipService;
@@ -67,6 +69,20 @@ export class FgenComponent {
         this.showDutyCycle = false;
         this.dutyCycle = 50;
         this.dataTransferService.awgPower = false;
+
+        this.events.subscribe('restore-defaults', () => {
+            let chans = [];
+            for (let i = 0; i < this.activeDevice.instruments.awg.chans.length; i++) {
+                chans.push(i + 1);
+            }
+            this.stop(chans);
+
+            this.initializeValues();
+        });
+    }
+
+    ngOnDestroy() {
+        this.events.unsubscribe('restore-defaults');
     }
 
     initializeValues() {

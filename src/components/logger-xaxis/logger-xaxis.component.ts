@@ -17,7 +17,8 @@ export class LoggerXAxisComponent {
     public timePerDiv: string;
     public base: string;
     public showTimeSettings: boolean = true;
-    public loggerBufferSize: number = 10;
+    public defaultBufferSize: number = 10;
+    public loggerBufferSize: number = this.defaultBufferSize;
 
     constructor(
         public tooltipService: TooltipService,

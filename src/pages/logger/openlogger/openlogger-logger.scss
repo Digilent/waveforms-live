@@ -1,11 +1,11 @@
-.logger-page-container 
+.openlogger-page-container 
 {
     width: 100%;
     height: 100%;
     background-color: #535353;
 }
 
-.logger-page-container .controls-col
+.openlogger-page-container .controls-col
 {
     max-width: 240px;
     min-width: 232px;
@@ -16,7 +16,7 @@
     border-left: solid black 1px;
 }
 
-.logger-page-container .chart-container-col
+.openlogger-page-container .chart-container-col
 {
     height: 100%;
     background-color: black;
@@ -25,72 +25,79 @@
     position: relative;
 }
 
-.logger-page-container .page-row
+.openlogger-page-container .page-row
 {
     height: calc(100% - 64px);
 }
 
-.logger-page-container .logger-timeline-container
+.openlogger-page-container .logger-timeline-container
 {
     height: 52px;
     background-color: black;
     padding: 0;
 }
 
-.logger-page-container .timeline-back-button
+.openlogger-page-container .timeline-back-button
 {
     min-width: 64px;
 }
 
-.logger-page-container .logger-header
+.openlogger-page-container .logger-header
 {
     height: 64px;
 }
 
-.logger-page-container .timeline-row-button-container
+.openlogger-page-container .timeline-row-button-container
 {
     min-width: 239px;
     max-width: 239px;
 }
 
-.logger-page-container .chart-button-container
+.openlogger-page-container .chart-button-container
 {
     right: 1px;
 }
 
-.logger-page-container .overal-run-status-container
+.openlogger-page-container .overal-run-status-container
 {
     color: #CCCCCC;
 }
 
-.logger-page-container .chart-and-bottom-container
+.openlogger-page-container .chart-and-bottom-container
 {
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.logger-page-container .logger-page-chart-container
+.openlogger-page-container .logger-page-chart-container
 {
     flex: 1 1 99%;
     position: relative;
 }
 
-.logger-page-container .logger-chart-bottom-container
+.openlogger-page-container .logger-chart-bottom-container
 {
     flex: 1 0 32px;
 }
 
-.logger-page-container .chart-info 
+.openlogger-page-container .chart-info 
 {
     height: 100%;
 }
 
+.openlogger-page-container .controls-row {
+    flex-direction: column;
+    height: calc(100% - 32px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 @media screen and (max-width: 1200px) {
-    .logger-page-container .logger-chart-bottom-container .collapse-button {
+    .openlogger-page-container .logger-chart-bottom-container .collapse-button {
         display: none;
     }
-    .logger-page-container .logger-chart-bottom-container .text-button-side {
+    .openlogger-page-container .logger-chart-bottom-container .text-button-side {
         margin-top: 0.1rem;
         margin-right: 0.1rem;
         margin-bottom: 0.1rem;
@@ -104,7 +111,7 @@
         padding: 0;
         width: 26px;
     }
-    .logger-page-container .logger-chart-bottom-container .text-button-side[icon-right] .button-inner img {
+    .openlogger-page-container .logger-chart-bottom-container .text-button-side[icon-right] .button-inner img {
         margin: 0;
     }
 }

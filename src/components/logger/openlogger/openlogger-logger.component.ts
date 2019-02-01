@@ -41,13 +41,14 @@ export class OpenLoggerLoggerComponent {
     public showAdvSettings: boolean = false;
     public selectedChannels: boolean[] = [];
 
-    private daqParams: DaqLoggerParams = {
+    private defaultDaqParams: DaqLoggerParams = {
         maxSampleCount: -1,
         startDelay: 0,
         sampleFreq: 500000,
         storageLocation: 'ram',
         uri: ''
     };
+    private daqParams: DaqLoggerParams = Object.assign({}, this.defaultDaqParams);
     private defaultDaqChannelParams: DaqChannelParams = {
         average: 1,
         vOffset: 0
@@ -643,11 +644,6 @@ export class OpenLoggerLoggerComponent {
             this.daqParams.storageLocation = 'ram';
         }
         this.selectedLogLocation = event;
-    }
-
-    updateUri(event) {
-        let uri = event.target.value;
-        this.daqParams.uri = uri;
     }
 
     modeSelect(event: 'finite' | 'continuous') {
@@ -1643,6 +1639,39 @@ export class OpenLoggerLoggerComponent {
                 chan.average = 1;
             });
         }
+    }
+
+    restoreDefaults() {
+        let defaultTpd = this.loggerPlotService.tpdArray[this.loggerPlotService.defaultTpdIndex];
+        this.loggerPlotService.setValPerDivAndUpdate('x', 1, defaultTpd);
+        this.xAxis.loggerBufferSize = this.xAxis.defaultBufferSize;
+
+        this.daqParams = Object.assign({}, this.defaultDaqParams);
+        this.validateAndApply(this.daqParams.sampleFreq, 'sampleFreq');
+
+        this.selectedLogLocation = 'chart';
+        this.logToChild._applyActiveSelection('chart');
+
+        this.selectedLogProfile = this.loggingProfiles[0];
+        this.profileChild._applyActiveSelection(this.selectedLogProfile);
+
+        this.selectedMode = 'continuous';
+        this.modeChild._applyActiveSelection('continuous');
+
+        this.averagingEnabled = false;
+
+        this.daqChans.forEach((chan, index) => {
+            chan.average = this.defaultDaqChannelParams.average;
+            chan.vOffset = this.defaultDaqChannelParams.vOffset;
+
+            let defaultVpd = this.loggerPlotService.vpdArray[this.loggerPlotService.defaultVpdIndices[index]];
+            this.loggerPlotService.setValPerDivAndUpdate('y', index + 1, defaultVpd);
+
+            this.scaleSelect("None", index);
+            this.scalingChildren.toArray()[index]._applyActiveSelection("None");
+        });
+        
+        this.events.publish("restore-defaults");
     }
 }
 
