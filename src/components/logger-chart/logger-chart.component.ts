@@ -64,7 +64,7 @@ export class LoggerChartComponent {
         console.log('chart loaded');
         console.log(this.loggerChart);
 
-        this.loggerChart.digilentChart.setSecsPerDivArray(this.generateNiceNumArray(0.000001, 10));
+        this.loggerChart.digilentChart.setSecsPerDivArray(this.generateNiceNumArray(0.000001, 100000000));
         this.loggerChart.digilentChart.setVoltsPerDivArray(this.generateNiceNumArray(0.001, 5));
         this.loggerChart.digilentChart.setActiveXIndex(15);
 
@@ -80,8 +80,10 @@ export class LoggerChartComponent {
         let currentPow = Math.ceil(Math.log10(min));
         let current = min * Math.pow(10, -1 * currentPow);
         let i = 0;
+
         while (current * Math.pow(10, currentPow) <= max) {
             niceNumArray[i] = this.decimalAdjust('round', current * Math.pow(10, currentPow), currentPow);
+            
             if (current === 1) {
                 current = 2;
             }

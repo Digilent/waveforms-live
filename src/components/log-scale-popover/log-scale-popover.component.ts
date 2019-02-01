@@ -27,6 +27,8 @@ export class LogScalePopover {
   private unitDescriptor: string = "";
   private allScalingOptions: ScaleParams[] = [];
 
+  public scalingTutorialLink = 'https://reference.digilentinc.com/learn/instrumentation/tutorials/openlogger/datalogger#section9'
+
   constructor(
     private viewCtrl: ViewController,
     private navParams: NavParams,
