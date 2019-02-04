@@ -1324,7 +1324,7 @@ export class OpenLoggerLoggerComponent {
                     this.daqParams.uri = stateData.uri;
                 }
 
-                if (this.storageLocations.length <= 1) {
+                if (this.storageLocations.length < 1) {
                     stateData.storageLocation = 'ram';
                 }
                 this.daqParams.storageLocation = stateData.storageLocation;
