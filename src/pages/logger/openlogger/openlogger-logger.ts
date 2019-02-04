@@ -169,8 +169,10 @@ export class OpenLoggerLoggerPage {
         this.timeline.loggerTimeline.chartLoad.emit();
 
         // NOTE(andrew): remove this once a better solution to updating chart axis is found
-        this.loggerPlotService.tpdIndex = tpdIndex;
-        this.loggerPlotService.vpdIndices = vpdIndices;
+        this.loggerPlotService.setValPerDivAndUpdate('x', 1, this.loggerPlotService.tpdArray[tpdIndex]);
+        vpdIndices.forEach((vpdIndex, i) => {
+            this.loggerPlotService.setValPerDivAndUpdate('y', i + 1, this.loggerPlotService.vpdArray[vpdIndex]);
+        });
 
         this.loggerComponent.startLogger();
     }
