@@ -1,6 +1,6 @@
 {
     "name": "waveforms-live",
-    "version": "1.4.6",
+    "version": "1.4.7",
     "author": "Digilent",
     "homepage": "http://digilent.com/",
     "main": "electron.js",
