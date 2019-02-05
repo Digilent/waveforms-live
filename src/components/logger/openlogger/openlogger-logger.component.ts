@@ -1394,7 +1394,7 @@ export class OpenLoggerLoggerComponent {
                     this.daqParams.sampleFreq,
                     this.daqParams.startDelay,
                     this.daqParams.storageLocation,
-                    this.daqParams.uri,
+                    this.daqParams.uri + '.log', // note(andrew): for now this is okay, but when logging to cloud DO NOT append
                     averages,
                     overflows
                 );
