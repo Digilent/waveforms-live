@@ -1440,14 +1440,14 @@ export class OpenLoggerLoggerComponent {
                 return;
             }
             this.activeDevice.instruments.logger.daq.stop().subscribe(
+                (data) => {
+                    console.log(data);
                     if (this.daqParams.storageLocation != 'ram') {
                         this.listDir(this.daqParams.storageLocation, '/')
                         .catch((err) => {
                             console.log(err);
                         });
                     }
-                (data) => {
-                    console.log(data);
                     resolve(data);
                 },
                 (err) => {
