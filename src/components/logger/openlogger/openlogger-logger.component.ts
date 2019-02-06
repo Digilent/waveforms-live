@@ -1054,11 +1054,10 @@ export class OpenLoggerLoggerComponent {
             return { reason: 0 };
         }
 
-        if (this.filesInStorage[this.daqParams.storageLocation].indexOf(this.daqParams.uri + '.dlog') !== -1) {
+        let regex = new RegExp(this.daqParams.uri + '_[0-9][0-9]*.log');
+        if (this.filesInStorage[this.daqParams.storageLocation].toString().search(regex) != -1) {
             //File already exists on device display alert
             existingFileFound = true;
-        } else {
-            this.filesInStorage[this.daqParams.storageLocation].push(this.daqParams.uri + '.dlog');
         }
         return (existingFileFound ? { reason: 2 } : { reason: 0 });
     }
