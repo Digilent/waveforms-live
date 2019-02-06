@@ -1316,9 +1316,13 @@ export class OpenLoggerLoggerComponent {
                     this.daqParams.startDelay = stateData.actualStartDelay / Math.pow(10, 12);
                 }
                 if (stateData.uri != undefined) {
-                    if (stateData.uri.indexOf('.dlog') !== -1) {
-                        // Remove .dlog from end of file
-                        stateData.uri = stateData.uri.slice(0, stateData.uri.indexOf('.dlog'));
+                    if (stateData.uri.lastIndexOf('_') !== -1) {
+                        // remove start index from end of file name
+                        // will also remove .log extension
+                        stateData.uri = stateData.uri.slice(0, stateData.uri.lastIndexOf('_'));
+                    } else if (stateData.uri.indexOf('.log') !== -1) {
+                        // Remove .log from end of file
+                        stateData.uri = stateData.uri.slice(0, stateData.uri.indexOf('.log'));
                     }
                     this.daqParams.uri = stateData.uri;
                 }
