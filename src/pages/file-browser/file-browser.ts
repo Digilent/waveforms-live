@@ -451,7 +451,7 @@ export class FileBrowserPage {
         let rate2 = dataView.getUint32(52, littleEndian);
         this.fileSampleRate = (littleEndian ? rate2 * Math.pow(2, 32) + rate1 : rate1 * Math.pow(2, 32) + rate2) / actualSFUnits;
         console.log(littleEndian, headerFullSize, headerFormat, headerVersion, this.stopReason, actualSFUnits , this.fileSampleRate);
-        return (headerVersion === 1 && headerFormat === 1 && headerFullSize === 512);
+        return (headerVersion === 1 && (headerFormat === 1 || headerFormat === 3) && headerFullSize === 512);
     }
 
     private verifyDigilentLogFile(storageLocation: string, file: string): Promise<any> {
