@@ -1040,7 +1040,7 @@ export class OpenLoggerLoggerComponent {
         console.log('time to parse and draw:', t1 - t0);
     }
 
-    private existingFileFoundAndValidate(loading): { reason: number } {
+    private existingFileFoundAndValidate(loading): { reason: number, existingFiles?: string[] } {
         let existingFileFound: boolean = false;
         if (this.daqParams.storageLocation !== 'ram' && this.daqParams.uri === '') {
             loading.dismiss();
@@ -1058,11 +1058,15 @@ export class OpenLoggerLoggerComponent {
         }
 
         let regex = new RegExp(this.daqParams.uri + '_[0-9][0-9]*.log');
-        if (this.filesInStorage[this.daqParams.storageLocation].toString().search(regex) != -1) {
+        
+        let matchingFiles = this.filesInStorage[this.daqParams.storageLocation].filter((filename) => regex.test(filename));
+
+        if (matchingFiles.length !== 0) {
             //File already exists on device display alert
             existingFileFound = true;
         }
-        return (existingFileFound ? { reason: 2 } : { reason: 0 });
+
+        return {reason: existingFileFound ? 2 : 0, existingFiles: matchingFiles};
     }
 
     startLogger() {
