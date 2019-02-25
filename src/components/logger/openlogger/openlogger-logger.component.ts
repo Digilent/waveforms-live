@@ -292,6 +292,8 @@ export class OpenLoggerLoggerComponent {
                 .then((data) => {
                     console.log(data);
 
+                    this.storageLocations.unshift('ram'); // openlogger doesn't report ram as storage location, but always will have it
+
                     if (data && data.device && data.device[0]) {
                         data.device[0].storageLocations.forEach((el, index, arr) => {
                             if (el !== 'flash') {
