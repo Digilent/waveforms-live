@@ -1422,8 +1422,8 @@ export class OpenLoggerLoggerComponent {
                 if (this.storageLocations.length < 1) {
                     stateData.storageLocation = 'ram';
                 }
-                this.daqParams.storageLocation = stateData.storageLocation;
-                if (stateData.storageLocation === 'ram') {
+
+                this.daqParams.storageLocation = stateData.storageLocation || this.daqParams.storageLocation;
                     this.selectedLogLocation = 'chart';
                     this.logToChild._applyActiveSelection('chart');
                 } else {
