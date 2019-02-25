@@ -1064,6 +1064,8 @@ export class OpenLoggerLoggerComponent {
         if (matchingFiles.length !== 0) {
             //File already exists on device display alert
             existingFileFound = true;
+        } else {
+            this.filesInStorage[this.daqParams.storageLocation].push(`${this.daqParams.uri}_0.log`);
         }
 
         return {reason: existingFileFound ? 2 : 0, existingFiles: matchingFiles};
