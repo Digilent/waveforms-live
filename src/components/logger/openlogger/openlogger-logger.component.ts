@@ -1102,7 +1102,8 @@ export class OpenLoggerLoggerComponent {
                         .catch((e) => { });
                 }
                 else if (returnData.reason === 0) {
-                    this.setParametersAndRun(loading);
+                    // return this.setParametersAndRun(loading);
+                    return Promise.resolve();
                 }
             })
             .catch((e) => {
