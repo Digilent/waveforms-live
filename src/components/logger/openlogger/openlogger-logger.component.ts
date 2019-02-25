@@ -1136,6 +1136,28 @@ export class OpenLoggerLoggerComponent {
             });
         });
     }
+
+    /**
+     * This method queries the state of the device filesystem. If the state is not
+     * idle, this method will recursively call itself until the filesystem is idle.
+     * 
+     * @returns a promise that resolves when file.state is idle, or rejects on error.
+     */
+    private waitTillFileIdle(): Promise<null> {
+        return new Promise((resolve, reject) => {
+            this.getFileCurrentState().then(data => {
+                if (data.file.state == 'idle') {
+                    resolve();
+                } else {
+                    this.getFileCurrentState()
+                        .then(resolve)
+                        .catch(reject);
+                }
+            })
+            .catch(reject);
+        });
+    }
+
     private setParametersAndRun(loading) {
         let daqChanArray = [];
         for (let i = 0; i < this.daqChans.length; i++) {
