@@ -1088,7 +1088,8 @@ export class OpenLoggerLoggerComponent {
                 
                 if (returnData.reason === 2) {
                     loading.dismiss();
-                    this.fileExists()
+
+                    return this.fileExists()
                         .then((data) => {
                             loading = this.loadingService.displayLoading('Starting data logging...');
 
