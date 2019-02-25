@@ -1231,6 +1231,15 @@ export class OpenLoggerLoggerComponent {
     }
 
     private getLiveState() {
+        let message;
+        if ((message = this.messageQueue.shift()) !== undefined) {
+            message().then(() => {
+                this.getLiveState(); // try again
+            });
+
+            return;
+        }
+
         this.getCurrentState()
             .then((data) => {
                 this.parseGetLiveStatePacket('analog', data);
