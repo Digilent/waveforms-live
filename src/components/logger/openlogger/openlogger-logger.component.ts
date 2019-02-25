@@ -1083,13 +1083,21 @@ export class OpenLoggerLoggerComponent {
         this.getCurrentState(true)
             .then((data) => {
                 console.log(data);
-                let returnData: { reason: number } = this.existingFileFoundAndValidate(loading);
+                
+                let returnData: { reason: number, existingFiles?: string[] } = this.existingFileFoundAndValidate(loading);
+                
                 if (returnData.reason === 2) {
                     loading.dismiss();
                     this.fileExists()
                         .then((data) => {
-                            let loading = this.loadingService.displayLoading('Starting data logging...');
-                            this.setParametersAndRun(loading);
+                            loading = this.loadingService.displayLoading('Starting data logging...');
+
+                            // delete the existing files
+                            if (returnData.existingFiles && returnData.existingFiles.length > 0) {
+                                return this.deleteFiles("sd0", returnData.existingFiles); // poll the device until not deleting any longer, then run
+                            }
+
+                            // this.setParametersAndRun(loading);
                         })
                         .catch((e) => { });
                 }
