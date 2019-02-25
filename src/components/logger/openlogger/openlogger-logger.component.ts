@@ -1118,6 +1118,24 @@ export class OpenLoggerLoggerComponent {
             });
     }
 
+    /**
+     * This method calls into the DIP file.delete method, wrapping the returned 
+     * observable in a promise. 
+     * @param location storage location to delete files from
+     * @param paths single path or array of paths of files to be deleted
+     * 
+     * @returns a promise that resolves on file.delete completion, or rejects on error.
+     */
+    private deleteFiles(location: string, paths: string | string[]): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.activeDevice.file.delete(location, paths).subscribe(data => {
+                resolve(data);
+            },
+            err => {
+                reject(err);
+            });
+        });
+    }
     private setParametersAndRun(loading) {
         let daqChanArray = [];
         for (let i = 0; i < this.daqChans.length; i++) {
