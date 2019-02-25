@@ -1106,6 +1106,8 @@ export class OpenLoggerLoggerComponent {
                     return Promise.resolve();
                 }
             })
+            .then(() => {
+                return this.waitTillFileIdle();
             .catch((e) => {
                 console.log(e);
                 loading.dismiss();
