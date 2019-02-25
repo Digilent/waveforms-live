@@ -1108,6 +1108,8 @@ export class OpenLoggerLoggerComponent {
             })
             .then(() => {
                 return this.waitTillFileIdle();
+            })
+            .then(() => this.setParametersAndRun(loading))
             .catch((e) => {
                 console.log(e);
                 loading.dismiss();
