@@ -1,5 +1,5 @@
 import { Component, ElementRef } from '@angular/core';
-import { ViewController, PopoverController, AlertController } from 'ionic-angular';
+import { ViewController, PopoverController, AlertController, NavParams } from 'ionic-angular';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -37,10 +37,12 @@ export class FileBrowserPage {
     public jasperTop: string = '80px';
     public jasperLeft: string = '80px';
 
+    hideExportButton: boolean = false;
 
     constructor(
         private deviceManagerService: DeviceManagerService,
         private viewCtrl: ViewController,
+        private params: NavParams,
         private popoverCtrl: PopoverController,
         private toastService: ToastService,
         private exportService: ExportService,
@@ -51,6 +53,9 @@ export class FileBrowserPage {
     ) {
         this.unitFormatPipe = new UnitFormatPipe();
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+
+        this.hideExportButton = this.params.get('hideExportButton') || this.hideExportButton;
+
         this.init();
     }
 

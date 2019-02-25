@@ -182,7 +182,8 @@ export class OpenLoggerLoggerPage {
     }
 
     openFileBrowser() {
-        let modal = this.modalCtrl.create(FileBrowserPage);
+        let modal = this.modalCtrl.create(FileBrowserPage, {hideExportButton: true});
+
         modal.present();
     }
 
