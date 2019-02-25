@@ -296,6 +296,7 @@ export class OpenLoggerLoggerComponent {
                         data.device[0].storageLocations.forEach((el, index, arr) => {
                             if (el !== 'flash') {
                                 this.storageLocations.unshift(el);
+                                this.filesInStorage[el] = [];
                             }
                         });
                     }
