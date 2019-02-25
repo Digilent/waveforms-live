@@ -1158,6 +1158,26 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
+    /**
+     * This method calls file.getCurrentState, and returns the response through 
+     * promise resolution.
+     * 
+     * @returns a promise that resolves with the filesystem state, or rejects on error.
+     */
+    private getFileCurrentState() {
+        return new Promise<any>((resolve, reject) => {
+            this.activeDevice.file.getCurrentState().subscribe(
+                (data) => {
+                    console.log(data);
+                    resolve(data);
+                },
+                (err) => {
+                    reject(err);
+                }
+            )
+        });
+    }
+
     private setParametersAndRun(loading) {
         let daqChanArray = [];
         for (let i = 0; i < this.daqChans.length; i++) {
