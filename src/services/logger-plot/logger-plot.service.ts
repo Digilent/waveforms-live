@@ -112,8 +112,8 @@ export class LoggerPlotService {
 
     setData(data: PlotDataContainer[], viewMoved: boolean) {
         // deep copy
-        this.dataContainers = data.map(a => ({ ...a }));
-        let timelineData = data.map(a => ({ ...a }));
+        this.dataContainers = data.map(a => Object.assign({}, a));
+        let timelineData = data.map(a => Object.assign({}, a));
 
         this.trimChartData(!viewMoved)
             .then(() => {
@@ -136,7 +136,7 @@ export class LoggerPlotService {
 
     trimChartData(snappedToFront: boolean = false) {
         return new Promise((resolve, reject) => {
-            let chartData = this.dataContainers.map(a => ({ ...a })); // deep copy
+            let chartData = this.dataContainers.map(a => Object.assign({}, a));
             let xaxis = this.chart.getAxes().xaxis;
 
             // trim data to visible section of xaxis and draw

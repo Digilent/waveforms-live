@@ -45,10 +45,10 @@
     },
     "devDependencies": {
         "@ionic/app-scripts": "1.0.0",
-        "@types/mathjs": "^4.4.1",
+        "@types/mathjs": "~3.21.1",
         "electron": "^1.6.2",
         "electron-packager": "^8.6.0",
-        "typescript": "^2.1.4"
+        "typescript": "~2.0.9"
     },
     "description": "Web Waveforms: An Ionic project",
     "cordovaPlugins": [
