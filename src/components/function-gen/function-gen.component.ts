@@ -279,6 +279,8 @@ export class FgenComponent {
                 break;
             default:
         }
+
+        this.setWaveformIfLogger(index);
     }
 
     //Toggle dropdown
@@ -292,6 +294,8 @@ export class FgenComponent {
         if (this.tutorialMode) {
             this.highlightPower();
         }
+
+        this.setWaveformIfLogger(index);
     }
 
     toggleChanSettings(channel: number) {
@@ -311,6 +315,8 @@ export class FgenComponent {
         else {
             this.decrementFrequency(index);
         }
+
+        this.setWaveformIfLogger(index);
     }
 
     voltageMousewheel(event, type: 'amplitude' | 'offset', index) {
@@ -322,26 +328,36 @@ export class FgenComponent {
         else {
             type === 'amplitude' ? this.decrementAmplitude(index) : this.decrementOffset(index);
         }
+
+        this.setWaveformIfLogger(index);
     }
 
     incrementAmplitude(index: number) {
         let newAmp = this.amplitude[index] + 0.1;
         this.amplitude[index] = Math.min(newAmp, this.activeDevice.instruments.awg.chans[0].dacVpp / 1000);
+
+        this.setWaveformIfLogger(index);
     }
 
     decrementAmplitude(index: number) {
         let newAmp = this.amplitude[index] - 0.1;
         this.amplitude[index] = Math.max(newAmp, 0);
+
+        this.setWaveformIfLogger(index);
     }
 
     incrementOffset(index: number) {
         let newOffset = this.offset[index] + 0.1;
         this.offset[index] = Math.min(newOffset, this.activeDevice.instruments.awg.chans[0].vOffsetMax / 1000);
+
+        this.setWaveformIfLogger(index);
     }
 
     decrementOffset(index: number) {
         let newOffset = this.offset[index] - 0.1;
         this.offset[index] = Math.max(newOffset, this.activeDevice.instruments.awg.chans[0].vOffsetMin / 1000);
+
+        this.setWaveformIfLogger(index);
     }
 
     incrementFrequency(index: number) {
@@ -366,6 +382,8 @@ export class FgenComponent {
         }
 
         this.frequency[index] = newFreq;
+
+        this.setWaveformIfLogger(index);
     }
 
     decrementFrequency(index: number) {
@@ -391,6 +409,8 @@ export class FgenComponent {
         }
 
         this.frequency[index] = newFreq;
+
+        this.setWaveformIfLogger(index);
     }
 
     //Toggle power to awg
