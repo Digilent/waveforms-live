@@ -43,6 +43,7 @@ export class FgenComponent {
     public tutorialStage: TutorialStage = TutorialStage.IDLE;
     public tutorialMode: boolean = false;
     public awaitingResponse: boolean = false;
+    public isOpenLogger: boolean = true;
 
     constructor(
         _deviceManagerService: DeviceManagerService,
@@ -79,6 +80,8 @@ export class FgenComponent {
 
             this.initializeValues();
         });
+
+        this.isOpenLogger = this.activeDevice.deviceModel === "OpenLogger MZ";
     }
 
     ngOnDestroy() {
