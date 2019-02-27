@@ -551,4 +551,21 @@ export class FgenComponent {
         return false;
     }
 
+    public asyncSetHandle = null;
+    setWaveformIfLogger(index: number) {
+        if (this.isOpenLogger) {
+            if (this.asyncSetHandle !== null) clearTimeout(this.asyncSetHandle);
+
+            this.asyncSetHandle = setTimeout(() => {
+                this.setRegularWaveform([index + 1], [{
+                    signalType: this.waveType[index],
+                    signalFreq: this.waveType[index] === 'dc' ? 0 : this.frequency[index],
+                    vpp: this.waveType[index] === 'dc' ? 0 : this.amplitude[index],
+                    vOffset: this.offset[index]
+                }]);
+
+                this.asyncSetHandle = null;
+            }, 250);
+        }
+    }
 }
