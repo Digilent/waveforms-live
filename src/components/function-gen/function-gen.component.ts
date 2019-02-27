@@ -283,7 +283,7 @@ export class FgenComponent {
 
     //Toggle dropdown
     toggleWave(waveType: string, index) {
-        if (this.powerOn[index]) {
+        if (this.powerOn[index] && !this.isOpenLogger) {
             return;
         }
 
@@ -303,7 +303,7 @@ export class FgenComponent {
     }
 
     frequencyMousewheel(event, index) {
-        if (this.powerOn[index]) { return; }
+        if (this.powerOn[index] && !this.isOpenLogger) { return; }
 
         if (event.deltaY < 0) {
             this.incrementFrequency(index);
@@ -314,7 +314,7 @@ export class FgenComponent {
     }
 
     voltageMousewheel(event, type: 'amplitude' | 'offset', index) {
-        if (this.powerOn[index]) { return; }
+        if (this.powerOn[index] && !this.isOpenLogger) { return; }
 
         if (event.deltaY < 0) {
             type === 'amplitude' ? this.incrementAmplitude(index) : this.incrementOffset(index);
