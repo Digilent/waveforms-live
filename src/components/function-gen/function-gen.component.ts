@@ -585,7 +585,7 @@ export class FgenComponent {
                 }]);
 
                 this.asyncSetHandle = null;
-            }, 250);
+            }, 100);
         }
     }
 }
