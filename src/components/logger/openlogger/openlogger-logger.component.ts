@@ -61,7 +61,7 @@ export class OpenLoggerLoggerComponent {
     public startIndex: number = 0;
     public count: number = 0;
     private daqChanNumbers: number[] = [];
-    public logToLocations: string[] = ['chart', 'SD'];
+    public logToLocations: string[] = ['chart'];
     public logAndStream: boolean = false;
     public modes: ('continuous' | 'finite')[] = ['continuous', 'finite'];
     public selectedMode: 'continuous' | 'finite' = this.modes[0];
@@ -299,6 +299,10 @@ export class OpenLoggerLoggerComponent {
                             if (el !== 'flash') {
                                 this.storageLocations.unshift(el);
                                 this.filesInStorage[el] = [];
+                            }
+
+                            if (/^sd/g.test(el) && this.logToLocations.indexOf('SD') === -1){
+                                this.logToLocations.push('SD');
                             }
                         });
                     }
