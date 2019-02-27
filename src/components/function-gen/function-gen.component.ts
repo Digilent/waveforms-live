@@ -411,7 +411,7 @@ export class FgenComponent {
 
             settings[index] = {
                 signalType: this.waveType[index],
-                signalFreq: this.frequency[index],
+                signalFreq: this.waveType[index] === 'dc' ? 0 : this.frequency[index],
                 vpp: this.waveType[index] === 'dc' ? 0 : this.amplitude[index],
                 vOffset: this.offset[index]
             };
