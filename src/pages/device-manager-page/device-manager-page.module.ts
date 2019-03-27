@@ -8,7 +8,8 @@ import { DeviceConfigurePage } from '../device-configure/device-configure';
 
 //Modules
 import { CalibrateModule } from '../calibrate/calibrate.module';
-import { WifiSetupModule } from '../wifi-setup/wifi-setup.module';
+import { WifiSetupModule as OpenScopeWiFiModule } from '../wifi-setup/openscope/wifi-setup.module';
+import { WifiSetupModule as OpenLoggerWiFiModule } from '../wifi-setup/openlogger/wifi-setup.module';
 import { LoadFirmwareModule } from '../load-firmware/load-firmware.module';
 import { UpdateFirmwareModule } from '../update-firmware/update-firmware.module';
 import { OpenLoggerLoggerModule } from '../logger/openlogger/openlogger-logger.module';
@@ -21,7 +22,8 @@ import { GithubForkRibbon } from '../../components/github-fork-ribbon/github-for
         IonicModule.forRoot(DeviceManagerPage),
         IonicModule.forRoot(DeviceConfigurePage),
         CalibrateModule,
-        WifiSetupModule,
+        OpenScopeWiFiModule,
+        OpenLoggerWiFiModule,
         LoadFirmwareModule,
         UpdateFirmwareModule,
         OpenLoggerLoggerModule

@@ -4,14 +4,15 @@ import { Component, ViewChild } from '@angular/core';
 //Components
 import { DeviceManagerPage } from '../device-manager-page/device-manager-page';
 import { CalibratePage } from '../calibrate/calibrate';
-import { WifiSetupPage } from '../wifi-setup/wifi-setup';
+import { WifiSetupPage as OpenScopeWifiSetupPage } from '../wifi-setup/openscope/wifi-setup';
+import { WifiSetupPage as OpenLoggerWifiSetupPage } from '../wifi-setup/openlogger/wifi-setup';
 import { LoadFirmwarePage } from '../load-firmware/load-firmware';
 import { UpdateFirmwarePage } from '../update-firmware/update-firmware';
 import { DropdownPopoverComponent } from '../../components/dropdown-popover/dropdown-popover.component';
 
 //Interfaces
 import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
-import { NicStatusContainer } from '../wifi-setup/wifi-setup.interface';
+import { NicStatusContainer } from '../wifi-setup/openscope/wifi-setup.interface';
 
 //Services
 import { DeviceManagerService } from 'dip-angular2/services';
@@ -619,11 +620,14 @@ export class DeviceConfigurePage {
     }
 
     openWifiWizard() {
+        const WifiSetupPage = this.deviceManagerService.getActiveDevice().deviceModel === 'OpenLogger MZ' ? OpenLoggerWifiSetupPage : OpenScopeWifiSetupPage;
+
         let modal = this.modalCtrl.create(WifiSetupPage, {
             deviceObject: this.deviceObject
         }, {
                 enableBackdropDismiss: false
             });
+
         modal.onWillDismiss((data) => {
             if (data == undefined) { return; }
             if (data.toDeviceManagerPage) {
@@ -634,6 +638,7 @@ export class DeviceConfigurePage {
             this.nicStatusContainer.ssid = data.ssid || '';
             this.nicStatusContainer.status = data.status.charAt(0).toUpperCase() + data.status.slice(1) || '';
         });
+
         modal.present();
     }
 
