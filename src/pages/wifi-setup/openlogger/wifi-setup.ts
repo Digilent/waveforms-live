@@ -506,8 +506,7 @@ export class WifiSetupPage {
         return new Promise((resolve, reject) => {
             this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex].wifiListSavedParameters(storageLocation).subscribe(
                 (data) => {
-                    console.log(data);
-                    this.parseSavedParameters(data.device[0].parameterSets, storageLocation);
+                    this.parseSavedParameters(data.device[0].parameterSet, storageLocation);
                     resolve(data);
                 },
                 (err) => {
