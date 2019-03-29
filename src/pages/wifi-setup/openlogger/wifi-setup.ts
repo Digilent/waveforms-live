@@ -687,42 +687,27 @@ export class WifiSetupPage {
         }
         if (this.selectedNetwork.securityType === 'wpa' || this.selectedNetwork.securityType === 'wpa2' || this.selectedNetwork.securityType === 'open') {
             this.wifiSetParameters(this.selectedNic, this.selectedNetwork.ssid, this.selectedNetwork.securityType, this.autoConnect, this.selectedNetwork.securityType === 'open' ? '' : this.password)
-                .then(() => {
+                .then(() => { // connect to network
+                    if (this.connectNow && this.deviceObject && this.deviceObject.bridge) {
+                        this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                })
+                .then((waitToConnect = true) => { // wait to connect
+                    let timeoutDate = this.getFutureDate(20);
+                    
+                    return (waitToConnect === true) ? this.readNicUntilConnected(timeoutDate) : Promise.resolve();
+                })
+                .then(() => { // save network config
                     if (this.save) {
                         return this.saveWifiNetwork(this.selectedStorageLocation);
                     }
                     else {
                         return new Promise((resolve, reject) => { resolve(); });
                     }
-                })
-                .then(() => {
-                    if (this.connectNow && this.deviceObject && this.deviceObject.bridge) {
-                        if (this.save) {
-                            return new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    console.log('return promise');
-                                    this.connectToNetwork(this.selectedNic, "workingParameterSet", true)
-                                        .then(() => {
-                                            resolve();
-                                        })
-                                        .catch(() => {
-                                            reject()
-                                        });
-                                }, 500);
-                            });
-                        }
-                        else {
-                            console.log('not saving connect immediately');
-                            return this.connectToNetwork(this.selectedNic, "workingParameterSet", true);
-                        }
-                    }
-                    else {
-                        return new Promise((resolve, reject) => { resolve(false); });
-                    }
-                })
-                .then((waitToConnect = true) => {
-                    let timeoutDate = this.getFutureDate(20); // new Date(new Date().getTime() + 20000);
-                    return (waitToConnect === true) ? this.readNicUntilConnected(timeoutDate) : Promise.resolve();
                 })
                 .then(() => {
                     loading.dismiss();
