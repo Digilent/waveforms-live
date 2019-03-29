@@ -57,6 +57,12 @@
      flex: 1 1 41px;
 }
 
+.digi-container .digi-logger-col {
+    max-width: 50px;
+    padding: 0px 0px 0px 0px;
+    flex: 1 1 50px;
+}
+
 .digi-container .channel-container .tooltip-inner
 {
     background-color: #222222;
@@ -177,4 +183,8 @@
 .digi-container .direction-mode-border
 {
     border-color: orange;
+}
+
+ion-row.pad-top {
+    justify-content: center;
 }

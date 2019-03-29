@@ -35,7 +35,7 @@
         </ion-row>
         <div *ngIf="selectedMode==='io'&&!directionMode">
             <ion-row wrap class="pad-top">
-                <ion-col *ngFor="let channel of gpioChans, let i = index;" class="digi-col" text-center>
+                <ion-col col-4 *ngFor="let channel of gpioChans, let i = index;" [ngClass]="{'digi-logger-col': isLogger, 'digi-col': !isLogger}" text-center>
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
                         <div class="dummy-border" [tooltip]="getChannelTooltip(i, 'gpio')" [tooltipAnimation]="true" tooltipPlacement="left" [ngClass]="{'button-output': gpioDirections[i]}">
@@ -63,7 +63,7 @@
         </div>
         <div *ngIf="selectedMode==='io'&& directionMode">
             <ion-row wrap class="pad-top">
-                <ion-col *ngFor="let channel of gpioChans, let i = index;" class="digi-col" text-center>
+                <ion-col *ngFor="let channel of gpioChans, let i = index;" [ngClass]="{'digi-logger-col': isLogger, 'digi-col': !isLogger}" text-center>
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
                         <div class="dummy-border" [tooltip]="getChannelTooltip(i, 'direction')" [tooltipAnimation]="true" tooltipPlacement="left">

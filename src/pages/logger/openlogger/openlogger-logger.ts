@@ -64,14 +64,13 @@ export class OpenLoggerLoggerPage {
         this.unitFormatPipeInstance = new UnitFormatPipe();
 
         this.activeDevice = this.deviceManagerService.getActiveDevice();
-        // TODO: uncomment when gpio is implemented
-        // this.readCurrentGpioStates()
-        //     .then((data) => {
-        //         console.log(data);
-        //     })
-        //     .catch((err) => {
-        //         console.log(err);
-        //     });
+        this.readCurrentGpioStates()
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     ngOnInit() {
@@ -497,7 +496,7 @@ export class OpenLoggerLoggerPage {
         return new Promise((resolve, reject) => {
             let chanArray = [];
             for (let i = 0; i < this.activeDevice.instruments.gpio.numChans; i++) {
-                chanArray.push(i + 1);
+                chanArray.push(i);
             }
             this.activeDevice.instruments.gpio.read(chanArray).subscribe(
                 (data) => {
@@ -509,6 +508,7 @@ export class OpenLoggerLoggerPage {
                     if (err.gpio) {
                         let setToInputChanArray = [];
                         let inputStringArray = [];
+
                         for (let channel in err.gpio) {
                             for (let command in err.gpio[channel]) {
                                 if (err.gpio[channel][command].statusCode === 1073741826 && err.gpio[channel][command].direction === 'tristate') {
@@ -521,6 +521,7 @@ export class OpenLoggerLoggerPage {
                                 }
                             }
                         }
+                        
                         if (setToInputChanArray.length > 0) {
                             this.activeDevice.instruments.gpio.setParameters(setToInputChanArray, inputStringArray).subscribe(
                                 (data) => {
@@ -561,13 +562,13 @@ export class OpenLoggerLoggerPage {
                             return this.getVoltages();
                         })
                         // TODO: uncomment when gpio is implemented
-                        // .then((data) => {
-                        //     this.gpioComponent.gpioDirections.forEach((val, index, array) => {
-                        //         this.gpioComponent.gpioDirections[index] = false;
-                        //         this.gpioComponent.gpioVals[index] = false;
-                        //     });
-                        //     return this.setGpioDirection('input');
-                        // })
+                        .then((data) => {
+                            this.gpioComponent.gpioDirections.forEach((val, index, array) => {
+                                this.gpioComponent.gpioDirections[index] = false;
+                                this.gpioComponent.gpioVals[index] = false;
+                            });
+                            return this.setGpioDirection('input');
+                        })
                         .then((data) => {
                             loading.dismiss();
                         })

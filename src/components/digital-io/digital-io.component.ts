@@ -48,23 +48,29 @@ export class DigitalIoComponent {
         this.popoverCtrl = _popoverCtrl;
         this.deviceManagerService = _devManagerService;
         this.activeDev = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+
+        this.isLogger = this.activeDev.deviceModel === 'OpenLogger MZ';
+        
         for (let i = 0; i < this.activeDev.instruments.gpio.numChans; i++) {
-            this.gpioChans.push(i + 1);
+            this.gpioChans.push((this.isLogger) ? i : i + 1);
             this.gpioVals.push(false);
             this.gpioDirections.push(false);
         }
+        
         for (let i = 0; i < this.activeDev.instruments.la.numChans; i++) {
             let chanNum: number = 0;
+
             for (let j = 0; j < this.activeDev.instruments.la.chans[i].numDataBits; j++) {
                 chanNum++;
                 this.laChans.push(chanNum);
                 this.laActiveChans.push(false);
             }
+
             this.dataTransferService.laChanActive = false;
         }
         this.contentHidden = true;
 
-        this.isLogger = this.activeDev.deviceModel === 'OpenLogger MZ';
+        if (this.isLogger) this.getCurrentState();
     }
 
     emitEvent() {
@@ -108,7 +114,7 @@ export class DigitalIoComponent {
         let chanArray = [];
         let valArray = [];
         for (let i = 0; i < this.gpioChans.length; i++) {
-            chanArray.push(i + 1);
+            chanArray.push((this.isLogger) ? i : i + 1);
             valArray.push(direction);
         }
         this.activeDev.instruments.gpio.setParameters(chanArray, valArray).subscribe(
@@ -138,7 +144,7 @@ export class DigitalIoComponent {
     toggleChanDirection(channel: number) {
         this.gpioDirections[channel] = !this.gpioDirections[channel];
         let direction = this.gpioDirections[channel] === true ? 'output' : 'input';
-        this.activeDev.instruments.gpio.setParameters([channel + 1], [direction]).subscribe(
+        this.activeDev.instruments.gpio.setParameters([(this.isLogger) ? channel : channel + 1], [direction]).subscribe(
             (data) => {
 
             },
@@ -161,7 +167,7 @@ export class DigitalIoComponent {
         if (this.gpioVals[channel] === true) {
             value = 1;
         }
-        this.activeDev.instruments.gpio.write([channel + 1], [value]).subscribe(
+        this.activeDev.instruments.gpio.write([(this.isLogger) ? channel : channel + 1], [value]).subscribe(
             (data) => {
                 console.log(data);
             },
@@ -200,20 +206,43 @@ export class DigitalIoComponent {
         let inputChans = [];
         for (let i = 0; i < this.gpioChans.length; i++) {
             if (this.gpioDirections[i] !== true) {
-                inputChans.push(i + 1);
+                (this.isLogger) ? inputChans.push(i) : inputChans.push(i + 1); // OpenLogger doesn't refer to the channels this way :/
             }
         }
+
         if (inputChans.length < 1) { return; }
+
         this.activeDev.instruments.gpio.read(inputChans).subscribe(
             (data) => {
                 for (let channel in data.gpio) {
-                    this.gpioVals[parseInt(channel) - 1] = data.gpio[channel][0].value === 1 ? true : false;
+                    this.gpioVals[(this.isLogger) ? parseInt(channel) : parseInt(channel) - 1] = data.gpio[channel][0].value === 1 ? true : false;
                 }
             },
             (err) => {
                 console.log(err);
             },
             () => { }
+        );
+    }
+
+    getCurrentState() {
+        if (this.gpioChans.length < 1) {
+            return;
+        }
+
+        this.activeDev.instruments.gpio.getCurrentState(this.gpioChans).subscribe(
+            (data) => {
+                for (let channel in data.gpio) {
+                    const { direction, value } = data.gpio[channel][0];
+
+                    this.gpioVals[(this.isLogger) ? parseInt(channel) : parseInt(channel) - 1] = value === 1 ? true : false;
+                    this.gpioDirections[(this.isLogger) ? parseInt(channel) : parseInt(channel) - 1] = direction === 'output' ? true : false;
+                }
+            },
+            (err) => {
+
+            },
+            () => {}
         );
     }
 }
