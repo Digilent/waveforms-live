@@ -464,7 +464,7 @@ export class WifiSetupPage {
             },
             (err) => {
                 console.log(err);
-                if (err.device !== undefined && err.device[0].statusCode === 2684354573 && this.currentAttemptCount < this.maxAttemptCount) {
+                if (err.device !== undefined && err.device[0].reason === 4 && this.currentAttemptCount < this.maxAttemptCount) { // if reason === 4 then still working on req
                     this.currentAttemptCount++;
                     setTimeout(() => {
                         this.readScannedWifiNetworks(adapter);
