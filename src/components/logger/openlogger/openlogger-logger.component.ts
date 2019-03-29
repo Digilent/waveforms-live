@@ -301,7 +301,9 @@ export class OpenLoggerLoggerComponent {
                                 this.filesInStorage[el] = [];
                             }
 
-                            if (/^sd/g.test(el) && this.logToLocations.indexOf('SD') === -1){
+                            let fwVer = this.activeDevice.firmwareVersion;
+                            if (/^sd/g.test(el) && this.logToLocations.indexOf('SD') === -1 && 
+                            (fwVer.major === 0 && fwVer.minor >= 1719)){ // only push SD as a location if the firmware supports it
                                 this.logToLocations.push('SD');
                             }
                         });
