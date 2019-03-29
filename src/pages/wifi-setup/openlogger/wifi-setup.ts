@@ -652,9 +652,12 @@ export class WifiSetupPage {
             setTimeout(() => { // wait 500ms to give device time to process last request
                 this.getNicStatus(this.selectedNic)
                     .then((data) => {
-                        if (data.statusCode !== 0) reject('An error has occured while connecting. Please try again.');
-                        if (data.status === 'connected') {
+                        if (data.statusCode !== 0) return reject('An error has occured while connecting. Please try again.');
+                        
+                        if (data.status === 'connected' && data.ipAddress !== 'none') {
                             resolve();
+                        } else if (data.status === 'disconnected') {
+                            if (data.reason !== 4) reject(new Error("Failed connecting"));
                         } else {
                             this.readNicUntilConnected(timeoutDate)
                                 .then(resolve)
