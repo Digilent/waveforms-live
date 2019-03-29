@@ -107,11 +107,14 @@ export class WifiSetupPage {
         this.getNicList()
             .then(() => {
                 console.log('get nic list done');
+
                 return this.getNicStatus(this.selectedNic);
             })
             .then((data: NicStatusContainer) => {
                 console.log('disconnect done or autoresolve');
+
                 this.currentNicStatus = data;
+
                 return this.getStorageLocations();
             })
             .catch((e) => {
@@ -420,6 +423,7 @@ export class WifiSetupPage {
                         ipAddress: data.device[0].ipAddress,
                         ssid: data.device[0].ssid,
                         securityType: data.device[0].securityType,
+                        reason: data.device[0].reason
                     }
             
                     resolve(nicStatusContainer);
