@@ -145,6 +145,27 @@ var waveformsLiveDictionary = (function() {
         logInvalidFileType: {
             english: 'Invalid File Type. The Specified File Does Not Appear To Be A Digilent Log File'
         },
+        loggerProfileNameRequired: {
+            english: 'Profile Name is Required.'
+        },
+        scaleInvalidExpression: {
+            english: "Invalid Expression"
+        },
+        scaleInvalidUnits: {
+            english: "Invalid Units"
+        },
+        scaleInvalidName: {
+            english: "Invalid Expression Name"
+        },
+        loggerScaleLoadErr: {
+            english: 'Error Reading Scaling Equation. Please Try Again'
+        },
+        loggerSampleFreqMax: {
+            english: 'Maximum Samples/ for Selected Channels Is '
+        },
+        loggerNoChannelsError: {
+            english: 'Please Select at Least One Logger Channel To Begin '
+        },
 
         //File
         fileDeleteErr: {
@@ -197,6 +218,12 @@ var waveformsLiveDictionary = (function() {
         // Appears when the agent tries to program firmware to device but encounters an error.
         firmwareProgrammingError: {
             english: 'Digilent Agent Encountered An Error While Uploading The Firmware To The Device. Please Try Again'
+        },
+
+        firmwareCautionMessage: {
+            english: 'Caution: Flashing firmware intended for a different device can\
+            cause damage to the hardware. Use extra caution when\
+            selecting firmware.'
         },
 
         //Tutorial Tooltips
@@ -348,6 +375,15 @@ var waveformsLiveDictionary = (function() {
         chartResetDevice: {
             english: 'Reset Device And ReInitialize'
         },
+        chartResetInstruments: {
+            english: 'Reset Instruments'
+        },
+        chartSetViewToFront: {
+            english: 'Set View to Front'
+        },
+        chartToFileExplorer: {
+            english: 'To File Explorer'
+        },
         sineButton: {
             english: 'Sine Wave'
         },
@@ -405,6 +441,9 @@ var waveformsLiveDictionary = (function() {
         xAxisTpd: {
             english: 'Set Time / Division'
         },
+        xAxisBuffer: {
+            english: 'Set Chart Buffer Size'
+        },
         awgFreq: {
             english: 'Set Wavegen Frequency'
         }, 
@@ -421,13 +460,16 @@ var waveformsLiveDictionary = (function() {
             english: 'Retry Enumeration'
         },
         logProfile: {
-            english: 'Log Profile'
+            english: 'Set Log Profile'
+        },
+        logProfileSettings: {
+            english: 'Log Profile Settings'
         },
         logSaveProfile: {
-            english: 'Save Profile'
+            english: 'Save Log Profile'
         },
-        logMode: {
-            english: 'Logger Mode'
+        logLocation: {
+            english: 'Set Location To Log To'
         },
         logLink: {
             english: 'Link Channel To Another'
@@ -436,19 +478,43 @@ var waveformsLiveDictionary = (function() {
             english: 'Device State'
         },
         logSampleFreq: {
-            english: 'Sample Frequency'
+            english: 'Set Sample Frequency'
         },
         logSamples: {
             english: 'Number Of Samples'
         },
+        logMode: {
+            english: 'Set Logger Mode'
+        },
+        logSampleMode: {
+            english: 'Set Sampling Mode'
+        },
         logSampleType: {
-            english: 'Sampling Type'
+            english: 'Set Sampling Type'
         },
         logStorageLocation: {
             english: 'Log File Storage Location'
         },
+        logSelectChannels: {
+            english: 'Select Logger Channels'
+        },
         logFileName: {
             english: 'Log File Name'
+        },
+        logSetScaling: {
+            english: 'Set Log Scaling Equation'
+        },
+        logNewScale: {
+            english: 'New Scaling Equation'
+        },
+        logScaleSettings: {
+            english: 'Scaling Settings'
+        },
+        logAveraging: {
+            english: 'Set Log Averaging'
+        },
+        logAveragingToggle: {
+            english: 'Toggle Channel Averaging Controls'
         }
 
     };

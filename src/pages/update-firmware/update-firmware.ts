@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavParams, Slides, ViewController, LoadingController } from 'ionic-angular';
+import { NavParams, Slides, ViewController, LoadingController, ToastController } from 'ionic-angular';
 
 //Components
 import { ProgressBarComponent } from '../../components/progress-bar/progress-bar.component';
@@ -9,9 +9,12 @@ import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { DeviceManagerService } from 'dip-angular2/services';
 import { CommandUtilityService } from '../../services/device/command-utility.service';
+import { UtilityService } from '../../services/utility/utility.service';
 
-//Interfaaces
+//Interfaces
 import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
+
+declare var waveformsLiveDictionary: any;
 
 @Component({
     templateUrl: 'update-firmware.html',
@@ -23,9 +26,11 @@ export class UpdateFirmwarePage {
     public settingsService: SettingsService;
     public loadingCtrl: LoadingController;
     public commandUtilityService: CommandUtilityService;
+    public utilityService: UtilityService;
     public params: NavParams;
     public viewCtrl: ViewController;
     public deviceManagerService: DeviceManagerService;
+    public toastCtrl: ToastController;
     public updateComplete: boolean = false;
 
     public deviceFirmwareVersion: string = '';
@@ -48,6 +53,8 @@ export class UpdateFirmwarePage {
     public maxUploadStatusAttempts: number = 50;
     public errorUpdatingFirmware: boolean = false;
 
+    public errorDevice: boolean = false;
+
     public listUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/release/firmware/without-bootloader';
     public firmwareRepositoryUrl: string = 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/release/firmware/without-bootloader'
 
@@ -57,27 +64,88 @@ export class UpdateFirmwarePage {
         _params: NavParams,
         _viewCtrl: ViewController,
         _cmdUtilSrv: CommandUtilityService,
+        _utilSertice: UtilityService,
         _loadingCtrl: LoadingController,
-        _deviceManagerService: DeviceManagerService
+        _deviceManagerService: DeviceManagerService,
+        _toastCtrl: ToastController
     ) {
         this.deviceManagerService = _deviceManagerService;
         this.commandUtilityService = _cmdUtilSrv;
+        this.utilityService = _utilSertice;
         this.storageService = _storageService;
         this.loadingCtrl = _loadingCtrl;
         this.settingsService = _settingsService;
         this.viewCtrl = _viewCtrl;
         this.params = _params;
+        this.toastCtrl = _toastCtrl;
+
         this.agentAddress = this.params.get('agentAddress');
         this.deviceObject = this.params.get('deviceObject');
+
         console.log('update firmware constructor');
         console.log(this.settingsService.useDevBuilds);
+
         if (this.settingsService.useDevBuilds) {
             this.listUrl = 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/development/firmware/without-bootloader';
             this.firmwareRepositoryUrl = 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/development/firmware/without-bootloader';
         }
+
         this.deviceManagerService.transport.setHttpTransport(this.deviceObject.deviceBridgeAddress);
-        this.getDeviceFirmware();
-        this.getFirmwareList();
+
+        // note(andrew): In the edge case where a different device has been connected to the PC and has
+        // the same COM port as the previous one, we double check the device here,
+        // as programming the wrong firmware can damage the hardware
+        this.checkDevice().then((descriptor) => {
+                this.deviceObject.deviceDescriptor = descriptor;
+
+                let deviceModel = this.utilityService.transformModelToPropKey(descriptor.deviceModel);
+                
+                let {listUrl, firmwareUrl} = this.settingsService.knownFirmwareUrls[deviceModel];
+                
+                this.listUrl = listUrl;
+                this.firmwareRepositoryUrl = firmwareUrl;
+
+                this.getDeviceFirmware();
+                this.getFirmwareList();
+            })
+            .catch((err) => {
+                console.log(err);
+                
+                this.toastCtrl.create({
+                    message: 'Error connecting to the device',
+                    showCloseButton: true,
+                    duration: 3000
+                }).present();
+
+                this.viewCtrl.dismiss();
+            });
+    }
+
+    public retrievedModel: string;
+
+    /**
+     * 
+     * @param expectedModel 
+     */
+    private checkDevice(): Promise<any>{
+        return new Promise((resolve, reject) => {
+            let command = {
+                device: [
+                    {command: "enumerate"}
+                ]
+            }
+            this.deviceManagerService.transport.writeRead("/", JSON.stringify(command), 'json').subscribe((res) => {
+                let response = JSON.parse(String.fromCharCode.apply(null, new Int8Array(res.slice(0))));
+
+                let deviceDescriptor = response.device[0];
+
+                resolve(deviceDescriptor);
+            }, (err) => { reject(err); });
+        });
+    }
+
+    public cautionMessage() {
+        return waveformsLiveDictionary.getMessage('firmwareCautionMessage').message;
     }
 
     getDeviceFirmware() {
@@ -231,7 +299,7 @@ export class UpdateFirmwarePage {
                 loading.dismiss();
             })
             .catch((e) => {
-                console.log('Error caught trying to upload the firmware');
+                console.log('Error caught trying to upload the firmware:', e);
                 loading.dismiss();
                 this.updateStatus = 'Error uploading firmware. Please try again.';
             });
@@ -253,7 +321,8 @@ export class UpdateFirmwarePage {
                     });
             }
             else {
-                this.getFirmwareFromUrl(this.firmwareRepositoryUrl + '/OpenScopeMZ-' + this.selectedFirmwareVersion + '.hex')
+                let device = this.deviceObject.deviceDescriptor.deviceModel.replace(" ", "");
+                this.getFirmwareFromUrl(this.firmwareRepositoryUrl + `/${device}-` + this.selectedFirmwareVersion + '.hex')
                     .then(() => {
                         resolve();
                     })

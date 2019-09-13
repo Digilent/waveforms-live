@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
-import { LoggerModule } from '../logger/logger.module';
+import { OpenScopeLoggerModule } from '../logger/openscope/openscope-logger.module';
 import { BodePageModule } from '../bode/bode.module'; 
 import { BodeModalPageModule } from '../bode-modal/bode-modal.module';
 import { SlowUSBModalPageModule } from '../slow-usb-modal/slow-usb-modal.module';
@@ -13,8 +13,8 @@ import { XAxisComponent } from '../../components/xaxis-controls/xaxis-controls.c
 import { YAxisComponent } from '../../components/yaxis-controls/yaxis-controls.component';
 import { TimelineChartComponent } from '../../components/timeline-chart/timeline-chart.component';
 import { TriggerComponent } from '../../components/trigger/trigger.component';
-import { DigitalIoComponent } from '../../components/digital-io/digital-io.component';
-import { DcSupplyComponent } from '../../components/dc-supply/dc-supply.component';
+import { DigitalIoModule } from '../../components/digital-io/digital-io.module';
+import { DcSupplyModule } from '../../components/dc-supply/dc-supply.module';
 import { ModalCursorPage } from '../../pages/cursor-modal/cursor-modal';
 import { MathModalPage } from '../../pages/math-modal/math-modal';
 import { LaPopover } from '../../components/la-popover/la-popover.component';
@@ -24,8 +24,10 @@ import { FGenModule } from '../../components/function-gen/function-gen.module';
 @NgModule({
     imports: [
         SharedModule,
-        LoggerModule,
+        OpenScopeLoggerModule,
         FGenModule,
+        DcSupplyModule,
+        DigitalIoModule,
         IonicModule.forRoot(InstrumentPanelPage),
         IonicModule.forRoot(ModalCursorPage),
         IonicModule.forRoot(MathModalPage),
@@ -45,8 +47,6 @@ import { FGenModule } from '../../components/function-gen/function-gen.module';
         YAxisComponent,
         TimelineChartComponent,
         TriggerComponent,
-        DigitalIoComponent,
-        DcSupplyComponent,
         ChartAnnotationComponent
     ],
     exports: [InstrumentPanelPage]

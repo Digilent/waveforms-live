@@ -6,6 +6,14 @@ import { Platform } from 'ionic-angular';
 import { StorageService } from '../storage/storage.service';
 import { DeviceManagerService } from 'dip-angular2/services';
 
+interface firmwareUrls {
+    prettyName: string
+    listUrl: string
+    devListUrl: string
+    firmwareUrl: string
+    devFirmwareUrl: string
+}
+
 @Injectable()
 export class SettingsService {
 
@@ -17,21 +25,29 @@ export class SettingsService {
     public nestedChannels: boolean = false;
     public routeToStore: boolean = true;
     public drawLaOnTimeline: boolean = false;
-    public wflVersion: string = '1.3.5';
+    public wflVersion: string = '1.4.8';
     public useDevBuilds: boolean = false;
     public androidAppLink = "market://details?id=com.digilent.waveformslive";
     public iosAppLink = "https://itunes.apple.com/us/app/waveforms-live/id1244242035";
     public isMobile: boolean = false;
 
     readonly profileToken: string = 'profile.';
+    private selectedLogProfiles: any = {};
 
-    public knownFirmwareUrls: { openscopeMz: { prettyName: string, listUrl: string, devListUrl: string, firmwareUrl: string, devFirmwareUrl: string } } = {
+    public knownFirmwareUrls: { openscopeMz: firmwareUrls, openloggerMz: firmwareUrls } = {
         openscopeMz: {
             prettyName: 'OpenScope MZ',
             listUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/release/firmware/without-bootloader',
             devListUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenScope+MZ/development/firmware/without-bootloader',
             firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/release/firmware/without-bootloader',
             devFirmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenScope+MZ/development/firmware/without-bootloader'
+        },
+        openloggerMz: {
+            prettyName: 'OpenLogger MZ',
+            listUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenLogger+MZ/release/firmware/without-bootloader',
+            devListUrl: 'https://s3-us-west-2.amazonaws.com/digilent?prefix=Software/OpenLogger+MZ/development/firmware/without-bootloader',
+            firmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenLogger+MZ/release/firmware/without-bootloader',
+            devFirmwareUrl: 'https://s3-us-west-2.amazonaws.com/digilent/Software/OpenLogger+MZ/development/firmware/without-bootloader'
         }
     };
 
@@ -75,12 +91,18 @@ export class SettingsService {
         });
 
         this.storageService.getData('loggerBufferSize').then((data) => {
-            this.loggerBufferSize = data || this.loggerBufferSize;
+            this.loggerBufferSize = parseFloat(data) || this.loggerBufferSize;
         });
         
         if (this.platform.is('ios') || this.platform.is('android') || this.platform.is('mobileweb')) {
             this.isMobile = true;
         }
+
+        this.storageService.getData('selectedLogProfiles').then((data) => {
+            if (data != undefined) {
+                this.selectedLogProfiles = JSON.parse(data);
+            }
+        });
     }
 
     setRouteToStore(route: boolean) {
@@ -138,9 +160,22 @@ export class SettingsService {
 
     localStorageLog(argumentArray?) {
         for (let i = 0; i < arguments.length; i++) {
-            let arg = arguments[i][0];
+            let arg = arguments[i];
             if (typeof(arg) === 'object') {
-                arg = JSON.stringify(arg);
+                let cache = new Set();
+                arg = JSON.stringify(arg, (key, value) => {
+                    if (typeof(value) === 'object' && value !== null) {
+                        if (cache.has(value)) {
+                            try {
+                                return JSON.parse(JSON.stringify(value));
+                            } catch (err) {
+                                return '[object]';
+                            }
+                        }
+                        cache.add(value);
+                    }
+                    return value;
+                });
             }
             this.logArguments.push(arg);
         }
@@ -166,7 +201,7 @@ export class SettingsService {
     }
 
     exportLogFile() {
-        let fileName = 'OpenScopeLogs.txt';
+        let fileName = 'WaveFormsLiveLogs.txt';
         let csvContent = 'data:text/csv;charset=utf-8,';
         if (this.logArguments.length === 0) {
             csvContent += 'No Logs Found\n';
@@ -207,5 +242,18 @@ export class SettingsService {
         this.storageService.saveData('loggerBufferSize', JSON.stringify(this.loggerBufferSize)).catch((e) => {
             console.warn(e);
         });
+    }
+
+    getLoggerProfile(macAddress: string) {
+        return this.selectedLogProfiles[macAddress];
+    }
+
+    saveLoggerProfile(macAddress: string, profileName: string) {
+        this.selectedLogProfiles[macAddress] = profileName;
+
+        this.storageService.saveData('selectedLogProfiles', JSON.stringify(this.selectedLogProfiles))
+            .catch((e) => {
+                console.warn(e);
+            });
     }
 }

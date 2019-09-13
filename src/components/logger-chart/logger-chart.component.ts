@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { Events } from 'ionic-angular';
 
 //Pipes
 import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
@@ -17,28 +18,38 @@ import { DigilentChart } from 'digilent-chart-angular2/modules';
 export class LoggerChartComponent {
     @ViewChild('loggerChart') loggerChart: DigilentChart;
     private unitFormatPipeInstance: UnitFormatPipe;
-    public colorArray: string[] = ['#FFA500', '#4487BA', '#ff3b99', '#00c864'];
+    public colorArray: string[] = ['#FFA510', '#4487BA', '#FF5080', '#00d400', '#AC9D93', '#8800AA', '#EAEA00', '#784421'];
     public loggerChartOptions: any;
     private activeDevice: DeviceService;
+    private instrument: any;
 
     public unitSymbols: string[];
 
     constructor(
         private loggerPlotService: LoggerPlotService,
-        private deviceManagerService: DeviceManagerService
+        private deviceManagerService: DeviceManagerService,
+        private events: Events
     ) {
         this.unitFormatPipeInstance = new UnitFormatPipe();
         this.activeDevice = this.deviceManagerService.devices[this.deviceManagerService.activeDeviceIndex];
+        this.instrument = this.activeDevice.instruments.logger.daq.numChans > 0 ? 'daq' : 'analog';
         
         // set the unit to v for volts initially
-        let length = this.activeDevice.instruments.logger.analog.numChans;
+        let length = this.activeDevice.instruments.logger[this.instrument].numChans;
         this.unitSymbols = Array.from({length}, () => 'V');
         
         this.loggerChartOptions = this.generateBodeOptions();
+
+        this.events.subscribe('units:update', (params) => {
+            this.setChannelUnit(params[0]['channel'], params[0]['units']);
+        });
     }
 
-    setChannelUnit(chan, unit) {
-        chan--;
+    ngOnDestroy() {
+        this.events.unsubscribe('units:update');
+    }
+
+    setChannelUnit(chan: number, unit?: string) {
         this.unitSymbols[chan] = unit || 'V';
 
         this.loggerChartOptions = this.generateBodeOptions();
@@ -47,21 +58,17 @@ export class LoggerChartComponent {
 
         console.log(this.loggerChartOptions, this.loggerChart.flotOptions);
         console.log(this.unitSymbols, chan);
-
-        this.loggerChart.digilentChart == undefined;
-        this.loggerChart.createChart();
-        this.loggerChart.chartLoad.emit();
     }
 
     plotLoaded() {
         console.log('chart loaded');
         console.log(this.loggerChart);
 
-        this.loggerChart.digilentChart.setSecsPerDivArray(this.generateNiceNumArray(0.000001, 10));
+        this.loggerChart.digilentChart.setSecsPerDivArray(this.generateNiceNumArray(0.000001, 100000000));
         this.loggerChart.digilentChart.setVoltsPerDivArray(this.generateNiceNumArray(0.001, 5));
-        this.loggerChart.digilentChart.setActiveXIndex(15);
+        this.loggerChart.digilentChart.setActiveXIndex(7);
 
-        let analongChans = this.deviceManagerService.getActiveDevice().instruments.logger.analog.numChans;
+        let analongChans =  this.activeDevice.instruments.logger[this.instrument].numChans;
         let indices = Array.from({length: analongChans}, () => 8);
 
         this.loggerChart.digilentChart.setActiveYIndices(indices);
@@ -73,8 +80,10 @@ export class LoggerChartComponent {
         let currentPow = Math.ceil(Math.log10(min));
         let current = min * Math.pow(10, -1 * currentPow);
         let i = 0;
+
         while (current * Math.pow(10, currentPow) <= max) {
             niceNumArray[i] = this.decimalAdjust('round', current * Math.pow(10, currentPow), currentPow);
+            
             if (current === 1) {
                 current = 2;
             }
@@ -173,7 +182,7 @@ export class LoggerChartComponent {
 
     generateFftYaxisOptions() {
         let fftYAxes: any = [];
-        for (let i = 0; i < this.activeDevice.instruments.logger.analog.numChans; i++) {
+        for (let i = 0; i < this.activeDevice.instruments.logger[this.instrument].numChans; i++) {
             let axisOptions = {
                 position: 'left',
                 axisLabel: 'Ch ' + (i + 1),
@@ -237,15 +246,18 @@ export class LoggerChartComponent {
 
     xTickFormatter(val, axis) {
         let timePerDiv = Math.abs(axis.max - axis.min) / 10;
+
         if (parseFloat(val) == 0) {
             return 0 + ' s';
         }
+        
         let i = 0;
         let unit = '';
         while (timePerDiv < 1) {
             i++;
             timePerDiv = timePerDiv * 1000;
         }
+
         val = (parseFloat(val) * Math.pow(1000, i));
         let numDigits = val.toFixed(0).length;
         let fixedDigits;

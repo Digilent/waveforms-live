@@ -1,31 +1,31 @@
-import { Component, ViewChild, ViewChildren, QueryList, Output, EventEmitter } from '@angular/core';
+import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { AlertController } from 'ionic-angular';
-import { LoadingService } from '../../services/loading/loading.service';
-import { ToastService } from '../../services/toast/toast.service';
+import { LoadingService } from '../../../services/loading/loading.service';
+import { ToastService } from '../../../services/toast/toast.service';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
 
 //Components
-import { DropdownPopoverComponent } from '../dropdown-popover/dropdown-popover.component';
+import { DropdownPopoverComponent } from '../../dropdown-popover/dropdown-popover.component';
+import { LoggerXAxisComponent } from '../../logger-xaxis/logger-xaxis.component';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
-import { UtilityService } from '../../services/utility/utility.service';
-import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
-import { ExportService } from '../../services/export/export.service';
-import { SettingsService } from '../../services/settings/settings.service';
-import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { UtilityService } from '../../../services/utility/utility.service';
+import { LoggerPlotService } from '../../../services/logger-plot/logger-plot.service';
+import { ExportService } from '../../../services/export/export.service';
+import { SettingsService } from '../../../services/settings/settings.service';
+import { TooltipService } from '../../../services/tooltip/tooltip.service';
 
 //Interfaces
 /* import { DataContainer } from '../chart/chart.interface'; */
-import { PlotDataContainer } from '../../services/logger-plot/logger-plot.service';
-import { LoggerXAxisComponent } from '../logger-xaxis/logger-xaxis.component';
+import { PlotDataContainer } from '../../../services/logger-plot/logger-plot.service';
 
 @Component({
-    templateUrl: 'logger.html',
-    selector: 'logger-component'
+    templateUrl: 'openscope-logger.html',
+    selector: 'openscope-logger-component'
 })
-export class LoggerComponent {
+export class OpenScopeLoggerComponent {
     //@ViewChildren('dropPopOverflow') overflowChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopSamples') samplesChildren: QueryList<DropdownPopoverComponent>;
     @ViewChildren('dropPopLocation') locationChildren: QueryList<DropdownPopoverComponent>;
@@ -33,9 +33,6 @@ export class LoggerComponent {
     @ViewChild('dropPopProfile') profileChild: DropdownPopoverComponent;
     @ViewChild('dropPopMode') modeChild: DropdownPopoverComponent;
     @ViewChild('xaxis') xAxis: LoggerXAxisComponent;
-
-    @Output('updateScale') update: EventEmitter<any> = new EventEmitter();
-
     private activeDevice: DeviceService;
     public showLoggerSettings: boolean = true;
     public showAnalogChan: boolean[] = [];
@@ -126,13 +123,6 @@ export class LoggerComponent {
                 this.toastService.createToast('deviceDroppedConnection', true, undefined, 5000);
                 loading.dismiss();
             });
-    }
-
-    private unitTransformer: any[] = [];
-    public updateScale(event, chan) {
-        this.update.emit(Object.assign({}, event, {chan}));
-
-        this.unitTransformer[chan] = event.expression;
     }
 
     ngOnDestroy() {
@@ -239,7 +229,6 @@ export class LoggerComponent {
             this.getStorageLocations()
                 .then((data) => {
                     console.log(data);
-
                     if (data && data.device && data.device[0]) {
                         data.device[0].storageLocations.forEach((el, index, arr) => {
                             if (el !== 'flash') {
@@ -247,7 +236,6 @@ export class LoggerComponent {
                             }
                         });
                     }
-
                     if (this.storageLocations.length < 1) {
                         this.modes = ['stream'];
                         this.modeSelect('stream');
@@ -933,7 +921,7 @@ export class LoggerComponent {
         for (let i = 0; i < this.dataContainers.length; i++) {
             this.dataContainers[i].data = [];
         }
-        this.loggerPlotService.setData(this.dataContainers, false);
+        this.loggerPlotService.setData(this.dataContainers, this.viewMoved);
         this.dataAvailable = false;
     }
 
@@ -944,26 +932,19 @@ export class LoggerComponent {
                 let channelObj = readResponse.instruments[instrument][channel];
                 let dt = 1 / (channelObj.actualSampleFreq / 1000000);
                 let timeVal = channelObj.startIndex * dt;
-
                 for (let i = 0; i < channelObj.data.length; i++) {
-                    let data = (this.unitTransformer[channel]) ? this.unitTransformer[channel](channelObj.data[i]) :
-                        channelObj.data[i]; 
-
-                    formattedData.push([timeVal, data]);
-                    
+                    formattedData.push([timeVal, channelObj.data[i]]);
                     timeVal += dt;
                 }
-
                 let dataContainerIndex = 0;
                 if (instrument === 'digital') {
                     dataContainerIndex += this.analogChans.length;
                 }
-
-                let chanIndex: number;
-                dataContainerIndex += (chanIndex = parseInt(channel) - 1);
+                let chanIndex: number = parseInt(channel) - 1;
+                dataContainerIndex += chanIndex;
                 this.dataContainers[dataContainerIndex].seriesOffset = channelObj.actualVOffset / 1000;
                 this.dataContainers[dataContainerIndex].data = this.dataContainers[dataContainerIndex].data.concat(formattedData);
-                
+
                 let overflow = 0;
                 let containerSize = this.analogChans[chanIndex].sampleFreq * this.xAxis.loggerBufferSize;
                 if ((overflow = this.dataContainers[dataContainerIndex].data.length - containerSize) >= 0) {
@@ -972,7 +953,7 @@ export class LoggerComponent {
             }
         }
         this.setViewToEdge();
-        this.loggerPlotService.setData(this.dataContainers, false);
+        this.loggerPlotService.setData(this.dataContainers, this.viewMoved);
         this.dataAvailable = true;
     }
 
@@ -1157,13 +1138,7 @@ export class LoggerComponent {
                 this.parseReadResponseAndDraw(data);
                 if (this.running) {
                     if (this.selectedMode !== 'log') {
-                        if (this.activeDevice.transport.getType() === 'local') {
-                            setTimeout(() => {
-                                this.readLiveData();
-                            }, 1000); // grab wait from one of the channels?? Or rather, if we are simulating then wait otherwise just continue as norm    
-                        } else {
-                            this.readLiveData();
-                        }
+                        this.readLiveData();
                     }
                     else {
                         this.getLiveState();

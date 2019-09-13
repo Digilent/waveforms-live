@@ -16,6 +16,8 @@ export class LoggerPlotService {
     public tpdIndex: number;
     public vpdArray: number[];
     public vpdIndices: number[];
+    public defaultTpdIndex: number;
+    public defaultVpdIndices: number[];
 
     public xAxis: AxisInfo = {
         position: 0.5,
@@ -67,18 +69,27 @@ export class LoggerPlotService {
         this.tpdIndex = this.chart.getActiveXIndex();
         this.vpdArray = this.chart.getVoltsPerDivArray();
         this.vpdIndices = this.chart.getActiveYIndices();
+        this.defaultVpdIndices = this.vpdIndices.slice();
+        this.defaultTpdIndex = this.tpdIndex;
+
         this.setValPerDivAndUpdate('x', 1, this.tpdArray[this.tpdIndex], false);
+
         for (let i = 0; i < this.vpdIndices.length; i++) {
+
             this.yAxis.push({
                 position: 0,
                 base: 0.5
             });
+
             this.setValPerDivAndUpdate('y', i + 1, this.vpdArray[this.vpdIndices[i]], false);
         }
         let getAxes = this.chart.getAxes();
+
         getAxes.xaxis.options.show = true;
+
         this.redrawChart();
         this.attachListeners();
+
         this.chart.hooks.drawOverlay.push(this.updateSeriesAnchors.bind(this));
     }
 
@@ -99,26 +110,74 @@ export class LoggerPlotService {
         this.attachTimelineListeners();
     }
 
-    setData(data: PlotDataContainer[], autoscale?: boolean) {
-        this.dataContainers = data;
-        this.digilentChart.setData(data, autoscale);
+    setData(data: PlotDataContainer[], viewMoved: boolean) {
+        // deep copy
+        this.dataContainers = data.map(a => Object.assign({}, a));
+        let timelineData = data.map(a => Object.assign({}, a));
+
+        this.trimChartData(!viewMoved)
+            .then(() => {
+                this.shouldShowIndividualPoints(true);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        
+        for (let i = 0; i < timelineData.length; i++) {
+            timelineData[i].yaxis = 1;
+            timelineData[i].data = largestTriangleThreeBuckets(timelineData[i].data, 1000, 0, 1);
+        }
+
         if (this.timelineChartRef != undefined) {
-            let tempYaxisNums: number[] = [];
-            let tempAllData: number[][][] = [];
-            for (let i = 0; i < data.length; i++) {
-                tempYaxisNums.push(data[i].yaxis);
-                data[i].yaxis = 1;
-                tempAllData.push(data[i].data);
-                data[i].data = largestTriangleThreeBuckets(data[i].data, 1000, 0, 1);
-            }
-            this.timelineChartRef.setData(data, false);
-            for (let i = 0; i < data.length; i++) {
-                data[i].yaxis = tempYaxisNums[i];
-                data[i].data = tempAllData[i];
-            }
+            this.timelineChartRef.setData(timelineData, false);
             this.updateTimelineCurtains();
         }
-        this.shouldShowIndividualPoints(true);
+    }
+
+    trimChartData(snappedToFront: boolean = false) {
+        return new Promise((resolve, reject) => {
+            let chartData = this.dataContainers.map(a => Object.assign({}, a));
+            let xaxis = this.chart.getAxes().xaxis;
+
+            // trim data to visible section of xaxis and draw
+            for (let i = 0; i < chartData.length; i++) {
+                let diff = 0;
+                if (snappedToFront && chartData[i].data.length > 0) {
+                    diff = chartData[i].data[chartData[i].data.length - 1][0] - xaxis.max;
+                }
+
+                let lastIndex = chartData[i].data.length - 1;
+                chartData[i].data = chartData[i].data.filter((point, index) => {
+                    let t0 = index === lastIndex ? point[0] : chartData[i].data[index + 1][0];
+                    let t1 = index === 0 ? point[0] : chartData[i].data[index - 1][0];
+
+                    return t0 >= (xaxis.min + diff) && t1 <= (xaxis.max + diff);
+                });
+                chartData[i].data = largestTriangleThreeBuckets(chartData[i].data, 1000, 0, 1);
+            }
+
+            this.chart.setData(chartData);
+            this.chart.setupGrid();
+            this.chart.draw();
+            resolve();
+        });
+    }
+
+    setViewToFront() {
+        this.chart.setupGrid();
+        if (this.timelineChartRef != undefined) {
+            this.updateTimelineCurtains();
+        }
+        setTimeout(() => {
+            this.trimChartData(true)
+                .then(() => {
+                    this.shouldShowIndividualPoints(false);
+                    this.chart.draw();
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }, 1);
     }
 
     redrawChart() {
@@ -144,24 +203,40 @@ export class LoggerPlotService {
 
     shouldShowIndividualPoints(redraw?: boolean) {
         redraw = redraw == undefined ? false : redraw;
+
         let series = this.chart.getData();
         let axesInfo = this.chart.getAxes();
         let shouldRedraw = false;
+
         for (let i = 0; i < series.length; i++) {
             if (series[0].data.length < 1) { return; }
+
             if (series[0].data.length < 2) {
                 shouldRedraw = true;
+
                 series[i].points.show = true;
+
                 continue;
             }
-            let numPointsInView = (axesInfo.xaxis.max - axesInfo.xaxis.min) / (series[i].data[1][0] - series[i].data[0][0]);
+
+            let dt;
+            try {
+               dt = (series[i].data[1][0] - series[i].data[0][0]);
+            } catch(e) {
+                continue;
+            }
+            
+            let numPointsInView = (axesInfo.xaxis.max - axesInfo.xaxis.min) / dt;
             let currentVal = series[i].points.show;
             let shouldShowPoints = numPointsInView < 50;
+
             series[i].points.show = shouldShowPoints;
+
             if (currentVal !== shouldShowPoints) {
                 shouldRedraw = true;
             }
         }
+
         if (shouldRedraw && redraw) {
             this.chart.draw();
         }
@@ -192,9 +267,11 @@ export class LoggerPlotService {
     setValPerDivAndUpdate(axis: Axis, axisNum: number, valPerDiv: number, redraw?: boolean) {
         if (this.isInvalidAxisInfo(axis, axisNum)) { console.log('invalid axis num'); return; }
         redraw = redraw == undefined ? true : redraw;
+
         let getAxes = this.chart.getAxes();
         let axisIndexer = this.getAxisIndexer(axis, axisNum);
         let axisObj: AxisInfo = axis === 'x' ? this.xAxis : this.yAxis[axisNum - 1];
+
         let max = valPerDiv * 5 + axisObj.position;
         let min = axisObj.position - valPerDiv * 5;
         getAxes[axisIndexer].options.min = min;
@@ -204,7 +281,20 @@ export class LoggerPlotService {
         this.setNearestPerDivVal(axis, axisNum);
 
         if (redraw) {
-            this.redrawChart();
+            this.chart.setupGrid();
+            if (this.timelineChartRef != undefined) {
+                this.updateTimelineCurtains();
+            }
+            setTimeout(() => {
+                this.trimChartData(false)
+                    .then(() => {
+                        this.shouldShowIndividualPoints(false);
+                        this.chart.draw();
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }, 1);
         }
     }
 
@@ -259,14 +349,40 @@ export class LoggerPlotService {
             this.tpdIndex = wheelData.perDivArrayIndex;
             this.xAxis.base = this.tpdArray[this.tpdIndex];
             this.xAxis.position = wheelData.mid;
+
             setTimeout(() => {
-                this.shouldShowIndividualPoints(true);
+                this.trimChartData(false)
+                    .then(() => {
+                        this.shouldShowIndividualPoints(true);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
             }, 1);
         });
 
         $("#loggerTimeline").bind("timelinePanEvent", (event, data) => {
             this.xAxis.position = data.mid;
             this.chartPan.next(data);
+            setTimeout(() => {
+                this.trimChartData(false)
+                    .then(() => {
+                        this.shouldShowIndividualPoints(true);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }, 1);
+        });
+
+        $("#loggerTimeline").bind("click", (event) => {
+            this.trimChartData(false)
+                .then(() => {
+                    this.shouldShowIndividualPoints(true);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         });
     }
 
@@ -275,6 +391,15 @@ export class LoggerPlotService {
             if (panData.axis === 'xaxis') {
                 this.chartPan.next(panData);
                 this.xAxis.position = panData.mid;
+                setTimeout(() => {
+                    this.trimChartData(false)
+                        .then(() => {
+                            this.shouldShowIndividualPoints(true);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                }, 1);
             }
             else {
                 this.yAxis[panData.axisNum - 1].position = panData.mid;
@@ -289,7 +414,13 @@ export class LoggerPlotService {
                 this.xAxis.base = this.tpdArray[this.tpdIndex];
                 this.xAxis.position = wheelData.mid;
                 setTimeout(() => {
-                    this.shouldShowIndividualPoints(true);
+                    this.trimChartData(false)
+                        .then(() => {
+                            this.shouldShowIndividualPoints(true);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
                 }, 1);
             }
             else {
@@ -472,22 +603,27 @@ export class LoggerPlotService {
     }
 
     updateSeriesAnchors(plot: any, ctx: any) {
-        if (this.dataContainers == undefined) { return; }
+        if (this.dataContainers == undefined || this.chart == undefined) { return; }
+
         let offsets = this.chart.offset();
         let getAxes = this.chart.getAxes();
         let series = this.chart.getData();
+
         for (let i = 0; i < this.dataContainers.length; i++) {
             if (this.dataContainers[i].data.length < 1 || series[i] == undefined) { continue; }
+
             let strokeColor = 'black';
             let lineWidth = 1;
             if (this.activeSeries - 1 === i) {
                 strokeColor = 'white';
                 lineWidth = 2;
             }
+            
             let seriesNum = i;
             let yIndexer = 'y' + ((seriesNum === 0) ? '' : (seriesNum + 1).toString()) + 'axis';
             let offsetVal = this.dataContainers[seriesNum].seriesOffset;
             let offsetPix = getAxes[yIndexer].p2c(offsetVal);
+            
             ctx.save();
             ctx.translate(offsets.left - 11, offsetPix + 10);
             ctx.beginPath();

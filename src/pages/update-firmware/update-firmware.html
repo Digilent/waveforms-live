@@ -30,6 +30,20 @@
                         <ion-label fixed>Status</ion-label>
                         <div item-right class="general-content">{{updateStatus}}</div>
                     </ion-item>
+
+                    <ion-item class="firmware-item" *ngIf="errorDevice">
+                        <div item-center>
+                            <p>Expected {{deviceObject.deviceDescriptor.deviceModel}} but found instead. Is this right?</p>
+                            
+                            <button item-right ion-button class="text-button-side disable-hover item-button" (click)="confirmNewDevice()">Yes</button>
+                        </div>
+                    </ion-item>
+
+                    <div class="caution-message" *ngIf="selectedFirmwareVersion === 'Other'">
+                        <p>
+                            {{ cautionMessage() }}
+                        </p>
+                    </div>
                 </ion-list>
                 
                 <input class="hidden-file-input" type="file" id="updateFileSelect" name="firmwareFileSelect" (change)="fileChange($event)" />

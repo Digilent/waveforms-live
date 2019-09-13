@@ -2,8 +2,9 @@
 
     <ion-slides #calibrationSlider>
 
-        <ion-slide class="slide-container">
-            <div class="content-container">
+        <ion-slide class="slide-container" *ngFor="let instruction of calibrationInstructions; let i = index">
+            <!-- Instructions -->
+            <div class="content-container" *ngIf="showInstructions">
                 <div class="slide-header">Device Calibration</div>
                 <div class="calibration-content-container">
                     <ion-row>
@@ -11,91 +12,124 @@
                             <img class="custom-image-button intro-icon" src="assets/img/calibrate.svg" />
                         </ion-col>
                     </ion-row>
-                    <ion-row>
-                        <ion-col text-left class="instructions-col"> 
-                            <div class="instruction-header">
-                                Instructions:
-                            </div>
-                            <div class="calibration-instructions">
-                                {{calibrationInstructions}}
-                            </div>
-                        </ion-col>
-                    </ion-row>
-                    <ion-row>
-                        <ion-col class="icon-col" center text-center>
-                            <img class="calibration-connection-image" src="assets/img/openscope_calibration.svg" />
-                        </ion-col>
-                    </ion-row>
-                    <ion-row>
+                    <ion-row *ngIf="i === 0">
                         <ion-col class="instructions-col" text-left>
                             <div class="calibration-instructions">
-                                <p>Device calibration compensates for component variance and temperature differences. Visit the <a target="_blank" href="https://reference.digilentinc.com/reference/instrumentation/openscope-mz/faq">FAQ</a> for more info.</p>
+                                <p>
+                                    Device calibration compensates for component variance and temperature differences. Visit the
+                                    <a target="_blank" href="https://reference.digilentinc.com/reference/instrumentation/openscope-mz/faq">FAQ</a> for more info. Follow these instructions to run calibration or select "Load Existing"
+                                    below to load an existing calibration file.
+                                </p>
                             </div>
                         </ion-col>
                     </ion-row>
-                    <div>
-                        <ion-item class="configure-item">
-                            <ion-label>Status</ion-label>
-                            <div item-right class="item-content-right">
-                                {{calibrationStatus}}
+                    <ion-row margin-top>
+                        <ion-col text-left class="instructions-col">
+                            <div class="instruction-header">
+                                Instructions
                             </div>
-                        </ion-item>
-                    </div>
-                </div>
-                <div class="navigation-button-container">
-                    <ion-row>
-                        <ion-col text-left>
-                            <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()">
-                                <img class="custom-image-button" src="assets/img/close.svg" />
-                                Close
-                            </button>
-                        </ion-col>
-                        <ion-col text-center>
-                            <button ion-button icon-right class="text-button-side disable-hover" (click)="toLoadExistingPage()">
-                                Load Existing
-                                <img class="custom-image-button" src="assets/img/archive.svg" />
-                            </button>
-                        </ion-col>
-                        <ion-col text-right>
-                            <button ion-button icon-right class="text-button-side disable-hover" (click)="runCalibration()">
-                                Begin
-                                <img class="custom-image-button" src="assets/img/arrow-forward.svg">
-                            </button>
+                            <div class="calibration-instructions">
+                                Step {{i + 1}} of {{calibrationInstructions.length}}: {{calibrationInstructions[i] || noInstructions}}
+                            </div>
                         </ion-col>
                     </ion-row>
-                </div>
-            </div>
-        </ion-slide>
-
-        <ion-slide class="slide-container">
-            <div class="content-container">
-                <div class="slide-header">Calibrating</div>
-                <div text-center class="pad-above">
-                    <digilent-progress-bar #digilentProgressBar (progressBarDone)="progressBarFinished()"></digilent-progress-bar>
-                </div>
-                <div class="calibration-instructions pad-above">
-                    {{calibrationStatus}}
                     <div class="calibration-connection-image-container">
-                        <ion-row *ngIf="calibrationFailed">
+                        <ion-row>
                             <ion-col class="icon-col" center text-center>
-                                <img class="calibration-connection-image" src="assets/img/openscope_calibration.svg" />
+                                <img [src]="connectionImage(i+1)" class="calibration-connection-image" *ngIf="calibrationInstructions[i]" />
                             </ion-col>
                         </ion-row>
+                    </div>
+                    <ion-row>
+                        <ion-col center text-center>
+                            <button ion-button class="pinout-icon disable-hover" (tap)="openDevicePinout($event)">
+                                PINOUT
+                            </button>
+                        </ion-col>
+                    </ion-row>
+                </div>
+                <div>
+                    <ion-item class="configure-item">
+                        <ion-label>Status</ion-label>
+                        <div item-right class="item-content-right">
+                            {{calibrationStatus}}
+                        </div>
+                    </ion-item>
+
+                    <div class="navigation-button-container">
+                        <ion-row>
+                            <ion-col text-left>
+                                <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()" *ngIf="i === 0">
+                                    <img class="custom-image-button" src="assets/img/close.svg" /> Close
+                                </button>
+                            </ion-col>
+                            <ion-col text-center>
+                                <button ion-button icon-right class="text-button-side disable-hover" (click)="toLoadExistingPage()" *ngIf="i === 0">
+                                    Load Existing
+                                    <img class="custom-image-button" src="assets/img/archive.svg" />
+                                </button>
+                            </ion-col>
+                            <ion-col text-right>
+                                <button ion-button icon-right class="text-button-side disable-hover" (click)="runCalibration(i)">
+                                    {{i === 0 ? 'Begin' : 'Next'}}
+                                    <img class="custom-image-button" src="assets/img/arrow-forward.svg">
+                                </button>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calibrating -->
+            <div class="content-container" [hidden]="!runningCalibration">
+                <div>
+                    <div class="slide-header">Calibrating</div>
+                    <div class="calibration-instructions">
+                        Step {{i + 1}} of {{calibrationInstructions.length}}
+                    </div>
+                    <div text-center class="pad-above">
+                        <digilent-progress-bar #digilentProgressBar (progressBarDone)="progressBarFinished()"></digilent-progress-bar>
+                    </div>
+                    <div class="calibration-instructions pad-above">
+                        {{calibrationStatus}}
+                        <div class="calibration-connection-image-container">
+                            <div *ngIf="calibrationFailed">
+                                <ion-row>
+                                    <ion-col class="icon-col pad-above" center text-center>
+                                        <img [src]="connectionImage(i+1)" class="calibration-connection-image" *ngIf="calibrationInstructions[i]" />
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col center text-center>
+                                        <button ion-button class="pinout-icon disable-hover" (tap)="openDevicePinout($event)">
+                                            PINOUT
+                                        </button>
+                                    </ion-col>
+                                </ion-row>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="navigation-button-container">
                     <ion-row>
                         <ion-col text-left>
                             <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()" *ngIf="calibrationFailed">
-                                <img class="custom-image-button" src="assets/img/close.svg">
-                                Close
+                                <img class="custom-image-button" src="assets/img/close.svg"> Close
                             </button>
                         </ion-col>
                         <ion-col text-right>
-                            <button ion-button icon-right class="text-button-side disable-hover" (click)="toCalibrationSuccessPage()" *ngIf="calibrationSuccessful">
+                            <!-- to Next Slide -->
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="toNextSlide()" *ngIf="calibrationSuccessful && i !== calibrationInstructions.length - 1">
                                 Next
                                 <img class="custom-image-button" src="assets/img/arrow-forward.svg">
                             </button>
+
+                            <!-- to Calibration Success slide -->
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="toCalibrationSuccessPage()" *ngIf="calibrationSuccessful && i === calibrationInstructions.length - 1">
+                                Finish
+                                <img class="custom-image-button" src="assets/img/arrow-forward.svg">
+                            </button>
+
                             <button ion-button icon-right class="text-button-side disable-hover" (click)="startCalibration()" *ngIf="calibrationFailed">
                                 Retry
                                 <img class="custom-image-button" src="assets/img/redo.svg">
@@ -108,77 +142,72 @@
 
         <ion-slide class="slide-container">
             <div class="content-container">
-                <div class="slide-header">Calibration Complete</div>
+                <div>
+                    <div class="slide-header">Calibration Complete</div>
 
-                <div class="calibration-info-container">
-                    <div>
-                        <ion-item class="configure-item">
-                            <!-- <ion-label></ion-label> -->
-                            <div class="something-else">
-                                {{ calibrationResultsIndicator }}
-                            </div>
-                            <!-- <div item-right class="item-content-right">
-                            </div> -->
-                        </ion-item>
-                    </div>
+                    <div class="calibration-info-container">
+                        <div class="results-indicator-wrapper">
+                            <ion-item class="configure-item">
+                                <div class="results-indicator">
+                                    {{ calibrationResultsIndicator }}
+                                </div>
+                            </ion-item>
+                        </div>
 
-                    <div text-center>
-                        <button ion-button icon-right clear class="advanced-button" (tap)="toggleAdvanced()">
-                            Advanced
-                            <div [@rotate]="showAdvanced">
-                                <img class="custom-image-button" src="assets/img/arrow-dropdown-white.svg">
-                            </div>
-                        </button> 
-                    </div>
-
-                    <div class="calibration-instructions calibration-results">
-                        <textarea [ngModel]="calibrationResults" class="calibration-results-container" [@expand]="showAdvanced"></textarea>
-                    </div>
-
-                    <div>
-                        <ion-item class="card-info collapse-card" [@expand]="showAdvanced">
-                            <ion-label>Apply this calibration on boot</ion-label>
-                            <ion-checkbox item-right [(ngModel)]="saveAsDefault"></ion-checkbox>
-                        </ion-item>
-                        <ion-item class="calibration-dropdown-popover-container" [@expand]="showAdvanced">
-                            <span class="storage-label">Storage Location</span>
-                            <dropdown-popover [forcePopover]="true" [dataArray]="storageLocations" [disabled]="!saveAsDefault" (onSelection)="selectStorage($event)"></dropdown-popover>
-                            <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" [disabled]="!saveAsDefault" item-right (click)="getStorageLocations()">
-                                <img class="custom-image-button" src="assets/img/refresh.svg">
+                        <div text-center>
+                            <button ion-button icon-right clear class="advanced-button" (tap)="toggleAdvanced()">
+                                Advanced
+                                <div [@rotate]="showAdvanced">
+                                    <img class="custom-image-button" src="assets/img/arrow-dropdown-white.svg">
+                                </div>
                             </button>
-                        </ion-item>
+                        </div>
+
+                        <div class="calibration-instructions calibration-results">
+                            <textarea [ngModel]="calibrationResults" class="calibration-results-container" [@expand]="showAdvanced"></textarea>
+                        </div>
+
+                        <div>
+                            <ion-item class="card-info collapse-card" [@expand]="showAdvanced">
+                                <ion-label>Apply this calibration on boot</ion-label>
+                                <ion-checkbox item-right [(ngModel)]="saveAsDefault"></ion-checkbox>
+                            </ion-item>
+                            <ion-item class="calibration-dropdown-popover-container" [@expand]="showAdvanced">
+                                <span class="storage-label">Storage Location</span>
+                                <dropdown-popover [forcePopover]="true" [dataArray]="storageLocations" [disabled]="!saveAsDefault" (onSelection)="selectStorage($event)"></dropdown-popover>
+                                <button ion-button class="storage-refresh-button icon-only-button-side disable-hover" [disabled]="!saveAsDefault" item-right
+                                    (click)="getStorageLocations()">
+                                    <img class="custom-image-button" src="assets/img/refresh.svg">
+                                </button>
+                            </ion-item>
+                        </div>
                     </div>
                 </div>
 
                 <div class="navigation-button-container">
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col text-left>
-                                <!--<div class="calibration-instructions status-indicator">Status: </div>
-                                <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>-->
-                            </ion-col>
-                            <ion-col text-center>
-                                <!--<button ion-button icon-right class="text-button-side disable-hover" (click)="saveCalibrationToDevice()">
-                                    Save
-                                    <img class="svg-in-img" src="assets/img/save.svg">
-                                </button>-->
-                            </ion-col>
-                            <ion-col text-right>
-                                <button ion-button icon-right class="storage-refresh-button text-button-side disable-hover" (click)="exitModal()">
-                                    Done
-                                    <img class="custom-image-button" src="assets/img/check.svg">
-                                </button>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
+                    <ion-row>
+                        <ion-col text-left>
+                            <button ion-button icon-left class="text-button-side disable-hover" (click)="closeModal()" *ngIf="calibrationFailed">
+                                <img class="custom-image-button" src="assets/img/close.svg"> Close
+                            </button>
+                        </ion-col>
+                        <ion-col text-center>
+                        </ion-col>
+                        <ion-col text-right>
+                            <button ion-button icon-right class="text-button-side disable-hover" (click)="exitModal()">
+                                Done
+                                <img class="custom-image-button" src="assets/img/check.svg">
+                            </button>
+                        </ion-col>
+                    </ion-row>
                 </div>
             </div>
         </ion-slide>
 
         <ion-slide class="slide-container">
             <div class="content-container">
-                <div class="slide-header">Load Calibration</div>
                 <div text-center>
+                    <div class="slide-header">Load Calibration</div>
                     <ion-item class="calibration-dropdown-popover-container">
                         <span class="storage-label">Storage Location</span>
                         <dropdown-popover [forcePopover]="true" [dataArray]="storageLocations" (onSelection)="selectStorage($event)"></dropdown-popover>
@@ -191,8 +220,11 @@
                         </button>
                     </ion-item>
                 </div>
-                
+
                 <div class="calibration-instructions calibration-results">
+                    <div class="pad-below">
+                        Current Calibration:
+                    </div>
                     <textarea [ngModel]="calibrationResults" class="calibration-results-container"></textarea>
                 </div>
 
@@ -203,25 +235,22 @@
                             {{calibrationResultsIndicator}}
                         </div>
                     </ion-item>
-                </div>
 
-                <div class="navigation-button-container">
-                    <ion-row>
-                        <ion-col text-left>
-                            <!--<div class="calibration-instructions status-indicator">Status: </div>
-                            <div class="calibration-instructions">{{calibrationResultsIndicator}}</div>-->
-                            <button ion-button icon-left class="text-button-side disable-hover" (click)="toSlide(0, true)">
-                                <img class="custom-image-button" src="assets/img/arrow-back.svg">
-                                Back
-                            </button>
-                        </ion-col>
-                        <ion-col text-right class="button-container-col">
-                            <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()">
-                                Done
-                                <img class="custom-image-button" src="assets/img/check.svg">
-                            </button>
-                        </ion-col>
-                    </ion-row>
+                    <div class="navigation-button-container">
+                        <ion-row>
+                            <ion-col text-left>
+                                <button ion-button icon-left class="text-button-side disable-hover" (click)="toSlide(0, true)">
+                                    <img class="custom-image-button" src="assets/img/arrow-back.svg"> Back
+                                </button>
+                            </ion-col>
+                            <ion-col text-right class="button-container-col">
+                                <button ion-button icon-right class="text-button-side disable-hover" (click)="closeModal()">
+                                    Done
+                                    <img class="custom-image-button" src="assets/img/check.svg">
+                                </button>
+                            </ion-col>
+                        </ion-row>
+                    </div>
                 </div>
             </div>
         </ion-slide>

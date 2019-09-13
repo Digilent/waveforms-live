@@ -7,7 +7,7 @@ import { DeviceConfigurePage } from '../../pages/device-configure/device-configu
 import { LoadFirmwarePage } from '../../pages/load-firmware/load-firmware';
 import { UpdateFirmwarePage } from '../../pages/update-firmware/update-firmware';
 import { CalibratePage } from '../../pages/calibrate/calibrate';
-import { LoggerPage } from '../logger/logger';
+import { OpenLoggerLoggerPage } from '../logger/openlogger/openlogger-logger';
 
 //Components
 import { GenPopover } from '../../components/gen-popover/gen-popover.component';
@@ -21,6 +21,7 @@ import { StorageService } from '../../services/storage/storage.service';
 import { SettingsService } from '../../services/settings/settings.service';
 import { ToastService } from '../../services/toast/toast.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
+import { UtilityService } from '../../services/utility/utility.service';
 
 interface tooltipInterface {
     addADevice: string,
@@ -58,6 +59,7 @@ export class DeviceManagerPage {
     public deviceManagerService: DeviceManagerService;
     public settingsService: SettingsService;
     public storage: StorageService;
+    public utilityService: UtilityService;
     public showDevMenu: boolean = false;
     public selectedSimulatedDevice: string = 'OpenScope MZ';
     public deviceBridgeAddress = 'http://localhost:42135';
@@ -86,7 +88,8 @@ export class DeviceManagerPage {
         _settingsService: SettingsService,
         _alertCtrl: AlertController,
         _toastService: ToastService,
-        _loadingCtrl: LoadingController
+        _loadingCtrl: LoadingController,
+        _utilService: UtilityService
     ) {
         console.log('tab1 constructor');
         this.app = _app;
@@ -103,6 +106,7 @@ export class DeviceManagerPage {
         this.addDeviceIp = "http://"
         this.deviceManagerService = _deviceManagerService;
         this.storage = _storage;
+        this.utilityService = _utilService;
         this.storage.getData('routeToStore').then((data) => {
             if ((data == null || data === true) && this.platform.is('mobileweb') && (this.platform.is('android') || this.platform.is('ios'))) {
                 this.routeToStore();
@@ -125,9 +129,14 @@ export class DeviceManagerPage {
 
     getFirmwareVersionsForDevices() {
         for (let i = 0; i < this.devices.length; i++) {
-            if (this.devices[i].ipAddress !== 'local') {
+            let device = this.devices[i];
+            if (device.ipAddress !== 'local') {
+                let deviceModel = this.utilityService.transformModelToPropKey(device.deviceDescriptor.deviceModel);
+
+                let listUrl = this.settingsService.knownFirmwareUrls[deviceModel].listUrl;
+
                 //TODO: read device enum for ip address and then call device man service getFirmwareVersionsFromUrl
-                this.deviceManagerService.getLatestFirmwareVersionFromUrl(this.listUrl).then((latestFirmwareVersion) => {
+                this.deviceManagerService.getLatestFirmwareVersionFromUrl(listUrl).then((latestFirmwareVersion) => {
                     this.determineIfOutdatedFirmware(latestFirmwareVersion, i);
                 }).catch((e) => {
                     console.log(e);
@@ -240,7 +249,7 @@ export class DeviceManagerPage {
             if (data.option === 'Remove') {
                 console.log(this.devices);
                 console.log(arrayIndex);
-                
+
                 this.agentReleaseActiveDevice(this.devices[arrayIndex]);
                 this.devices.splice(arrayIndex, 1);
                 this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
@@ -532,32 +541,13 @@ export class DeviceManagerPage {
     verifyCalibrationSource(deviceIndex: number, calibrationSource: string): Promise<any> {
         return new Promise((resolve, reject) => {
             console.log(deviceIndex, this.devices[deviceIndex]);
-            /*this.verifyFirmware(deviceIndex)
-                .then((data) => {*/
-            //Firmware updated
-            if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
-                let title = 'Uncalibrated Device';
-                let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
-                this.alertWrapper(title, subtitle)
-                    .then((data) => {
-                        return this.toCalibrationPage();
-                    })
-                    .then((data) => {
-                        resolve();
-                    })
-                    .catch((e) => {
-                        reject(e);
-                    });
-            }
-            else {
-                resolve();
-            }
-            /*})*/
-            /*.catch((e) => {
-                //can't update firmware
-                if (this.devices[deviceIndex].deviceDescriptor.calibrationSource == undefined || this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
+            this.deviceManagerService.getActiveDevice().calibrationRead().subscribe((data) => {
+                let calibrationObjectString = JSON.stringify(data.device[0].calibrationData);
+                if (calibrationObjectString.indexOf('uncalibrated') !== -1 ||
+                    this.devices[deviceIndex].deviceDescriptor.calibrationSource == 'UNCALIBRATED') {
                     let title = 'Uncalibrated Device';
                     let subtitle = 'Your device is uncalibrated. You will now be taken to the calibration wizard.';
+
                     this.alertWrapper(title, subtitle)
                         .then((data) => {
                             return this.toCalibrationPage();
@@ -568,21 +558,27 @@ export class DeviceManagerPage {
                         .catch((e) => {
                             reject(e);
                         });
+                } else {
+                    resolve();
                 }
-
-            });*/
+            });
         });
     }
 
     openGettingStartedPopover(event) {
-        /*let popover = this.popoverCtrl.create(GenPopover, {
-            dataArray: ['OpenScope MZ']
-        });
+        let popover = this.popoverCtrl.create(GenPopover, {
+            dataArray: ['OpenScope MZ', 'OpenLogger MZ']
+        }, {cssClass: 'gettingStartedPopover'});
         popover.onWillDismiss((data) => {
             if (data == undefined) { return; }
+            let openTab;
             switch (data.option) {
                 case 'OpenScope MZ':
-                    let openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/getting-started', '_blank');
+                    openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/start', '_blank');
+                    openTab.location;
+                    break;
+                case 'OpenLogger MZ':
+                    openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openlogger/getting-started', '_blank');
                     openTab.location;
                     break;
                 default:
@@ -591,9 +587,7 @@ export class DeviceManagerPage {
         });
         popover.present({
             ev: event
-        });*/
-        let openTab = window.open('https://reference.digilentinc.com/reference/instrumentation/openscope-mz/start', '_blank');
-        openTab.location;
+        });
     }
 
     verifyFirmware(deviceIndex): Promise<any> {
@@ -682,43 +676,49 @@ export class DeviceManagerPage {
         });
     }
 
+    getLogoName(deviceIndex: number) {
+        let name = this.utilityService.getShortName(this.devices[deviceIndex].deviceDescriptor.deviceModel);
+
+        return `assets/img/${name}.svg`;
+    }
+
     openSimDevice() {
-            if (this.checkIfMatchingLocal(this.selectedSimulatedDevice, this.tutorialMode)) {
-                if (!this.tutorialMode) {
-                    this.toastService.createToast('deviceExists', true);
-                    return;
-                }
+        if (this.checkIfMatchingLocal(this.selectedSimulatedDevice, this.tutorialMode)) {
+            if (!this.tutorialMode) {
+                this.toastService.createToast('deviceExists', true);
+                return;
             }
-            let loading = this.displayLoading();
-            this.deviceManagerService.connectLocal(this.selectedSimulatedDevice).subscribe(
-                (success) => {
-                    console.log(success);
-                    loading.dismiss();
-                    this.devices.unshift(
-                        {
-                            deviceDescriptor: success.device[0],
-                            ipAddress: 'local',
-                            hostname: 'Simulated ' + this.selectedSimulatedDevice,
-                            bridge: false,
-                            deviceBridgeAddress: null,
-                            connectedDeviceAddress: null,
-                            outdatedFirmware: false
-                        }
-                    );
-                    this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
-                        console.warn(e);
-                    });
-                    this.showDevMenu = false;
-                    this.toastService.createToast('deviceAdded');
-                    this.tutorialStage = 3;
-                },
-                (err) => {
-                    console.log(err);
-                    loading.dismiss();
-                    this.toastService.createToast('timeout', true);
-                },
-                () => { }
-            );
+        }
+        let loading = this.displayLoading();
+        this.deviceManagerService.connectLocal(this.selectedSimulatedDevice).subscribe(
+            (success) => {
+                console.log(success);
+                loading.dismiss();
+                this.devices.unshift(
+                    {
+                        deviceDescriptor: success.device[0],
+                        ipAddress: 'local',
+                        hostname: 'Simulated ' + this.selectedSimulatedDevice,
+                        bridge: false,
+                        deviceBridgeAddress: null,
+                        connectedDeviceAddress: null,
+                        outdatedFirmware: false
+                    }
+                );
+                this.storage.saveData('savedDevices', JSON.stringify(this.devices)).catch((e) => {
+                    console.warn(e);
+                });
+                this.showDevMenu = false;
+                this.toastService.createToast('deviceAdded');
+                this.tutorialStage = 3;
+            },
+            (err) => {
+                console.log(err);
+                loading.dismiss();
+                this.toastService.createToast('timeout', true);
+            },
+            () => { }
+        );
     }
 
     openUpdateFirmware(deviceIndex: number): Promise<any> {
@@ -854,24 +854,46 @@ export class DeviceManagerPage {
 
     connectToDevice(deviceIndex: number) {
         let isLogger = false;
-        let pageToDisplay = (isLogger = this.devices[deviceIndex].deviceDescriptor.deviceModel === 'OpenLogger MZ') ? LoggerPage : InstrumentPanelPage;
-        // What happens if I previosuly had an OpenScope, but this is now an OpenLogger?
-        
+        let pageToDisplay = (isLogger = this.devices[deviceIndex].deviceDescriptor.deviceModel === 'OpenLogger MZ') ? OpenLoggerLoggerPage : InstrumentPanelPage;
+
+        let navParams = {
+            tutorialMode: this.tutorialMode
+        };
+
+        if (isLogger) navParams = Object.assign(navParams, { onLoggerDismiss: () => { }, isRoot: true });
+
         if (this.devices[deviceIndex].ipAddress === 'local') {
             this.deviceManagerService.addDeviceFromDescriptor('local', { device: [this.devices[deviceIndex].deviceDescriptor] });
 
             console.log(this.deviceManagerService);
 
-            let navParams = {
-                tutorialMode: this.tutorialMode
-            };
-
-            if (isLogger) navParams = Object.assign(navParams, {onLoggerDismiss: () => {}, isRoot: true});
-
             this.navCtrl.setRoot(pageToDisplay, navParams);
             return;
         }
 
+        let fwVer = this.devices[deviceIndex].deviceDescriptor.firmwareVersion;
+
+        // force the user to update firmware to proceed 
+        if (fwVer.major === 0 && fwVer.minor === 1359 && fwVer.patch === 0) {
+            let toast = this.toastService.toastCtrl.create({
+                message: 'Please update the firmware to access the logger page',
+                duration: 3000,
+                showCloseButton: true
+            });
+
+            toast.present();
+
+            this.openUpdateFirmware(deviceIndex)
+                .then((data) => {
+                    console.log(data);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+
+            return;
+        }
+        
         let loading = this.displayLoading();
         let ipAddress = this.devices[deviceIndex].ipAddress;
         if (this.devices[deviceIndex].bridge) {
@@ -897,7 +919,7 @@ export class DeviceManagerPage {
 
                     try {
                         data = JSON.parse(String.fromCharCode.apply(null, new Int8Array(arrayBuffer.slice(0))));
-                        
+
                         statusCode = data.agent[0].statusCode;
                     }
                     catch (e) {
@@ -918,11 +940,9 @@ export class DeviceManagerPage {
                     this.enterJsonMode()
                         .then(() => {
                             this.sendEnumeration(ipAddress, loading, deviceIndex)
-                            .then(() => {
-                                this.navCtrl.setRoot(pageToDisplay, {
-                                    tutorialMode: this.tutorialMode
+                                .then(() => {
+                                    this.navCtrl.setRoot(pageToDisplay, navParams);
                                 });
-                            });
                         })
                         .catch((e) => {
                             this.toastService.createToast('agentConnectError', true);
@@ -941,13 +961,11 @@ export class DeviceManagerPage {
             );
             return;
         }
-        
+
         this.sendEnumeration(ipAddress, loading, deviceIndex)
-        .then(() => {
-            this.navCtrl.setRoot(pageToDisplay, {
-                tutorialMode: this.tutorialMode
+            .then(() => {
+                this.navCtrl.setRoot(pageToDisplay, navParams);
             });
-        });
     }
 
     sendEnumeration(ipAddress, loadingInstance, deviceIndex) {
@@ -963,6 +981,7 @@ export class DeviceManagerPage {
 
                     this.verifyFirmware(deviceIndex)
                         .then((data) => {
+
                             return this.verifyCalibrationSource(deviceIndex, success.device[0].calibrationSource);
                         })
                         .then((data) => {
@@ -980,7 +999,7 @@ export class DeviceManagerPage {
                     console.log(err);
 
                     this.toastService.createToast('timeout', true);
-                    
+
                     loadingInstance.dismiss();
                 },
                 () => { }

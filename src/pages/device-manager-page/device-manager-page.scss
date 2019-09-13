@@ -407,3 +407,27 @@
     font-size: 1.2rem;
     margin-top: 0px;
 }
+
+.gettingStartedPopover .popover-content {
+    right: 130px !important;
+    left: auto !important;
+}
+
+.first-tab-container .getting-started {
+    color: white;
+    text-transform: uppercase;
+    font-size: 11px;
+    text-align: center;
+    max-width: 66%;
+}
+
+@media screen and (max-width: 768px) {
+    .gettingStartedPopover .popover-content {
+        right: 15% !important;
+        left: auto !important;
+    }
+
+    .first-tab-container .getting-started {
+        max-width: 100%;
+    }
+}

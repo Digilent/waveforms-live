@@ -17,7 +17,7 @@ import { DigilentChart } from 'digilent-chart-angular2/modules';
 export class LoggerTimelineComponent {
     @ViewChild('loggerTimeline') loggerTimeline: DigilentChart;
     private unitFormatPipeInstance: UnitFormatPipe;
-    public colorArray: string[] = ['#FFA500', '#4487BA', '#ff3b99', '#00c864'];
+    public colorArray: string[] = ['#FFA510', '#4487BA', '#FF5080', '#00d400', '#AC9D93', '#8800AA', '#EAEA00', '#784421'];
     public loggerChartOptions: any = this.generateBodeOptions();
     private activeDevice: DeviceService;
 

@@ -2,16 +2,16 @@ import { Component, ViewChild, trigger, state, animate, transition, style } from
 import { NavParams, Slides, ViewController, PopoverController, LoadingController, NavController } from 'ionic-angular';
 
 //Services
-import { StorageService } from '../../services/storage/storage.service';
-import { SettingsService } from '../../services/settings/settings.service';
+import { StorageService } from '../../../services/storage/storage.service';
+import { SettingsService } from '../../../services/settings/settings.service';
 import { DeviceManagerService } from 'dip-angular2/services';
 
 //Components
-import { GenPopover } from '../../components/gen-popover/gen-popover.component';
+import { GenPopover } from '../../../components/gen-popover/gen-popover.component';
 
 //Interfaces
 import { SavedWifiInfoContainer, WifiInfoContainer, NicStatusContainer } from './wifi-setup.interface';
-import { DeviceCardInfo } from '../device-manager-page/device-manager-page.interface';
+import { DeviceCardInfo } from '../../device-manager-page/device-manager-page.interface';
 
 @Component({
     templateUrl: 'wifi-setup.html',
@@ -420,10 +420,13 @@ export class WifiSetupPage {
                         ssid: data.device[0].ssid,
                         statusCode: data.device[0].statusCode
                     };
+            
                     if (data.device[0].ipAddress) {
                         nicStatusContainer['ipAddress'] = data.device[0].ipAddress;
                     }
+            
                     resolve(nicStatusContainer);
+            
                     console.log(data);
                 },
                 (err) => {

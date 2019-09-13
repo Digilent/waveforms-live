@@ -1,18 +1,20 @@
 import { NgModule } from '@angular/core';
+
+//Components
+import { DcSupplyComponent } from './dc-supply.component';
 import { SharedModule } from '../../app/shared/shared.module';
 import { IonicModule } from 'ionic-angular';
 
-//Pages
-import { WifiSetupPage } from './wifi-setup';
- 
 @NgModule({
     imports: [
         SharedModule,
-        IonicModule.forRoot(WifiSetupPage)
+        IonicModule.forRoot(DcSupplyComponent),
     ],
     declarations: [
-        WifiSetupPage
+        DcSupplyComponent
     ],
-    exports: [WifiSetupPage]
+    exports: [DcSupplyComponent],
+    providers: [
+    ]
 })
-export class WifiSetupModule { }
+export class DcSupplyModule { }

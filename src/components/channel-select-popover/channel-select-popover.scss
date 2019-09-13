@@ -1,0 +1,40 @@
+channel-select-popover {
+    .channel-select-container {
+        background-color: #535353;
+        padding: 5px;
+    }
+    .button-container {
+        padding: 0px 5px 5px 5px;
+    }
+    .channel-button {
+        border: solid #3A3A3A 1px;
+        height: 25px;
+        width: 25px;
+        padding: 0px;
+        opacity: 0.25;
+        border-radius: 0px;
+        color: black;
+        margin: auto;
+        box-shadow: none;
+        font-weight: 400;
+        display: block;
+        text-align: center;
+    }
+    .button-on {
+        opacity: 1;
+    }
+    .channel-button:hover {
+        border: solid white 1px;
+    }
+    .header {
+        color: white;
+        font-weight: 600;
+        padding-bottom: 10px;
+    }
+}
+
+.logChannelsPopover .popover-content {
+    right: 250px !important;
+    left: auto !important;
+    width: 200px;
+}

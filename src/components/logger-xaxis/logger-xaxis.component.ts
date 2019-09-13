@@ -17,7 +17,8 @@ export class LoggerXAxisComponent {
     public timePerDiv: string;
     public base: string;
     public showTimeSettings: boolean = true;
-    public loggerBufferSize: number = 10;
+    public defaultBufferSize: number = 10;
+    public loggerBufferSize: number = this.defaultBufferSize;
 
     constructor(
         public tooltipService: TooltipService,
@@ -25,6 +26,10 @@ export class LoggerXAxisComponent {
         public settingsService: SettingsService
     ) {
         this.loggerBufferSize = this.settingsService.getLoggerBufferSize() || this.loggerBufferSize;
+    }
+
+    ngOnDestroy() {
+        this.settingsService.setLoggerBufferSize(this.loggerBufferSize);
     }
 
     loggerBufferSizeChange(trueVal) {
@@ -89,7 +94,7 @@ export class LoggerXAxisComponent {
             oneTenth *= 10;
         }
 
-        if (this.loggerBufferSize - oneTenth < 0) return;
+        if (this.loggerBufferSize - oneTenth <= 0) return;
 
         this.loggerBufferSize -= oneTenth;
     }

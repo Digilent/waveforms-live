@@ -1,0 +1,294 @@
+<div class="logger-component-container">
+
+    
+
+        <div>
+            <logger-xaxis #xaxis (tpdChange)="xAxisValChange($event)" [tpdArray]="loggerPlotService.tpdArray" [tpdIndex]="loggerPlotService.tpdIndex" [tpdAbsolute]="loggerPlotService.xAxis.base"></logger-xaxis>
+        </div>
+    
+        <div>
+    
+            <div class="header-bar-side">
+                <ion-row>
+                    <ion-col class="header-side-col" center text-right>
+                    </ion-col>
+                    <ion-col center text-center>
+                        <div class="instrument-header">Logger</div>
+                    </ion-col>
+                    <ion-col class="header-side-col" center text-right>
+                        <!-- <button ion-button clear class="header-button disable-hover main-button" (tap)="running ? stopLogger() : startLogger()">
+                            <img class="custom-image-button svg-size" [src]="running ? 'assets/img/stop.svg' : 'assets/img/run.svg'">
+                        </button> -->
+                    </ion-col>
+                </ion-row>
+            </div>
+    
+            <div class="button-info-container">
+                <ion-row class="controls-container">
+                    <ion-col center class="vpd-label-col">
+                        Profile
+                    </ion-col>
+                    <ion-col class="vpd-input-col no-button-col" center text-center>
+                        <dropdown-popover class="profile-drop-pop" #dropPopProfile [dataArray]="loggingProfiles" (onSelection)="profileSelect($event)" [disabled]="running"
+                            [tooltip]="tooltipService.getTooltip('logProfile').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        </dropdown-popover>
+                    </ion-col>
+                </ion-row>
+    
+                <ion-row *ngIf="selectedLogProfile === 'New Profile'" class="controls-container">
+                    <ion-col center class="vpd-label-col">
+                        Name
+                    </ion-col>
+                    <ion-col class="vpd-val-col one-button-col" center text-center>
+                        <input class="custom-input" step="any" [(ngModel)]="profileNameScratch" [disabled]="running" />
+                    </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <div style="display:inline-block">
+                            <button ion-button class="img-button disable-hover" (tap)="saveAndSetProfile()" [disabled]="running"
+                                [tooltip]="tooltipService.getTooltip('logSaveProfile').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                                <img class="custom-image-button svg-size" src="assets/img/save.svg">
+                            </button>
+                        </div>
+                    </ion-col>
+                </ion-row>
+                
+                <ion-row class="controls-container">
+                    <ion-col center class="vpd-label-col">
+                        Mode
+                    </ion-col>
+                    <ion-col class="vpd-input-col no-button-col" center text-center>
+                        <dropdown-popover #dropPopMode [dataArray]="modes" (onSelection)="modeSelect($event)" [disabled]="running"
+                            [tooltip]="tooltipService.getTooltip('logMode').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        </dropdown-popover>
+                    </ion-col>
+                </ion-row>
+    
+            </div>
+        </div>
+    
+        <div *ngFor="let series of analogChans, let i = index;" class="set-top-border" (tap)="setActiveSeries('analog', i)">
+            <div class="header-bar-side">
+                <ion-row>
+                    <ion-col class="header-side-col" center text-left>
+                        <button ion-button clear class="dropdown-image-button" (tap)="toggleSeriesSettings('analog', i)">
+                            <img class="custom-dropdown-img" [ngClass]="{rotateOn: showAnalogChan[i]}" src="assets/img/collapse-arrow-right.svg">
+                        </button>
+                    </ion-col>
+                    <ion-col center text-center>
+                        <div class="instrument-header">Analog Ch {{i + 1}}</div>
+                    </ion-col>
+                    <ion-col class="header-side-col" center text-right>
+                    </ion-col>
+                </ion-row>
+                
+            </div>
+            <!-- Use display none instead of ngIf to keep a reference in the dom to allow for the dropPops to be found by ViewChildren -->
+            <div class="button-info-container" [ngClass]="{'display-none': !showAnalogChan[i]}">
+    
+                <ion-row class="controls-container">
+                    <ion-col center class="vpd-label-col">
+                        Link
+                    </ion-col>
+                    <ion-col class="vpd-input-col no-button-col" center text-center>
+                        <dropdown-popover #dropPopLink [id]="'link' + i" [dataArray]="analogLinkOptions[i]" (onSelection)="linkSelect($event, 'analog', i)" [disabled]="running"
+                            [tooltip]="tooltipService.getTooltip('logLink').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                        </dropdown-popover>
+                    </ion-col>
+                </ion-row>
+    
+                <ion-row class="controls-container">
+                    <ion-col center class="vpd-label-col">
+                        State
+                    </ion-col>
+                    <ion-col class="vpd-input-col no-button-col" center text-center>
+                        <input class="custom-input" step="any" [(ngModel)]="series.state" disabled="true" 
+                            [tooltip]="tooltipService.getTooltip('logState').message" [tooltipAnimation]="true" tooltipPlacement="top" />
+                    </ion-col>
+                </ion-row>
+    
+                <ion-row class="controls-container">
+                    <ion-col center class="vpd-label-col">
+                        Volts/
+                    </ion-col>
+                    <ion-col text-right center class="vpd-button-col">
+                        <div style="display:inline-block">
+                            <button ion-button class="img-button disable-hover" (tap)="incrementVpd(i)" [disabled]="loggerPlotService.vpdIndices[i] > loggerPlotService.vpdArray.length - 2">
+                                <img class="custom-image-button" src="assets/img/zoom-out.svg">
+                            </button>
+                        </div>
+                    </ion-col>
+                    <ion-col class="vpd-val-col" center text-center>
+                        <input class="custom-input highlight-input" step="any" [ngModel]="loggerPlotService.vpdArray[loggerPlotService.vpdIndices[i]] | unitFormat:'V/'" 
+                            formatInput (valChange)="yAxisValChange($event, i)" (mousewheel)="mousewheel($event, 'analog', i, 'vpd')"
+                            [tooltip]="tooltipService.getTooltip('oscVpd').message" [tooltipAnimation]="true" tooltipPlacement="top" />
+                    </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <div style="display:inline-block">
+                            <button ion-button class="img-button disable-hover" (tap)="decrementVpd(i)" [disabled]="loggerPlotService.vpdIndices[i] < 1">
+                                <img class="custom-image-button" src="assets/img/zoom-in.svg">
+                            </button>
+                        </div>
+                    </ion-col>
+                </ion-row>
+    
+                <ion-row class="controls-container">
+                    <ion-col center class="vpd-label-col">
+                        Offset
+                    </ion-col>
+                    <ion-col text-right center class="vpd-button-col">
+                        <div style="display:inline-block">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="buttonChangeOffset(i, 'decrement')">
+                                <img class="custom-image-button" src="assets/img/remove.svg">
+                            </button>
+                        </div>
+                    </ion-col>
+                    <ion-col class="vpd-val-col" center text-center>
+                        <input class="custom-input" step="any" [ngModel]="series.vOffset | unitFormat:'V'" 
+                            formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'offset', i)" (mousewheel)="mousewheel($event, 'analog', i, 'offset')"
+                            [tooltip]="tooltipService.getTooltip('oscOffset').message" [tooltipAnimation]="true" tooltipPlacement="top" />
+                    </ion-col>
+                    <ion-col text-left center class="vpd-button-col margin-right">
+                        <div style="display:inline-block">
+                            <button ion-button class="icon-only-button-side disable-hover" (tap)="buttonChangeOffset(i, 'increment')">
+                                <img class="custom-image-button" src="assets/img/add.svg">
+                            </button>
+                        </div>
+                    </ion-col>
+                </ion-row>
+    
+                <div  [ngClass]="{'display-none': series.linked}">
+                    <ion-row class="controls-container">
+                        <ion-col center class="vpd-label-col">
+                            Samples/
+                        </ion-col>
+                        <ion-col text-right center class="vpd-button-col">
+                            <div style="display:inline-block">
+                                <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', i, 'sampleFreq')" [disabled]="running">
+                                    <img class="custom-image-button" src="assets/img/remove.svg">
+                                </button>
+                            </div>
+                        </ion-col>
+                        <ion-col class="vpd-val-col" center text-center>
+                            <input class="custom-input" step="any" [ngModel]="series.sampleFreq | unitFormat:'S/s'" [disabled]="running"
+                                formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'sampleFreq', i)" (mousewheel)="mousewheel($event, 'analog', i, 'sampleFreq')"
+                                [tooltip]="tooltipService.getTooltip('logSampleFreq').message" [tooltipAnimation]="true" tooltipPlacement="top" />
+                        </ion-col>
+                        <ion-col text-left center class="vpd-button-col margin-right">
+                            <div style="display:inline-block">
+                                <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', i, 'sampleFreq')" [disabled]="running">
+                                    <img class="custom-image-button" src="assets/img/add.svg">
+                                </button>
+                            </div>
+                        </ion-col>
+                    </ion-row>
+                    
+                    <ion-row class="controls-container">
+                        <ion-col center class="vpd-label-col">
+                            Sampling
+                        </ion-col>
+                        <!-- <ion-col text-right center class="vpd-button-col">
+                            <div style="display:inline-block">
+                                <button ion-button class="img-button disable-hover">
+                                    <img class="custom-image-button" src="assets/img/zoom-out.svg">
+                                </button>
+                            </div>
+                        </ion-col>
+                        <ion-col class="vpd-val-col" center text-center>
+                            <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'samples', i)" />
+                        </ion-col>
+                        <ion-col text-left center class="vpd-button-col margin-right">
+                            <div style="display:inline-block">
+                                <button ion-button class="img-button disable-hover">
+                                    <img class="custom-image-button" src="assets/img/zoom-in.svg">
+                                </button>
+                            </div>
+                        </ion-col> -->
+                        <ion-col class="vpd-input-col no-button-col" center text-center>
+                            <dropdown-popover #dropPopSamples [id]="'samples' + i" [dataArray]="samples" (onSelection)="samplesSelect($event, 'analog', i)" [disabled]="running"
+                                [tooltip]="tooltipService.getTooltip('logSampleType').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                            </dropdown-popover>
+                        </ion-col>
+                    </ion-row>
+    
+                    <ion-row class="controls-container" *ngIf="analogChans[i].maxSampleCount !== -1">
+                        <ion-col center class="vpd-label-col">
+                            Samples
+                        </ion-col>
+                        <ion-col text-right center class="vpd-button-col">
+                            <div style="display:inline-block">
+                                <button ion-button class="icon-only-button-side disable-hover" (tap)="decrementFrequency('analog', i, 'samples')" [disabled]="running">
+                                    <img class="custom-image-button" src="assets/img/remove.svg">
+                                </button>
+                            </div>
+                        </ion-col>
+                        <ion-col class="vpd-val-col" center text-center>
+                            <input class="custom-input" step="any" [ngModel]="series.maxSampleCount | unitFormat:'S'" [disabled]="running" 
+                                formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'samples', i)" (mousewheel)="mousewheel($event, 'analog', i, 'samples')"
+                                [tooltip]="tooltipService.getTooltip('logSamples').message" [tooltipAnimation]="true" tooltipPlacement="top" />
+                        </ion-col>
+                        <ion-col text-left center class="vpd-button-col margin-right">
+                            <div style="display:inline-block">
+                                <button ion-button class="icon-only-button-side disable-hover" (tap)="incrementFrequency('analog', i, 'samples')" [disabled]="running">
+                                    <img class="custom-image-button" src="assets/img/add.svg">
+                                </button>
+                            </div>
+                        </ion-col>
+                    </ion-row>
+                    <!-- <ion-row class="controls-container">
+                        <ion-col center class="vpd-label-col">
+                            Start
+                        </ion-col>
+                        <ion-col text-right center class="vpd-button-col">
+                            <div style="display:inline-block">
+                                <button ion-button class="img-button disable-hover">
+                                    <img class="custom-image-button" src="assets/img/zoom-out.svg">
+                                </button>
+                            </div>
+                        </ion-col>
+                        <ion-col class="vpd-val-col" center text-center>
+                            <input class="custom-input" step="any" [ngModel]="series.startDelay | unitFormat:'s'" formatInput (valChange)="formatInputAndUpdate($event, 'analog', 'delay', i)" />
+                        </ion-col>
+                        <ion-col text-left center class="vpd-button-col margin-right">
+                            <div style="display:inline-block">
+                                <button ion-button class="img-button disable-hover">
+                                    <img class="custom-image-button" src="assets/img/zoom-in.svg">
+                                </button>
+                            </div>
+                        </ion-col>
+                    </ion-row> -->
+                    
+                    <!-- <ion-row class="controls-container">
+                        <ion-col center class="vpd-label-col">
+                            Overflow
+                        </ion-col>
+                        <ion-col class="vpd-input-col no-button-col" center text-center>
+                            <dropdown-popover #dropPopOverflow [id]="'overflow' + i" [dataArray]="overflowConditions" (onSelection)="overflowSelect($event, 'analog', i)"></dropdown-popover>
+                        </ion-col>
+                    </ion-row> -->
+                    
+                    <ion-row class="controls-container" [ngClass]="{'display-none': selectedMode === 'stream'}">
+                        <ion-col center class="vpd-label-col">
+                            Location
+                        </ion-col>
+                        <ion-col class="vpd-input-col no-button-col" center text-center>
+                            <dropdown-popover #dropPopLocation [id]="'location' + i" [dataArray]="storageLocations" (onSelection)="locationSelect($event, 'analog', i)" [disabled]="running"
+                                [tooltip]="tooltipService.getTooltip('logStorageLocation').message" [tooltipAnimation]="true" tooltipPlacement="top">
+                            </dropdown-popover>
+                        </ion-col>
+                    </ion-row>
+    
+                </div>
+                
+                <ion-row class="controls-container" [ngClass]="{'display-none': selectedMode === 'stream'}">
+                    <ion-col center class="vpd-label-col">
+                        {{series.storageLocation === 'cloud' ? 'Topic' : 'File Name'}}
+                    </ion-col>
+                    <ion-col class="vpd-input-col no-button-col" center text-center>
+                        <input class="custom-input" step="any" [(ngModel)]="series.uri" placeholder="logData1" [disabled]="running"
+                            [tooltip]="tooltipService.getTooltip('logFileName').message" [tooltipAnimation]="true" tooltipPlacement="top" />
+                    </ion-col>
+                </ion-row>
+    
+            </div>
+        </div>
+    </div>

@@ -1,4 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
+import { Events } from 'ionic-angular';
 
 //Services
 import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
@@ -42,13 +43,15 @@ export class FgenComponent {
     public tutorialStage: TutorialStage = TutorialStage.IDLE;
     public tutorialMode: boolean = false;
     public awaitingResponse: boolean = false;
+    public isOpenLogger: boolean = true;
 
     constructor(
         _deviceManagerService: DeviceManagerService,
         _toastService: ToastService,
         _settingsService: SettingsService,
         _tooltipService: TooltipService,
-        public dataTransferService: DeviceDataTransferService
+        public dataTransferService: DeviceDataTransferService,
+        public events: Events
     ) {
         this.settingsService = _settingsService;
         this.tooltipService = _tooltipService;
@@ -67,6 +70,22 @@ export class FgenComponent {
         this.showDutyCycle = false;
         this.dutyCycle = 50;
         this.dataTransferService.awgPower = false;
+
+        this.events.subscribe('restore-defaults', () => {
+            let chans = [];
+            for (let i = 0; i < this.activeDevice.instruments.awg.chans.length; i++) {
+                chans.push(i + 1);
+            }
+            this.stop(chans);
+
+            this.initializeValues();
+        });
+
+        this.isOpenLogger = this.activeDevice.deviceModel === "OpenLogger MZ";
+    }
+
+    ngOnDestroy() {
+        this.events.unsubscribe('restore-defaults');
     }
 
     initializeValues() {
@@ -260,11 +279,13 @@ export class FgenComponent {
                 break;
             default:
         }
+
+        this.setWaveformIfLogger(index);
     }
 
     //Toggle dropdown
     toggleWave(waveType: string, index) {
-        if (this.powerOn[index]) {
+        if (this.powerOn[index] && !this.isOpenLogger) {
             return;
         }
 
@@ -273,6 +294,8 @@ export class FgenComponent {
         if (this.tutorialMode) {
             this.highlightPower();
         }
+
+        this.setWaveformIfLogger(index);
     }
 
     toggleChanSettings(channel: number) {
@@ -284,7 +307,7 @@ export class FgenComponent {
     }
 
     frequencyMousewheel(event, index) {
-        if (this.powerOn[index]) { return; }
+        if (this.powerOn[index] && !this.isOpenLogger) { return; }
 
         if (event.deltaY < 0) {
             this.incrementFrequency(index);
@@ -292,10 +315,12 @@ export class FgenComponent {
         else {
             this.decrementFrequency(index);
         }
+
+        this.setWaveformIfLogger(index);
     }
 
     voltageMousewheel(event, type: 'amplitude' | 'offset', index) {
-        if (this.powerOn[index]) { return; }
+        if (this.powerOn[index] && !this.isOpenLogger) { return; }
 
         if (event.deltaY < 0) {
             type === 'amplitude' ? this.incrementAmplitude(index) : this.incrementOffset(index);
@@ -303,26 +328,36 @@ export class FgenComponent {
         else {
             type === 'amplitude' ? this.decrementAmplitude(index) : this.decrementOffset(index);
         }
+
+        this.setWaveformIfLogger(index);
     }
 
     incrementAmplitude(index: number) {
         let newAmp = this.amplitude[index] + 0.1;
         this.amplitude[index] = Math.min(newAmp, this.activeDevice.instruments.awg.chans[0].dacVpp / 1000);
+
+        this.setWaveformIfLogger(index);
     }
 
     decrementAmplitude(index: number) {
         let newAmp = this.amplitude[index] - 0.1;
         this.amplitude[index] = Math.max(newAmp, 0);
+
+        this.setWaveformIfLogger(index);
     }
 
     incrementOffset(index: number) {
         let newOffset = this.offset[index] + 0.1;
         this.offset[index] = Math.min(newOffset, this.activeDevice.instruments.awg.chans[0].vOffsetMax / 1000);
+
+        this.setWaveformIfLogger(index);
     }
 
     decrementOffset(index: number) {
         let newOffset = this.offset[index] - 0.1;
         this.offset[index] = Math.max(newOffset, this.activeDevice.instruments.awg.chans[0].vOffsetMin / 1000);
+
+        this.setWaveformIfLogger(index);
     }
 
     incrementFrequency(index: number) {
@@ -347,6 +382,8 @@ export class FgenComponent {
         }
 
         this.frequency[index] = newFreq;
+
+        this.setWaveformIfLogger(index);
     }
 
     decrementFrequency(index: number) {
@@ -372,73 +409,86 @@ export class FgenComponent {
         }
 
         this.frequency[index] = newFreq;
+
+        this.setWaveformIfLogger(index);
     }
 
     //Toggle power to awg
     togglePower(event, index) {
-        this.awaitingResponse = true;
+        this.togglePromise(event, index).catch(e => console.error(e));
+    }
 
-        if (this.tutorialMode) {
-            this.finishTutorial();
-        }
+    togglePromise(event, index) {
+        return new Promise((resolve, reject) => {
+            
+            this.awaitingResponse = true;
 
-        let chans = [];
-        let settings = [];
-
-        chans[index] = index + 1;
-
-        settings[index] = {
-            signalType: this.waveType[index],
-            signalFreq: this.frequency[index],
-            vpp: this.waveType[index] === 'dc' ? 0 : this.amplitude[index],
-            vOffset: this.offset[index]
-        };
-
-        if (!this.powerOn[index]) {
-            console.log(this.dataTransferService);
-
-            if ((this.dataTransferService.laChanActive || this.dataTransferService.triggerSource === 'LA') && this.activeDevice.transport.getType() !== 'local') {
-                this.toastService.createToast('laOnNoAwg');
-                this.awaitingResponse = false;
-                return;
+            if (this.tutorialMode) {
+                this.finishTutorial();
             }
 
-            let singleCommand = {
-                awg: {
-                    setRegularWaveform: [chans, settings],
-                    run: [chans]
+            let chans = [];
+            let settings = [];
+
+            chans[index] = index + 1;
+
+            settings[index] = {
+                signalType: this.waveType[index],
+                signalFreq: this.waveType[index] === 'dc' ? 0 : this.frequency[index],
+                vpp: this.waveType[index] === 'dc' ? 0 : this.amplitude[index],
+                vOffset: this.offset[index]
+            };
+
+            if (!this.powerOn[index]) {
+                console.log(this.dataTransferService);
+
+                if ((this.dataTransferService.laChanActive || this.dataTransferService.triggerSource === 'LA') && this.activeDevice.transport.getType() !== 'local') {
+                    this.toastService.createToast('laOnNoAwg');
+                    this.awaitingResponse = false;
+                    return;
                 }
-            }
 
-            this.activeDevice.multiCommand(singleCommand).subscribe(
-                (data) => {
-                    console.log(data);
-
-                    if (data.command && data.command == 'setRegularWaveform') {
-                        this.frequency[index] = data.actualSignalFreq / 1000;
+                let singleCommand = {
+                    awg: {
+                        setRegularWaveform: [chans, settings],
+                        run: [chans]
                     }
-
-                    this.awaitingResponse = false;
-                },
-                (err) => {
-                    console.log(err);
-
-                    this.awaitingResponse = false;
-
-                    console.log('AWG Set Regular and Run Failed');
-
-                    this.stop(chans);
-                    this.toastService.createToast('awgRunError', true);
-                },
-                () => {
-                    this.powerOn[index] = !this.powerOn[index];
-                    this.dataTransferService.awgPower = this.powerOn[index];
                 }
-            );
-        }
-        else {
-            this.stop(chans);
-        }
+
+                this.activeDevice.multiCommand(singleCommand).subscribe(
+                    (data) => {
+                        console.log(data);
+
+                        if (data.command && data.command == 'setRegularWaveform') {
+                            this.frequency[index] = data.actualSignalFreq / 1000;
+                        }
+
+                        this.awaitingResponse = false;
+
+                        resolve();
+                    },
+                    (err) => {
+                        console.log(err);
+
+                        this.awaitingResponse = false;
+
+                        console.log('AWG Set Regular and Run Failed');
+
+                        this.stop(chans);
+                        this.toastService.createToast('awgRunError', true);
+
+                        reject(err);
+                    },
+                    () => {
+                        this.powerOn[index] = !this.powerOn[index];
+                        this.dataTransferService.awgPower = this.powerOn[index];
+                    }
+                );
+            }
+            else {
+                this.stopPromise(chans).then(resolve);
+            }
+        });
     }
 
     //Get settings from awg
@@ -474,33 +524,42 @@ export class FgenComponent {
 
     //Stop awg
     stop(chans: number[]) {
-        this.awaitingResponse = true;
+        this.stopPromise(chans).catch(e => console.error(e));
+    }
 
-        this.activeDevice.instruments.awg.stop(chans).subscribe(
-            (data) => {
-                this.awaitingResponse = false;
+    stopPromise(chans: number[]) {
+        return new Promise((resolve, reject) => {
+            this.awaitingResponse = true;
+    
+            this.activeDevice.instruments.awg.stop(chans).subscribe(
+                (data) => {
+                    this.awaitingResponse = false;
+    
+                    let powerOffResult = false;
+    
+                    for (let chan in chans) {
+                        this.powerOn[chan] = false;
+                        powerOffResult = powerOffResult || (data.awg[chans[chan]][0].statusCode === 0 && this.attemptingPowerOff);
+                    }
+    
+                    this.dataTransferService.awgPower = false;
+    
+                    if (powerOffResult) {
+                        this.attemptingPowerOff = false;
+                        this.toastService.createToast('awgRunError', true);
+                    }
 
-                let powerOffResult = false;
-
-                for (let chan in chans) {
-                    this.powerOn[chan] = false;
-                    powerOffResult = powerOffResult || (data.awg[chans[chan]][0].statusCode === 0 && this.attemptingPowerOff);
-                }
-
-                this.dataTransferService.awgPower = false;
-
-                if (powerOffResult) {
-                    this.attemptingPowerOff = false;
-                    this.toastService.createToast('awgRunError', true);
-                }
-            },
-            (err) => {
-                this.awaitingResponse = false;
-                console.log('AWG Stop Failed');
-            },
-            () => {
-
-            });
+                    resolve();
+                },
+                (err) => {
+                    this.awaitingResponse = false;
+                    console.log('AWG Stop Failed');
+                    reject(err);
+                },
+                () => {
+    
+                });
+        })
     }
 
     //Determines if active wave type is a square wave
@@ -512,4 +571,21 @@ export class FgenComponent {
         return false;
     }
 
+    public asyncSetHandle = null;
+    setWaveformIfLogger(index: number) {
+        if (this.isOpenLogger) {
+            if (this.asyncSetHandle !== null) clearTimeout(this.asyncSetHandle);
+
+            this.asyncSetHandle = setTimeout(() => {
+                this.setRegularWaveform([index + 1], [{
+                    signalType: this.waveType[index],
+                    signalFreq: this.waveType[index] === 'dc' ? 0 : this.frequency[index],
+                    vpp: this.waveType[index] === 'dc' ? 0 : this.amplitude[index],
+                    vOffset: this.offset[index]
+                }]);
+
+                this.asyncSetHandle = null;
+            }, 100);
+        }
+    }
 }

@@ -1,0 +1,142 @@
+<ion-content class="openlogger-page-container">
+    <div>
+        <ion-row class="logger-header">
+            <ion-col class="back-button-col timeline-back-button" center text-center>
+                <button *ngIf="isRoot === false" ion-button class="custom-back-button disable-hover" (click)="done()">
+                    <img class="custom-image-button" src="assets/img/arrow-back.svg">
+                </button>
+
+                <div *ngIf="isRoot === true" class="menu-button-container">
+                    <button clear ion-button menuToggle class="custom-menu-button disable-hover">
+                        <img class="custom-image-button" src="assets/img/menu.svg">
+                    </button>
+                </div>
+            </ion-col>
+            <ion-col center class="config-title-menu-col logger-timeline-container">
+                <logger-timeline #timeline></logger-timeline>
+            </ion-col>
+            <ion-col center text-center class="timeline-row-button-container">
+                <div>
+                    <div>
+                        <button ion-button icon-right class="text-button-side disable-hover main-button" (tap)="loggerComponent.running ? stopLogger() : runLogger()">
+                            <span class="collapse-button">{{loggerComponent.running ? 'Stop' : loggerComponent.selectedLogLocation === 'chart' ? 'Stream' : 'Log'}}</span>
+                            <img class="custom-image-button" [src]="loggerComponent.running ? 'assets/img/stop.svg' : 'assets/img/run.svg'" />
+                        </button>
+                    </div>
+                    <div text-center class="overal-run-status-container">
+                        {{!loggerComponent.running ? 'Idle' : loggerComponent.selectedLogLocation === 'chart' ? 'Streaming' : 'Logging'}}
+                    </div>
+                </div>
+            </ion-col>
+        </ion-row>
+    </div>
+
+    <ion-row class="page-row">
+        <ion-col class="chart-container-col">
+            <div class="chart-button-container">
+                <button ion-button class="chart-button disable-hover" [disabled]="!loggerComponent.viewMoved && loggerComponent.running" (tap)="snapViewToFront()" [tooltip]="tooltipService.getTooltip('chartSetViewToFront').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                    <img class="button-side-svg" src="assets/img/logger-to-front.svg" />
+                </button>
+                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="presentExportPop($event)" [tooltip]="tooltipService.getTooltip('chartSettings').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                    <img class="button-side-svg" src="assets/img/download.svg" />
+                </button>
+                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="openFileBrowser()" [tooltip]="tooltipService.getTooltip('chartToFileExplorer').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                    <img class="button-side-svg" src="assets/img/folder.svg" />
+                </button>
+                <button ion-button class="chart-button disable-hover" (tap)="openDevicePinout($event)"  [tooltip]="tooltipService.getTooltip('chartShowDevicePinout').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                    PIN
+                </button>
+                <button ion-button class="chart-button disable-hover" (tap)="resetInstruments()" [tooltip]="tooltipService.getTooltip('chartResetInstruments').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                    <img class="button-size-svg" src="assets/img/restore.svg" />
+                </button>
+            </div>
+            <div class="chart-and-bottom-container">
+                <div class="logger-page-chart-container">
+                    <logger-chart #chart></logger-chart>
+                </div>
+                <div class="logger-chart-bottom-container">
+                    <ion-row class="chart-info">
+                        <ion-col center class="info-col">
+                            <ion-row center class="cursor-container">
+                                <button ion-button icon-right class="text-button-side disable-hover" [disabled]="loggerComponent.running || !loggerComponent.dataAvailable" (tap)="openMathPopover($event)" [tooltip]="tooltipService.getTooltip('mathButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
+                                    <span class="collapse-button">Math</span>
+                                    <img class="button-side-svg" src="assets/img/math.svg" />
+                                </button>
+                                <button ion-button class="icon-only-button-side disable-hover" (tap)="updateMath()" [tooltip]="tooltipService.getTooltip('refreshMathButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
+                                    <img class="button-side-svg" src="assets/img/refresh.svg" />
+                                </button>
+                                <ion-col center class="cursor-info-col" id="test-test">
+                                    <span *ngIf="selectedMathInfo[0]">
+                                        <span [style.color]="loggerPlotService.chart.getData()[selectedMathInfo[0].mathChannel.seriesOffset].color">&#9632;</span>
+                                        {{selectedMathInfo[0].mathInfo}}: {{selectedMathInfo[0].value}}
+                                    </span>
+                                    <br>
+                                    <span *ngIf="selectedMathInfo[1]">
+                                        <span [style.color]="loggerPlotService.chart.getData()[selectedMathInfo[1].mathChannel.seriesOffset].color">&#9632;</span>
+                                        {{selectedMathInfo[1].mathInfo}}: {{selectedMathInfo[1].value}}
+                                    </span>
+                                </ion-col>
+                                <ion-col center class="cursor-info-col">
+                                    <span *ngIf="selectedMathInfo[2]">
+                                        <span [style.color]="loggerPlotService.chart.getData()[selectedMathInfo[2].mathChannel.seriesOffset].color">&#9632;</span>
+                                        {{selectedMathInfo[2].mathInfo}}: {{selectedMathInfo[2].value}}
+                                    </span>
+                                    <br>
+                                    <span *ngIf="selectedMathInfo[3]">
+                                        <span [style.color]="loggerPlotService.chart.getData()[selectedMathInfo[3].mathChannel.seriesOffset].color">&#9632;</span>
+                                        {{selectedMathInfo[3].mathInfo}}: {{selectedMathInfo[3].value}}
+                                    </span>
+                                </ion-col>
+                            </ion-row>
+                        </ion-col>
+                        <ion-col center class="info-col">
+                            <ion-row center class="cursor-container">
+                                <button ion-button icon-right class="text-button-side disable-hover" [disabled]="loggerComponent.running || !loggerComponent.dataAvailable" (tap)="openCursorModal($event)" [tooltip]="tooltipService.getTooltip('cursorButton').message" [tooltipAnimation]="true" tooltipPlacement="right">
+                                    <span class="collapse-button">Cursors</span>
+                                    <img class="button-side-svg" src="assets/img/edit.svg" />
+                                </button>
+                                <ion-col center *ngIf="cursorInfo && cursorInfo.currentType === 'time'" class="cursor-info-col">
+                                    1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
+                                </ion-col>
+                                <ion-col center class="cursor-info-col" *ngIf="cursorInfo && cursorInfo.currentType === 'time'">
+                                    &Delta;X: {{getCursorInfo('xDelta')}} <br> 1/&Delta;X: {{getCursorInfo('xFreq')}}
+                                </ion-col>
+                                <ion-col center class="cursor-info-col" *ngIf="cursorInfo && cursorInfo.currentType === 'track'">
+                                    1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
+                                </ion-col>
+                                <ion-col center class="cursor-info-col" *ngIf="cursorInfo && cursorInfo.currentType === 'track'">
+                                    &Delta;X: {{getCursorInfo('xDelta')}} &Delta;Y: {{getCursorInfo('yDelta')}} <br>
+                                    1/&Delta;X: {{getCursorInfo('xFreq')}}
+                                </ion-col>
+                                <ion-col center class="cursor-info-col" *ngIf="cursorInfo && cursorInfo.currentType === 'voltage'">
+                                    1: {{getCursorInfo('cursorPosition0')}} <br> 2: {{getCursorInfo('cursorPosition1')}}
+                                </ion-col>
+                                <ion-col center class="cursor-info-col" *ngIf="cursorInfo && cursorInfo.currentType === 'voltage'">
+                                    &Delta;Y: {{getCursorInfo('yDelta')}}
+                                </ion-col>
+                            </ion-row>
+                        </ion-col>
+                    </ion-row>
+                </div>
+            </div>
+        </ion-col>
+        
+        <ion-col class="controls-col">
+            <ion-row class="controls-row">
+                <openlogger-logger-component #loggerComponent [colorArray]="loggerChart.colorArray"></openlogger-logger-component>
+
+                <fgen #fgenComponent (fgenTutorialFinish)="fgenTutorialFinished($event)"></fgen>
+
+                <digital-io #gpioComponent [chart]="chart1"></digital-io>
+                
+                <dc-supply #dcComponent></dc-supply>
+            </ion-row>
+
+            <ion-row>
+                <ion-col center text-center no-padding>
+                    <button ion-button class="text-button-side disable-hover" (tap)="loggerComponent.restoreDefaults()" [disabled]="loggerComponent.running">Restore Defaults</button>
+                </ion-col>
+            </ion-row>
+        </ion-col>
+    </ion-row>
+</ion-content>

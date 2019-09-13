@@ -6,8 +6,14 @@
     "deviceModel": "OpenLogger MZ",
     "firmwareVersion": {
         "major": 0,
-        "minor": 997,
+        "minor": 1504,
         "patch": 0
+    },
+    "macAddress": "F8:F0:05:A2:B3:AB",
+    "nics": {
+        "wlan0": {
+            "macAddress": "F8:F0:05:A2:B3:AB"
+        }
     },
     "requiredCalibrationVer": 1,
     "requiredWiFiParameterVer": 1,
@@ -69,153 +75,51 @@
         "sourceCurrentMax": 7000,
         "sinkCurrentMax": 12000
     },
-    "la": {
-        "numChans": 0
-    },"osc": {
-        "numChans": 0
-    },
     "log": {
-        "analog": {
-            "fileFormat": 1,
-            "fileRevision": 1,
-            "numChans": 1,
+        "daq": {
+            "fileFormat": 2,
+            "fileRevision": 2,
+            "numChans": 8,
+            "numAdc": 1,
             "1": {
-                "resolution": 12,
-                "effectiveBits": 12,
-                "bufferSizeMax": 32702,
-                "fileSamplesMax": 2147483136,
+                "adcChans": 8,
+                "adcAggregateSampleFreq": 500000000000,
+                "resolution": 16,
+                "effectiveBits": 14,
                 "sampleDataType": "I16",
                 "sampleFreqUnits": 0.000001,
                 "sampleFreqMin": 1,
-                "sampleFreqMax": 50000000000,
                 "delayUnits": 0.000000000001,
-                "delayMax": 9223372036854775807,
+                "delayMax": 18446744073709551615,
                 "delayMin": 0,
                 "voltageUnits": 0.001,
                 "adcVpp": 3000,
-                "inputVoltageMax": 10000,
-                "inputVoltageMin": -10000,
-                "gains": [1, 0.25, 0.125, 0.175]
-            },
-            "2": {
-                "resolution": 12,
-                "effectiveBits": 12,
-                "bufferSizeMax": 32702,
-                "fileSamplesMax": 2147483136,
-                "sampleDataType": "I16",
-                "sampleFreqUnits": 0.000001,
-                "sampleFreqMin": 1,
-                "sampleFreqMax": 50000000000,
-                "delayUnits": 0.000000000001,
-                "delayMax": 9223372036854775807,
-                "delayMin": 0,
-                "voltageUnits": 0.001,
-                "adcVpp": 3000,
+                "gains": [
+                    1
+                ],
+                "vOffsetMin": 0,
+                "vOffsetMax": 0,
                 "inputVoltageMax": 10000,
                 "inputVoltageMin": -10000
             },
-            "3": {
-                "resolution": 12,
-                "effectiveBits": 12,
-                "bufferSizeMax": 32702,
-                "fileSamplesMax": 2147483136,
-                "sampleDataType": "I16",
-                "sampleFreqUnits": 0.000001,
-                "sampleFreqMin": 1,
-                "sampleFreqMax": 50000000000,
-                "delayUnits": 0.000000000001,
-                "delayMax": 9223372036854775807,
-                "delayMin": 0,
-                "voltageUnits": 0.001,
-                "adcVpp": 3000,
-                "inputVoltageMax": 10000,
-                "inputVoltageMin": -10000
-            },
-            "4": {
-                "resolution": 12,
-                "effectiveBits": 12,
-                "bufferSizeMax": 32702,
-                "fileSamplesMax": 2147483136,
-                "sampleDataType": "I16",
-                "sampleFreqUnits": 0.000001,
-                "sampleFreqMin": 1,
-                "sampleFreqMax": 50000000000,
-                "delayUnits": 0.000000000001,
-                "delayMax": 9223372036854775807,
-                "delayMin": 0,
-                "voltageUnits": 0.001,
-                "adcVpp": 3000,
-                "inputVoltageMax": 10000,
-                "inputVoltageMin": -10000
-            },
-            "5": {
-                "resolution": 12,
-                "effectiveBits": 12,
-                "bufferSizeMax": 32702,
-                "fileSamplesMax": 2147483136,
-                "sampleDataType": "I16",
-                "sampleFreqUnits": 0.000001,
-                "sampleFreqMin": 1,
-                "sampleFreqMax": 50000000000,
-                "delayUnits": 0.000000000001,
-                "delayMax": 9223372036854775807,
-                "delayMin": 0,
-                "voltageUnits": 0.001,
-                "adcVpp": 3000,
-                "inputVoltageMax": 10000,
-                "inputVoltageMin": -10000
-            },
-            "6": {
-                "resolution": 12,
-                "effectiveBits": 12,
-                "bufferSizeMax": 32702,
-                "fileSamplesMax": 2147483136,
-                "sampleDataType": "I16",
-                "sampleFreqUnits": 0.000001,
-                "sampleFreqMin": 1,
-                "sampleFreqMax": 50000000000,
-                "delayUnits": 0.000000000001,
-                "delayMax": 9223372036854775807,
-                "delayMin": 0,
-                "voltageUnits": 0.001,
-                "adcVpp": 3000,
-                "inputVoltageMax": 10000,
-                "inputVoltageMin": -10000
-            },
-            "7": {
-                "resolution": 12,
-                "effectiveBits": 12,
-                "bufferSizeMax": 32702,
-                "fileSamplesMax": 2147483136,
-                "sampleDataType": "I16",
-                "sampleFreqUnits": 0.000001,
-                "sampleFreqMin": 1,
-                "sampleFreqMax": 50000000000,
-                "delayUnits": 0.000000000001,
-                "delayMax": 9223372036854775807,
-                "delayMin": 0,
-                "voltageUnits": 0.001,
-                "adcVpp": 3000,
-                "inputVoltageMax": 10000,
-                "inputVoltageMin": -10000
-            },
-            "8": {
-                "resolution": 12,
-                "effectiveBits": 12,
-                "bufferSizeMax": 32702,
-                "fileSamplesMax": 2147483136,
-                "sampleDataType": "I16",
-                "sampleFreqUnits": 0.000001,
-                "sampleFreqMin": 1,
-                "sampleFreqMax": 50000000000,
-                "delayUnits": 0.000000000001,
-                "delayMax": 9223372036854775807,
-                "delayMin": 0,
-                "voltageUnits": 0.001,
-                "adcVpp": 3000,
-                "inputVoltageMax": 10000,
-                "inputVoltageMin": -10000
-            }
+            "targets": [
+                {
+                    "ram": {
+                        "bytesMax": 16000000,
+                        "sampleFreqMax": 500000000000
+                    },
+                    "sd0": {
+                        "bytesMax": 4294966272,
+                        "sampleFreqMax": 50000000000
+                    },
+                    "cloud": {
+                        "service": [
+                            "Thinkspeak"
+                        ],
+                        "sampleFreqMax": 66666
+                    }
+                }
+            ]
         }
     }
 }

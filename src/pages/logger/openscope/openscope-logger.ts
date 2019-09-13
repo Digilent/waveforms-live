@@ -2,36 +2,33 @@ import { Component, ViewChild } from '@angular/core';
 import { NavController, NavParams, ModalController, PopoverController } from 'ionic-angular';
 
 //Components
-import { LoggerComponent } from '../../components/logger/logger.component';
-import { GenPopover } from '../../components/gen-popover/gen-popover.component';
-import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
-import { MathPopoverComponent, MathPassData, MathOutput } from '../../components/math-popover/math-popover.component';
-import { CursorPopoverComponent, CursorPassData, CursorChannel, CursorSelection } from '../../components/cursor-popover/cursor-popover.component';
+import { OpenScopeLoggerComponent } from '../../../components/logger/openscope/openscope-logger.component';
+import { GenPopover } from '../../../components/gen-popover/gen-popover.component';
+import { PinoutPopover } from '../../../components/pinout-popover/pinout-popover.component';
+import { MathPopoverComponent, MathPassData, MathOutput } from '../../../components/math-popover/math-popover.component';
+import { CursorPopoverComponent, CursorPassData, CursorChannel, CursorSelection } from '../../../components/cursor-popover/cursor-popover.component';
 
 //Pages
-import { FileBrowserPage } from '../file-browser/file-browser';
+import { FileBrowserPage } from '../../file-browser/file-browser';
 
 //Pipes
-import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
+import { UnitFormatPipe } from '../../../pipes/unit-format.pipe';
 
 //Services
-import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
-import { TooltipService } from '../../services/tooltip/tooltip.service';
-import { LoggerChartComponent } from '../../components/logger-chart/logger-chart.component';
+import { LoggerPlotService } from '../../../services/logger-plot/logger-plot.service';
+import { TooltipService } from '../../../services/tooltip/tooltip.service';
 
 declare var mathFunctions: any;
 
 @Component({
-    templateUrl: "logger.html"
+    templateUrl: "openscope-logger.html"
 })
-export class LoggerPage {
-    @ViewChild('loggerComponent') loggerComponent: LoggerComponent;
-    @ViewChild('chart') loggerChart: LoggerChartComponent;
+export class OpenScopeLoggerPage {
+    @ViewChild('loggerComponent') loggerComponent: OpenScopeLoggerComponent;
     private dismissCallback: () => void;
     private unitFormatPipeInstance: UnitFormatPipe;
     private selectedMathInfo: MathOutput[] = [];
     private cursorInfo: CursorSelection;
-    private isRoot: boolean = false;
 
     constructor(
         private navCtrl: NavController,
@@ -42,14 +39,7 @@ export class LoggerPage {
         public tooltipService: TooltipService
     ) {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
-        this.isRoot = this.navParams.get('isRoot') || this.isRoot;
         this.unitFormatPipeInstance = new UnitFormatPipe();
-    }
-
-    updateScale({chan, unit}) {
-        console.log({chan, unit});
-        
-        this.loggerChart.setChannelUnit(chan, unit);
     }
 
     ngOnInit() {
@@ -427,7 +417,4 @@ export class LoggerPage {
         }
     }
 
-    private fgenTutorialFinished(event) {
-
-    }
 }

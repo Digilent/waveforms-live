@@ -39,6 +39,11 @@
                     </ion-item>
                 </ion-list>
 
+                <div class="caution-message">
+                    <p>
+                        {{ cautionMessage() }}
+                    </p>
+                </div>
 
                 <input class="hidden-file-input" type="file" id="firmwareFileSelect" name="firmwareFileSelect" (change)="fileChange($event)" />
 

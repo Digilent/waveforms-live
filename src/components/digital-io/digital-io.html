@@ -9,7 +9,7 @@
                     </button>
                 </ion-col>
                 <ion-col center text-center>
-                    <span class="header-bar-title instrument-header">Digital</span>
+                    <span class="header-bar-title instrument-header">{{isLogger === true ? 'Digital I/O' : 'Digital'}}</span>
                 </ion-col>
                 <ion-col class="header-side-col" center text-right>
                 </ion-col>
@@ -17,7 +17,7 @@
         </div>
     </div>
     <div *ngIf="showDigiContent">
-        <ion-row class="mode-row">
+        <ion-row class="mode-row" *ngIf="!isLogger">
             <ion-col text-right>
                 <button ion-button class="text-button-side disable-hover bottom-button" (tap)="setMode('analyzer')" 
                     [tooltip]="tooltipService.getTooltip('analyzerButton').message" [tooltipAnimation]="true" tooltipPlacement="top" 
@@ -34,8 +34,8 @@
             </ion-col>
         </ion-row>
         <div *ngIf="selectedMode==='io'&&!directionMode">
-            <ion-row wrap>
-                <ion-col *ngFor="let channel of gpioChans, let i = index;" class="digi-col" text-center>
+            <ion-row wrap class="pad-top">
+                <ion-col col-4 *ngFor="let channel of gpioChans, let i = index;" [ngClass]="{'digi-logger-col': isLogger, 'digi-col': !isLogger}" text-center>
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
                         <div class="dummy-border" [tooltip]="getChannelTooltip(i, 'gpio')" [tooltipAnimation]="true" tooltipPlacement="left" [ngClass]="{'button-output': gpioDirections[i]}">
@@ -46,7 +46,7 @@
                     </div>
                 </ion-col>
             </ion-row>
-            <ion-row>
+            <ion-row class="pad-top">
                 <ion-col text-right class="bottom-buttons">
                     <button ion-button class="text-button-side disable-hover bottom-button" (tap)="readAllIo($event)"
                         [tooltip]="tooltipService.getTooltip('refreshGpioButton').message" [tooltipAnimation]="true" tooltipPlacement="top">
@@ -62,8 +62,8 @@
             </ion-row>
         </div>
         <div *ngIf="selectedMode==='io'&& directionMode">
-            <ion-row wrap>
-                <ion-col *ngFor="let channel of gpioChans, let i = index;" class="digi-col" text-center>
+            <ion-row wrap class="pad-top">
+                <ion-col *ngFor="let channel of gpioChans, let i = index;" [ngClass]="{'digi-logger-col': isLogger, 'digi-col': !isLogger}" text-center>
                     <div class="channel-container">
                         <div>{{i + 1}}</div>
                         <div class="dummy-border" [tooltip]="getChannelTooltip(i, 'direction')" [tooltipAnimation]="true" tooltipPlacement="left">
@@ -74,7 +74,7 @@
                     </div>
                 </ion-col>
             </ion-row>
-            <ion-row>
+            <ion-row class="pad-top">
                 <ion-col text-right class="bottom-buttons">
                     <button ion-button class="text-button-side disable-hover bottom-button" (tap)="readAllIo($event)"
                         [tooltip]="tooltipService.getTooltip('refreshGpioButton').message" [tooltipAnimation]="true" tooltipPlacement="top">

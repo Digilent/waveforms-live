@@ -25,9 +25,14 @@
     padding: 0px 4px 0px 4px;
 }
 
-.xaxis-component-wrapper
+openscope-logger-component logger-xaxis .xaxis-component-wrapper
 {
     border-bottom: solid black 1px;
+}
+
+openlogger-logger-component logger-xaxis .xaxis-component-wrapper
+{
+    border-bottom: none;
 }
 
 .xaxis-component-wrapper .time-col-container

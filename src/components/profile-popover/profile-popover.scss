@@ -1,0 +1,40 @@
+profile-popover {
+    .custom-input {
+        min-width: 100px;
+    }
+
+    .header {
+        color: white;
+        font-weight: 600;
+        padding: 10px 0px;
+    }
+
+    .input-label {
+        color: #CCCCCC;
+        padding-left: 10px;
+        align-self: center;
+        flex-grow: 0;
+    }
+
+    .profile-container {
+        background-color: #535353;
+        padding: 5px;
+    }
+
+    .checkbox-container {
+        color: #CCCCCC;
+        display: flex;
+        align-items: center;
+        padding: 5px 0px 5px 35px;
+    }
+
+    .checkbox-label {
+        margin-left: 10px;
+    }
+}
+
+.profilePopover .popover-content {
+    top: 250px !important;
+    right: 250px !important;
+    left: auto !important;
+}

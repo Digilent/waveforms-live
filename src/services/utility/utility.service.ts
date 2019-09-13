@@ -39,4 +39,29 @@ export class UtilityService {
         return trueValue;
     }
 
+    public transformModelToPropKey(deviceModel: string): string {
+        let model: string[] = deviceModel.toLowerCase().split(" ");
+        
+        model[1] = model[1].charAt(0).toUpperCase() + model[1].slice(1);
+        
+        return model.join("");
+    }
+
+    public getShortName(deviceModel: string): string {
+        let name = '';
+
+        switch(deviceModel) {
+            case 'OpenScope MZ':
+                name = 'osmz';
+                break;
+            case 'OpenLogger MZ':
+                name = 'olmz';
+                break;
+            default:
+                name = 'osmz';
+                break;
+        }
+
+        return name;
+    }
 }

@@ -1,0 +1,25 @@
+log-scale-popover {
+    .log-scale-container {
+        background-color: #535353;
+        padding: 5px;
+    }
+    .custom-input {
+        width: 150px;
+    }
+    .header {
+        color: white;
+        font-weight: 600;
+        padding-bottom: 10px;
+    }
+    .input-label {
+        color: #CCCCCC;
+        padding-left: 10px;
+        align-self: center;
+        flex-grow: 0;
+    }
+}
+
+.logScalePopover .popover-content {
+    right: 250px !important;
+    left: auto !important;
+}
