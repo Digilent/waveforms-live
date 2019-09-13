@@ -53,9 +53,6 @@
                 <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="openDevicePinout($event)">
                     PIN
                 </button>
-                <button ion-button class="chart-button disable-hover" [disabled]="loggerComponent.running" (tap)="openCloudLoggingModal($event)" [ngClass]="{'cloud-logging-enabled': cloudLoggingService.enabled}" *ngIf="activeDevice.deviceModel === 'OpenLogger MZ'">
-                    <img class="button-side-svg" src="assets/img/cloud.svg" />
-                </button>
             </div>
             <div class="chart-and-bottom-container">
                 <div class="logger-page-chart-container">

@@ -7,7 +7,6 @@ import { GenPopover } from '../../components/gen-popover/gen-popover.component';
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
 import { MathPopoverComponent, MathPassData, MathOutput } from '../../components/math-popover/math-popover.component';
 import { CursorPopoverComponent, CursorPassData, CursorChannel, CursorSelection } from '../../components/cursor-popover/cursor-popover.component';
-import { CloudLoggingPopover } from '../../components/cloud-logging-popover/cloud-logging-popover.component';
 
 //Pages
 import { FileBrowserPage } from '../file-browser/file-browser';
@@ -19,8 +18,6 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
 import { LoggerPlotService } from '../../services/logger-plot/logger-plot.service';
 import { TooltipService } from '../../services/tooltip/tooltip.service';
 import { LoggerChartComponent } from '../../components/logger-chart/logger-chart.component';
-import { DeviceManagerService, DeviceService } from 'dip-angular2/services';
-import { CloudLoggingService } from '../../services/cloud-logging/cloud-logging.service';
 
 declare var mathFunctions: any;
 
@@ -35,7 +32,6 @@ export class LoggerPage {
     private selectedMathInfo: MathOutput[] = [];
     private cursorInfo: CursorSelection;
     private isRoot: boolean = false;
-    private activeDevice: DeviceService;
 
     constructor(
         private navCtrl: NavController,
@@ -43,14 +39,11 @@ export class LoggerPage {
         private loggerPlotService: LoggerPlotService,
         private modalCtrl: ModalController,
         private popoverCtrl: PopoverController,
-        public tooltipService: TooltipService,
-        public deviceManagerService: DeviceManagerService,
-        public cloudLoggingService: CloudLoggingService
+        public tooltipService: TooltipService
     ) {
         this.dismissCallback = this.navParams.get('onLoggerDismiss');
         this.isRoot = this.navParams.get('isRoot') || this.isRoot;
         this.unitFormatPipeInstance = new UnitFormatPipe();
-        this.activeDevice = this.deviceManagerService.getActiveDevice();
     }
 
     updateScale({chan, unit}) {
@@ -124,13 +117,6 @@ export class LoggerPage {
     openDevicePinout(event) {
         let popover = this.popoverCtrl.create(PinoutPopover, undefined, {
             cssClass: 'pinoutPopover'
-        });
-        popover.present();
-    }
-
-    openCloudLoggingModal(event) {
-        let popover = this.popoverCtrl.create(CloudLoggingPopover, undefined, {
-            cssClass: 'cloudLoggingPopover'
         });
         popover.present();
     }

@@ -14,7 +14,6 @@ import { ProgressBarComponent } from '../../components/progress-bar/progress-bar
 import { PinoutPopover } from '../../components/pinout-popover/pinout-popover.component';
 import { MathPopoverComponent } from '../../components/math-popover/math-popover.component';
 import { CursorPopoverComponent } from '../../components/cursor-popover/cursor-popover.component';
-import { CloudLoggingPopover } from '../../components/cloud-logging-popover/cloud-logging-popover.component';
 
 //Directives
 import { FormatInputDirective } from '../../directives/format-input/format-input.directive';
@@ -30,8 +29,7 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
         IonicModule.forRoot(ProgressBarComponent),
         IonicModule.forRoot(PinoutPopover),
         IonicModule.forRoot(MathPopoverComponent),
-        IonicModule.forRoot(CursorPopoverComponent),
-        IonicModule.forRoot(CloudLoggingPopover)
+        IonicModule.forRoot(CursorPopoverComponent)
     ],
     declarations: [
         GenPopover,
@@ -41,8 +39,7 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
         FormatInputDirective,
         MathPopoverComponent,
         CursorPopoverComponent,
-        PinoutPopover,
-        CloudLoggingPopover
+        PinoutPopover
     ],
     exports: [
         GenPopover,
@@ -56,8 +53,7 @@ import { UnitFormatPipe } from '../../pipes/unit-format.pipe';
         FormatInputDirective,
         MathPopoverComponent,
         CursorPopoverComponent,
-        PinoutPopover,
-        CloudLoggingPopover
+        PinoutPopover
     ]
 })
 export class SharedModule { }
