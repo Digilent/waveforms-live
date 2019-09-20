@@ -1785,25 +1785,6 @@ export class OpenLoggerLoggerComponent {
     }
 }
 
-export interface LoggerParams {
-    maxSampleCount: number,
-    sampleFreq: number,
-    startDelay: number,
-    overflow: 'stop' | 'circular',
-    storageLocation: string,
-    uri: string,
-    startIndex: number,
-    count: number,
-    state: LoggerChannelState
-}
-
-export type LoggerChannelState = 'busy' | 'idle' | 'stopped' | 'running';
-
-export interface AnalogLoggerParams extends LoggerParams {
-    gain: number,
-    vOffset: number
-}
-
 export type LoggerInputType = 'delay' | 'offset' | 'samples' | 'sampleFreq';
 
 export interface DaqChannelParams {
