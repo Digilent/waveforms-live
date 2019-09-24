@@ -69,6 +69,8 @@ export class OpenLoggerLoggerComponent {
     public selectedMode: 'continuous' | 'finite' = this.modes[0];
     public selectedLogLocation: string = this.logToLocations[0];
     public storageLocations: string[] = [];
+    public cloudServices: string[] = ['ThingSpeak'];
+    public selectedCloudService: string = this.cloudServices[0];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
     public logOnBootProfiles: string[] = ['None'];
@@ -91,6 +93,8 @@ export class OpenLoggerLoggerComponent {
     private chanSelectTimer;
 
     public messageQueue: any[] = [];
+
+    private channelId: number;
 
     constructor(
         private devicemanagerService: DeviceManagerService,
