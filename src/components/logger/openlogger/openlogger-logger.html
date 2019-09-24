@@ -50,7 +50,7 @@
                 </ion-col>
             </ion-row>
 
-            <ion-row class="controls-container pad-bottom" [ngClass]="{'display-none': selectedLogLocation === 'chart'}">
+            <ion-row class="controls-container pad-bottom" [ngClass]="{'display-none': selectedLogLocation !== 'SD'}">
                 <ion-col center class="vpd-label-col">File Name</ion-col>
                 <ion-col class="vpd-input-col no-button-col" center text-center>
                     <input class="custom-input" step="any" [(ngModel)]="daqParams.uri" placeholder="logData" [disabled]="running" [tooltip]="tooltipService.getTooltip('logFileName').message" [tooltipAnimation]="true" tooltipPlacement="top" />
