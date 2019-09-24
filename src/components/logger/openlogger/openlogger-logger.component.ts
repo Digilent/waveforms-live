@@ -46,6 +46,8 @@ export class OpenLoggerLoggerComponent {
         startDelay: 0,
         sampleFreq: 500000,
         storageLocation: 'ram',
+        service: '',
+        apiKey: '',
         uri: ''
     };
     private daqParams: DaqLoggerParams = Object.assign({}, this.defaultDaqParams);
@@ -1496,6 +1498,8 @@ export class OpenLoggerLoggerComponent {
                     this.daqParams.sampleFreq,
                     this.daqParams.startDelay,
                     this.daqParams.storageLocation,
+                    this.selectedCloudService,
+                    this.daqParams.apiKey,
                     this.daqParams.uri + '.log', // note(andrew): for now this is okay, but when logging to cloud DO NOT append
                     averages,
                     overflows
@@ -1797,5 +1801,7 @@ export interface DaqLoggerParams {
     startDelay: number,
     sampleFreq: number,
     storageLocation: string,
+    service: string,
+    apiKey: string,
     uri: string,
 }
