@@ -95,6 +95,8 @@ export class OpenLoggerLoggerComponent {
     public messageQueue: any[] = [];
 
     private channelId: number;
+    private thingSpeakBaseUrl = 'http://api.thingspeak.com/channels/';
+    private thingSpeakResourcePath = '/bulk_update.json';
 
     constructor(
         private devicemanagerService: DeviceManagerService,
@@ -1060,7 +1062,7 @@ export class OpenLoggerLoggerComponent {
 
     private existingFileFoundAndValidate(loading): { reason: number, existingFiles?: string[] } {
         let existingFileFound: boolean = false;
-        if (this.daqParams.storageLocation !== 'ram' && this.daqParams.uri === '') {
+        if (this.daqParams.storageLocation !== 'ram' && this.daqParams.storageLocation !== 'cloud' && this.daqParams.uri === '') {
             loading.dismiss();
             this.toastService.createToast('loggerInvalidFileName', true, undefined, 8000);
             return { reason: 1 };
@@ -1071,7 +1073,7 @@ export class OpenLoggerLoggerComponent {
             return { reason: 1 };
         }
 
-        if (this.selectedLogLocation === 'chart') {
+        if (this.selectedLogLocation !== 'SD') {
             return { reason: 0 };
         }
 
@@ -1425,7 +1427,9 @@ export class OpenLoggerLoggerComponent {
                 if (stateData.actualStartDelay != undefined) {
                     this.daqParams.startDelay = stateData.actualStartDelay / Math.pow(10, 12);
                 }
-                if (stateData.uri != undefined) {
+                    if (stateData.storageLocation === 'cloud') {
+                    this.channelId = stateData.uri.replace(this.thingSpeakBaseUrl, '').replace(this.thingSpeakResourcePath, '');
+                } else if (stateData.uri != undefined) {
                     if (stateData.uri.lastIndexOf('_') !== -1) {
                         // remove start index from end of file name
                         // will also remove .log extension
@@ -1446,6 +1450,9 @@ export class OpenLoggerLoggerComponent {
                 if (stateData.storageLocation === undefined || stateData.storageLocation === 'ram') {
                     this.selectedLogLocation = 'chart';
                     this.logToChild._applyActiveSelection('chart');
+                } else if (stateData.storageLocation === 'cloud') {
+                    this.selectedLogLocation = 'cloud';
+                    this.logToChild._applyActiveSelection('cloud');
                 } else {
                     this.selectedLogLocation = 'SD';
                     this.logToChild._applyActiveSelection('SD');
@@ -1499,6 +1506,13 @@ export class OpenLoggerLoggerComponent {
                     return;
                 }
 
+                let uri;
+                if (this.selectedLogLocation === 'SD') {
+                    uri = this.daqParams.uri + '.log';
+                } else if (this.selectedLogLocation === 'cloud') {
+                    uri = this.thingSpeakBaseUrl + this.channelId + this.thingSpeakResourcePath;
+                }
+
                 let averages = chans.map((chan) => this.daqChans[chan - 1].average);
                 let overflows = Array.apply(null, Array(chans.length)).map(() => 'circular');
 
@@ -1510,7 +1524,7 @@ export class OpenLoggerLoggerComponent {
                     this.daqParams.storageLocation,
                     this.selectedCloudService,
                     this.daqParams.apiKey,
-                    this.daqParams.uri + '.log', // note(andrew): for now this is okay, but when logging to cloud DO NOT append
+                    uri,
                     averages,
                     overflows
                 );
