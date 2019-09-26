@@ -94,6 +94,7 @@ export class OpenLoggerLoggerComponent {
 
     public messageQueue: any[] = [];
 
+    private nicStatus: string = 'disconnected';
     private channelId: number;
     private thingSpeakBaseUrl = 'http://api.thingspeak.com/channels/';
     private thingSpeakResourcePath = '/bulk_update.json';
@@ -117,8 +118,7 @@ export class OpenLoggerLoggerComponent {
         let loading = this.loadingService.displayLoading('Loading device info...');
         this.init();
         this.loadDeviceInfo()
-            .then((data) => {
-                console.log(data);
+            .then(() => {
                 loading.dismiss();
                 if (this.running) {
                     this.continueStream();
@@ -367,7 +367,11 @@ export class OpenLoggerLoggerComponent {
                 })
                 .then((data) => {
                     console.log(data);
-                    resolve(data);
+                    return this.getNicStatus('wlan0');
+                })
+                .then((status) => {
+                    this.nicStatus = status;
+                    resolve();
                 })
                 .catch((e) => {
                     console.log(e);
@@ -1108,6 +1112,11 @@ export class OpenLoggerLoggerComponent {
                 this.toastService.createToast('loggerChannelIdRequired', true, undefined, 5000);
                 return;
             }
+
+            if (this.nicStatus != 'connected') {
+                this.toastService.createToast('loggerNetworkError', true, undefined, 5000);
+                return;
+            }
         }
 
         let loading = this.loadingService.displayLoading('Starting data logging...');
@@ -1822,6 +1831,20 @@ export class OpenLoggerLoggerComponent {
         });
         
         this.events.publish("restore-defaults");
+    }
+
+    getNicStatus(adapter: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.activeDevice.nicGetStatus(adapter).subscribe((data) => {
+                resolve(data.device[0].status);
+            },
+                (err) => {
+                    reject(err);
+                    console.log(err);
+                },
+                () => { }
+            );
+        });
     }
 }
 

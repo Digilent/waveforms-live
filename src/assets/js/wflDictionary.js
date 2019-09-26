@@ -172,6 +172,9 @@ var waveformsLiveDictionary = (function() {
         loggerApiKeyRequired: {
             english: 'API Key is required'
         },
+        loggerNetworkError: {
+            english: 'Error Starting Acquisition. Please Make Sure the Device is Connected to a Wifi Network and Try Again'
+        },
 
         //File
         fileDeleteErr: {
