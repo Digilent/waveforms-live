@@ -599,7 +599,7 @@ export class DeviceManagerPage {
             let oldFirmware = weightedFirmware < weightedMinFirmware;
             console.log('OLD FIRMWARE?');
             console.log(oldFirmware);
-            if (this.devices[deviceIndex].bridge && oldFirmware) {
+            if (this.devices[deviceIndex].bridge && oldFirmware && this.devices[deviceIndex].deviceDescriptor.deviceModel === "OpenScope MZ") {
                 //Agent
                 let title = 'Firmware Update Required';
                 let subtitle = 'You will now be taken to the update firmware wizard.';
