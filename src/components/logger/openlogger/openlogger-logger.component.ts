@@ -446,7 +446,7 @@ export class OpenLoggerLoggerComponent {
             this.count = -1000;
         }
 
-        if (this.selectedLogLocation === 'SD') {
+        if (this.selectedLogLocation !== 'chart') {
             this.logAndStream = true;
             this.bothStartStream();
         }
@@ -1255,7 +1255,7 @@ export class OpenLoggerLoggerComponent {
                         return chanArray;
                     }, []);
 
-                    if (this.selectedLogLocation === 'SD' && !this.logAndStream) {
+                    if (this.selectedLogLocation !== 'chart' && !this.logAndStream) {
                         this.getLiveState();
                     } else {
                         this.readLiveData();
@@ -1286,7 +1286,7 @@ export class OpenLoggerLoggerComponent {
                 this.parseGetLiveStatePacket('analog', data);
                 if (this.running) {
                     setTimeout(() => {
-                        if (this.selectedLogLocation === 'SD' && this.logAndStream) {
+                        if (this.selectedLogLocation !== 'chart' && this.logAndStream) {
                             this.continueStream();
                         }
                         else {
@@ -1344,7 +1344,7 @@ export class OpenLoggerLoggerComponent {
             .then((data) => {
                 this.parseReadResponseAndDraw(data);
                 if (this.running) {
-                    if (this.selectedLogLocation === 'SD' && !this.logAndStream) {
+                    if (this.selectedLogLocation !== 'chart' && !this.logAndStream) {
                         this.getLiveState();
                     } else {
                         if (this.activeDevice.transport.getType() === 'local') {

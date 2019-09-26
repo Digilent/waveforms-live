@@ -2,7 +2,7 @@
 
     <div>
         <div class="button-info-container">
-            <ion-row *ngIf="selectedLogLocation === 'SD'">
+            <ion-row *ngIf="selectedLogLocation !== 'chart'">
                 <ion-col class="checkbox-container">
                     <ion-checkbox [(ngModel)]="logAndStream" (ionChange)="logAndStreamChange()"></ion-checkbox> <span class="checkbox-label">Stream to Chart</span>
                 </ion-col>
