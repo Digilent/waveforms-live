@@ -1098,6 +1098,18 @@ export class OpenLoggerLoggerComponent {
             return;
         }
 
+        if (this.selectedLogLocation === 'cloud') {
+            if (!this.daqParams.apiKey) {
+                this.toastService.createToast('loggerApiKeyRequired', true, undefined, 5000);
+                return;
+            }
+
+            if (!this.channelId) {
+                this.toastService.createToast('loggerChannelIdRequired', true, undefined, 5000);
+                return;
+            }
+        }
+
         let loading = this.loadingService.displayLoading('Starting data logging...');
 
         this.getCurrentState(true)

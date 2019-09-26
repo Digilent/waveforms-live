@@ -166,6 +166,12 @@ var waveformsLiveDictionary = (function() {
         loggerNoChannelsError: {
             english: 'Please Select at Least One Logger Channel To Begin '
         },
+        loggerChannelIdRequired: {
+            english: 'Channel ID is required'
+        },
+        loggerApiKeyRequired: {
+            english: 'API Key is required'
+        },
 
         //File
         fileDeleteErr: {
