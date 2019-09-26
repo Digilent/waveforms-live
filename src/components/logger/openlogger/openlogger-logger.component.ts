@@ -301,18 +301,23 @@ export class OpenLoggerLoggerComponent {
                     this.storageLocations.unshift('ram'); // openlogger doesn't report ram as storage location, but always will have it
 
                     if (data && data.device && data.device[0]) {
+                        let fwVer = this.activeDevice.firmwareVersion;
                         data.device[0].storageLocations.forEach((el, index, arr) => {
                             if (el !== 'flash') {
                                 this.storageLocations.unshift(el);
                                 this.filesInStorage[el] = [];
                             }
 
-                            let fwVer = this.activeDevice.firmwareVersion;
                             if (/^sd/g.test(el) && this.logToLocations.indexOf('SD') === -1 && 
-                            (fwVer.major === 0 && fwVer.minor >= 1719)){ // only push SD as a location if the firmware supports it
+                                ((fwVer.major === 0 && fwVer.minor >= 1719) || fwVer.major >= 1)) { // only push SD as a location if the firmware supports it
                                 this.logToLocations.push('SD');
                             }
                         });
+
+                        if (this.logToLocations.indexOf('cloud') === -1 && ((fwVer.major === 0 && fwVer.minor >= 1877) || fwVer.major >= 1)) { // only push cloud as a location if the firmware supports it
+                            this.storageLocations.unshift('cloud'); // openlogger doesn't report cloud as storage location
+                            this.logToLocations.push('cloud');
+                    }
                     }
 
                     if (this.storageLocations.length < 1) {
@@ -651,11 +656,12 @@ export class OpenLoggerLoggerComponent {
 
     logToSelect(event) {
         console.log(event);
-        if (this.selectedLogLocation === 'chart' && event !== 'chart') {
-            this.daqParams.storageLocation = this.storageLocations[0];
-        }
         if (event === 'chart') {
             this.daqParams.storageLocation = 'ram';
+        } else if (event === 'SD') {
+            this.daqParams.storageLocation = 'sd0';
+        } else {
+            this.daqParams.storageLocation = event;
         }
         this.selectedLogLocation = event;
     }
