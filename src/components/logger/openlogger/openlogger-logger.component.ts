@@ -1389,6 +1389,7 @@ export class OpenLoggerLoggerComponent {
                 this.getCurrentState()
                     .then((data) => {
                         console.log(data);
+                        this.running = false;
                         this.stopLogger();
                     })
                     .catch((e) => {
