@@ -524,6 +524,15 @@ var waveformsLiveDictionary = (function() {
         },
         logAveragingToggle: {
             english: 'Toggle Channel Averaging Controls'
+        },
+        logCloudLoggingService: {
+            english: 'Set Cloud Logging Service'
+        },
+        logThingSpeakApiKey: {
+            english: 'Set ThingSpeak API Key'
+        },
+        logThingSpeakChannelId: {
+            english: 'Set ThingSpeak Channel ID'
         }
 
     };

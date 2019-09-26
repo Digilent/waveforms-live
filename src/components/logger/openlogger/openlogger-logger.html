@@ -63,21 +63,21 @@
                         Service
                     </ion-col>
                     <ion-col class="vpd-input-col no-button-col" center text-center>
-                        <dropdown-popover [dataArray]="cloudServices" [disabled]="running"></dropdown-popover>
+                        <dropdown-popover [dataArray]="cloudServices" [disabled]="running" [tooltip]="tooltipService.getTooltip('logCloudLoggingService').message" [tooltipAnimation]="true" tooltipPlacement="top" ></dropdown-popover>
                     </ion-col>
                 </ion-row>
 
                 <ion-row class="controls-container pad-bottom">
                     <ion-col center class="vpd-label-col">API Key</ion-col>
                     <ion-col class="vpd-input-col no-button-col" center text-center>
-                        <input class="custom-input" step="any" [(ngModel)]="daqParams.apiKey" [disabled]="running" />
+                        <input class="custom-input" step="any" [(ngModel)]="daqParams.apiKey" [disabled]="running" [tooltip]="tooltipService.getTooltip('logThingSpeakApiKey').message" [tooltipAnimation]="true" tooltipPlacement="top" />
                     </ion-col>
                 </ion-row>
 
                 <ion-row class="controls-container pad-bottom">
                     <ion-col center class="vpd-label-col">Channel ID</ion-col>
                     <ion-col class="vpd-input-col no-button-col" center text-center>
-                        <input class="custom-input" step="any" [(ngModel)]="channelId" [disabled]="running" />
+                        <input class="custom-input" step="any" [(ngModel)]="channelId" [disabled]="running" [tooltip]="tooltipService.getTooltip('logThingSpeakChannelId').message" [tooltipAnimation]="true" tooltipPlacement="top" />
                     </ion-col>
                 </ion-row>
             </div>
