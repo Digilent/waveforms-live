@@ -656,8 +656,8 @@ export class WifiSetupPage {
                         
                         if (data.status === 'connected' && data.ipAddress !== 'none') {
                             resolve();
-                        } else if (data.status === 'disconnected') {
-                            if (data.reason !== 4) reject(new Error("Failed connecting"));
+                        } else if (data.status === 'disconnected' && data.reason != 4) {
+                            reject(new Error("Failed connecting"));
                         } else {
                             this.readNicUntilConnected(timeoutDate)
                                 .then(resolve)
