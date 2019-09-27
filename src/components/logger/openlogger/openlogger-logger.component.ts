@@ -73,8 +73,6 @@ export class OpenLoggerLoggerComponent {
     public selectedCloudService: string = this.cloudServices[0];
     public loggingProfiles: string[] = ['New Profile'];
     public selectedLogProfile: string = this.loggingProfiles[0];
-    public logOnBootProfiles: string[] = ['None'];
-    public selectedLogOnBoot: string = this.logOnBootProfiles[0];
     private dirtyProfile: boolean = false;
     private profileObjectMap: any = {};
     public running: boolean = false;
@@ -730,7 +728,6 @@ export class OpenLoggerLoggerComponent {
                 let nameIndex: number = this.loggingProfiles.indexOf(profileName);
                 if (nameIndex !== -1) {
                     this.loggingProfiles.splice(nameIndex, 1);
-                    this.logOnBootProfiles.splice(nameIndex, 1);
                 }
                 this.selectedLogProfile = this.loggingProfiles[0];
             },
@@ -755,10 +752,8 @@ export class OpenLoggerLoggerComponent {
         let nameIndex: number = this.loggingProfiles.indexOf(profileName);
         if (nameIndex !== -1) {
             this.loggingProfiles.splice(nameIndex, 1);
-            this.logOnBootProfiles.splice(nameIndex, 1);
         }
         this.loggingProfiles.push(profileName);
-        this.logOnBootProfiles.push(profileName);
         let profileObj = this.generateProfileJson(saveChart, saveDaq);
         let profileObjCopy = JSON.parse(JSON.stringify(profileObj));
         this.profileObjectMap[profileName] = profileObjCopy;
@@ -833,14 +828,12 @@ export class OpenLoggerLoggerComponent {
                     let splitArray = profileName.split('.');
                     if (splitArray.length < 2) {
                         this.loggingProfiles.push(profileName);
-                        this.logOnBootProfiles.push(profileName);
                         this.profileObjectMap[profileName] = parsedData;
                     }
                     else {
                         splitArray.splice(splitArray.length - 1, 1);
                         let noExtName = splitArray.join('');
                         this.loggingProfiles.push(noExtName);
-                        this.logOnBootProfiles.push(noExtName);
                         this.profileObjectMap[noExtName] = parsedData;
                     }
                     resolve(data);
