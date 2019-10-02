@@ -46,6 +46,7 @@ export class OpenLoggerLoggerComponent {
         startDelay: 0,
         sampleFreq: 500000,
         storageLocation: 'ram',
+        logOnBoot: true,
         service: '',
         apiKey: '',
         uri: ''
@@ -1426,6 +1427,7 @@ export class OpenLoggerLoggerComponent {
                 if (stateData.statusCode == undefined) { return; }
                 this.loggerState = stateData.state.trim();
                 this.running = stateData.state === 'running';
+                this.daqParams.logOnBoot = stateData.logOnBoot;
                 if (onlyCopyState) {
                     return;
                 }
@@ -1449,6 +1451,12 @@ export class OpenLoggerLoggerComponent {
                         // remove start index from end of file name
                         // will also remove .log extension
                         stateData.uri = stateData.uri.slice(0, stateData.uri.lastIndexOf('_'));
+
+                        // remove session ID from end of file name if exists
+                        let regex = new RegExp('.+_LOB[0-9]{3}');
+                        if (regex.test(stateData.uri)) {
+                            stateData.uri = stateData.uri.slice(0, stateData.uri.lastIndexOf('_'));
+                        }
                     } else if (stateData.uri.indexOf('.log') !== -1) {
                         // Remove .log from end of file
                         stateData.uri = stateData.uri.slice(0, stateData.uri.indexOf('.log'));
@@ -1537,6 +1545,7 @@ export class OpenLoggerLoggerComponent {
                     this.daqParams.sampleFreq,
                     this.daqParams.startDelay,
                     this.daqParams.storageLocation,
+                    this.daqParams.logOnBoot,
                     this.selectedCloudService,
                     this.daqParams.apiKey,
                     uri,
@@ -1840,6 +1849,29 @@ export class OpenLoggerLoggerComponent {
             );
         });
     }
+
+    setLogOnBootParams(event) {
+        let daqChanArray = [];
+        for (let i = 0; i < this.daqChans.length; i++) {
+            if (this.selectedChannels[i]) {
+                daqChanArray.push(i + 1);
+            }
+        }
+
+        this.setParameters('analog', daqChanArray)
+            .then((data) => {
+                if (data && data.log.daq.logOnBoot) {
+                    this.toastService.createToast('loggerLogOnBootEnabled', true, undefined, 5000);
+                } else {
+                    this.toastService.createToast('loggerLogOnBootDisabled', true, undefined, 5000);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                this.toastService.createToast('loggerSetParamError', true, undefined, 5000);
+            });
+    }
+
 }
 
 export type LoggerInputType = 'delay' | 'offset' | 'samples' | 'sampleFreq';
@@ -1854,6 +1886,7 @@ export interface DaqLoggerParams {
     startDelay: number,
     sampleFreq: number,
     storageLocation: string,
+    logOnBoot: boolean,
     service: string,
     apiKey: string,
     uri: string,

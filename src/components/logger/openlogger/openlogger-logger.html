@@ -103,6 +103,21 @@
         <div class="button-info-container" [ngClass]="{'display-none': !showAdvSettings}">
             <ion-row class="controls-container">
                 <ion-col center class="vpd-label-col">
+                    Log On Boot
+                </ion-col>
+                <ion-col center class="log-on-boot-toggle" [tooltip]="tooltipService.getTooltip('logLogOnBoot').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                    <ion-toggle class="toggle" color="primary" [(ngModel)]="daqParams.logOnBoot" (click)="setLogOnBootParams($event)"></ion-toggle>
+                </ion-col>
+    
+                <ion-col>
+                    <button ion-button class="text-button-side disable-hover bottom-button" (tap)="setLogOnBootParams()" [disabled]="running || !daqParams.logOnBoot"  [tooltip]="tooltipService.getTooltip('logLogOnBootRefresh').message" [tooltipAnimation]="true" tooltipPlacement="left">
+                        <img src="assets/img/refresh.svg">
+                    </button>
+                </ion-col>
+            </ion-row>
+
+            <ion-row class="controls-container pad-bottom">
+                <ion-col center class="vpd-label-col">
                     Profile
                     <img *ngIf="dirtyProfile" class="svg-size" src="assets/img/dirty-dot.svg">
                 </ion-col>
@@ -130,7 +145,7 @@
                 </ion-col>
             </ion-row>
 
-            <ion-row class="controls-container">
+            <ion-row class="controls-container pad-bottom">
                 <ion-col center class="vpd-label-col">
                     Mode
                 </ion-col>
@@ -141,7 +156,7 @@
                 </ion-col>
             </ion-row>
 
-            <ion-row class="controls-container" *ngIf="selectedMode === 'finite'">
+            <ion-row class="controls-container pad-bottom" *ngIf="selectedMode === 'finite'">
                 <ion-col center class="vpd-label-col">
                     Samples
                 </ion-col>

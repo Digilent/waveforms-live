@@ -175,6 +175,15 @@ var waveformsLiveDictionary = (function() {
         loggerNetworkError: {
             english: 'Error Starting Acquisition. Please Make Sure the Device is Connected to a Wifi Network and Try Again'
         },
+        loggerSetParamError: {
+            english: 'Could Not Set Logger Parameters. Please Try Again. If Problem Persists, Reset The Device'
+        },
+        loggerLogOnBootEnabled: {
+            english: 'Log On Boot Enabled With Current Settings'
+        },
+        loggerLogOnBootDisabled: {
+            english: 'Log On Boot Disabled'
+        },
 
         //File
         fileDeleteErr: {
@@ -533,6 +542,12 @@ var waveformsLiveDictionary = (function() {
         },
         logThingSpeakChannelId: {
             english: 'Set ThingSpeak Channel ID'
+        },
+        logLogOnBoot: {
+            english: 'Enable Log On Boot'
+        },
+        logLogOnBootRefresh: {
+            english: 'Apply Current Settings to Log On Boot'
         }
 
     };
