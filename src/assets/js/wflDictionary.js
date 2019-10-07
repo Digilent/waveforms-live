@@ -210,7 +210,7 @@ var waveformsLiveDictionary = (function() {
         },
         //Appears when the agent enumerates and does not find any devices.
         agentEnumerateError: {
-            english: 'No UART Devices Found'
+            english: 'No Devices Found'
         },
         //Appears when the user tries to add an agent and no response is found.
         agentConnectError: {
