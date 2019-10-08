@@ -366,7 +366,7 @@ export class OpenLoggerLoggerComponent {
                 })
                 .then((data) => {
                     console.log(data);
-                    return this.getNicStatus('wlan0');
+                    return (this.activeDevice.rootUri === 'local') ? 'local' : this.getNicStatus('wlan0'); // only if this isn't a sim device
                 })
                 .then((status) => {
                     this.nicStatus = status;
