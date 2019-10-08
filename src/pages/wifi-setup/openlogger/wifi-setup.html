@@ -55,6 +55,13 @@
                     </ion-col>
                 </ion-row>
                 <div text-center>
+                    <div class="configure-item">
+                        <button ion-button class="text-button-side item-button disable-hover" (click)="manualDisconnect()"
+                            *ngIf="currentNicStatus.status === 'connected' && deviceObject && deviceObject.bridge">
+                            Disconnect From Network
+                        </button>
+                    </div>
+
                     <button ion-button icon-right clear class="advanced-button" (tap)="toggleMainAdvanced()">
                         Advanced
                         <div [@rotate]="showMainAdvanced">
@@ -74,11 +81,6 @@
                         <div item-right class="item-content-right dropdown-popover-item-right">
                             <dropdown-popover [forcePopover]="true" [dataArray]="storageLocations" (onSelection)="storageSelection($event)"></dropdown-popover>
                         </div>
-                    </ion-item>
-                    <ion-item class="configure-item collapse-card" *ngIf="currentNicStatus.status === 'connected' && deviceObject && deviceObject.bridge" [@expand]="showMainAdvanced">
-                        <button ion-button class="text-button-side item-button disable-hover" (click)="manualDisconnect()">
-                            Disconnect From Network
-                        </button>
                     </ion-item>
                 </div>
             </div>
