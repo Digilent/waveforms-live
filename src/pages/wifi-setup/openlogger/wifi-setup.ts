@@ -227,6 +227,12 @@ export class WifiSetupPage {
                 let timeoutDate = this.getFutureDate(20);
                 return this.readNicUntilConnected(timeoutDate)
             })
+            .then(_ => {
+                return this.getNicStatus(this.selectedNic)
+            })
+            .then(data => {
+                this.currentNicStatus = data;
+            }) 
             .then(() => {
                 loading.dismiss();
                 if (this.deviceObject && !this.deviceObject.bridge) {

@@ -43,7 +43,7 @@
                             <div *ngFor="let savedNetwork of savedNetworks, let i = index;" text-center>
                                 <ion-card class="network-card" (click)="loadAndConnect(i)">
                                     <ion-item class="card-info">
-                                        {{savedNetwork.ssid}}
+                                        {{savedNetwork.ssid}} {{ currentNicStatus.status === "connected" && savedNetwork.ssid === currentNicStatus.ssid ? "(Connected)" : ""}}
                                         <button item-right ion-button clear class="network-button" (click)="showPopover($event, i)">
                                             <img class="custom-image-button" src="assets/img/more.svg">
                                         </button>
