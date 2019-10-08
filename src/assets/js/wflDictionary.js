@@ -548,6 +548,9 @@ var waveformsLiveDictionary = (function() {
         },
         logLogOnBootRefresh: {
             english: 'Apply Current Settings to Log On Boot'
+        },
+        showPassword: {
+            english: 'Show Password'
         }
 
     };

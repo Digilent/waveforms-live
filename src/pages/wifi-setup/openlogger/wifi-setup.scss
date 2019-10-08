@@ -193,3 +193,21 @@
         background-color: rgba(0, 0, 0, 0.4);
     }
 }
+
+.hostname-input-wrapper ion-checkbox .item-cover {
+    display: none;
+}
+
+.card-info.connected.connected {
+    background: #808080;
+}
+
+.hostname-input-wrapper ion-checkbox.checkbox-md.checkbox-md {
+    position: absolute;
+    top: 5px;
+    right: -1.5rem;
+}
+
+ion-item.card-info {
+    overflow: visible;
+}

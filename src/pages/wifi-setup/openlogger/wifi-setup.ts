@@ -12,6 +12,7 @@ import { GenPopover } from '../../../components/gen-popover/gen-popover.componen
 //Interfaces
 import { SavedWifiInfoContainer, WifiInfoContainer, NicStatusContainer } from './wifi-setup.interface';
 import { DeviceCardInfo } from '../../device-manager-page/device-manager-page.interface';
+import { TooltipService } from '../../../services/tooltip/tooltip.service';
 
 @Component({
     templateUrl: 'wifi-setup.html',
@@ -72,6 +73,7 @@ export class WifiSetupPage {
     public storageLocations: string[] = ['None'];
 
     public showAdvancedSettings: boolean = false;
+    public showPassword: boolean = false;
 
     public wepKeyIndex: number = 0;
     public wepKeyArray: string[] = [];
@@ -92,7 +94,8 @@ export class WifiSetupPage {
         _viewCtrl: ViewController,
         _loadingCtrl: LoadingController,
         _popoverCtrl: PopoverController,
-        public navCtrl: NavController
+        public navCtrl: NavController,
+        public tooltipService: TooltipService
     ) {
         this.storageService = _storageService;
         this.settingsService = _settingsService;
