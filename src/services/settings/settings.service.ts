@@ -103,6 +103,10 @@ export class SettingsService {
                 this.selectedLogProfiles = JSON.parse(data);
             }
         });
+
+        this.storageService.getData('selectedConsoleLog').then((data) => {
+            this.changeConsoleLog(data || 'None', false);
+        });
     }
 
     setRouteToStore(route: boolean) {
@@ -141,7 +145,7 @@ export class SettingsService {
         };
     }
 
-    changeConsoleLog(type: 'Local Storage' | 'Both' | 'None' | 'Console') {
+    changeConsoleLog(type: 'Local Storage' | 'Both' | 'None' | 'Console', save: boolean = true) {
         if (type === 'Console') {
             window.console.log = this.defaultConsoleLog;
         }
@@ -154,6 +158,8 @@ export class SettingsService {
         else if (type === 'None') {
             window.console.log = this.log;
         }
+
+        if (save === true) this.storageService.saveData('selectedConsoleLog', type);
     }
 
     log() {}
