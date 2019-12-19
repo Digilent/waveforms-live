@@ -59,6 +59,17 @@ export class DcSupplyComponent {
                 this.formatInputAndUpdate(0.000, i);
             }
         });
+
+        this.events.subscribe('profile:getDC', () => {
+            return this.voltages;
+        });
+
+        this.events.subscribe('profile:setDC', (voltages) => {
+            this.voltages = voltages;
+
+            this.deviceManagerService.getActiveDevice().instruments.dc.chans
+             .forEach((_, idx) => this.setNewVoltageAndRefresh(idx));
+        });
     }
 
     formatInputAndUpdate(trueValue: number, channel: number) {
