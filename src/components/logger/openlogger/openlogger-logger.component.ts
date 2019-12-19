@@ -571,7 +571,7 @@ export class OpenLoggerLoggerComponent {
         if (this.selectedLogLocation === 'chart') {
             max = targets.ram.sampleFreqMax;
         } else if (this.selectedLogLocation === 'SD') {
-            max = targets.sd0.sampleFreqMax;
+            max = targets.sd0.sampleFreqMax * 10; // note(andrew): THIS IS A SIMPLE BANDAID FIX THAT NEEDS TO BE REMOVED AFTER THE FIRMWARE HAS BEEN FIXED!!
         } else {
             max = this.activeDevice.instruments.logger.daq.chans[0].sampleFreqMax;
         }
