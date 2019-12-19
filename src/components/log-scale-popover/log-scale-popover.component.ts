@@ -90,10 +90,6 @@ export class LogScalePopover {
       this.toastService.createToast("scaleInvalidName", true);
       return;
     }
-    if (this.unitDescriptor.length !== 1) {
-      this.toastService.createToast("scaleInvalidUnits", true);
-      return;
-    }
 
     this.evaluateParams()
       .then((params: ScaleParams) => {
