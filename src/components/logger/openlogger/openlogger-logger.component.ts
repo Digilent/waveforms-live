@@ -1006,18 +1006,14 @@ export class OpenLoggerLoggerComponent {
     }
 
     stopLogger() {
-        if (this.running) {
-            this.messageQueue.push(() => this.stop().then(() => this.running = false));
-        } else {
-            this.stop()
-                .then((data) => {
-                    console.log(data);
-                    this.running = false;
-                })
-                .catch((e) => {
-                    console.log(e);
-                });
-        }
+        this.stop()
+            .then((data) => {
+                console.log(data);
+                this.running = false;
+            })
+            .catch((e) => {
+                console.log(e);
+            });
     }
 
     private clearChart() {
