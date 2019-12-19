@@ -159,6 +159,14 @@ export class OpenLoggerLoggerPage {
         this.loggerPlotService.resetService();
     }
 
+    setFirstAvailableSeries() {
+        for (let idx = 0; idx < this.loggerComponent.selectedChannels.length; idx++) {
+            const chanIsActive = this.loggerComponent.selectedChannels[idx];
+
+            if (chanIsActive) return this.loggerPlotService.setActiveSeries(idx+1);
+        }
+    }
+
     runLogger() {
         let { tpdIndex, vpdIndices } = this.loggerPlotService;
 
