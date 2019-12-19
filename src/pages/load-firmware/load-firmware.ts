@@ -295,7 +295,8 @@ export class LoadFirmwarePage {
                         });
                 }
             } else {
-                this.getFirmwareFromUrl(this.deviceFirmwareVersionDictionary[this.selectedDevice].firmwareUrl + '/OpenScopeMZ-' + this.deviceFirmwareVersionDictionary[this.selectedDevice].latest + '.hex')
+                let device = this.deviceManagerService.getActiveDevice().deviceModel.replace(" ", "");
+                this.getFirmwareFromUrl(this.deviceFirmwareVersionDictionary[this.selectedDevice].firmwareUrl + `/${device}-` + this.deviceFirmwareVersionDictionary[this.selectedDevice].latest + '.hex')
                     .then(() => {
                         resolve();
                     })
