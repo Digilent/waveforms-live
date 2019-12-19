@@ -934,6 +934,8 @@ export class OpenLoggerLoggerComponent {
                     }
                     this.daqChans[chanNum - 1].vOffset = channel[chanNum].vOffset;
                 });
+            } else if (instrument === 'dc') {
+                this.events.publish('profile:setDC', ...loadedObj[instrument]);
             }
         }
     }
