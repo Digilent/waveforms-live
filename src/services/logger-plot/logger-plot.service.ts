@@ -60,6 +60,7 @@ export class LoggerPlotService {
             base: 0.1
         };
         this.yAxis = [];
+        this.activeSeries = 1;
     }
 
     init(chartRef: DigilentChart) {
@@ -71,6 +72,7 @@ export class LoggerPlotService {
         this.vpdIndices = this.chart.getActiveYIndices();
         this.defaultVpdIndices = this.vpdIndices.slice();
         this.defaultTpdIndex = this.tpdIndex;
+        this.activeSeries = 1;
 
         this.setValPerDivAndUpdate('x', 1, this.tpdArray[this.tpdIndex], false);
 
