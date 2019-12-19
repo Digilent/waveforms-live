@@ -848,7 +848,7 @@ export class OpenLoggerLoggerComponent {
         });
     }
 
-    generateProfileJson(saveChart, saveDaq) {
+    generateProfileJson(saveChart, saveDaq, saveDC = true) {
         let saveObj = {};
         if (saveChart) {
             saveObj['chart'] = {
@@ -881,6 +881,13 @@ export class OpenLoggerLoggerComponent {
                 }
             });
         }
+
+        if (saveDC) {
+            let voltages: number[] = this.events.publish('profile:getDC')[0] || ''; // DC Component listens for getDC from the openlogger component since the component doesn't have easy access to the dc supply component.
+
+            saveObj['dc'] = voltages;
+        }
+
         return saveObj;
     }
 
