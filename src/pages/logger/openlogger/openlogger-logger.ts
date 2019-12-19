@@ -181,6 +181,8 @@ export class OpenLoggerLoggerPage {
             this.loggerPlotService.setValPerDivAndUpdate('y', i + 1, this.loggerPlotService.vpdArray[vpdIndex]);
         });
 
+        this.setFirstAvailableSeries();
+
         this.loggerComponent.startLogger();
     }
 
