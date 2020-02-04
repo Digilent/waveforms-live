@@ -453,8 +453,14 @@ var waveformsLiveDictionary = (function() {
         oscSamplingFreq: {
             english: 'Osc Sampling Frequency'
         },
+        oscSampleFreqLocked: {
+            english: 'Lock sampling frequency to timebase'
+        },
         oscSampleSize: {
             english: 'Osc Sample Size'
+        },
+        oscSampleSizeLocked: {
+            english: 'Lock sample size'
         },
         xAxisTpd: {
             english: 'Set Time / Division'
